@@ -22,6 +22,53 @@ describe('public SEO metadata', () => {
     expect(metadata.robots).toBe('index,follow');
   });
 
+  it('does not preserve removed competition subroutes as legacy game pages', () => {
+    const metadata = resolveSeoMetadata('/competition/leaderboard', siteOrigin);
+    expect(metadata.routeKey).toBe('unknown');
+    expect(metadata.title).toBe('Ocentra Games');
+    expect(metadata.canonicalPath).toBe('/competition/leaderboard');
+    expect(metadata.robots).toBe('noindex,follow');
+  });
+
+  it('resolves event and match route metadata with the right privacy', () => {
+    const eventMetadata = resolveSeoMetadata('/events/weekend-cup', siteOrigin);
+    const matchesMetadata = resolveSeoMetadata('/matches', siteOrigin);
+    const matchMetadata = resolveSeoMetadata('/matches/match-123', siteOrigin);
+
+    expect(eventMetadata.routeKey).toBe('event-detail');
+    expect(eventMetadata.canonicalPath).toBe('/events/weekend-cup');
+    expect(eventMetadata.robots).toBe('index,follow');
+    expect(matchesMetadata.routeKey).toBe('matches');
+    expect(matchesMetadata.robots).toBe('noindex,nofollow');
+    expect(matchMetadata.routeKey).toBe('match-detail');
+    expect(matchMetadata.canonicalPath).toBe('/matches/match-123');
+    expect(matchMetadata.robots).toBe('noindex,nofollow');
+  });
+
+  it('does not preserve removed or unknown leaderboard subroutes', () => {
+    const metadata = resolveSeoMetadata('/leaderboard/random', siteOrigin);
+    expect(metadata.routeKey).toBe('unknown');
+    expect(metadata.canonicalPath).toBe('/leaderboard/random');
+    expect(metadata.robots).toBe('noindex,follow');
+  });
+
+  it('does not collapse unknown nested public routes into valid metadata', () => {
+    const paths = [
+      '/games/card-games/leaderboard',
+      '/games/claim/leaderboard/season',
+      '/shop/offers',
+      '/categories/trick-taking-card-games/extra',
+      '/rules/claim/extra',
+    ];
+
+    for (const pathname of paths) {
+      const metadata = resolveSeoMetadata(pathname, siteOrigin);
+      expect(metadata.routeKey, pathname).toBe('unknown');
+      expect(metadata.canonicalPath, pathname).toBe(pathname);
+      expect(metadata.robots, pathname).toBe('noindex,follow');
+    }
+  });
+
   it('canonicalizes replaced catalog game slugs to authored game slugs', () => {
     const gameMetadata = resolveSeoMetadata('/games/brag-3-card', siteOrigin);
     const rulesMetadata = resolveSeoMetadata('/rules/brag-3-card', siteOrigin);
@@ -56,12 +103,15 @@ describe('public SEO metadata', () => {
     expect(paths).toContain('/');
     expect(paths).toContain('/games');
     expect(paths).toContain('/games/card-games');
+    expect(paths).toContain('/events');
     expect(paths).toContain('/categories/trick-taking-card-games');
     expect(paths).toContain('/games/claim');
     expect(paths).toContain('/rules/claim');
     expect(paths).toContain('/games/claim/leaderboard');
     expect(paths).not.toContain('/CardGamesExplorer');
     expect(paths).not.toContain('/settings');
+    expect(paths).not.toContain('/matches');
+    expect(paths).not.toContain('/matches/match-123');
     expect(paths).not.toContain('/games/claim/play');
     expect(paths).not.toContain('/admin');
   });

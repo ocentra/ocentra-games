@@ -17,19 +17,27 @@ interface CompetitionPageProps {
   onLogoutClick?: () => void;
   pageMode?:
     | 'competition'
+    | 'events'
+    | 'eventDetail'
     | 'tournaments'
     | 'tournamentDetail'
     | 'leaderboard'
     | 'gameLeaderboard'
-    | 'aiBenchmarkLeaderboard';
+    | 'aiBenchmarkLeaderboard'
+    | 'matches'
+    | 'matchDetail';
   gameId?: string;
+  eventId?: string;
   tournamentId?: string;
+  matchId?: string;
 }
 
 function getCompetitionHeader(
   pageMode: NonNullable<CompetitionPageProps['pageMode']>,
   gameId?: string,
-  tournamentId?: string
+  tournamentId?: string,
+  eventId?: string,
+  matchId?: string
 ): { gameName: string; tagline: string } {
   if (pageMode === 'leaderboard') {
     return { gameName: 'Leaderboard', tagline: 'Overall ranks across every game.' };
@@ -40,11 +48,23 @@ function getCompetitionHeader(
   if (pageMode === 'aiBenchmarkLeaderboard') {
     return { gameName: 'AI Benchmarks', tagline: 'AI-vs-AI model standings and benchmark runs.' };
   }
+  if (pageMode === 'events') {
+    return { gameName: 'Events', tagline: 'Campaigns, seasonal entry paths, and shop-backed access.' };
+  }
+  if (pageMode === 'eventDetail') {
+    return { gameName: 'Event Detail', tagline: `Rules, access, and rewards for ${eventId ?? 'the selected event'}.` };
+  }
   if (pageMode === 'tournaments') {
     return { gameName: 'Tournaments', tagline: 'Scheduled competitive events and active brackets.' };
   }
   if (pageMode === 'tournamentDetail') {
     return { gameName: 'Tournament Detail', tagline: `Bracket, registration, and status for ${tournamentId ?? 'the selected tournament'}.` };
+  }
+  if (pageMode === 'matches') {
+    return { gameName: 'Matches', tagline: 'Account match history, table receipts, and result records.' };
+  }
+  if (pageMode === 'matchDetail') {
+    return { gameName: 'Match Detail', tagline: `Result record and table receipt for ${matchId ?? 'the selected match'}.` };
   }
   return { gameName: 'Competition', tagline: 'Rank ladders, nearby standings, and tournament brackets.' };
 }
@@ -55,7 +75,9 @@ export function CompetitionPage({
   onLogoutClick,
   pageMode = 'competition',
   gameId,
+  eventId,
   tournamentId: routeTournamentId,
+  matchId,
 }: CompetitionPageProps) {
   const { runWithAccount } = useAuthAccess();
   const accountUserId = user && user.isGuest !== true ? user.uid : null;
@@ -85,7 +107,7 @@ export function CompetitionPage({
     onLogout();
   };
   const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
-  const headerDynamicData = getCompetitionHeader(pageMode, gameId, routeTournamentId ?? tournamentId);
+  const headerDynamicData = getCompetitionHeader(pageMode, gameId, routeTournamentId ?? tournamentId, eventId, matchId);
 
   return (
     <UnifiedPageShell
@@ -120,6 +142,8 @@ export function CompetitionPage({
         tournamentRounds={Array.isArray(tournamentBracket?.rounds) ? tournamentBracket.rounds : []}
         pageMode={pageMode}
         gameId={gameId}
+        eventId={eventId}
+        matchId={matchId}
         onRefreshLeaderboard={(nextGameType) => { void refreshLeaderboard(nextGameType); }}
         onLoadBracket={(nextTournamentId) => { void loadTournamentBracket(nextTournamentId); }}
         onRegister={(nextTournamentId) => {

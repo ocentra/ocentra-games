@@ -105,11 +105,15 @@ export type AdminActivityRow = {
 
 export type CompetitionPageMode =
   | 'competition'
+  | 'events'
+  | 'eventDetail'
   | 'tournaments'
   | 'tournamentDetail'
   | 'leaderboard'
   | 'gameLeaderboard'
-  | 'aiBenchmarkLeaderboard';
+  | 'aiBenchmarkLeaderboard'
+  | 'matches'
+  | 'matchDetail';
 
 export type LobbyRoomLike = {
   roomId?: string;
@@ -383,6 +387,8 @@ export function CompetitionPageContent({
   tournamentRounds,
   pageMode = 'competition',
   gameId,
+  eventId,
+  matchId,
   onRefreshLeaderboard,
   onLoadBracket,
   onRegister,
@@ -404,6 +410,8 @@ export function CompetitionPageContent({
   tournamentRounds: TournamentRound[];
   pageMode?: CompetitionPageMode;
   gameId?: string;
+  eventId?: string;
+  matchId?: string;
   onRefreshLeaderboard: (gameType: number) => void;
   onLoadBracket: (tournamentId: string) => void;
   onRegister: (tournamentId: string) => void;
@@ -413,19 +421,27 @@ export function CompetitionPageContent({
   const currentTournamentId = tournamentId || 'season-main';
   const titleByMode: Record<CompetitionPageMode, string> = {
     competition: 'Competition',
+    events: 'Events',
+    eventDetail: 'Event Detail',
     tournaments: 'Tournaments',
     tournamentDetail: 'Tournament Detail',
     leaderboard: 'Leaderboard',
     gameLeaderboard: 'Game Leaderboard',
     aiBenchmarkLeaderboard: 'AI Benchmark Leaderboard',
+    matches: 'Matches',
+    matchDetail: 'Match Detail',
   };
   const routeByMode: Record<CompetitionPageMode, string> = {
     competition: '/competition',
+    events: '/events',
+    eventDetail: `/events/${routeScopeLabel(eventId)}`,
     tournaments: '/tournaments',
     tournamentDetail: `/tournaments/${currentTournamentId}`,
     leaderboard: '/leaderboard',
     gameLeaderboard: `/games/${routeScopeLabel(gameId)}/leaderboard`,
     aiBenchmarkLeaderboard: '/leaderboard/ai-benchmarks',
+    matches: '/matches',
+    matchDetail: `/matches/${routeScopeLabel(matchId)}`,
   };
   const panels: AppPageSvgPanel[] = [
     {
@@ -474,6 +490,8 @@ export function CompetitionPageContent({
         { label: 'Mode', value: pageMode },
         { label: 'Route', value: routeByMode[pageMode] },
         { label: 'Game', value: routeScopeLabel(gameId) },
+        { label: 'Event', value: routeScopeLabel(eventId) },
+        { label: 'Match', value: routeScopeLabel(matchId) },
       ],
     },
   ];
@@ -482,7 +500,7 @@ export function CompetitionPageContent({
     <AppPageSvgSurface
       title={titleByMode[pageMode]}
       eyebrow="Competitive Play"
-      subtitle="Overall standings, per-game ranking, AI benchmarking, and tournament bracket pages are route-addressable surfaces."
+      subtitle="Competition, events, tournaments, matches, leaderboards, and AI benchmark pages stay route-addressable while lobby tables remain the playable execution layer."
       routeLabel={routeByMode[pageMode]}
       metrics={[
         { label: 'Entries', value: leaderboardEntries.length },

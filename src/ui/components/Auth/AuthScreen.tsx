@@ -44,7 +44,7 @@ interface RouteAccessMessage {
 }
 
 function getRouteAccess(route: AppRouteState): RouteAccess {
-  if (route.kind === 'social' || route.kind === 'playerHub') {
+  if (route.kind === 'social' || route.kind === 'playerHub' || route.kind === 'matches' || route.kind === 'matchDetail') {
     return 'account';
   }
 
@@ -65,6 +65,14 @@ function getAccountRouteMessage(route: AppRouteState, isGuestUser: boolean): Rou
       eyebrow: 'Player Hub',
       title: isGuestUser ? 'Upgrade your guest session for your player hub' : 'Your player hub needs a real account',
       description: 'Inventory, profile progress, and account-owned items live in your real player profile, so this area is not available to guests.',
+    };
+  }
+
+  if (route.kind === 'matches' || route.kind === 'matchDetail') {
+    return {
+      eyebrow: 'Matches',
+      title: isGuestUser ? 'Upgrade your guest session for match records' : 'Match records need a real account',
+      description: 'Match history, table receipts, and result records belong to a persistent player identity.',
     };
   }
 
@@ -146,6 +154,10 @@ export function AuthScreen({
       return null;
     }
 
+    if (route.kind === 'notFound') {
+      return renderHome(currentUser);
+    }
+
     if (route.kind === 'settings') {
       return (
         <Suspense fallback={<RouteFallback />}>
@@ -206,11 +218,15 @@ export function AuthScreen({
 
     if (
       route.kind === 'competition' ||
+      route.kind === 'events' ||
+      route.kind === 'eventDetail' ||
       route.kind === 'tournaments' ||
       route.kind === 'tournamentDetail' ||
       route.kind === 'leaderboard' ||
       route.kind === 'gameLeaderboard' ||
-      route.kind === 'aiBenchmarkLeaderboard'
+      route.kind === 'aiBenchmarkLeaderboard' ||
+      route.kind === 'matches' ||
+      route.kind === 'matchDetail'
     ) {
       return (
         <Suspense fallback={<RouteFallback />}>
@@ -220,7 +236,9 @@ export function AuthScreen({
             onLogoutClick={onLogoutClick}
             pageMode={route.kind}
             gameId={route.kind === 'gameLeaderboard' ? route.gameId : undefined}
+            eventId={route.kind === 'eventDetail' ? route.eventId : undefined}
             tournamentId={route.kind === 'tournamentDetail' ? route.tournamentId : undefined}
+            matchId={route.kind === 'matchDetail' ? route.matchId : undefined}
           />
         </Suspense>
       );
