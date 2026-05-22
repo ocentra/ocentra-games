@@ -181,9 +181,14 @@ const LEADERBOARD_CONFIG_CHANNEL = "ocentra-leaderboard-config-channel";
 
 const ROUTE_LINKS: RouteLink[] = [
   {
-    label: "Full Leaderboard",
+    label: "Global Leaderboard",
     path: "/leaderboard",
-    description: "Combined preview and controls page.",
+    description: "Command-center mock based on the global leaderboard reference.",
+  },
+  {
+    label: "Game Leaderboard",
+    path: "/game-leaderboard",
+    description: "Per-game arena board for Three Card Brag ranked season.",
   },
   {
     label: "Leaderboard SVG",

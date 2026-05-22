@@ -164,7 +164,7 @@ const DEFAULT_CFG = {
     cx: 768,
     cy: 312,
     radius: 213,
-    profileImageUrl: "https://thumbs.dreamstime.com/b/anonymous-faceless-character-dark-hoodie-vector-illustration-mysterious-person-wearing-figure-representing-411675273.jpg",
+    profileImageUrl: "",
     imageOpacity: 1,
     imageScale: 1.22,
     imageYOffset: 10,
@@ -348,8 +348,170 @@ const DEFAULT_CFG = {
 const FOREIGN_STORAGE_KEY = "ocentra-foreign-frame-config";
 const FOREIGN_CHANNEL = "ocentra-foreign-frame-channel";
 
+const VARIANT_PALETTES = {
+  gold: {
+    light: "#fff4a8",
+    mid: "#ffd23b",
+    bottom: "#b87900",
+    dark: "#5a3000",
+    glow: "#ffcf45",
+    fillTop: "#261713",
+    fillMid: "#0f1024",
+    fillBottom: "#050611",
+    textStroke: "#090300",
+  },
+  silver: {
+    light: "#f8fbff",
+    mid: "#b9d7f2",
+    bottom: "#5e7f9d",
+    dark: "#203348",
+    glow: "#9fe8ff",
+    fillTop: "#182838",
+    fillMid: "#0d1827",
+    fillBottom: "#050914",
+    textStroke: "#06101a",
+  },
+  bronze: {
+    light: "#ffd7a1",
+    mid: "#d98a42",
+    bottom: "#7b331c",
+    dark: "#35150d",
+    glow: "#ff8e52",
+    fillTop: "#2a1714",
+    fillMid: "#151019",
+    fillBottom: "#08060d",
+    textStroke: "#160705",
+  },
+  blue: {
+    light: "#c8fbff",
+    mid: "#35d9ff",
+    bottom: "#0866aa",
+    dark: "#062340",
+    glow: "#35d9ff",
+    fillTop: "#102841",
+    fillMid: "#071829",
+    fillBottom: "#030815",
+    textStroke: "#020b14",
+  },
+  red: {
+    light: "#ffc1cc",
+    mid: "#ff4f70",
+    bottom: "#8c1635",
+    dark: "#350717",
+    glow: "#ff5d7a",
+    fillTop: "#2b111b",
+    fillMid: "#140d18",
+    fillBottom: "#07050d",
+    textStroke: "#18040a",
+  },
+};
+
 function cloneDefaultForeignConfig() {
   return JSON.parse(JSON.stringify(DEFAULT_CFG));
+}
+
+export function createGoldenFrameVariantConfig({
+  rank = "1",
+  name = "AceMaster99",
+  statName = "Global",
+  statValue = "4,928",
+  tone = "gold",
+} = {}) {
+  const cfg = cloneDefaultForeignConfig();
+  const palette = VARIANT_PALETTES[tone as keyof typeof VARIANT_PALETTES] ?? VARIANT_PALETTES.gold;
+
+  cfg.viewportGuide.enabled = false;
+  cfg.viewportGuide.showCenterLines = false;
+  cfg.viewportGuide.opacity = 0;
+
+  for (const frame of [cfg.outerFrame, cfg.innerFrame]) {
+    frame.color = palette.mid;
+    frame.glowColor = palette.glow;
+    frame.edgeColor = palette.dark;
+    frame.overlayTopColor = palette.light;
+    frame.overlayMidColor = palette.mid;
+    frame.overlayBottomColor = palette.bottom;
+  }
+
+  Object.assign(cfg.centerCircle, {
+    fillTopColor: palette.fillTop,
+    fillMidColor: palette.fillMid,
+    fillBottomColor: palette.fillBottom,
+    glowColor: palette.glow,
+    bevelColor: palette.light,
+    innerShadowColor: palette.dark,
+    ringShadowColor: palette.dark,
+    ringGoldDark: palette.dark,
+    ringGoldMid: palette.mid,
+    ringGoldBright: palette.light,
+    boxFillTop: palette.light,
+    boxFillMid: palette.mid,
+    boxFillBottom: palette.bottom,
+    boxStroke: palette.dark,
+    boxHighlight: palette.light,
+    boxGlow: palette.glow,
+    boxInnerEdge: palette.light,
+  });
+
+  Object.assign(cfg.centerCrown, {
+    fillTop: palette.light,
+    fillMid: palette.mid,
+    fillBottom: palette.bottom,
+    edge: palette.dark,
+    glow: palette.glow,
+    jewelRed: palette.mid,
+    jewelGreen: palette.bottom,
+  });
+
+  Object.assign(cfg.sideHexBadge, {
+    label: String(rank),
+    glowColor: palette.glow,
+    highlightColor: palette.light,
+    ringShadowColor: palette.dark,
+    ringGoldDark: palette.dark,
+    ringGoldMid: palette.mid,
+    ringGoldBright: palette.light,
+    textStroke: palette.textStroke,
+  });
+
+  Object.assign(cfg.hexCrown, {
+    goldLight: palette.light,
+    gold: palette.mid,
+    goldDark: palette.bottom,
+    edge: palette.dark,
+    red: palette.mid,
+    green: palette.bottom,
+    glow: palette.glow,
+  });
+
+  Object.assign(cfg.winnerName, {
+    text: name,
+    fillTop: palette.fillTop,
+    fillMid: palette.fillMid,
+    fillBottom: palette.fillBottom,
+    edgeColor: palette.dark,
+    glowColor: palette.glow,
+    ringShadowColor: palette.dark,
+    ringGoldDark: palette.dark,
+    ringGoldMid: palette.mid,
+    ringGoldBright: palette.light,
+    highlightColor: palette.light,
+    textStroke: palette.textStroke,
+  });
+
+  Object.assign(cfg.rightStats, {
+    name: statName,
+    value: statValue,
+    valueColor: palette.mid,
+    valueStroke: palette.dark,
+    iconTop: palette.light,
+    iconMid: palette.mid,
+    iconBottom: palette.bottom,
+    iconStroke: palette.light,
+    iconGlow: palette.glow,
+  });
+
+  return cfg;
 }
 
 function readForeignConfig() {
@@ -650,7 +812,8 @@ function CenterCircle({ circle }) {
   const imageSize = imageRadius * 2 * circle.imageScale;
   const imageX = circle.cx - imageSize / 2;
   const imageY = circle.cy - imageSize / 2 + circle.imageYOffset;
-  return <><defs><clipPath id="center-circle-image-clip"><circle cx={circle.cx} cy={circle.cy} r={imageRadius} /></clipPath><radialGradient id="center-circle-fill" cx="50%" cy="42%" r="66%"><stop offset="0%" stopColor={circle.fillTopColor} /><stop offset="58%" stopColor={circle.fillMidColor} /><stop offset="100%" stopColor={circle.fillBottomColor} /></radialGradient><linearGradient id="center-circle-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor={circle.ringGoldBright} /><stop offset="18%" stopColor={circle.ringGoldMid} /><stop offset="36%" stopColor={circle.ringGoldDark} /><stop offset="58%" stopColor={circle.ringGoldBright} /><stop offset="82%" stopColor={circle.ringGoldMid} /><stop offset="100%" stopColor={circle.ringGoldDark} /></linearGradient><linearGradient id="center-circle-highlight" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" /><stop offset="60%" stopColor={circle.bevelColor} stopOpacity="0.35" /><stop offset="100%" stopColor="#ffffff" stopOpacity="0" /></linearGradient><filter id="center-circle-glow" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation={circle.glowBlur} /></filter><filter id="center-circle-edge" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation={circle.edgeBlur} /></filter><filter id="center-circle-box-glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation={circle.boxGlowBlur} /></filter><linearGradient id="center-box-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor={circle.boxFillTop} /><stop offset="28%" stopColor={circle.boxFillMid} /><stop offset="48%" stopColor={circle.boxFillMid} /><stop offset="68%" stopColor={circle.boxFillTop} /><stop offset="100%" stopColor={circle.boxFillBottom} /></linearGradient></defs>{circle.glowOpacity > 0 && <circle cx={circle.cx} cy={circle.cy} r={circle.radius} fill="none" stroke={circle.glowColor} strokeWidth={circle.glowWidth} opacity={circle.glowOpacity} filter="url(#center-circle-glow)" pointerEvents="none" />}<circle cx={circle.cx} cy={circle.cy} r={circle.radius} fill="none" stroke={circle.ringShadowColor} strokeWidth={circle.edgeWidth + 3} opacity="0.58" filter="url(#center-circle-edge)" pointerEvents="none" /><circle cx={circle.cx} cy={circle.cy} r={circle.radius} fill="none" stroke="url(#center-circle-ring)" strokeWidth={circle.edgeWidth} opacity={circle.edgeOpacity} vectorEffect="non-scaling-stroke" /><circle cx={circle.cx} cy={circle.cy} r={circle.radius - circle.edgeWidth * 0.5} fill="none" stroke={circle.ringGoldBright} strokeWidth="1" opacity="0.62" vectorEffect="non-scaling-stroke" /><circle cx={circle.cx} cy={circle.cy} r={circle.radius + circle.edgeWidth * 0.5} fill="none" stroke={circle.ringGoldDark} strokeWidth="1" opacity="0.7" vectorEffect="non-scaling-stroke" /><circle cx={circle.cx} cy={circle.cy} r={imageRadius} fill="url(#center-circle-fill)" opacity={circle.fillOpacity} /><image href={circle.profileImageUrl} xlinkHref={circle.profileImageUrl} crossOrigin="anonymous" x={imageX} y={imageY} width={imageSize} height={imageSize} preserveAspectRatio="xMidYMid slice" opacity={circle.imageOpacity} clipPath="url(#center-circle-image-clip)" /><circle cx={circle.cx} cy={circle.cy} r={imageRadius} fill="none" stroke={circle.innerShadowColor} strokeWidth={circle.innerShadowWidth} opacity={circle.innerShadowOpacity} vectorEffect="non-scaling-stroke" /><circle cx={circle.cx} cy={circle.cy} r={imageRadius + circle.innerRingWidth} fill="none" stroke="url(#center-circle-ring)" strokeWidth={circle.innerRingWidth} opacity="0.92" vectorEffect="non-scaling-stroke" /><path d={`M ${circle.cx - circle.radius * 0.62} ${circle.cy - circle.radius * 0.36} C ${circle.cx - circle.radius * 0.28} ${circle.cy - circle.radius * 0.72}, ${circle.cx + circle.radius * 0.32} ${circle.cy - circle.radius * 0.68}, ${circle.cx + circle.radius * 0.62} ${circle.cy - circle.radius * 0.28}`} fill="none" stroke="url(#center-circle-highlight)" strokeWidth={circle.highlightArcWidth} strokeLinecap="round" opacity={circle.bevelOpacity} vectorEffect="non-scaling-stroke" /><circle cx={circle.cx - circle.bevelWidth * 0.75} cy={circle.cy - circle.bevelWidth * 0.75} r={circle.radius - circle.bevelWidth} fill="none" stroke={circle.bevelColor} strokeWidth={circle.bevelWidth} opacity={circle.bevelOpacity * 0.36} vectorEffect="non-scaling-stroke" /><CircleRingBoxes circle={circle} /></>;
+  const profileImageUrl = circle.profileImageUrl || undefined;
+  return <><defs><clipPath id="center-circle-image-clip"><circle cx={circle.cx} cy={circle.cy} r={imageRadius} /></clipPath><radialGradient id="center-circle-fill" cx="50%" cy="42%" r="66%"><stop offset="0%" stopColor={circle.fillTopColor} /><stop offset="58%" stopColor={circle.fillMidColor} /><stop offset="100%" stopColor={circle.fillBottomColor} /></radialGradient><linearGradient id="center-circle-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor={circle.ringGoldBright} /><stop offset="18%" stopColor={circle.ringGoldMid} /><stop offset="36%" stopColor={circle.ringGoldDark} /><stop offset="58%" stopColor={circle.ringGoldBright} /><stop offset="82%" stopColor={circle.ringGoldMid} /><stop offset="100%" stopColor={circle.ringGoldDark} /></linearGradient><linearGradient id="center-circle-highlight" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" /><stop offset="60%" stopColor={circle.bevelColor} stopOpacity="0.35" /><stop offset="100%" stopColor="#ffffff" stopOpacity="0" /></linearGradient><filter id="center-circle-glow" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation={circle.glowBlur} /></filter><filter id="center-circle-edge" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation={circle.edgeBlur} /></filter><filter id="center-circle-box-glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation={circle.boxGlowBlur} /></filter><linearGradient id="center-box-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor={circle.boxFillTop} /><stop offset="28%" stopColor={circle.boxFillMid} /><stop offset="48%" stopColor={circle.boxFillMid} /><stop offset="68%" stopColor={circle.boxFillTop} /><stop offset="100%" stopColor={circle.boxFillBottom} /></linearGradient></defs>{circle.glowOpacity > 0 && <circle cx={circle.cx} cy={circle.cy} r={circle.radius} fill="none" stroke={circle.glowColor} strokeWidth={circle.glowWidth} opacity={circle.glowOpacity} filter="url(#center-circle-glow)" pointerEvents="none" />}<circle cx={circle.cx} cy={circle.cy} r={circle.radius} fill="none" stroke={circle.ringShadowColor} strokeWidth={circle.edgeWidth + 3} opacity="0.58" filter="url(#center-circle-edge)" pointerEvents="none" /><circle cx={circle.cx} cy={circle.cy} r={circle.radius} fill="none" stroke="url(#center-circle-ring)" strokeWidth={circle.edgeWidth} opacity={circle.edgeOpacity} vectorEffect="non-scaling-stroke" /><circle cx={circle.cx} cy={circle.cy} r={circle.radius - circle.edgeWidth * 0.5} fill="none" stroke={circle.ringGoldBright} strokeWidth="1" opacity="0.62" vectorEffect="non-scaling-stroke" /><circle cx={circle.cx} cy={circle.cy} r={circle.radius + circle.edgeWidth * 0.5} fill="none" stroke={circle.ringGoldDark} strokeWidth="1" opacity="0.7" vectorEffect="non-scaling-stroke" /><circle cx={circle.cx} cy={circle.cy} r={imageRadius} fill="url(#center-circle-fill)" opacity={circle.fillOpacity} />{profileImageUrl && <image href={profileImageUrl} xlinkHref={profileImageUrl} crossOrigin="anonymous" x={imageX} y={imageY} width={imageSize} height={imageSize} preserveAspectRatio="xMidYMid slice" opacity={circle.imageOpacity} clipPath="url(#center-circle-image-clip)" />}<circle cx={circle.cx} cy={circle.cy} r={imageRadius} fill="none" stroke={circle.innerShadowColor} strokeWidth={circle.innerShadowWidth} opacity={circle.innerShadowOpacity} vectorEffect="non-scaling-stroke" /><circle cx={circle.cx} cy={circle.cy} r={imageRadius + circle.innerRingWidth} fill="none" stroke="url(#center-circle-ring)" strokeWidth={circle.innerRingWidth} opacity="0.92" vectorEffect="non-scaling-stroke" /><path d={`M ${circle.cx - circle.radius * 0.62} ${circle.cy - circle.radius * 0.36} C ${circle.cx - circle.radius * 0.28} ${circle.cy - circle.radius * 0.72}, ${circle.cx + circle.radius * 0.32} ${circle.cy - circle.radius * 0.68}, ${circle.cx + circle.radius * 0.62} ${circle.cy - circle.radius * 0.28}`} fill="none" stroke="url(#center-circle-highlight)" strokeWidth={circle.highlightArcWidth} strokeLinecap="round" opacity={circle.bevelOpacity} vectorEffect="non-scaling-stroke" /><circle cx={circle.cx - circle.bevelWidth * 0.75} cy={circle.cy - circle.bevelWidth * 0.75} r={circle.radius - circle.bevelWidth} fill="none" stroke={circle.bevelColor} strokeWidth={circle.bevelWidth} opacity={circle.bevelOpacity * 0.36} vectorEffect="non-scaling-stroke" /><CircleRingBoxes circle={circle} /></>;
 }
 
 async function copyTextSafely(text: string) {
@@ -811,15 +974,24 @@ function Controls({ cfg, setCfg }: { cfg: typeof DEFAULT_CFG; setCfg: React.Disp
   </div>;
 }
 
-function FinalArtStage({ cfg, fullBleed = false }) {
+export function GoldenFrameForeignObjectArtSvg({
+  cfg: providedCfg,
+  className = "leaderboard-svg",
+  backgroundFill = "#020713",
+}: {
+  cfg?: typeof DEFAULT_CFG;
+  className?: string;
+  backgroundFill?: string;
+}) {
+  const [sharedCfg] = useSharedForeignConfig();
+  const cfg = providedCfg ?? sharedCfg;
   const outerLiveFrame = getAnchoredFrame(cfg, "outerFrame", "outerAnchor");
   const innerLiveFrame = getAnchoredFrame(cfg, "innerFrame", "innerAnchor");
   const outerSegments = [...frameSegments(outerLiveFrame), ...copyRiseSegments(outerLiveFrame)];
   const innerSegments = [...frameSegments(innerLiveFrame), ...copyRiseSegments(innerLiveFrame)];
 
-  return <div className="preview-stage" style={fullBleed ? { height: "100vh", margin: 0 } : { height: "58vh" }}>
-    <svg className="leaderboard-svg" viewBox={`0 ${cfg.viewBox.y ?? 0} ${cfg.viewBox.w} ${cfg.viewBox.h}`} role="img">
-      <rect x="0" y={cfg.viewBox.y ?? 0} width={cfg.viewBox.w} height={cfg.viewBox.h} fill="#020713" />
+  return <svg className={className} viewBox={`0 ${cfg.viewBox.y ?? 0} ${cfg.viewBox.w} ${cfg.viewBox.h}`} role="img">
+      {backgroundFill !== "none" && <rect x="0" y={cfg.viewBox.y ?? 0} width={cfg.viewBox.w} height={cfg.viewBox.h} fill={backgroundFill} />}
       <SvgDefs outerFrame={outerLiveFrame} innerFrame={innerLiveFrame} />
       <Guides viewBox={cfg.viewBox} guides={cfg.viewportGuide} />
       <FrameFill frame={outerLiveFrame} gradientId="outer-frame-fill-gradient" />
@@ -833,6 +1005,11 @@ function FinalArtStage({ cfg, fullBleed = false }) {
       <RightStats stats={cfg.rightStats} />
       <text x="768" y="790" textAnchor="middle" fontSize="34" fontWeight="800" fill="#ffffff" stroke="#090300" strokeWidth="1.8" paintOrder="stroke fill" pointerEvents="none">Match : 1000    Win : 89%</text>
     </svg>
+}
+
+function FinalArtStage({ cfg, fullBleed = false }) {
+  return <div className="preview-stage" style={fullBleed ? { height: "100vh", margin: 0 } : { height: "58vh" }}>
+    <GoldenFrameForeignObjectArtSvg cfg={cfg} />
   </div>;
 }
 

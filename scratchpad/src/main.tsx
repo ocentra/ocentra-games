@@ -1,13 +1,13 @@
 import { StrictMode, useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 import {
   OcentraLeaderboardControlsRoute,
   OcentraLeaderboardForeignObjectRoute,
   OcentraLeaderboardForeignObjectControlsRoute,
-  OcentraLeaderboardPage,
   OcentraLeaderboardSvgRoute,
   ScratchpadHomePage,
 } from "./OcentraLeaderboardPage";
+import { OcentraGameLeaderboardMock, OcentraGlobalLeaderboardMock } from "./OcentraGlobalLeaderboardMock";
 import "./styles.css";
 
 function AppRouter() {
@@ -29,7 +29,11 @@ function AppRouter() {
   };
 
   if (pathname === "/leaderboard") {
-    return <OcentraLeaderboardPage onNavigate={navigate} />;
+    return <OcentraGlobalLeaderboardMock />;
+  }
+
+  if (pathname === "/game-leaderboard") {
+    return <OcentraGameLeaderboardMock />;
   }
 
   if (pathname === "/svg") {
@@ -55,7 +59,11 @@ function AppRouter() {
   return <ScratchpadHomePage onNavigate={navigate} />;
 }
 
-createRoot(document.getElementById("root")!).render(
+const rootContainer = document.getElementById("root")! as HTMLElement & { __ocentraScratchpadRoot?: Root };
+const root = rootContainer.__ocentraScratchpadRoot ?? createRoot(rootContainer);
+rootContainer.__ocentraScratchpadRoot = root;
+
+root.render(
   <StrictMode>
     <AppRouter />
   </StrictMode>,
