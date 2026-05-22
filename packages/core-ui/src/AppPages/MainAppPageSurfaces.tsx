@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react';
 import { AppPageSvgSurface } from './AppPageSvgSurface';
+import { LeaderboardPageSvgSurface } from './Leaderboard/LeaderboardPageSvgSurface';
 import { LobbyPageSvgSurface } from './Lobby/LobbyPageSvgSurface';
 import { ShopPageSvgSurface } from './Shop/ShopPageSvgSurface';
 import type {
@@ -8,6 +9,9 @@ import type {
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
 import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
+import type { LeaderboardPageMode } from './Leaderboard/LeaderboardPageSvgSurface';
+import type { PartialLeaderboardPageContentData } from './Leaderboard/LeaderboardPageSvgContent';
+import type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 import type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
 import type { ShopPageContentData } from './Shop/ShopPageSvgContent';
@@ -40,6 +44,11 @@ export type {
   AppPageSvgMetric,
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
+export type {
+  LeaderboardPageMode,
+  LeaderboardPageRow,
+} from './Leaderboard/LeaderboardPageSvgSurface';
+export type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 export type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
 export type {
@@ -175,6 +184,11 @@ type LobbyPageSurfaceControlProps = {
   layoutControls?: Partial<LobbyPageSvgControls> | null;
 };
 
+type LeaderboardPageSurfaceControlProps = {
+  leaderboardControls?: Partial<LeaderboardPageSvgControls> | null;
+  leaderboardContent?: PartialLeaderboardPageContentData | null;
+};
+
 type ShopPageSurfaceControlProps = {
   layoutControls?: Partial<ShopPageSvgControls> | null;
   shopContent: ShopPageContentData;
@@ -206,6 +220,10 @@ function noopAction(label: string): AppPageSvgAction {
 
 function routeScopeLabel(value?: string): string {
   return value && value.trim().length > 0 ? value : 'all games';
+}
+
+function isLeaderboardPageMode(pageMode: CompetitionPageMode): pageMode is LeaderboardPageMode {
+  return pageMode === 'leaderboard' || pageMode === 'gameLeaderboard' || pageMode === 'aiBenchmarkLeaderboard';
 }
 
 export function SocialPageContent({
@@ -394,6 +412,8 @@ export function CompetitionPageContent({
   onRegister,
   onMatchmaking,
   layoutControls,
+  leaderboardControls,
+  leaderboardContent,
 }: {
   loading: boolean;
   registering: boolean;
@@ -416,7 +436,7 @@ export function CompetitionPageContent({
   onLoadBracket: (tournamentId: string) => void;
   onRegister: (tournamentId: string) => void;
   onMatchmaking: () => void;
-} & AppPageSurfaceControlProps) {
+} & AppPageSurfaceControlProps & LeaderboardPageSurfaceControlProps) {
   const topEntry = leaderboardEntries[0];
   const currentTournamentId = tournamentId || 'season-main';
   const titleByMode: Record<CompetitionPageMode, string> = {
@@ -443,9 +463,33 @@ export function CompetitionPageContent({
     matches: '/matches',
     matchDetail: `/matches/${routeScopeLabel(matchId)}`,
   };
+
+  if (isLeaderboardPageMode(pageMode)) {
+    return (
+      <LeaderboardPageSvgSurface
+        key={`${pageMode}:${gameId ?? ''}`}
+        pageMode={pageMode}
+        gameType={gameType}
+        seasonId={seasonId}
+        lastUpdated={lastUpdated}
+        leaderboardEntries={leaderboardEntries}
+        userEntry={userEntry}
+        nearbyAbove={nearbyAbove}
+        nearbyBelow={nearbyBelow}
+        gameId={gameId}
+        loading={loading}
+        error={error}
+        controls={leaderboardControls}
+        content={leaderboardContent}
+        onRefreshLeaderboard={onRefreshLeaderboard}
+        onMatchmaking={onMatchmaking}
+      />
+    );
+  }
+
   const panels: AppPageSvgPanel[] = [
     {
-      title: pageMode === 'aiBenchmarkLeaderboard' ? 'Model Standings' : 'Leaderboard',
+      title: 'Leaderboard',
       subtitle: `Season ${seasonId || '-'}`,
       rows: [
         { label: 'Rows', value: leaderboardEntries.length },

@@ -83,6 +83,12 @@ import {
   normalizeLobbyPageSvgControls,
   type LobbyPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Lobby/LobbyPageSvgSurfaceControls';
+import { LeaderboardPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgControlsPanel';
+import {
+  DEFAULT_LEADERBOARD_PAGE_SVG_CONTROLS,
+  normalizeLeaderboardPageSvgControls,
+  type LeaderboardPageSvgControls,
+} from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgSurfaceControls';
 import { ShopPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgControlsPanel';
 import { ShopPageContentControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageContentControlsPanel';
 import {
@@ -176,6 +182,14 @@ import {
   saveLobbyPageLayoutControlsToDisk,
 } from '@/utils/lobbyPageLayoutControlsPersistence';
 import {
+  LEADERBOARD_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type LeaderboardPageLayoutControlsMessage,
+} from '@/utils/leaderboardPageLayoutControlsChannel';
+import {
+  loadLeaderboardPageLayoutControlsFromDisk,
+  saveLeaderboardPageLayoutControlsToDisk,
+} from '@/utils/leaderboardPageLayoutControlsPersistence';
+import {
   SHOP_PAGE_LAYOUT_CONTROLS_CHANNEL,
   type ShopPageLayoutControlsMessage,
 } from '@/utils/shopPageLayoutControlsChannel';
@@ -232,6 +246,7 @@ type StandalonePanel =
   | 'featured-showcase-controls'
   | 'homepage-layout-controls'
   | 'lobby-page-layout-controls'
+  | 'leaderboard-page-layout-controls'
   | 'shop-page-layout-controls'
   | 'auth-page-layout-controls'
   | 'selected-game-layout-controls'
@@ -3708,6 +3723,86 @@ const StandaloneLobbyPageLayoutControls: React.FC<{ assetPath: string }> = ({ as
   );
 };
 
+const StandaloneLeaderboardPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
+  const [controls, setControls] = useState<LeaderboardPageSvgControls>(DEFAULT_LEADERBOARD_PAGE_SVG_CONTROLS);
+  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState('');
+  const channelRef = useRef<BroadcastChannel | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadLeaderboardPageLayoutControlsFromDisk(assetPath)
+      .then(result => {
+        if (cancelled) return;
+        setControls(result.controls);
+      })
+      .catch(error => {
+        if (!cancelled) setStatus(error instanceof Error ? error.message : 'Load failed');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    const channel = new BroadcastChannel(LEADERBOARD_PAGE_LAYOUT_CONTROLS_CHANNEL);
+    channelRef.current = channel;
+    const handler = (event: MessageEvent<LeaderboardPageLayoutControlsMessage>) => {
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setControls(normalizeLeaderboardPageSvgControls(event.data.controls));
+      }
+    };
+    channel.addEventListener('message', handler);
+    channel.postMessage({ type: 'request-state' } satisfies LeaderboardPageLayoutControlsMessage);
+
+    return () => {
+      cancelled = true;
+      channel.removeEventListener('message', handler);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [assetPath]);
+
+  const updateControls = useCallback<React.Dispatch<React.SetStateAction<LeaderboardPageSvgControls>>>((value) => {
+    setControls((previous: LeaderboardPageSvgControls) => {
+      const next = normalizeLeaderboardPageSvgControls(
+        typeof value === 'function' ? value(previous) : value
+      );
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: next,
+      } satisfies LeaderboardPageLayoutControlsMessage);
+      return next;
+    });
+  }, []);
+
+  const handleSave = useCallback(async (nextControls: LeaderboardPageSvgControls) => {
+    const savedControls = await saveLeaderboardPageLayoutControlsToDisk(nextControls, assetPath);
+    setControls(savedControls);
+    channelRef.current?.postMessage({
+      type: 'update',
+      controls: savedControls,
+    } satisfies LeaderboardPageLayoutControlsMessage);
+    const syncResult = await syncSavedLayoutAssetToR2(assetPath);
+    return syncResult.message;
+  }, [assetPath]);
+
+  if (isLoading) {
+    return <StandalonePanelLoading label="Loading leaderboard layout controls" />;
+  }
+
+  return (
+    <main className="standalone-panel-page standalone-panel-page--homepage-layout">
+      <LeaderboardPageSvgControlsPanel
+        controls={controls}
+        onControlsChange={updateControls}
+        onSave={handleSave}
+      />
+      {status && (
+        <p className="standalone-panel-page__status">{status}</p>
+      )}
+    </main>
+  );
+};
+
 const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
   const [controls, setControls] = useState<ShopPageSvgControls>(DEFAULT_SHOP_PAGE_SVG_CONTROLS);
   const [content, setContent] = useState<ShopPageContentData>(DEFAULT_SHOP_PAGE_CONTENT);
@@ -4126,6 +4221,7 @@ export const StandalonePanelPage: React.FC = () => {
         panel === 'featured-showcase-controls' ||
         panel === 'homepage-layout-controls' ||
         panel === 'lobby-page-layout-controls' ||
+        panel === 'leaderboard-page-layout-controls' ||
         panel === 'shop-page-layout-controls' ||
         panel === 'auth-page-layout-controls' ||
         panel === 'selected-game-layout-controls' ||
@@ -4162,6 +4258,7 @@ export const StandalonePanelPage: React.FC = () => {
     params.panel !== 'featured-showcase-controls' &&
     params.panel !== 'homepage-layout-controls' &&
     params.panel !== 'lobby-page-layout-controls' &&
+    params.panel !== 'leaderboard-page-layout-controls' &&
     params.panel !== 'shop-page-layout-controls' &&
     params.panel !== 'auth-page-layout-controls' &&
     params.panel !== 'selected-game-layout-controls' &&
@@ -4216,6 +4313,10 @@ export const StandalonePanelPage: React.FC = () => {
 
   if (params.panel === 'lobby-page-layout-controls') {
     return <StandaloneLobbyPageLayoutControls assetPath={params.assetPath} />;
+  }
+
+  if (params.panel === 'leaderboard-page-layout-controls') {
+    return <StandaloneLeaderboardPageLayoutControls assetPath={params.assetPath} />;
   }
 
   if (params.panel === 'shop-page-layout-controls') {
