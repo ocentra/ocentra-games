@@ -83,6 +83,10 @@ function getAccountRouteMessage(route: AppRouteState, isGuestUser: boolean): Rou
   };
 }
 
+function canPreviewSocialWorld(route: AppRouteState, search: string): boolean {
+  return import.meta.env.DEV && route.kind === 'social' && new URLSearchParams(search).get('preview') === 'world';
+}
+
 interface AuthScreenProps {
   user: UserProfile | null;
   hasAccount: boolean;
@@ -310,7 +314,7 @@ export function AuthScreen({
     );
   };
 
-  if (getRouteAccess(route) === 'account' && !hasAccount) {
+  if (getRouteAccess(route) === 'account' && !hasAccount && !canPreviewSocialWorld(route, location.search)) {
     const accessMessage = getAccountRouteMessage(route, user?.isGuest === true);
 
     return (

@@ -91,7 +91,7 @@ import {
   SettingsPageContent,
   SettingsPageToolbar,
   ShopPageContent,
-  SocialPageContent,
+  SocialWorldPageContent,
   type AdminActivityRow,
   type AdminUserRow,
   type LeaderboardRow,
@@ -1916,33 +1916,26 @@ function PageLayoutMainAppPreview({
         shopContent={resolvedShopContent}
       />
     ) : kind === 'social' ? (
-      <SocialPageContent
+      <SocialWorldPageContent
         loading={false}
         error={null}
-        presenceStatus="online"
-        friends={[{ friendId: 'claim-master' }, { friendId: 'table-pilot' }]}
-        partyId="party-preview"
-        partyMembers={[{ userId: 'sujan' }, { userId: 'ocentra-ai' }]}
-        messages={[{ messageId: 'm1', senderId: 'claim-master', content: 'Ready for the next table.' }]}
-        activeConversationId="claim-table"
-        notifications={[{ id: 'n1', type: 'party.invite', title: 'Party invite', body: 'table-pilot invited you.', read: false }]}
-        feedItems={[{ id: 'f1', type: 'match.complete', payload: { game: 'Claim', result: 'win' } }]}
-        onRefresh={() => undefined}
-        onMatchmaking={() => undefined}
-        onLobby={() => undefined}
-        onAddFriend={() => undefined}
-        onRemoveFriend={() => undefined}
+        presence={{
+          userName: 'preview-player',
+          status: 'online',
+          friends: 2,
+          partyMembers: 2,
+          unread: 1,
+          messages: 1,
+          feedItems: 1,
+        }}
         onCreateParty={() => undefined}
-        onLoadParty={() => undefined}
-        onJoinParty={() => undefined}
-        onLeaveParty={() => undefined}
-        onInvite={() => undefined}
-        onLoadMessages={() => undefined}
-        onSendMessage={() => undefined}
-        onMarkRead={() => undefined}
-        onMarkAllNotificationsRead={() => undefined}
-        onAppendActivity={() => undefined}
-        layoutControls={pageControls}
+        onOpenLobby={() => undefined}
+        onOpenGame={() => undefined}
+        onOpenCategory={() => undefined}
+        onOpenShop={() => undefined}
+        onOpenCompetition={() => undefined}
+        onOpenPlayerHub={() => undefined}
+        onOpenMatchmaking={() => undefined}
       />
     ) : kind === 'competition' || kind === 'tournaments' || kind === 'tournament-detail' ? (
       <CompetitionPageContent

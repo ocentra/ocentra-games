@@ -3,11 +3,13 @@ import { AppPageSvgSurface } from './AppPageSvgSurface';
 import { LeaderboardPageSvgSurface } from './Leaderboard/LeaderboardPageSvgSurface';
 import { LobbyPageSvgSurface } from './Lobby/LobbyPageSvgSurface';
 import { ShopPageSvgSurface } from './Shop/ShopPageSvgSurface';
+import { SocialWorldSurface } from './SocialWorld/SocialWorldSurface';
 import type {
   AppPageSvgAction,
   AppPageSvgControls,
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
+import type { SocialWorldPresence, SocialWorldQuickGame } from './SocialWorld/SocialWorldTypes';
 import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
 import type { LeaderboardPageMode } from './Leaderboard/LeaderboardPageSvgSurface';
 import type { PartialLeaderboardPageContentData } from './Leaderboard/LeaderboardPageSvgContent';
@@ -51,6 +53,8 @@ export type {
 export type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 export type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
+export { SocialWorldSurface } from './SocialWorld/SocialWorldSurface';
+export type { SocialWorldPresence, SocialWorldQuickGame } from './SocialWorld/SocialWorldTypes';
 export type {
   ShopAccountSummary,
   ShopDeckImageResolver,
@@ -385,6 +389,57 @@ export function SocialPageContent({
       loading={loading}
       error={error}
       controls={layoutControls}
+    />
+  );
+}
+
+export function SocialWorldPageContent({
+  loading,
+  error,
+  presence,
+  quickGames,
+  favoriteGameIds,
+  onToggleFavorite,
+  onCreateParty,
+  onOpenLobby,
+  onOpenGame,
+  onOpenCategory,
+  onOpenShop,
+  onOpenCompetition,
+  onOpenPlayerHub,
+  onOpenMatchmaking,
+}: {
+  loading: boolean;
+  error: string | null;
+  presence: SocialWorldPresence;
+  quickGames?: SocialWorldQuickGame[];
+  favoriteGameIds?: string[];
+  onToggleFavorite?: (gameId: string) => void;
+  onCreateParty: () => void;
+  onOpenLobby: (gameId?: string) => void;
+  onOpenGame: (gameId: string) => void;
+  onOpenCategory: (categoryId: string) => void;
+  onOpenShop: () => void;
+  onOpenCompetition: () => void;
+  onOpenPlayerHub: () => void;
+  onOpenMatchmaking: () => void;
+}) {
+  return (
+    <SocialWorldSurface
+      loading={loading}
+      error={error}
+      presence={presence}
+      quickGames={quickGames}
+      favoriteGameIds={favoriteGameIds}
+      onToggleFavorite={onToggleFavorite}
+      onCreateParty={onCreateParty}
+      onOpenLobby={onOpenLobby}
+      onOpenGame={onOpenGame}
+      onOpenCategory={onOpenCategory}
+      onOpenShop={onOpenShop}
+      onOpenCompetition={onOpenCompetition}
+      onOpenPlayerHub={onOpenPlayerHub}
+      onOpenMatchmaking={onOpenMatchmaking}
     />
   );
 }
