@@ -16,6 +16,19 @@ import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/en
 import { TestConfig } from '@tests/constants/test-constants';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
+function isAbortLikeError(error: unknown): boolean {
+  if (error instanceof DOMException) {
+    return error.name === 'AbortError' || error.code === DOMException.ABORT_ERR;
+  }
+  if (error instanceof Error) {
+    return error.name === 'AbortError' || error.message.toLowerCase().includes('aborted');
+  }
+  if (typeof error === 'object' && error !== null && 'code' in error) {
+    return (error as { code?: unknown }).code === DOMException.ABORT_ERR;
+  }
+  return false;
+}
+
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   let worker: TestWorker;
 
@@ -58,22 +71,29 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const abortCount = 8;
     const abortRequests = Array.from({ length: abortCount }, () => {
       const controller = new AbortController();
-      setTimeout(() => controller.abort(), 5);
-      return worker
-        .fetch(redeemUrl, {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          },
-          body: JSON.stringify({ code }),
-          signal: controller.signal,
-        }, token)
-        .then(async (r) => {
+      const request = worker.fetch(redeemUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({ code }),
+        signal: controller.signal,
+      }, token);
+      const handledRequest = request.then(
+        async (r) => {
           await r.text().catch(() => undefined);
           return r.status;
-        })
-        .catch(() => 0);
+        },
+        (error) => {
+          if (isAbortLikeError(error)) return 0;
+          throw error;
+        }
+      );
+      const abortTimer = setTimeout(() => controller.abort(), 5);
+      return handledRequest.finally(() => {
+        clearTimeout(abortTimer);
+      });
     });
 
     await Promise.all(abortRequests);
