@@ -30,18 +30,26 @@ function extractHashes(data: {
     }
   };
   for (const g of data.featured ?? []) {
+    add(g.gameIcon);
     add(g.bannerImage);
+    add(g.bannerLogoImage);
     add(g.textImageUrl);
     for (const c of g.carouselImages ?? []) add(c);
   }
   for (const g of data.recommended ?? []) {
+    add(g.gameIcon);
     add(g.bannerImage);
+    add(g.bannerLogoImage);
     add(g.textImageUrl);
     for (const c of g.carouselImages ?? []) add(c);
   }
   for (const t of data.comingSoon ?? []) add(t.bannerImage);
   for (const t of data.catalogMontageImages ?? []) add(t.bannerImage);
-  for (const g of data.availableNow ?? []) add(g.bannerImage);
+  for (const g of data.availableNow ?? []) {
+    add(g.gameIcon);
+    add(g.bannerImage);
+    add(g.bannerLogoImage);
+  }
   for (const item of data.featureBannerItems ?? []) add(item.imageHash);
   return out;
 }

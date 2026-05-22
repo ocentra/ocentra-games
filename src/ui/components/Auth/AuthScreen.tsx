@@ -44,7 +44,7 @@ interface RouteAccessMessage {
 }
 
 function getRouteAccess(route: AppRouteState): RouteAccess {
-  if (route.kind === 'social' || route.kind === 'playerHub') {
+  if (route.kind === 'social' || route.kind === 'playerHub' || route.kind === 'matches' || route.kind === 'matchDetail') {
     return 'account';
   }
 
@@ -68,11 +68,23 @@ function getAccountRouteMessage(route: AppRouteState, isGuestUser: boolean): Rou
     };
   }
 
+  if (route.kind === 'matches' || route.kind === 'matchDetail') {
+    return {
+      eyebrow: 'Matches',
+      title: isGuestUser ? 'Upgrade your guest session for match records' : 'Match records need a real account',
+      description: 'Match history, table receipts, and result records belong to a persistent player identity.',
+    };
+  }
+
   return {
     eyebrow: 'Account required',
     title: isGuestUser ? 'Upgrade your guest session' : 'Sign in with a real account',
     description: 'This part of the platform needs a real player account to continue.',
   };
+}
+
+function canPreviewSocialWorld(route: AppRouteState, search: string): boolean {
+  return import.meta.env.DEV && route.kind === 'social' && new URLSearchParams(search).get('preview') === 'world';
 }
 
 interface AuthScreenProps {
@@ -146,6 +158,10 @@ export function AuthScreen({
       return null;
     }
 
+    if (route.kind === 'notFound') {
+      return renderHome(currentUser);
+    }
+
     if (route.kind === 'settings') {
       return (
         <Suspense fallback={<RouteFallback />}>
@@ -206,11 +222,15 @@ export function AuthScreen({
 
     if (
       route.kind === 'competition' ||
+      route.kind === 'events' ||
+      route.kind === 'eventDetail' ||
       route.kind === 'tournaments' ||
       route.kind === 'tournamentDetail' ||
       route.kind === 'leaderboard' ||
       route.kind === 'gameLeaderboard' ||
-      route.kind === 'aiBenchmarkLeaderboard'
+      route.kind === 'aiBenchmarkLeaderboard' ||
+      route.kind === 'matches' ||
+      route.kind === 'matchDetail'
     ) {
       return (
         <Suspense fallback={<RouteFallback />}>
@@ -220,7 +240,9 @@ export function AuthScreen({
             onLogoutClick={onLogoutClick}
             pageMode={route.kind}
             gameId={route.kind === 'gameLeaderboard' ? route.gameId : undefined}
+            eventId={route.kind === 'eventDetail' ? route.eventId : undefined}
             tournamentId={route.kind === 'tournamentDetail' ? route.tournamentId : undefined}
+            matchId={route.kind === 'matchDetail' ? route.matchId : undefined}
           />
         </Suspense>
       );
@@ -292,7 +314,7 @@ export function AuthScreen({
     );
   };
 
-  if (getRouteAccess(route) === 'account' && !hasAccount) {
+  if (getRouteAccess(route) === 'account' && !hasAccount && !canPreviewSocialWorld(route, location.search)) {
     const accessMessage = getAccountRouteMessage(route, user?.isGuest === true);
 
     return (

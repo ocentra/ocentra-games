@@ -14,9 +14,15 @@ import {
 } from '@/ui/pages/Competition/types';
 
 interface CompetitionData extends CompetitionState {
+  leaderboardError: string | null;
+  tournamentError: string | null;
   refreshLeaderboard: (nextGameType?: number) => Promise<void>;
   loadTournamentBracket: (tournamentId: string) => Promise<void>;
   registerForTournament: (tournamentId: string) => Promise<void>;
+}
+
+interface CompetitionDataOptions {
+  loadDefaultTournament?: boolean;
 }
 
 function mapError(error: unknown, fallback: string): string {
@@ -26,10 +32,16 @@ function mapError(error: unknown, fallback: string): string {
   return fallback;
 }
 
-export function useCompetitionData(userId: string | null): CompetitionData {
+function isUnsupportedLeaderboardGameTypeError(message: string): boolean {
+  return message.toLowerCase().includes('invalid game type');
+}
+
+export function useCompetitionData(userId: string | null, options: CompetitionDataOptions = {}): CompetitionData {
+  const loadDefaultTournament = options.loadDefaultTournament ?? true;
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [leaderboardError, setLeaderboardError] = useState<string | null>(null);
+  const [tournamentError, setTournamentError] = useState<string | null>(null);
   const [gameType, setGameType] = useState(CompetitionDefaultGameType);
   const [seasonId, setSeasonId] = useState('');
   const [lastUpdated, setLastUpdated] = useState('');
@@ -43,7 +55,7 @@ export function useCompetitionData(userId: string | null): CompetitionData {
   const refreshLeaderboard = useCallback(async (nextGameType?: number) => {
     const selectedGameType = Number.isFinite(nextGameType) ? Number(nextGameType) : gameType;
     setLoading(true);
-    setError(null);
+    setLeaderboardError(null);
 
     try {
       const leaderboard = await getLeaderboard(selectedGameType);
@@ -72,7 +84,17 @@ export function useCompetitionData(userId: string | null): CompetitionData {
         setNearbyBelow([]);
       }
     } catch (leaderboardError) {
-      setError(mapError(leaderboardError, 'Failed to load leaderboard'));
+      const message = mapError(leaderboardError, 'Failed to load leaderboard');
+      if (isUnsupportedLeaderboardGameTypeError(message)) {
+        setGameType(selectedGameType);
+        setLeaderboardEntries([]);
+        setUserEntry(null);
+        setNearbyAbove([]);
+        setNearbyBelow([]);
+        setLeaderboardError(null);
+        return;
+      }
+      setLeaderboardError(message);
     } finally {
       setLoading(false);
     }
@@ -83,14 +105,14 @@ export function useCompetitionData(userId: string | null): CompetitionData {
       return;
     }
 
-    setError(null);
+    setTournamentError(null);
 
     try {
       const bracket = await getTournamentBracket(nextTournamentId);
       setTournamentId(nextTournamentId);
       setTournamentBracket(bracket);
     } catch (tournamentError) {
-      setError(mapError(tournamentError, 'Failed to load tournament bracket'));
+      setTournamentError(mapError(tournamentError, 'Failed to load tournament bracket'));
     }
   }, []);
 
@@ -100,7 +122,7 @@ export function useCompetitionData(userId: string | null): CompetitionData {
     }
 
     setRegistering(true);
-    setError(null);
+    setTournamentError(null);
 
     try {
       await registerTournament(nextTournamentId);
@@ -108,7 +130,7 @@ export function useCompetitionData(userId: string | null): CompetitionData {
       setTournamentId(nextTournamentId);
       setTournamentBracket(bracket);
     } catch (registrationError) {
-      setError(mapError(registrationError, 'Failed to register for tournament'));
+      setTournamentError(mapError(registrationError, 'Failed to register for tournament'));
     } finally {
       setRegistering(false);
     }
@@ -116,13 +138,17 @@ export function useCompetitionData(userId: string | null): CompetitionData {
 
   useEffect(() => {
     void refreshLeaderboard(CompetitionDefaultGameType);
-    void loadTournamentBracket(CompetitionDefaultTournamentId);
-  }, [refreshLeaderboard, loadTournamentBracket]);
+    if (loadDefaultTournament) {
+      void loadTournamentBracket(CompetitionDefaultTournamentId);
+    }
+  }, [refreshLeaderboard, loadTournamentBracket, loadDefaultTournament]);
 
   return {
     loading,
     registering,
-    error,
+    error: leaderboardError ?? tournamentError,
+    leaderboardError,
+    tournamentError,
     gameType,
     seasonId,
     lastUpdated,

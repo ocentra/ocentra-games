@@ -1,4 +1,4 @@
-import { normalizeAssetType } from '@/utils/assetTypeUtils';
+import { normalizeAssetType } from '../utils/assetTypeUtils';
 
 type AssetConstructor = new () => unknown;
 

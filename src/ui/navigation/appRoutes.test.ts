@@ -3,12 +3,17 @@ import {
   buildAiBenchmarkLeaderboardPath,
   buildCardGameTemplatePath,
   buildCardGamesCatalogPath,
+  buildEventDetailPath,
+  buildEventsPath,
   buildGameLeaderboardPath,
   buildGameLobbyPath,
   buildGameMatchmakingPath,
   buildGamePlayPath,
   buildGamesCatalogPath,
+  buildCompetitionPath,
   buildLeaderboardPath,
+  buildMatchDetailPath,
+  buildMatchesPath,
   buildRulesPath,
   buildTournamentDetailPath,
   buildTournamentsPath,
@@ -28,6 +33,11 @@ describe('appRoutes', () => {
     expect(buildGamesCatalogPath()).toBe('/games');
     expect(buildCardGamesCatalogPath()).toBe('/games/card-games');
     expect(buildRulesPath('three-card-brag')).toBe('/rules/three-card-brag');
+    expect(buildCompetitionPath()).toBe('/competition');
+    expect(buildEventsPath()).toBe('/events');
+    expect(buildEventDetailPath('may-2026-cup')).toBe('/events/may-2026-cup');
+    expect(buildMatchesPath()).toBe('/matches');
+    expect(buildMatchDetailPath('match-123')).toBe('/matches/match-123');
     expect(buildLeaderboardPath()).toBe('/leaderboard');
     expect(buildAiBenchmarkLeaderboardPath()).toBe('/leaderboard/ai-benchmarks');
     expect(buildTournamentsPath()).toBe('/tournaments');
@@ -49,7 +59,11 @@ describe('appRoutes', () => {
     expect(parseAppRoute('/rules/three-card-brag')).toEqual({ kind: 'rules', gameId: 'three-card-brag' });
   });
 
-  it('parses route-level leaderboard, lobby, matchmaking, and tournament pages', () => {
+  it('parses route-level events, matches, leaderboard, lobby, matchmaking, and tournament pages', () => {
+    expect(parseAppRoute('/events')).toEqual({ kind: 'events' });
+    expect(parseAppRoute('/events/may-2026-cup')).toEqual({ kind: 'eventDetail', eventId: 'may-2026-cup' });
+    expect(parseAppRoute('/matches')).toEqual({ kind: 'matches' });
+    expect(parseAppRoute('/matches/match-123')).toEqual({ kind: 'matchDetail', matchId: 'match-123' });
     expect(parseAppRoute('/leaderboard')).toEqual({ kind: 'leaderboard' });
     expect(parseAppRoute('/leaderboard/ai-benchmarks')).toEqual({ kind: 'aiBenchmarkLeaderboard' });
     expect(parseAppRoute('/tournaments')).toEqual({ kind: 'tournaments' });
@@ -57,5 +71,23 @@ describe('appRoutes', () => {
     expect(parseAppRoute('/games/claim/leaderboard')).toEqual({ kind: 'gameLeaderboard', gameId: 'claim' });
     expect(parseAppRoute('/games/claim/lobby')).toEqual({ kind: 'lobby', gameId: 'claim' });
     expect(parseAppRoute('/games/claim/matchmaking')).toEqual({ kind: 'matchmaking', gameId: 'claim' });
+  });
+
+  it('does not preserve the removed competition leaderboard route', () => {
+    expect(parseAppRoute('/competition')).toEqual({ kind: 'competition' });
+    expect(parseAppRoute('/competition/leaderboard')).toEqual({ kind: 'notFound', path: '/competition/leaderboard' });
+  });
+
+  it('does not collapse unknown subroutes into valid page surfaces', () => {
+    expect(parseAppRoute('/leaderboard/random')).toEqual({ kind: 'notFound', path: '/leaderboard/random' });
+    expect(parseAppRoute('/leaderboard/ai-benchmarks/extra')).toEqual({ kind: 'notFound', path: '/leaderboard/ai-benchmarks/extra' });
+    expect(parseAppRoute('/tournaments/may-2026/round-one')).toEqual({ kind: 'notFound', path: '/tournaments/may-2026/round-one' });
+    expect(parseAppRoute('/events/may-2026/details')).toEqual({ kind: 'notFound', path: '/events/may-2026/details' });
+    expect(parseAppRoute('/matches/match-123/receipt')).toEqual({ kind: 'notFound', path: '/matches/match-123/receipt' });
+    expect(parseAppRoute('/games/card-games/leaderboard')).toEqual({ kind: 'notFound', path: '/games/card-games/leaderboard' });
+    expect(parseAppRoute('/games/claim/leaderboard/season')).toEqual({ kind: 'notFound', path: '/games/claim/leaderboard/season' });
+    expect(parseAppRoute('/shop/offers')).toEqual({ kind: 'notFound', path: '/shop/offers' });
+    expect(parseAppRoute('/lobby/claim')).toEqual({ kind: 'notFound', path: '/lobby/claim' });
+    expect(parseAppRoute('/CardGamesExplorer/leaderboard')).toEqual({ kind: 'notFound', path: '/CardGamesExplorer/leaderboard' });
   });
 });

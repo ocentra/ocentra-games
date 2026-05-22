@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { PublicRouteKey, PublicRoutePath } from '@ocentra/endpoint-domain/constants/public-routes';
 import type { UnifiedHeaderNavigationConfig } from './UnifiedHeader.config';
 import styles from './UnifiedHeader.module.css';
 
@@ -175,7 +176,7 @@ function resolveActiveItem(pathname: string, items: SiteNavItem[]) {
   if (pathname.startsWith('/player-hub')) {
     return 'Profile';
   }
-  if (pathname.startsWith('/competition')) {
+  if (pathname.startsWith(PublicRoutePath[PublicRouteKey.Tournaments])) {
     return 'Tournaments';
   }
   if (pathname.startsWith('/social')) {
@@ -670,13 +671,13 @@ export function PrimarySiteNavigation({ includeAdmin = false, config, extraItems
   const [startIndex, setStartIndex] = useState(0);
   const items = useMemo<SiteNavItem[]>(
     () => [
-      { label: 'Shop', path: '/shop' },
-      { label: 'Social', path: '/social' },
-      { label: 'Games', path: '/CardGamesExplorer' },
-      { label: 'Tournaments', path: '/competition' },
-      { label: 'Leaderboard', path: '/competition/leaderboard', matchPrefixes: ['/competition/leaderboard'] },
-      { label: 'Profile', path: '/player-hub', matchPrefixes: ['/player-hub', '/settings'] },
-      ...(includeAdmin ? [{ label: 'Admin', path: '/admin' }] : []),
+      { label: 'Shop', path: PublicRoutePath[PublicRouteKey.Shop] },
+      { label: 'Social', path: PublicRoutePath[PublicRouteKey.Social] },
+      { label: 'Games', path: PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer] },
+      { label: 'Tournaments', path: PublicRoutePath[PublicRouteKey.Tournaments] },
+      { label: 'Leaderboard', path: PublicRoutePath[PublicRouteKey.Leaderboard] },
+      { label: 'Profile', path: PublicRoutePath[PublicRouteKey.PlayerHub], matchPrefixes: [PublicRoutePath[PublicRouteKey.PlayerHub], PublicRoutePath[PublicRouteKey.Settings]] },
+      ...(includeAdmin ? [{ label: 'Admin', path: PublicRoutePath[PublicRouteKey.Admin] }] : []),
       ...extraItems,
     ],
     [extraItems, includeAdmin],

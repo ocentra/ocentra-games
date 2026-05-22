@@ -427,6 +427,11 @@ function renderStaticIndexableBodyFallback(metadata: RouteSeoMetadata): string {
       description: 'Track Ocentra competitive formats, tournament paths, leaderboard surfaces, and AI benchmark context.',
     },
     {
+      href: '/events',
+      label: 'Events',
+      description: 'Browse seasonal campaigns that connect shop access, tournament entries, benchmark challenges, and rewards.',
+    },
+    {
       href: '/tournaments',
       label: 'Tournaments',
       description: 'Follow Ocentra tournament formats, schedules, eligibility, and prize-track pages.',
@@ -537,6 +542,7 @@ function renderSeoBodyFallback(metadata: RouteSeoMetadata): string {
     || metadata.routeKey === PublicRouteKey.GamesCatalog
     || metadata.routeKey === PublicRouteKey.Shop
     || metadata.routeKey === PublicRouteKey.Competition
+    || metadata.routeKey === PublicRouteKey.Events
     || metadata.routeKey === PublicRouteKey.Tournaments
     || metadata.routeKey === PublicRouteKey.Leaderboard
     || metadata.routeKey === PublicRouteKey.AiBenchmarkLeaderboard
