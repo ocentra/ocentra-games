@@ -4,18 +4,22 @@ import { beforeAll, afterAll } from 'vitest';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { StripeEndpoint, StripeEventType } from '@ocentra/endpoint-domain/constants/stripe';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
 import { getValidRequestHeaders, getValidAdminRequestHeaders, buildCreditsApiUrl } from '@tests/helpers/test-helpers';
 import { CreditAction } from '@ocentra/endpoint-domain/constants/credits';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { TestWorkerBindings } from '@tests/constants/test-worker-bindings';
+import { createStripeSignatureHeader } from '@/utils/stripe-webhook-signature';
 import {
   ensureContextReady,
   createTestContext,
   setCurrentContext,
   createSetupContextToken,
   getTokenForFetch,
+  type SetupContextToken,
 } from '@tests/test-setup-core';
 import { RunType } from '@ocentra/logging-domain/test-log/types';
 
@@ -33,6 +37,70 @@ const logWarn = (message: string, stackTrace: StackTrace, data?: unknown, enable
 const logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
   log.logError(message, stackTrace, data);
 };
+
+const WEBHOOK_SECRET = TestWorkerBindings.STRIPE_WEBHOOK_SECRET ?? 'whsec_test_integration_secret_32chars_!!';
+
+function buildStripeWebhookPayload(opts: {
+  eventId: string;
+  userId: string;
+  paymentId: string;
+  amountCents: number;
+}): string {
+  return JSON.stringify({
+    id: opts.eventId,
+    type: StripeEventType.PaymentIntentSucceeded,
+    data: {
+      object: {
+        id: `pi_test_${opts.paymentId.slice(0, 8)}`,
+        metadata: { userId: opts.userId, paymentId: opts.paymentId },
+        amount_total: opts.amountCents,
+        client_reference_id: opts.paymentId,
+      },
+    },
+  });
+}
+
+async function consumeResponse(response: Response): Promise<void> {
+  await response.text().catch(() => undefined);
+}
+
+async function seedCredits(
+  worker: TestWorker,
+  userId: string,
+  acAmount: number,
+  token: SetupContextToken | undefined
+): Promise<void> {
+  const paymentId = crypto.randomUUID();
+  const initUrl = buildApiUrl(StripeEndpoint.TestInitPayment, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+  const initRes = await worker.fetch(initUrl, {
+    method: HttpMethod.Post,
+    headers: {
+      ...getValidRequestHeaders(userId),
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+    },
+    body: JSON.stringify({ paymentId, amount: acAmount }),
+  }, token);
+  expect(initRes.status).toBe(HttpStatus.Ok);
+  await consumeResponse(initRes);
+
+  const payload = buildStripeWebhookPayload({
+    eventId: `evt_ai_escrow_${paymentId.slice(0, 8)}`,
+    userId,
+    paymentId,
+    amountCents: acAmount * 100,
+  });
+  const webhookUrl = buildApiUrl(StripeEndpoint.Webhook, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+  const webhookRes = await worker.fetch(webhookUrl, {
+    method: HttpMethod.Post,
+    headers: {
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      [HttpHeader.StripeSignature]: await createStripeSignatureHeader(payload, WEBHOOK_SECRET),
+    },
+    body: payload,
+  }, token);
+  expect(webhookRes.status).toBe(HttpStatus.Ok);
+  await consumeResponse(webhookRes);
+}
 
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   let worker: TestWorker;
@@ -122,24 +190,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(typeof token).toBe('object');
 
       const userId = `escrow-reserve-${Date.now()}`;
-      
-      // First add some AC balance
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseRes = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: `purchase-${userId}`,
-        },
-        body: JSON.stringify({
-          ac_amount: 1000,
-          amount: 10,
-          currency: 'USD',
-        }),
-      }, token);
-      expect(purchaseRes.status).toBe(HttpStatus.Ok);
-      await purchaseRes.json().catch(() => undefined);
+      await seedCredits(worker, userId, 1000, token);
 
       // Reserve escrow
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
@@ -216,23 +267,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
       const userId = `escrow-idempotent-${Date.now()}`;
       const idempotencyKey = `escrow-idem-${userId}`;
-      
-      // Add balance
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseRes = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: `purchase-${userId}`,
-        },
-        body: JSON.stringify({
-          ac_amount: 1000,
-          amount: 10,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseRes.text().catch(() => undefined);
+      await seedCredits(worker, userId, 1000, token);
 
       // First reserve
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
@@ -486,23 +521,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(typeof token).toBe('object');
 
       const userId = `escrow-consume-${Date.now()}`;
-      
-      // Add balance
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseRes1 = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: `purchase-${userId}`,
-        },
-        body: JSON.stringify({
-          ac_amount: 1000,
-          amount: 10,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseRes1.text().catch(() => undefined);
+      await seedCredits(worker, userId, 1000, token);
 
       // Reserve escrow
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
@@ -568,23 +587,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(typeof token).toBe('object');
 
       const userId = `escrow-exact-${Date.now()}`;
-      
-      // Add balance
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseExact = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: `purchase-${userId}`,
-        },
-        body: JSON.stringify({
-          ac_amount: 1000,
-          amount: 10,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseExact.text().catch(() => undefined);
+      await seedCredits(worker, userId, 1000, token);
 
       // Reserve with small amount
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
@@ -666,23 +669,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(typeof token).toBe('object');
 
       const userId = `escrow-settled-${Date.now()}`;
-      
-      // Add balance
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseRes2 = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: `purchase-${userId}`,
-        },
-        body: JSON.stringify({
-          ac_amount: 1000,
-          amount: 10,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseRes2.text().catch(() => undefined);
+      await seedCredits(worker, userId, 1000, token);
 
       // Reserve
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
@@ -747,23 +734,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(typeof token).toBe('object');
 
       const userId = `escrow-invariant-${Date.now()}`;
-      
-      // Add balance
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseInv = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: `purchase-${userId}`,
-        },
-        body: JSON.stringify({
-          ac_amount: 1000,
-          amount: 10,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseInv.text().catch(() => undefined);
+      await seedCredits(worker, userId, 1000, token);
 
       // Reserve
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
@@ -817,23 +788,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
       const userId = `escrow-doublespend-${Date.now()}`;
       const idempotencyKey = `escrow-ds-${userId}`;
-      
-      // Add balance
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseDs = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: `purchase-${userId}`,
-        },
-        body: JSON.stringify({
-          ac_amount: 1000,
-          amount: 10,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseDs.text().catch(() => undefined);
+      await seedCredits(worker, userId, 1000, token);
 
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
       
@@ -895,23 +850,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(typeof token).toBe('object');
 
       const userId = `escrow-zero-${Date.now()}`;
-      
-      // Add balance
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseZero = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: `purchase-${userId}`,
-        },
-        body: JSON.stringify({
-          ac_amount: 1000,
-          amount: 10,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseZero.text().catch(() => undefined);
+      await seedCredits(worker, userId, 1000, token);
 
       // Reserve
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
