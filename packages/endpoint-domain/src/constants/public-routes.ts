@@ -6,9 +6,11 @@ export const PublicRouteSegment = {
   Categories: 'categories',
   Competition: 'competition',
   Editor: 'Editor',
+  Events: 'events',
   Games: 'games',
   Leaderboard: 'leaderboard',
   Lobby: 'lobby',
+  Matches: 'matches',
   Matchmaking: 'matchmaking',
   Play: 'play',
   PlayerHub: 'player-hub',
@@ -33,6 +35,8 @@ export const PublicRouteKey = {
   Category: 'category',
   Competition: 'competition',
   EditorAlias: 'editor-alias',
+  EventDetail: 'event-detail',
+  Events: 'events',
   Game: 'game',
   GameLeaderboard: 'game-leaderboard',
   GameLobby: 'game-lobby',
@@ -43,6 +47,8 @@ export const PublicRouteKey = {
   Leaderboard: 'leaderboard',
   LegacyCardGamesExplorer: 'legacy-card-games-explorer',
   Lobby: 'lobby',
+  MatchDetail: 'match-detail',
+  Matches: 'matches',
   Matchmaking: 'matchmaking',
   PlayerHub: 'player-hub',
   Rules: 'rules',
@@ -65,6 +71,8 @@ export const PublicRoutePath = {
   [PublicRouteKey.Category]: `/${PublicRouteSegment.Categories}/:categoryId`,
   [PublicRouteKey.Competition]: `/${PublicRouteSegment.Competition}`,
   [PublicRouteKey.EditorAlias]: `/${PublicRouteSegment.Editor}`,
+  [PublicRouteKey.EventDetail]: `/${PublicRouteSegment.Events}/:eventId`,
+  [PublicRouteKey.Events]: `/${PublicRouteSegment.Events}`,
   [PublicRouteKey.Game]: `/${PublicRouteSegment.Games}/:gameId`,
   [PublicRouteKey.GameLeaderboard]: `/${PublicRouteSegment.Games}/:gameId/${PublicRouteSegment.Leaderboard}`,
   [PublicRouteKey.GameLobby]: `/${PublicRouteSegment.Games}/:gameId/${PublicRouteSegment.Lobby}`,
@@ -75,6 +83,8 @@ export const PublicRoutePath = {
   [PublicRouteKey.Leaderboard]: `/${PublicRouteSegment.Leaderboard}`,
   [PublicRouteKey.LegacyCardGamesExplorer]: '/CardGamesExplorer',
   [PublicRouteKey.Lobby]: `/${PublicRouteSegment.Lobby}`,
+  [PublicRouteKey.MatchDetail]: `/${PublicRouteSegment.Matches}/:matchId`,
+  [PublicRouteKey.Matches]: `/${PublicRouteSegment.Matches}`,
   [PublicRouteKey.Matchmaking]: `/${PublicRouteSegment.Matchmaking}`,
   [PublicRouteKey.PlayerHub]: `/${PublicRouteSegment.PlayerHub}`,
   [PublicRouteKey.Rules]: `/${PublicRouteSegment.Rules}/:gameId`,
@@ -108,6 +118,8 @@ export const PublicRouteDefinitions = [
   { key: PublicRouteKey.CardGamesCatalog, path: PublicRoutePath[PublicRouteKey.CardGamesCatalog], privacy: PublicRoutePrivacy.Indexable },
   { key: PublicRouteKey.Category, path: PublicRoutePath[PublicRouteKey.Category], privacy: PublicRoutePrivacy.Indexable },
   { key: PublicRouteKey.LegacyCardGamesExplorer, path: PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer], privacy: PublicRoutePrivacy.Alias },
+  { key: PublicRouteKey.Events, path: PublicRoutePath[PublicRouteKey.Events], privacy: PublicRoutePrivacy.Indexable },
+  { key: PublicRouteKey.EventDetail, path: PublicRoutePath[PublicRouteKey.EventDetail], privacy: PublicRoutePrivacy.Indexable },
   { key: PublicRouteKey.Game, path: PublicRoutePath[PublicRouteKey.Game], privacy: PublicRoutePrivacy.Indexable },
   { key: PublicRouteKey.GamePlay, path: PublicRoutePath[PublicRouteKey.GamePlay], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.Shop, path: PublicRoutePath[PublicRouteKey.Shop], privacy: PublicRoutePrivacy.Indexable },
@@ -122,6 +134,8 @@ export const PublicRouteDefinitions = [
   { key: PublicRouteKey.GameLeaderboard, path: PublicRoutePath[PublicRouteKey.GameLeaderboard], privacy: PublicRoutePrivacy.Indexable },
   { key: PublicRouteKey.Lobby, path: PublicRoutePath[PublicRouteKey.Lobby], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.GameLobby, path: PublicRoutePath[PublicRouteKey.GameLobby], privacy: PublicRoutePrivacy.Private },
+  { key: PublicRouteKey.Matches, path: PublicRoutePath[PublicRouteKey.Matches], privacy: PublicRoutePrivacy.Private },
+  { key: PublicRouteKey.MatchDetail, path: PublicRoutePath[PublicRouteKey.MatchDetail], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.Matchmaking, path: PublicRoutePath[PublicRouteKey.Matchmaking], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.GameMatchmaking, path: PublicRoutePath[PublicRouteKey.GameMatchmaking], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.AiBenchmarkLeaderboard, path: PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard], privacy: PublicRoutePrivacy.Indexable },
@@ -138,6 +152,10 @@ export function buildPublicGamePath(gameId: string): string {
 
 export function buildPublicCategoryPath(categoryId: string): string {
   return `/${PublicRouteSegment.Categories}/${encodeURIComponent(categoryId)}`;
+}
+
+export function buildPublicEventDetailPath(eventId: string): string {
+  return `/${PublicRouteSegment.Events}/${encodeURIComponent(eventId)}`;
 }
 
 export function buildPublicRulesPath(gameId: string): string {
@@ -158,6 +176,10 @@ export function buildPublicGameLobbyPath(gameId: string): string {
 
 export function buildPublicGameMatchmakingPath(gameId: string): string {
   return `${buildPublicGamePath(gameId)}/${PublicRouteSegment.Matchmaking}`;
+}
+
+export function buildPublicMatchDetailPath(matchId: string): string {
+  return `/${PublicRouteSegment.Matches}/${encodeURIComponent(matchId)}`;
 }
 
 export function buildPublicTournamentDetailPath(tournamentId: string): string {

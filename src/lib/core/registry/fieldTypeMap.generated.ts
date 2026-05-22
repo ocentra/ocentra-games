@@ -662,6 +662,8 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "layoutControls": "SelectedGameLayoutControls",
     "lobbyControls": "Record<string, unknown>",
     "authControls": "Record<string, unknown>",
+    "leaderboardControls": "Record<string, unknown>",
+    "leaderboardContent": "PartialLeaderboardPageContentData",
     "shopControls": "Record<string, unknown>",
     "shopContent": "PartialShopPageContentData",
     "contentPlan": "SelectedGameContentPlan",

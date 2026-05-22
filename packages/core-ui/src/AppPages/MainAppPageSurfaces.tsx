@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react';
 import { AppPageSvgSurface } from './AppPageSvgSurface';
+import { LeaderboardPageSvgSurface } from './Leaderboard/LeaderboardPageSvgSurface';
 import { LobbyPageSvgSurface } from './Lobby/LobbyPageSvgSurface';
 import { ShopPageSvgSurface } from './Shop/ShopPageSvgSurface';
 import type {
@@ -8,6 +9,9 @@ import type {
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
 import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
+import type { LeaderboardPageMode } from './Leaderboard/LeaderboardPageSvgSurface';
+import type { PartialLeaderboardPageContentData } from './Leaderboard/LeaderboardPageSvgContent';
+import type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 import type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
 import type { ShopPageContentData } from './Shop/ShopPageSvgContent';
@@ -40,6 +44,11 @@ export type {
   AppPageSvgMetric,
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
+export type {
+  LeaderboardPageMode,
+  LeaderboardPageRow,
+} from './Leaderboard/LeaderboardPageSvgSurface';
+export type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 export type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
 export type {
@@ -105,11 +114,15 @@ export type AdminActivityRow = {
 
 export type CompetitionPageMode =
   | 'competition'
+  | 'events'
+  | 'eventDetail'
   | 'tournaments'
   | 'tournamentDetail'
   | 'leaderboard'
   | 'gameLeaderboard'
-  | 'aiBenchmarkLeaderboard';
+  | 'aiBenchmarkLeaderboard'
+  | 'matches'
+  | 'matchDetail';
 
 export type LobbyRoomLike = {
   roomId?: string;
@@ -171,6 +184,11 @@ type LobbyPageSurfaceControlProps = {
   layoutControls?: Partial<LobbyPageSvgControls> | null;
 };
 
+type LeaderboardPageSurfaceControlProps = {
+  leaderboardControls?: Partial<LeaderboardPageSvgControls> | null;
+  leaderboardContent?: PartialLeaderboardPageContentData | null;
+};
+
 type ShopPageSurfaceControlProps = {
   layoutControls?: Partial<ShopPageSvgControls> | null;
   shopContent: ShopPageContentData;
@@ -202,6 +220,10 @@ function noopAction(label: string): AppPageSvgAction {
 
 function routeScopeLabel(value?: string): string {
   return value && value.trim().length > 0 ? value : 'all games';
+}
+
+function isLeaderboardPageMode(pageMode: CompetitionPageMode): pageMode is LeaderboardPageMode {
+  return pageMode === 'leaderboard' || pageMode === 'gameLeaderboard' || pageMode === 'aiBenchmarkLeaderboard';
 }
 
 export function SocialPageContent({
@@ -383,11 +405,15 @@ export function CompetitionPageContent({
   tournamentRounds,
   pageMode = 'competition',
   gameId,
+  eventId,
+  matchId,
   onRefreshLeaderboard,
   onLoadBracket,
   onRegister,
   onMatchmaking,
   layoutControls,
+  leaderboardControls,
+  leaderboardContent,
 }: {
   loading: boolean;
   registering: boolean;
@@ -404,32 +430,66 @@ export function CompetitionPageContent({
   tournamentRounds: TournamentRound[];
   pageMode?: CompetitionPageMode;
   gameId?: string;
+  eventId?: string;
+  matchId?: string;
   onRefreshLeaderboard: (gameType: number) => void;
   onLoadBracket: (tournamentId: string) => void;
   onRegister: (tournamentId: string) => void;
   onMatchmaking: () => void;
-} & AppPageSurfaceControlProps) {
+} & AppPageSurfaceControlProps & LeaderboardPageSurfaceControlProps) {
   const topEntry = leaderboardEntries[0];
   const currentTournamentId = tournamentId || 'season-main';
   const titleByMode: Record<CompetitionPageMode, string> = {
     competition: 'Competition',
+    events: 'Events',
+    eventDetail: 'Event Detail',
     tournaments: 'Tournaments',
     tournamentDetail: 'Tournament Detail',
     leaderboard: 'Leaderboard',
     gameLeaderboard: 'Game Leaderboard',
     aiBenchmarkLeaderboard: 'AI Benchmark Leaderboard',
+    matches: 'Matches',
+    matchDetail: 'Match Detail',
   };
   const routeByMode: Record<CompetitionPageMode, string> = {
     competition: '/competition',
+    events: '/events',
+    eventDetail: `/events/${routeScopeLabel(eventId)}`,
     tournaments: '/tournaments',
     tournamentDetail: `/tournaments/${currentTournamentId}`,
     leaderboard: '/leaderboard',
     gameLeaderboard: `/games/${routeScopeLabel(gameId)}/leaderboard`,
     aiBenchmarkLeaderboard: '/leaderboard/ai-benchmarks',
+    matches: '/matches',
+    matchDetail: `/matches/${routeScopeLabel(matchId)}`,
   };
+
+  if (isLeaderboardPageMode(pageMode)) {
+    return (
+      <LeaderboardPageSvgSurface
+        key={`${pageMode}:${gameId ?? ''}`}
+        pageMode={pageMode}
+        gameType={gameType}
+        seasonId={seasonId}
+        lastUpdated={lastUpdated}
+        leaderboardEntries={leaderboardEntries}
+        userEntry={userEntry}
+        nearbyAbove={nearbyAbove}
+        nearbyBelow={nearbyBelow}
+        gameId={gameId}
+        loading={loading}
+        error={error}
+        controls={leaderboardControls}
+        content={leaderboardContent}
+        onRefreshLeaderboard={onRefreshLeaderboard}
+        onMatchmaking={onMatchmaking}
+      />
+    );
+  }
+
   const panels: AppPageSvgPanel[] = [
     {
-      title: pageMode === 'aiBenchmarkLeaderboard' ? 'Model Standings' : 'Leaderboard',
+      title: 'Leaderboard',
       subtitle: `Season ${seasonId || '-'}`,
       rows: [
         { label: 'Rows', value: leaderboardEntries.length },
@@ -474,6 +534,8 @@ export function CompetitionPageContent({
         { label: 'Mode', value: pageMode },
         { label: 'Route', value: routeByMode[pageMode] },
         { label: 'Game', value: routeScopeLabel(gameId) },
+        { label: 'Event', value: routeScopeLabel(eventId) },
+        { label: 'Match', value: routeScopeLabel(matchId) },
       ],
     },
   ];
@@ -482,7 +544,7 @@ export function CompetitionPageContent({
     <AppPageSvgSurface
       title={titleByMode[pageMode]}
       eyebrow="Competitive Play"
-      subtitle="Overall standings, per-game ranking, AI benchmarking, and tournament bracket pages are route-addressable surfaces."
+      subtitle="Competition, events, tournaments, matches, leaderboards, and AI benchmark pages stay route-addressable while lobby tables remain the playable execution layer."
       routeLabel={routeByMode[pageMode]}
       metrics={[
         { label: 'Entries', value: leaderboardEntries.length },

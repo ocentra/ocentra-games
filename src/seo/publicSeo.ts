@@ -4,11 +4,13 @@ import {
   PublicRoutePrivacy,
   PublicRouteSegment,
   buildPublicCategoryPath,
+  buildPublicEventDetailPath,
   buildPublicGameLeaderboardPath,
   buildPublicGameLobbyPath,
   buildPublicGameMatchmakingPath,
   buildPublicGamePath,
   buildPublicGamePlayPath,
+  buildPublicMatchDetailPath,
   buildPublicRulesPath,
   buildPublicTournamentDetailPath,
 } from '@ocentra/endpoint-domain/constants/public-routes';
@@ -61,12 +63,16 @@ const pageLayoutAssetPath = {
   selectedGame: 'Resources/Pages/SelectedGameLayout.asset',
   shop: 'Resources/Pages/ShopPageLayout.asset',
   competition: 'Resources/Pages/CompetitionPageLayout.asset',
+  events: 'Resources/Pages/EventsPageLayout.asset',
+  eventDetail: 'Resources/Pages/EventDetailPageLayout.asset',
   tournaments: 'Resources/Pages/TournamentsPageLayout.asset',
   tournamentDetail: 'Resources/Pages/TournamentDetailPageLayout.asset',
   leaderboard: 'Resources/Pages/LeaderboardPageLayout.asset',
   gameLeaderboard: 'Resources/Pages/GameLeaderboardPageLayout.asset',
   aiBenchmarkLeaderboard: 'Resources/Pages/AiBenchmarkLeaderboardPageLayout.asset',
   lobby: 'Resources/Pages/LobbyPageLayout.asset',
+  matches: 'Resources/Pages/MatchesPageLayout.asset',
+  matchDetail: 'Resources/Pages/MatchDetailPageLayout.asset',
   matchmaking: 'Resources/Pages/MatchmakingPageLayout.asset',
   settings: 'Resources/Pages/SettingsPageLayout.asset',
   social: 'Resources/Pages/SocialPageLayout.asset',
@@ -198,6 +204,14 @@ const staticPageMetadata = {
     privacy: PublicRoutePrivacy.Indexable,
     pageLayoutAssetPath: pageLayoutAssetPath.competition,
   },
+  [PublicRoutePath[PublicRouteKey.Events]]: {
+    routeKey: PublicRouteKey.Events,
+    title: 'Events | Ocentra Games',
+    description: 'Browse Ocentra event campaigns that package shop access, tournament entries, benchmark challenges, and seasonal rewards.',
+    canonicalPath: PublicRoutePath[PublicRouteKey.Events],
+    privacy: PublicRoutePrivacy.Indexable,
+    pageLayoutAssetPath: pageLayoutAssetPath.events,
+  },
   [PublicRoutePath[PublicRouteKey.Tournaments]]: {
     routeKey: PublicRouteKey.Tournaments,
     title: 'Tournaments | Ocentra Games',
@@ -253,6 +267,14 @@ const staticPageMetadata = {
     canonicalPath: PublicRoutePath[PublicRouteKey.Lobby],
     privacy: PublicRoutePrivacy.Private,
     pageLayoutAssetPath: pageLayoutAssetPath.lobby,
+  },
+  [PublicRoutePath[PublicRouteKey.Matches]]: {
+    routeKey: PublicRouteKey.Matches,
+    title: 'Matches | Ocentra Games',
+    description: 'Private account match history, table receipts, and result records for Ocentra games.',
+    canonicalPath: PublicRoutePath[PublicRouteKey.Matches],
+    privacy: PublicRoutePrivacy.Private,
+    pageLayoutAssetPath: pageLayoutAssetPath.matches,
   },
   [PublicRoutePath[PublicRouteKey.Matchmaking]]: {
     routeKey: PublicRouteKey.Matchmaking,
@@ -471,7 +493,7 @@ function resolveStaticMetadata(pathname: string, siteOrigin: string): RouteSeoMe
         ? [structuredCollection(siteOrigin, metadata.canonicalPath, metadata.title)]
         : metadata.routeKey === PublicRouteKey.Leaderboard || metadata.routeKey === PublicRouteKey.AiBenchmarkLeaderboard
           ? [structuredLeaderboard(siteOrigin, metadata.canonicalPath, metadata.title)]
-          : metadata.routeKey === PublicRouteKey.Tournaments
+          : metadata.routeKey === PublicRouteKey.Tournaments || metadata.routeKey === PublicRouteKey.Events
             ? [structuredTournament(siteOrigin, metadata.canonicalPath, metadata.title)]
             : [];
   return completeMetadata(siteOrigin, { ...metadata, structuredData });
@@ -481,20 +503,102 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
   const siteOrigin = normalizeSiteOrigin(siteOriginInput);
   const normalizedPathname = normalizePathname(pathname);
   const segments = getSegments(normalizedPathname);
-  const [first, second, third] = segments;
+  const [first, second, third, fourth] = segments;
   const staticMetadata = resolveStaticMetadata(normalizedPathname, siteOrigin);
   if (staticMetadata) {
     return staticMetadata;
   }
 
+  if (
+    second
+    && (
+      first === PublicRouteSegment.Shop
+      || first === PublicRouteSegment.Social
+      || first === PublicRouteSegment.Settings
+      || first === PublicRouteSegment.PlayerHub
+      || first === PublicRouteSegment.Lobby
+      || first === PublicRouteSegment.Matchmaking
+      || first === PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer].replace(/^\/+/, '')
+    )
+  ) {
+    return completeMetadata(siteOrigin, {
+      routeKey: 'unknown',
+      title: 'Ocentra Games',
+      description: 'Ocentra Games route.',
+      canonicalPath: normalizedPathname,
+      privacy: PublicRoutePrivacy.Alias,
+    });
+  }
+
+  if (first === PublicRouteSegment.Competition && second) {
+    return completeMetadata(siteOrigin, {
+      routeKey: 'unknown',
+      title: 'Ocentra Games',
+      description: 'Ocentra Games route.',
+      canonicalPath: normalizedPathname,
+      privacy: PublicRoutePrivacy.Alias,
+    });
+  }
+
+  if (first === PublicRouteSegment.Leaderboard && second) {
+    return completeMetadata(siteOrigin, {
+      routeKey: 'unknown',
+      title: 'Ocentra Games',
+      description: 'Ocentra Games route.',
+      canonicalPath: normalizedPathname,
+      privacy: PublicRoutePrivacy.Alias,
+    });
+  }
+
+  if (first === PublicRouteSegment.Events && second) {
+    if (third) {
+      return completeMetadata(siteOrigin, {
+        routeKey: 'unknown',
+        title: 'Ocentra Games',
+        description: 'Ocentra Games route.',
+        canonicalPath: normalizedPathname,
+        privacy: PublicRoutePrivacy.Alias,
+      });
+    }
+    const eventId = decodePathSegment(second);
+    const title = `${titleCaseGameId(eventId)} Event`;
+    return completeMetadata(siteOrigin, {
+      routeKey: PublicRouteKey.EventDetail,
+      title: `${title} | Ocentra Games`,
+      description: `Event detail page for ${title}, including access, rules, rewards, and eligible table flows.`,
+      canonicalPath: buildPublicEventDetailPath(eventId),
+      privacy: PublicRoutePrivacy.Indexable,
+      pageLayoutAssetPath: pageLayoutAssetPath.eventDetail,
+      structuredData: [structuredTournament(siteOrigin, buildPublicEventDetailPath(eventId), title)],
+    });
+  }
+
   if (first === PublicRouteSegment.Games && second) {
-    if (second === PublicRouteSegment.CardGame && third === PublicRouteSegment.Template) {
+    if (second === PublicRouteSegment.CardGames && third) {
+      return completeMetadata(siteOrigin, {
+        routeKey: 'unknown',
+        title: 'Ocentra Games',
+        description: 'Ocentra Games route.',
+        canonicalPath: normalizedPathname,
+        privacy: PublicRoutePrivacy.Alias,
+      });
+    }
+    if (second === PublicRouteSegment.CardGame && third === PublicRouteSegment.Template && !fourth) {
       return completeMetadata(siteOrigin, {
         routeKey: PublicRouteKey.CardGameTemplate,
         title: 'Card Game Template | Ocentra Games',
         description: 'Development-only card game template route.',
         canonicalPath: PublicRoutePath[PublicRouteKey.CardGameTemplate],
         privacy: PublicRoutePrivacy.DevOnly,
+      });
+    }
+    if (second === PublicRouteSegment.CardGame || fourth) {
+      return completeMetadata(siteOrigin, {
+        routeKey: 'unknown',
+        title: 'Ocentra Games',
+        description: 'Ocentra Games route.',
+        canonicalPath: normalizedPathname,
+        privacy: PublicRoutePrivacy.Alias,
       });
     }
     const game = findGame(second);
@@ -538,6 +642,15 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
         structuredData: [structuredLeaderboard(siteOrigin, buildPublicGameLeaderboardPath(game.gameId), `${game.name} Leaderboard`)],
       });
     }
+    if (third) {
+      return completeMetadata(siteOrigin, {
+        routeKey: 'unknown',
+        title: 'Ocentra Games',
+        description: 'Ocentra Games route.',
+        canonicalPath: normalizedPathname,
+        privacy: PublicRoutePrivacy.Alias,
+      });
+    }
     return completeMetadata(siteOrigin, {
       routeKey: PublicRouteKey.Game,
       title: `${game.name} | Ocentra Games`,
@@ -550,6 +663,15 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
   }
 
   if (first === PublicRouteSegment.Categories && second) {
+    if (third) {
+      return completeMetadata(siteOrigin, {
+        routeKey: 'unknown',
+        title: 'Ocentra Games',
+        description: 'Ocentra Games route.',
+        canonicalPath: normalizedPathname,
+        privacy: PublicRoutePrivacy.Alias,
+      });
+    }
     const category = findCategory(second);
     return completeMetadata(siteOrigin, {
       routeKey: PublicRouteKey.Category,
@@ -563,6 +685,15 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
   }
 
   if (first === PublicRouteSegment.Rules && second) {
+    if (third) {
+      return completeMetadata(siteOrigin, {
+        routeKey: 'unknown',
+        title: 'Ocentra Games',
+        description: 'Ocentra Games route.',
+        canonicalPath: normalizedPathname,
+        privacy: PublicRoutePrivacy.Alias,
+      });
+    }
     const game = findGame(second);
     return completeMetadata(siteOrigin, {
       routeKey: PublicRouteKey.Rules,
@@ -576,6 +707,15 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
   }
 
   if (first === PublicRouteSegment.Tournaments && second) {
+    if (third) {
+      return completeMetadata(siteOrigin, {
+        routeKey: 'unknown',
+        title: 'Ocentra Games',
+        description: 'Ocentra Games route.',
+        canonicalPath: normalizedPathname,
+        privacy: PublicRoutePrivacy.Alias,
+      });
+    }
     const tournamentId = decodePathSegment(second);
     const title = `${titleCaseGameId(tournamentId)} Tournament`;
     return completeMetadata(siteOrigin, {
@@ -586,6 +726,27 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
       privacy: PublicRoutePrivacy.Indexable,
       pageLayoutAssetPath: pageLayoutAssetPath.tournamentDetail,
       structuredData: [structuredTournament(siteOrigin, buildPublicTournamentDetailPath(tournamentId), title)],
+    });
+  }
+
+  if (first === PublicRouteSegment.Matches && second) {
+    if (third) {
+      return completeMetadata(siteOrigin, {
+        routeKey: 'unknown',
+        title: 'Ocentra Games',
+        description: 'Ocentra Games route.',
+        canonicalPath: normalizedPathname,
+        privacy: PublicRoutePrivacy.Alias,
+      });
+    }
+    const matchId = decodePathSegment(second);
+    return completeMetadata(siteOrigin, {
+      routeKey: PublicRouteKey.MatchDetail,
+      title: `Match ${matchId} | Ocentra Games`,
+      description: `Private Ocentra match record for ${matchId}.`,
+      canonicalPath: buildPublicMatchDetailPath(matchId),
+      privacy: PublicRoutePrivacy.Private,
+      pageLayoutAssetPath: pageLayoutAssetPath.matchDetail,
     });
   }
 
@@ -629,6 +790,7 @@ export function getSitemapEntries(): SitemapEntry[] {
     { path: PublicRoutePath[PublicRouteKey.CardGamesCatalog], priority: '0.9', changefreq: 'daily' },
     { path: PublicRoutePath[PublicRouteKey.Shop], priority: '0.5', changefreq: 'weekly' },
     { path: PublicRoutePath[PublicRouteKey.Competition], priority: '0.8', changefreq: 'daily' },
+    { path: PublicRoutePath[PublicRouteKey.Events], priority: '0.7', changefreq: 'daily' },
     { path: PublicRoutePath[PublicRouteKey.Tournaments], priority: '0.8', changefreq: 'daily' },
     { path: PublicRoutePath[PublicRouteKey.Leaderboard], priority: '0.8', changefreq: 'daily' },
     { path: PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard], priority: '0.8', changefreq: 'daily' },

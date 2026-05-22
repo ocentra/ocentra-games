@@ -3,11 +3,13 @@ import {
   PublicRoutePath,
   PublicRouteSegment,
   buildPublicCategoryPath,
+  buildPublicEventDetailPath,
   buildPublicGameLeaderboardPath,
   buildPublicGameLobbyPath,
   buildPublicGameMatchmakingPath,
   buildPublicGamePath,
   buildPublicGamePlayPath,
+  buildPublicMatchDetailPath,
   buildPublicRulesPath,
   buildPublicTournamentDetailPath,
 } from '@ocentra/endpoint-domain/constants/public-routes';
@@ -21,6 +23,8 @@ export const AppScreenToken = {
   Lobby: 'lobby',
   Social: 'social',
   Competition: 'competition',
+  Events: 'events',
+  Matches: 'matches',
   PlayerHub: 'player-hub',
   Tournaments: 'tournaments',
   Leaderboard: 'leaderboard',
@@ -36,17 +40,22 @@ export type AppRouteState =
   | { kind: 'shop' }
   | { kind: 'social' }
   | { kind: 'competition' }
+  | { kind: 'events' }
+  | { kind: 'eventDetail'; eventId: string }
   | { kind: 'tournaments' }
   | { kind: 'tournamentDetail'; tournamentId: string }
   | { kind: 'leaderboard' }
   | { kind: 'gameLeaderboard'; gameId: string }
   | { kind: 'rules'; gameId: string }
   | { kind: 'aiBenchmarkLeaderboard' }
+  | { kind: 'matches' }
+  | { kind: 'matchDetail'; matchId: string }
   | { kind: 'playerHub' }
   | { kind: 'matchmaking'; gameId?: string }
   | { kind: 'lobby'; gameId?: string }
   | { kind: 'game'; gameId: string }
   | { kind: 'template' }
+  | { kind: 'notFound'; path: string }
   | { kind: 'legacy'; token: string };
 
 export const GameRouteSegment = {
@@ -76,6 +85,10 @@ function normalizePath(pathname: string): string[] {
     .split('/')
     .filter((segment) => segment.length > 0)
     .map(decodeSegment);
+}
+
+function notFoundRoute(segments: string[]): AppRouteState {
+  return { kind: 'notFound', path: `/${segments.join('/')}` };
 }
 
 function getGameContextFromRoute(state: AppRouteState): string | undefined {
@@ -110,8 +123,24 @@ export function buildCompetitionPath(): string {
   return PublicRoutePath[PublicRouteKey.Competition];
 }
 
+export function buildEventsPath(): string {
+  return PublicRoutePath[PublicRouteKey.Events];
+}
+
+export function buildEventDetailPath(eventId: string): string {
+  return buildPublicEventDetailPath(eventId);
+}
+
 export function buildPlayerHubPath(): string {
   return PublicRoutePath[PublicRouteKey.PlayerHub];
+}
+
+export function buildMatchesPath(): string {
+  return PublicRoutePath[PublicRouteKey.Matches];
+}
+
+export function buildMatchDetailPath(matchId: string): string {
+  return buildPublicMatchDetailPath(matchId);
 }
 
 export function buildMatchmakingPath(): string {
@@ -185,76 +214,99 @@ export function parseAppRoute(pathname: string): AppRouteState {
     return { kind: 'home' };
   }
 
-  const [first, second, third] = segments;
+  const [first, second, third, fourth] = segments;
 
   if (first === PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer].replace(/^\/+/, '')) {
-    return { kind: 'gameCatalog', scope: 'card-games' };
+    return second ? notFoundRoute(segments) : { kind: 'gameCatalog', scope: 'card-games' };
   }
 
   if (first === PublicRouteSegment.Games) {
     if (!second) {
       return { kind: 'gameCatalog', scope: 'all' };
     }
-    if (second === PublicRouteSegment.CardGames && !third) {
-      return { kind: 'gameCatalog', scope: 'card-games' };
+    if (second === PublicRouteSegment.CardGames) {
+      return third ? notFoundRoute(segments) : { kind: 'gameCatalog', scope: 'card-games' };
     }
     if (third === AppScreenToken.Matchmaking) {
-      return { kind: 'matchmaking', gameId: second };
+      return fourth ? notFoundRoute(segments) : { kind: 'matchmaking', gameId: second };
     }
     if (third === AppScreenToken.Lobby) {
-      return { kind: 'lobby', gameId: second };
+      return fourth ? notFoundRoute(segments) : { kind: 'lobby', gameId: second };
     }
     if (third === AppScreenToken.Leaderboard) {
-      return { kind: 'gameLeaderboard', gameId: second };
+      return fourth ? notFoundRoute(segments) : { kind: 'gameLeaderboard', gameId: second };
+    }
+    if (third === PublicRouteSegment.Play) {
+      return fourth ? notFoundRoute(segments) : { kind: 'game', gameId: second };
     }
     if (second === PublicRouteSegment.CardGame && third === PublicRouteSegment.Template) {
-      return { kind: 'template' };
+      return fourth ? notFoundRoute(segments) : { kind: 'template' };
     }
-    return { kind: 'game', gameId: second };
+    return third ? notFoundRoute(segments) : { kind: 'game', gameId: second };
   }
 
   if (first === PublicRouteSegment.CardGames) {
-    return { kind: 'gameCatalog', scope: 'card-games' };
+    return second ? notFoundRoute(segments) : { kind: 'gameCatalog', scope: 'card-games' };
   }
 
   if (first === PublicRouteSegment.Categories && second) {
-    return { kind: 'category', categoryId: second };
+    return third ? notFoundRoute(segments) : { kind: 'category', categoryId: second };
   }
 
   if (first === PublicRouteSegment.Rules && second) {
-    return { kind: 'rules', gameId: second };
+    return third ? notFoundRoute(segments) : { kind: 'rules', gameId: second };
   }
 
   if (first === AppScreenToken.Settings) {
-    return { kind: 'settings' };
+    return second ? notFoundRoute(segments) : { kind: 'settings' };
   }
   if (first === AppScreenToken.Shop) {
-    return { kind: 'shop' };
+    return second ? notFoundRoute(segments) : { kind: 'shop' };
   }
   if (first === AppScreenToken.Social) {
-    return { kind: 'social' };
+    return second ? notFoundRoute(segments) : { kind: 'social' };
   }
   if (first === AppScreenToken.Competition) {
-    return { kind: 'competition' };
+    return second
+      ? notFoundRoute(segments)
+      : { kind: 'competition' };
+  }
+  if (first === AppScreenToken.Events) {
+    if (!second) {
+      return { kind: 'events' };
+    }
+    return third ? notFoundRoute(segments) : { kind: 'eventDetail', eventId: second };
   }
   if (first === AppScreenToken.Tournaments) {
+    if (third) {
+      return notFoundRoute(segments);
+    }
     return second
       ? { kind: 'tournamentDetail', tournamentId: second }
       : { kind: 'tournaments' };
   }
   if (first === AppScreenToken.Leaderboard) {
-    return second === PublicRouteSegment.AiBenchmarks
+    if (!second) {
+      return { kind: 'leaderboard' };
+    }
+    return second === PublicRouteSegment.AiBenchmarks && !third
       ? { kind: 'aiBenchmarkLeaderboard' }
-      : { kind: 'leaderboard' };
+      : notFoundRoute(segments);
+  }
+  if (first === AppScreenToken.Matches) {
+    if (!second) {
+      return { kind: 'matches' };
+    }
+    return third ? notFoundRoute(segments) : { kind: 'matchDetail', matchId: second };
   }
   if (first === AppScreenToken.PlayerHub) {
-    return { kind: 'playerHub' };
+    return second ? notFoundRoute(segments) : { kind: 'playerHub' };
   }
   if (first === AppScreenToken.Matchmaking) {
-    return { kind: 'matchmaking' };
+    return second ? notFoundRoute(segments) : { kind: 'matchmaking' };
   }
   if (first === AppScreenToken.Lobby) {
-    return { kind: 'lobby' };
+    return second ? notFoundRoute(segments) : { kind: 'lobby' };
   }
 
   return { kind: 'legacy', token: first };
@@ -281,11 +333,17 @@ export function resolvePathFromScreenToken(screen: string, currentPathname: stri
   if (screen === AppScreenToken.Competition) {
     return buildCompetitionPath();
   }
+  if (screen === AppScreenToken.Events) {
+    return buildEventsPath();
+  }
   if (screen === AppScreenToken.Tournaments) {
     return buildTournamentsPath();
   }
   if (screen === AppScreenToken.Leaderboard) {
     return buildLeaderboardPath();
+  }
+  if (screen === AppScreenToken.Matches) {
+    return buildMatchesPath();
   }
   if (screen === AppScreenToken.PlayerHub) {
     return buildPlayerHubPath();
