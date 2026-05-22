@@ -1,5 +1,5 @@
 import { fetchFromDO } from '@/utils/durable-object-request';
-import { validateProduct, calculateAmount } from '@/config/products';
+import { validateProduct, calculateAmount, saveProductToKV } from '@/config/products';
 import { PaymentDO as PaymentDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { HttpMethod, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { CreateCheckoutRequest } from '@ocentra/endpoint-domain/schemas/payments';
@@ -7,6 +7,7 @@ import { BaseFlow } from '@/flows/core/BaseFlow';
 import type { FlowContext } from '@/flows/core/FlowContext';
 import type { FlowResult } from '@/flows/core/FlowResult';
 import { StripeApiVersion } from '@/constants/stripe';
+import type { Product } from '@/config/products';
 
 type PaymentCheckoutSession = {
   id: string;
@@ -20,6 +21,15 @@ type PaymentStripeClient = {
       create(params: Record<string, unknown>): Promise<PaymentCheckoutSession>;
     };
   };
+  customers: {
+    create(params: Record<string, unknown>): Promise<{ id: string }>;
+  };
+  products: {
+    create(params: Record<string, unknown>): Promise<{ id: string }>;
+  };
+  prices: {
+    create(params: Record<string, unknown>): Promise<{ id: string }>;
+  };
 };
 
 export type PaymentCheckoutFlowInput =
@@ -27,6 +37,11 @@ export type PaymentCheckoutFlowInput =
       kind: 'test-init';
       paymentId: string;
       amount: number;
+      productType?: CreateCheckoutRequest['productType'];
+      productId?: string;
+      entitlementKind?: Product['entitlementKind'];
+      subscriptionTier?: string;
+      quantity?: number;
     }
   | {
       kind: 'checkout';
@@ -69,11 +84,116 @@ async function defaultCreateStripeClient(secret: string): Promise<PaymentStripeC
   return new Stripe(secret, {
     apiVersion: StripeApiVersion,
     httpClient: (Stripe as { createFetchHttpClient?: () => unknown }).createFetchHttpClient?.() as never,
-  }) as PaymentStripeClient;
+  }) as unknown as PaymentStripeClient;
 }
 
 function toJsonString(value: unknown): string {
   return JSON.stringify(value);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function stripeRefs(product: Product): Record<string, unknown> {
+  const refs = product.providerRefs?.stripe;
+  return isRecord(refs) ? refs : {};
+}
+
+function cleanStripeId(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  if (!value || value.startsWith('price_placeholder_')) return undefined;
+  return value;
+}
+
+function resolveStripePriceId(product: Product): string | undefined {
+  return cleanStripeId(stripeRefs(product).priceId) ?? cleanStripeId(product.stripePriceId);
+}
+
+function resolveBillingMode(product: Product): 'payment' | 'subscription' {
+  if (product.billingMode === 'payment' || product.billingMode === 'subscription') return product.billingMode;
+  if (product.productType === 'SUBSCRIPTION' && product.subscriptionTier !== 'founder') return 'subscription';
+  return 'payment';
+}
+
+function shouldAutoMaterializeStripeProduct(env: FlowContext['env']): boolean {
+  return env.STRIPE_AUTO_MATERIALIZE_PRODUCTS === 'true';
+}
+
+function automaticTaxEnabled(env: FlowContext['env']): boolean {
+  return env.STRIPE_AUTOMATIC_TAX_ENABLED === 'true';
+}
+
+async function materializeStripeProductIfAllowed(
+  env: FlowContext['env'],
+  stripeClient: PaymentStripeClient,
+  product: Product,
+  billingMode: 'payment' | 'subscription'
+): Promise<string | undefined> {
+  if (!shouldAutoMaterializeStripeProduct(env)) return undefined;
+  if (!env.PRODUCT_KV || product.unitPriceCents == null || product.unitPriceCents <= 0) return undefined;
+  const refs = stripeRefs(product);
+  const stripeProduct = await stripeClient.products.create({
+    name: product.displayName,
+    metadata: {
+      productId: product.productId,
+      productType: product.productType,
+      entitlementKind: product.entitlementKind ?? '',
+      subscriptionTier: product.subscriptionTier ?? '',
+    },
+  });
+  const priceParams: Record<string, unknown> = {
+    product: stripeProduct.id,
+    unit_amount: product.unitPriceCents,
+    currency: product.currency,
+    metadata: {
+      productId: product.productId,
+      productType: product.productType,
+      entitlementKind: product.entitlementKind ?? '',
+      subscriptionTier: product.subscriptionTier ?? '',
+    },
+  };
+  if (billingMode === 'subscription') {
+    priceParams.recurring = { interval: 'month' };
+  }
+  const price = await stripeClient.prices.create(priceParams);
+  const updatedProduct: Product = {
+    ...product,
+    stripeProductId: stripeProduct.id,
+    stripePriceId: price.id,
+    billingMode,
+    providerRefs: {
+      ...product.providerRefs,
+      stripe: {
+        ...refs,
+        productId: stripeProduct.id,
+        priceId: price.id,
+        mode: billingMode,
+      },
+    },
+  };
+  await saveProductToKV(env, updatedProduct);
+  return price.id;
+}
+
+async function getOrCreateStripeCustomerId(
+  stub: DurableObjectStub,
+  stripeClient: PaymentStripeClient,
+  userId: string
+): Promise<string> {
+  const existingRes = await fetchFromDO(stub, PaymentDOPaths.StripeCustomer, { method: HttpMethod.Get });
+  const existing = await existingRes.json().catch(() => ({})) as { stripeCustomerId?: string | null };
+  if (typeof existing.stripeCustomerId === 'string' && existing.stripeCustomerId) {
+    return existing.stripeCustomerId;
+  }
+  const customer = await stripeClient.customers.create({
+    metadata: { userId },
+  });
+  await fetchFromDO(stub, PaymentDOPaths.StripeCustomer, {
+    method: HttpMethod.Post,
+    body: toJsonString({ stripeCustomerId: customer.id }),
+  }).then((res) => res.text().catch(() => undefined));
+  return customer.id;
 }
 
 export class PaymentCheckoutFlow extends BaseFlow<PaymentCheckoutFlowInput, PaymentCheckoutFlowBody> {
@@ -118,8 +238,13 @@ export class PaymentCheckoutFlow extends BaseFlow<PaymentCheckoutFlowInput, Paym
         userId,
         amount: input.amount,
         currency: 'usd',
-        productType: 'AC_CREDITS',
-        productId: 'test',
+        provider: 'stripe',
+        productType: input.productType ?? 'AC_CREDITS',
+        productId: input.productId ?? 'test',
+        quantity: input.quantity ?? 1,
+        entitlementKind: input.entitlementKind ?? 'credits',
+        acAmount: input.amount,
+        subscriptionTier: input.subscriptionTier,
       }),
     });
     if (!initRes.ok) {
@@ -173,6 +298,25 @@ export class PaymentCheckoutFlow extends BaseFlow<PaymentCheckoutFlowInput, Paym
     const calculateAmountFn = this.deps.calculateAmount ?? calculateAmount;
     const amount = calculateAmountFn(product, input.quantity);
     const paymentId = crypto.randomUUID();
+    const secret = context.env.STRIPE_SECRET_KEY;
+    if (!secret) {
+      return {
+        status: HttpStatus.ServiceUnavailable,
+        body: { error: 'Stripe not configured' },
+      };
+    }
+
+    const stripeClient = await (this.deps.createStripeClient ?? defaultCreateStripeClient)(secret);
+    const billingMode = resolveBillingMode(product);
+    const stripePriceId = resolveStripePriceId(product)
+      ?? await materializeStripeProductIfAllowed(context.env, stripeClient, product, billingMode);
+    if (!stripePriceId) {
+      return {
+        status: HttpStatus.ServiceUnavailable,
+        body: { error: 'Stripe price not configured' },
+      };
+    }
+    const stripeCustomerId = await getOrCreateStripeCustomerId(stub, stripeClient, userId);
 
     const initRes = await fetchFromDO(stub, PaymentDOPaths.InitPayment, {
       method: HttpMethod.Post,
@@ -181,8 +325,14 @@ export class PaymentCheckoutFlow extends BaseFlow<PaymentCheckoutFlowInput, Paym
         userId,
         amount,
         currency: product.currency,
+        provider: 'stripe',
         productType: input.productType,
         productId: input.productId,
+        quantity: input.quantity,
+        entitlementKind: product.entitlementKind,
+        acAmount: product.acAmount,
+        subscriptionTier: product.subscriptionTier,
+        stripeCustomerId,
       }),
     });
     if (!initRes.ok) {
@@ -193,41 +343,34 @@ export class PaymentCheckoutFlow extends BaseFlow<PaymentCheckoutFlowInput, Paym
       };
     }
 
-    const secret = context.env.STRIPE_SECRET_KEY;
-    if (!secret) {
-      return {
-        status: HttpStatus.ServiceUnavailable,
-        body: { error: 'Stripe not configured' },
-      };
-    }
-    if (product.unitPriceCents == null && !product.stripePriceId) {
-      return {
-        status: HttpStatus.ServiceUnavailable,
-        body: { error: 'Stripe price not configured' },
-      };
-    }
-
-    const stripeClient = await (this.deps.createStripeClient ?? defaultCreateStripeClient)(secret);
-    const lineItems = product.unitPriceCents != null
-      ? [{
-          price_data: {
-            currency: product.currency,
-            product_data: { name: product.displayName, metadata: { productType: input.productType, productId: input.productId, paymentId } },
-            unit_amount: product.unitPriceCents,
-          },
-          quantity: input.quantity,
-        }]
-      : [{ price: product.stripePriceId, quantity: input.quantity }];
-
-    const session = await stripeClient.checkout.sessions.create({
-      mode: 'payment',
+    const metadata = {
+      userId,
+      productType: input.productType,
+      productId: input.productId,
+      paymentId,
+      entitlementKind: product.entitlementKind ?? '',
+      subscriptionTier: product.subscriptionTier ?? '',
+    };
+    const sessionParams: Record<string, unknown> = {
+      mode: billingMode,
+      customer: stripeCustomerId,
       client_reference_id: paymentId,
       success_url: input.successUrl,
       cancel_url: input.cancelUrl,
-      line_items: lineItems,
-      metadata: { userId, productType: input.productType, productId: input.productId, paymentId },
-      payment_intent_data: { metadata: { userId, paymentId } },
-    });
+      line_items: [{ price: stripePriceId, quantity: input.quantity }],
+      metadata,
+      allow_promotion_codes: true,
+    };
+    if (automaticTaxEnabled(context.env)) {
+      sessionParams.automatic_tax = { enabled: true };
+    }
+    if (billingMode === 'subscription') {
+      sessionParams.subscription_data = { metadata };
+    } else {
+      sessionParams.payment_intent_data = { metadata };
+    }
+
+    const session = await stripeClient.checkout.sessions.create(sessionParams);
 
     const transitionRes = await fetchFromDO(stub, PaymentDOPaths.Transition, {
       method: HttpMethod.Post,
@@ -236,6 +379,7 @@ export class PaymentCheckoutFlow extends BaseFlow<PaymentCheckoutFlowInput, Paym
         toState: 'CHECKOUT_CREATED',
         trigger: 'checkout_created',
         stripeCheckoutSessionId: session.id,
+        stripeCustomerId,
       }),
     });
     await transitionRes.text().catch(() => undefined);

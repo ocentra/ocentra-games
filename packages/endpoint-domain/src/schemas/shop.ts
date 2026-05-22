@@ -12,8 +12,11 @@ export type ShopEntitlementKind = schema.infer<typeof ShopEntitlementKindSchema>
 export const ShopAvailabilitySchema = schema.enum(['live', 'preview', 'coming_soon']);
 export type ShopAvailability = schema.infer<typeof ShopAvailabilitySchema>;
 
-export const ShopPaymentProviderSchema = schema.enum(['stripe', 'paypal', 'solana']);
+export const ShopPaymentProviderSchema = schema.enum(['stripe', 'paypal', 'razorpay', 'solana']);
 export type ShopPaymentProvider = schema.infer<typeof ShopPaymentProviderSchema>;
+
+export const ShopBillingModeSchema = schema.enum(['payment', 'subscription']);
+export type ShopBillingMode = schema.infer<typeof ShopBillingModeSchema>;
 
 export const ShopPurchaseStatusSchema = schema.enum([
   'redirect',
@@ -40,6 +43,7 @@ export const ShopProductSchema = schema.object({
   priceLabel: schema.string().max(64).optional(),
   subscriptionTier: schema.string().max(64).optional(),
   currency: schema.string().length(3).default('usd'),
+  billingMode: ShopBillingModeSchema.optional(),
   active: schema.boolean().default(true),
   paymentProviders: schema.array(ShopPaymentProviderSchema).optional(),
 });
@@ -75,8 +79,10 @@ export const ShopPurchaseResponseSchema = schema.object({
   productId: schema.string().min(1).max(128).optional(),
   paymentId: schema.string().optional(),
   redirectUrl: schema.string().url().optional(),
+  providerData: schema.record(schema.unknown()).optional(),
   code: schema.enum([
     'provider_not_configured',
+    'provider_unavailable',
     'product_not_found',
     'product_unavailable',
     'checkout_unavailable',

@@ -16,9 +16,36 @@ interface PaymentStateMachine {
   userId: string;
   amount: number;
   currency: string;
+  provider?: string;
+  productType?: string;
+  productId?: string;
+  quantity?: number;
+  entitlementKind?: string;
+  acAmount?: number;
+  subscriptionTier?: string;
   isRefundable: boolean;
   stripePaymentIntentId?: string;
   stripeCheckoutSessionId?: string;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  providerPaymentId?: string;
+  providerOrderId?: string;
+  providerReference?: string;
+  fulfilledAt?: number;
+}
+
+interface PurchaseHistoryEntry {
+  paymentId: string;
+  provider: string;
+  productId: string;
+  productType: string;
+  entitlementKind?: string;
+  amount: number;
+  currency: string;
+  quantity: number;
+  status: string;
+  createdAt: number;
+  fulfilledAt?: number;
 }
 
 export class PaymentDO implements DurableObject {
@@ -73,6 +100,18 @@ export class PaymentDO implements DurableObject {
       }
       if (request.method === HttpMethod.Get && pathname.endsWith(`/${PaymentDOSegment.ListPayments}`)) {
         return this.listPayments();
+      }
+      if (request.method === HttpMethod.Get && pathname.endsWith(`/${PaymentDOSegment.StripeCustomer}`)) {
+        return this.getStripeCustomer();
+      }
+      if (request.method === HttpMethod.Post && pathname.endsWith(`/${PaymentDOSegment.StripeCustomer}`)) {
+        return this.setStripeCustomer(request);
+      }
+      if (request.method === HttpMethod.Post && pathname.endsWith(`/${PaymentDOSegment.StorePurchase}`)) {
+        return this.storePurchase(request);
+      }
+      if (request.method === HttpMethod.Get && pathname.endsWith(`/${PaymentDOSegment.ListPurchases}`)) {
+        return this.listPurchases();
       }
 
       return new Response('Not Found', { status: HttpStatus.NotFound });
@@ -131,7 +170,23 @@ export class PaymentDO implements DurableObject {
   }
 
   private async initPayment(request: Request): Promise<Response> {
-    let body: { paymentId: string; userId?: string; amount: number; currency: string; productType: string; productId: string };
+    let body: {
+      paymentId: string;
+      userId?: string;
+      amount: number;
+      currency: string;
+      provider?: string;
+      productType?: string;
+      productId?: string;
+      quantity?: number;
+      entitlementKind?: string;
+      acAmount?: number;
+      subscriptionTier?: string;
+      stripeCustomerId?: string;
+      providerPaymentId?: string;
+      providerOrderId?: string;
+      providerReference?: string;
+    };
     try {
       body = (await request.json()) as typeof body;
     } catch {
@@ -148,6 +203,17 @@ export class PaymentDO implements DurableObject {
       userId: body.userId ?? '',
       amount,
       currency,
+      provider: body.provider,
+      productType: body.productType,
+      productId: body.productId,
+      quantity: body.quantity,
+      entitlementKind: body.entitlementKind,
+      acAmount: body.acAmount,
+      subscriptionTier: body.subscriptionTier,
+      stripeCustomerId: body.stripeCustomerId,
+      providerPaymentId: body.providerPaymentId,
+      providerOrderId: body.providerOrderId,
+      providerReference: body.providerReference,
       isRefundable: true,
     };
     await this.ctx.storage.put(`${PaymentDOStoragePrefix.Machine}${paymentId}`, machine);
@@ -164,8 +230,24 @@ export class PaymentDO implements DurableObject {
       trigger: string;
       stripePaymentIntentId?: string;
       stripeCheckoutSessionId?: string;
+      stripeCustomerId?: string;
+      stripeSubscriptionId?: string;
+      providerPaymentId?: string;
+      providerOrderId?: string;
+      providerReference?: string;
     };
-    const { paymentId, toState, trigger, stripePaymentIntentId, stripeCheckoutSessionId } = body;
+    const {
+      paymentId,
+      toState,
+      trigger,
+      stripePaymentIntentId,
+      stripeCheckoutSessionId,
+      stripeCustomerId,
+      stripeSubscriptionId,
+      providerPaymentId,
+      providerOrderId,
+      providerReference,
+    } = body;
     const machine = await this.ctx.storage.get<PaymentStateMachine>(`${PaymentDOStoragePrefix.Machine}${paymentId}`);
     if (!machine) {
       return new Response(JSON.stringify({ error: 'Payment not found' }), {
@@ -188,6 +270,12 @@ export class PaymentDO implements DurableObject {
     machine.currentState = toState;
     if (stripePaymentIntentId) machine.stripePaymentIntentId = stripePaymentIntentId;
     if (stripeCheckoutSessionId) machine.stripeCheckoutSessionId = stripeCheckoutSessionId;
+    if (stripeCustomerId) machine.stripeCustomerId = stripeCustomerId;
+    if (stripeSubscriptionId) machine.stripeSubscriptionId = stripeSubscriptionId;
+    if (providerPaymentId) machine.providerPaymentId = providerPaymentId;
+    if (providerOrderId) machine.providerOrderId = providerOrderId;
+    if (providerReference) machine.providerReference = providerReference;
+    if (toState === 'ENTITLEMENT_GRANTED') machine.fulfilledAt = Date.now();
     await this.ctx.storage.put(`${PaymentDOStoragePrefix.Machine}${paymentId}`, machine);
     return new Response(JSON.stringify({ paymentId, previousState: fromState, currentState: toState }), {
       status: HttpStatus.Ok,
@@ -219,6 +307,66 @@ export class PaymentDO implements DurableObject {
     const list = await this.ctx.storage.list<PaymentStateMachine>({ prefix: PaymentDOStoragePrefix.Machine });
     const payments = Array.from(list.values());
     return new Response(JSON.stringify({ payments }), {
+      status: HttpStatus.Ok,
+      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+    });
+  }
+
+  private async getStripeCustomer(): Promise<Response> {
+    const stripeCustomerId = await this.ctx.storage.get<string>(PaymentDOStoragePrefix.StripeCustomer);
+    return new Response(JSON.stringify({ stripeCustomerId: stripeCustomerId ?? null }), {
+      status: HttpStatus.Ok,
+      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+    });
+  }
+
+  private async setStripeCustomer(request: Request): Promise<Response> {
+    const body = await request.json().catch(() => ({})) as { stripeCustomerId?: string };
+    const stripeCustomerId = body.stripeCustomerId ?? '';
+    if (!stripeCustomerId) {
+      return new Response(JSON.stringify({ error: 'Missing stripeCustomerId' }), {
+        status: HttpStatus.BadRequest,
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+      });
+    }
+    await this.ctx.storage.put(PaymentDOStoragePrefix.StripeCustomer, stripeCustomerId);
+    return new Response(JSON.stringify({ stripeCustomerId }), {
+      status: HttpStatus.Ok,
+      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+    });
+  }
+
+  private async storePurchase(request: Request): Promise<Response> {
+    const body = await request.json().catch(() => ({})) as PurchaseHistoryEntry;
+    if (!body.paymentId || !body.productId || !body.productType) {
+      return new Response(JSON.stringify({ error: 'Invalid purchase history entry' }), {
+        status: HttpStatus.BadRequest,
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+      });
+    }
+    const purchases = (await this.ctx.storage.get<PurchaseHistoryEntry[]>(PaymentDOStoragePrefix.PurchaseHistory)) ?? [];
+    const existingIndex = purchases.findIndex((item) => item.paymentId === body.paymentId);
+    const nextEntry: PurchaseHistoryEntry = {
+      ...body,
+      quantity: body.quantity > 0 ? body.quantity : 1,
+      createdAt: body.createdAt || Date.now(),
+    };
+    if (existingIndex >= 0) {
+      purchases[existingIndex] = { ...purchases[existingIndex], ...nextEntry };
+    } else {
+      purchases.push(nextEntry);
+    }
+    if (purchases.length > 100) purchases.splice(0, purchases.length - 100);
+    await this.ctx.storage.put(PaymentDOStoragePrefix.PurchaseHistory, purchases);
+    return new Response(JSON.stringify({ stored: true, paymentId: nextEntry.paymentId }), {
+      status: HttpStatus.Ok,
+      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+    });
+  }
+
+  private async listPurchases(): Promise<Response> {
+    const purchases = (await this.ctx.storage.get<PurchaseHistoryEntry[]>(PaymentDOStoragePrefix.PurchaseHistory)) ?? [];
+    return new Response(JSON.stringify({ purchases: purchases.slice().reverse() }), {
       status: HttpStatus.Ok,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
     });

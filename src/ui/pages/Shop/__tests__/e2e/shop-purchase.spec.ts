@@ -1,14 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 
-async function guestLoginAndGoToShop(page: import('@playwright/test').Page) {
-  await page.goto('/');
-  const guestBtn = page.getByRole('button', { name: /guest/i });
-  await guestBtn.waitFor({ state: 'visible', timeout: 20000 });
-  await guestBtn.click();
-  await page.waitForTimeout(2000);
+async function goToShop(page: import('@playwright/test').Page) {
   await page.goto('/shop');
-  await expect(page.getByRole('heading', { name: 'Power your AI game' }).first()).toBeVisible({ timeout: 25000 });
+  await expect(page.locator('.screen-loading-fallback')).toHaveCount(0, { timeout: 60000 });
+  await expect(page.getByRole('img', { name: 'Arena Marketplace page layout' })).toBeVisible({ timeout: 25000 });
 }
 
 test.describe('Shop UI - Plan A monetization', () => {
@@ -25,42 +21,47 @@ test.describe('Shop UI - Plan A monetization', () => {
     expect(ids).toContain('sub-founder');
   });
 
-  test('shop Elite tab shows Arena Pass, Champion\'s Pass, and Founder when products loaded', async ({ page }) => {
-    await guestLoginAndGoToShop(page);
-    await page.getByRole('button', { name: /elite/i }).click();
-    await expect(page.getByRole('heading', { name: 'Arena Pass' })).toBeVisible({ timeout: 10000 });
-    await expect(page.getByRole('heading', { name: "Champion's Pass" })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Founder' })).toBeVisible();
+  test('shop API through app: POST /api/v1/shop/purchase requires auth', async ({ request }) => {
+    const response = await request.post(ApiEndpoint.Shop.Purchase, {
+      data: {
+        productId: 'ac-100',
+        productType: 'AC_CREDITS',
+        quantity: 1,
+        provider: 'stripe',
+        returnUrl: 'http://localhost:3000/shop?checkout=success',
+        cancelUrl: 'http://localhost:3000/shop?checkout=cancel',
+      },
+    });
+    expect(response.status()).toBe(401);
+  });
+
+  test('shop Elite tab shows Arena Pass, Champion Pass, and Founder when products loaded', async ({ page }) => {
+    await goToShop(page);
+    await page.getByRole('button', { name: /^ELITE\s+Premium Passes$/i }).click();
+    await expect(page.getByRole('button', { name: /^Select Plan\s+Arena Pass/i })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('button', { name: /^Select Plan\s+Champion Pass/i })).toBeVisible();
+    await expect(page.getByText('Founder Lifetime').first()).toBeVisible();
   });
 
   test('shop page shows Arena Credits and AC packages', async ({ page }) => {
-    await guestLoginAndGoToShop(page);
-    await expect(page.getByRole('heading', { name: /power your ai game/i })).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText(/arena credits/i)).toBeVisible();
-    await expect(page.getByText(/100|500|1200|3500/).first()).toBeVisible({ timeout: 10000 });
+    await goToShop(page);
+    await expect(page.getByRole('img', { name: 'Arena Marketplace page layout' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('button', { name: /^TREASURY\s+Buy Arena Credits$/i })).toBeVisible();
+    await expect(page.getByText(/100|500|1500|3000/).first()).toBeVisible({ timeout: 10000 });
   });
 
   test('shop page has Buy buttons for each package', async ({ page }) => {
-    await guestLoginAndGoToShop(page);
-    const buyButtons = page.getByRole('button', { name: /reload ac|subscribe|claim founder/i });
+    await goToShop(page);
+    const buyButtons = page.getByRole('button', { name: /purchase \d+ ac|select plan|claim founder|buy digital/i });
     await expect(buyButtons.first()).toBeVisible({ timeout: 15000 });
     expect(await buyButtons.count()).toBeGreaterThanOrEqual(1);
   });
 
-  test('clicking Buy triggers checkout flow', async ({ page }) => {
-    await guestLoginAndGoToShop(page);
-    const buyBtn = page.getByRole('button', { name: /reload ac|subscribe|claim founder/i }).first();
-    const responsePromise = page.waitForResponse(
-      (res) =>
-        res.url().includes('create-checkout-session') && res.request().method() === 'POST',
-      { timeout: 15000 }
-    ).catch(() => null);
-    await buyBtn.click();
-    const response = await responsePromise;
-    if (response) {
-      expect([200, 400, 401, 402, 500]).toContain(response.status());
-    }
-    const url = page.url();
-    expect(url.includes('stripe.com') || url.includes('checkout') || url.includes('/shop')).toBe(true);
+  test('clicking Buy without a real account opens account gate before checkout', async ({ page }) => {
+    await goToShop(page);
+    await page.getByRole('button', { name: /purchase 100 ac/i }).click({ timeout: 15000 });
+    await page.getByRole('button', { name: /^Purchase$/ }).click();
+    await expect(page.getByText(/real account required/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/sign in with a real account/i)).toBeVisible();
   });
 });

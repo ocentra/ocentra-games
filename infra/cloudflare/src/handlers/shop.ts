@@ -10,15 +10,14 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { getAllActiveProducts, getProductFromKV, validateProduct } from '@/config/products';
 import { validateSchemaBody } from '@/utils/schema-validation';
 import { requireAuth } from '@/utils/auth-middleware';
-import { createFlowContext } from '@/flows/core/FlowContext';
 import { FlowRunner } from '@/flows/core/FlowRunner';
 import { PaymentCheckoutFlow } from '@/flows/payment-checkout-flow';
+import { startShopPaymentProviderCheckout } from '@/payments/shop-payment-provider-router';
 import {
   ShopProductSchema,
   ShopProductsResponseSchema,
   ShopPurchaseRequestSchema,
   ShopPurchaseResponseSchema,
-  type ShopPaymentProvider,
   type ShopProduct,
   type ShopPurchaseResponse,
 } from '@ocentra/endpoint-domain/schemas/shop';
@@ -56,22 +55,6 @@ function shopPurchaseResponse(body: ShopPurchaseResponse, env: Env, status: numb
   });
 }
 
-function providerNotConfigured(
-  env: Env,
-  provider: ShopPaymentProvider,
-  productId: string,
-  message: string,
-): Response {
-  return shopPurchaseResponse({
-    success: false,
-    status: 'provider_not_configured',
-    provider,
-    productId,
-    code: 'provider_not_configured',
-    message,
-  }, env);
-}
-
 export async function handleShopRequest(
   request: Request,
   env: Env,
@@ -105,7 +88,9 @@ export async function handleShopRequest(
         acPrice: p.acPrice,
         unitPriceCents: p.unitPriceCents,
         priceLabel: p.priceLabel,
+        subscriptionTier: p.subscriptionTier,
         currency: p.currency,
+        billingMode: p.billingMode,
         active: p.active,
         paymentProviders: p.paymentProviders,
       })).filter((product): product is ShopProduct => product !== null);
@@ -171,7 +156,9 @@ export async function handleShopRequest(
         acPrice: product.acPrice,
         unitPriceCents: product.unitPriceCents,
         priceLabel: product.priceLabel,
+        subscriptionTier: product.subscriptionTier,
         currency: product.currency,
+        billingMode: product.billingMode,
         active: product.active,
         paymentProviders: product.paymentProviders,
       });
@@ -214,57 +201,18 @@ export async function handleShopRequest(
       }, env, HttpStatus.BadRequest);
     }
 
-    if (body.provider === 'paypal') {
-      return providerNotConfigured(env, 'paypal', body.productId, 'PayPal checkout is not configured yet.');
-    }
-    if (body.provider === 'solana') {
-      return providerNotConfigured(env, 'solana', body.productId, 'Solana checkout is not configured yet.');
-    }
-
-    if (!env.STRIPE_SECRET_KEY) {
-      return providerNotConfigured(env, 'stripe', body.productId, 'Stripe checkout is not configured yet.');
-    }
-
-    const flowResult = await flowRunner.run(
-      paymentCheckoutFlow,
-      createFlowContext({
-        env,
-        request,
-        authUserId: authResult.userId,
-        path,
-        method: request.method,
-        origin: requestOrigin,
-      }),
-      {
-        kind: 'checkout',
-        productType: body.productType,
-        productId: body.productId,
-        quantity: body.quantity,
-        successUrl: body.returnUrl ?? requestOrigin ?? new URL(request.url).origin,
-        cancelUrl: body.cancelUrl ?? requestOrigin ?? new URL(request.url).origin,
-      }
-    );
-    if ('error' in flowResult.body) {
-      return shopPurchaseResponse({
-        success: false,
-        status: flowResult.status === HttpStatus.ServiceUnavailable ? 'provider_not_configured' : 'failed',
-        provider: 'stripe',
-        productId: body.productId,
-        code: flowResult.status === HttpStatus.ServiceUnavailable ? 'provider_not_configured' : 'checkout_unavailable',
-        message: flowResult.body.error,
-      }, env, flowResult.status);
-    }
-    if ('url' in flowResult.body) {
-      return shopPurchaseResponse({
-        success: Boolean(flowResult.body.url),
-        status: flowResult.body.url ? 'redirect' : 'pending',
-        provider: 'stripe',
-        productId: body.productId,
-        paymentId: flowResult.body.paymentId,
-        redirectUrl: flowResult.body.url ?? undefined,
-        message: flowResult.body.url ? 'Redirecting to checkout.' : 'Checkout session created.',
-      }, env, flowResult.status);
-    }
+    const checkout = await startShopPaymentProviderCheckout({
+      env,
+      request,
+      path,
+      requestOrigin,
+      authUserId: authResult.userId,
+      body,
+      product,
+      flowRunner,
+      stripeCheckoutFlow: paymentCheckoutFlow,
+    });
+    return shopPurchaseResponse(checkout.body, env, checkout.status);
   }
 
   return new Response(JSON.stringify({ error: 'Not Found' }), {

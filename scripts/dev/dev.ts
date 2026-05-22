@@ -48,9 +48,20 @@ interface LockData {
 // Configuration
 // ============================================================================
 
-const PREFERRED_PORT: number = LocalWebConfig.Port;
-const RANGE_START: number = LocalWebConfig.Port;
-const RANGE_END = 3100;
+function resolveExplicitPort(): number | undefined {
+  const raw = process.env.OCENTRA_WEB_PORT || process.env.VITE_PORT;
+  if (!raw) return undefined;
+  const parsed = parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed < 1 || parsed > 65535) {
+    throw new Error(`Invalid frontend port override: ${raw}`);
+  }
+  return parsed;
+}
+
+const EXPLICIT_PORT = resolveExplicitPort();
+const PREFERRED_PORT: number = EXPLICIT_PORT ?? LocalWebConfig.Port;
+const RANGE_START: number = EXPLICIT_PORT ?? LocalWebConfig.Port;
+const RANGE_END = EXPLICIT_PORT ?? 3100;
 const PROCESS_NAMES = ['node', 'vite']; // Process names we consider "ours"
 const LOCK_FILE = path.join(process.cwd(), '.vite-dev.lock');
 const REGISTRY_CACHE_FILE = path.join(process.cwd(), '.dev-registry-hash');

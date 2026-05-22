@@ -620,8 +620,9 @@ export const SHOP_UI_COPY = {
     idleMessage: 'Provider setup can fail gracefully without changing this shop UI.',
     providerOptions: [
       { provider: 'stripe', label: 'Card / Stripe', detail: 'Hosted checkout when Stripe is configured.' },
-      { provider: 'paypal', label: 'PayPal', detail: 'PayPal checkout placeholder until provider setup lands.' },
-      { provider: 'solana', label: 'Solana', detail: 'Wallet payment placeholder until on-chain checkout lands.' },
+      { provider: 'paypal', label: 'PayPal', detail: 'PayPal checkout when Orders capture is configured.' },
+      { provider: 'razorpay', label: 'Razorpay / UPI', detail: 'India checkout for UPI, wallets, cards, and netbanking.' },
+      { provider: 'solana', label: 'Solana Pay', detail: 'Wallet checkout after on-chain confirmation is configured.' },
     ],
     starting: 'Starting...',
     working: 'Working',

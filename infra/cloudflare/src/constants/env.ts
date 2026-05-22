@@ -102,6 +102,15 @@ export interface Env {
 
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
+  STRIPE_AUTOMATIC_TAX_ENABLED?: string;
+  STRIPE_AUTO_MATERIALIZE_PRODUCTS?: string;
+  PAYPAL_CLIENT_ID?: string;
+  PAYPAL_CLIENT_SECRET?: string;
+  PAYPAL_API_BASE_URL?: string;
+  RAZORPAY_KEY_ID?: string;
+  RAZORPAY_KEY_SECRET?: string;
+  SOLANA_PAY_RECIPIENT?: string;
+  SOLANA_PAY_USDC_MINT?: string;
   TURNSTILE_SECRET_KEY?: string;
 
   OAUTH_GOOGLE_CLIENT_ID?: string;

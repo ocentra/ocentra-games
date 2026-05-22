@@ -45,7 +45,9 @@ export function stripeEventTypeToState(type: string): string | null {
     case StripeEventType.ChargeDisputeClosed:
       return null;
     case StripeEventType.InvoicePaid:
+      return 'PAYMENT_SUCCEEDED';
     case StripeEventType.InvoicePaymentFailed:
+      return 'PAYMENT_FAILED';
     case StripeEventType.SubscriptionCreated:
     case StripeEventType.SubscriptionUpdated:
     case StripeEventType.SubscriptionDeleted:

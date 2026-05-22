@@ -34,6 +34,8 @@ describe('SEO server rendering', () => {
   it('renders static public page fallback content before React mounts', () => {
     const rendered = injectSeoIntoHtml(html, resolveSeoMetadata('/', siteOrigin));
     expect(rendered).toContain('data-ocentra-seo-body="public-page"');
+    expect(rendered).toContain('class="ocentra-seo-fallback"');
+    expect(rendered).toContain('style="position:fixed;inset-inline-start:-100vw;');
     expect(rendered).toContain('<h1>Ocentra Games | AI Card Games And Verifiable Play</h1>');
     expect(rendered).toContain('<a href="/games/card-games">Card Games Catalog</a>');
     expect(rendered).toContain('<a href="/games/claim">Claim</a>');

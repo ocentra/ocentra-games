@@ -21,7 +21,9 @@ import {
   fetchShopPlayerStats,
   fetchShopProducts,
   playerStatsToShopAccountState,
+  capturePayPalOrder as capturePayPalOrderApi,
   startShopPurchase,
+  verifyRazorpayPayment as verifyRazorpayPaymentApi,
   type ShopCloudAccountState,
 } from '@/ui/pages/Shop/shopApi';
 import { getShopApiBaseUrl, getShopAppOrigin } from '@/ui/pages/Shop/shopApiBase';
@@ -34,6 +36,7 @@ import {
   type ShopVaultDeckPreviewItem,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
 import { parseShopPageContent, type ShopPageContentData } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
+import type { ShopPaymentPrompt } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgTypes';
 import type { ShopPageSvgControls } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgSurfaceControls';
 import {
   buildDeckPreviewModel,
@@ -63,9 +66,31 @@ type ResourceEntryRef = {
 };
 type LooseRecord = Record<string, unknown>;
 type DeckImageUrlMap = Record<string, string>;
+type RazorpaySuccessPayload = {
+  razorpay_payment_id?: string;
+  razorpay_order_id?: string;
+  razorpay_signature?: string;
+};
+type RazorpayCheckoutOptions = {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpaySuccessPayload) => void;
+  modal: { ondismiss: () => void };
+};
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayCheckoutOptions) => { open: () => void };
+  }
+}
 
 const SHOP_PAGE_LAYOUT_ASSET_PATH = 'Resources/Pages/ShopPageLayout.asset';
 const SHOP_MARKETPLACE_HEADER_CONFIG = createShopMarketplaceHeaderLogoConfig(shopPageMarketplaceLogoImageUrl);
+const RAZORPAY_CHECKOUT_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js';
 const VAULT_INITIAL_DECK_MODEL_LIMIT = 5;
 const VAULT_DECK_REFERENCE_LOAD_CONCURRENCY = 8;
 const VAULT_PREFERRED_DECK_PATHS = [
@@ -75,6 +100,9 @@ const VAULT_PREFERRED_DECK_PATHS = [
   'Resources/GameMode/CardGames/Decks/Hanafuda_48.asset',
   'Resources/GameMode/CardGames/Decks/Tarot_78_(French_Tarock).asset',
 ] as const;
+const SHOP_PAYMENT_PROVIDERS = ['stripe', 'paypal', 'razorpay', 'solana'] as const satisfies readonly ShopPaymentProvider[];
+const CHECKOUT_SUCCESS_MESSAGE = 'Thank you. Checkout completed. Your account will refresh after payment sync finishes.';
+const CHECKOUT_CANCELLED_MESSAGE = 'Checkout was cancelled. No payment was completed.';
 
 function asRecord(value: unknown): LooseRecord {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as LooseRecord : {};
@@ -115,6 +143,52 @@ function deckPathSortKey(resource: ResourceEntryRef): string {
 
 function wait(ms: number): Promise<void> {
   return new Promise(resolve => window.setTimeout(resolve, ms));
+}
+
+function providerDataString(data: Record<string, unknown> | undefined, key: string): string {
+  const value = data?.[key];
+  return typeof value === 'string' ? value : '';
+}
+
+function providerDataNumber(data: Record<string, unknown> | undefined, key: string): number {
+  const value = data?.[key];
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
+function loadRazorpayCheckoutScript(): Promise<void> {
+  if (window.Razorpay) return Promise.resolve();
+  const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_CHECKOUT_SCRIPT_URL}"]`);
+  if (existing) {
+    return new Promise((resolve, reject) => {
+      existing.addEventListener('load', () => resolve(), { once: true });
+      existing.addEventListener('error', () => reject(new Error('Razorpay checkout failed to load')), { once: true });
+    });
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = RAZORPAY_CHECKOUT_SCRIPT_URL;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Razorpay checkout failed to load'));
+    document.head.appendChild(script);
+  });
+}
+
+function parseShopPaymentProvider(value: string | null): ShopPaymentProvider | null {
+  return SHOP_PAYMENT_PROVIDERS.includes(value as ShopPaymentProvider) ? value as ShopPaymentProvider : null;
+}
+
+function findProductForCheckout(products: ShopProduct[], productId: string): ShopProduct | null {
+  if (!productId) return null;
+  return products.find(product => product.productId === productId) ?? null;
+}
+
+function checkoutUrl(appOrigin: string, checkout: 'success' | 'cancel', provider: ShopPaymentProvider, product: ShopProduct): string {
+  const url = new URL('/shop', appOrigin);
+  url.searchParams.set('checkout', checkout);
+  url.searchParams.set('provider', provider);
+  url.searchParams.set('productId', product.productId);
+  return url.toString();
 }
 
 function preferredDeckResources(resources: ResourceEntryRef[]): ResourceEntryRef[] {
@@ -358,14 +432,74 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const [vaultDeckImageUrls, setVaultDeckImageUrls] = useState<DeckImageUrlMap>({});
   const vaultDeckResourceContextRef = useRef<{ resources: ResourceEntryRef[]; deckResources: ResourceEntryRef[] } | null>(null);
   const hydratingVaultDeckGuidsRef = useRef(new Set<string>());
-  const [purchasePrompt, setPurchasePrompt] = useState<{
-    product: ShopProduct;
-    message?: string | null;
-    busyProvider?: ShopPaymentProvider | null;
-  } | null>(null);
+  const [purchasePrompt, setPurchasePrompt] = useState<ShopPaymentPrompt | null>(null);
+  const productsRef = useRef<ShopProduct[]>([]);
 
   const appOrigin = getShopAppOrigin();
   const apiBaseUrl = getShopApiBaseUrl();
+
+  useEffect(() => {
+    productsRef.current = products;
+  }, [products]);
+
+  useEffect(() => {
+    if (!auth?.currentUser) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('provider') !== 'paypal' || params.get('checkout') !== 'success') return;
+    const paymentId = params.get('paymentId') ?? '';
+    const orderId = params.get('token') ?? '';
+    if (!paymentId || !orderId) return;
+    let cancelled = false;
+    setError(null);
+    void auth.currentUser.getIdToken(true)
+      .then(token => capturePayPalOrderApi({ apiBaseUrl, token, paymentId, orderId }))
+      .then(() => {
+        if (cancelled) return;
+        const params = new URLSearchParams(window.location.search);
+        const product = findProductForCheckout(productsRef.current, params.get('productId') ?? '');
+        setPurchasePrompt({
+          product,
+          productName: product?.displayName ?? 'PayPal checkout',
+          provider: 'paypal',
+          phase: 'success',
+          message: CHECKOUT_SUCCESS_MESSAGE,
+        });
+        const url = new URL(window.location.href);
+        url.searchParams.delete('provider');
+        url.searchParams.delete('paymentId');
+        url.searchParams.delete('token');
+        window.history.replaceState({}, '', url.toString());
+      })
+      .catch(errorValue => {
+        if (!cancelled) {
+          setError(errorValue instanceof Error ? errorValue.message : 'PayPal checkout capture failed.');
+        }
+      });
+    return () => { cancelled = true; };
+  }, [apiBaseUrl]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get('checkout');
+    if (checkout !== 'success' && checkout !== 'cancel') return;
+    if (params.get('provider') === 'paypal' && params.get('paymentId') && params.get('token')) return;
+    const productId = params.get('productId') ?? '';
+    if (productId && products.length === 0) return;
+    const provider = parseShopPaymentProvider(params.get('provider'));
+    const product = findProductForCheckout(products, productId);
+    setPurchasePrompt({
+      product,
+      productName: product?.displayName ?? 'Checkout',
+      provider,
+      phase: checkout === 'success' ? 'success' : 'cancelled',
+      message: checkout === 'success' ? CHECKOUT_SUCCESS_MESSAGE : CHECKOUT_CANCELLED_MESSAGE,
+    });
+    const url = new URL(window.location.href);
+    url.searchParams.delete('checkout');
+    url.searchParams.delete('provider');
+    url.searchParams.delete('productId');
+    window.history.replaceState({}, '', url.toString());
+  }, [products]);
 
   useEffect(() => {
     let cancelled = false;
@@ -523,7 +657,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
 
   const handleBuy = (product: ShopProduct) => {
     setError(null);
-    setPurchasePrompt({ product });
+    setPurchasePrompt({ product, phase: 'selecting' });
   };
 
   const handlePurchaseProviderSelect = async (product: ShopProduct, provider: ShopPaymentProvider) => {
@@ -531,11 +665,11 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     if (!paymentCopy) return;
     setError(null);
     setLoadingId(product.productId);
-    setPurchasePrompt({ product, busyProvider: provider });
+    setPurchasePrompt({ product, provider, busyProvider: provider, phase: 'processing' });
     try {
       const token = auth?.currentUser ? await auth.currentUser.getIdToken(true) : null;
       if (!token) {
-        setPurchasePrompt({ product, message: paymentCopy.signInRequired });
+        setPurchasePrompt({ product, provider, phase: 'error', message: paymentCopy.signInRequired });
         return;
       }
       const result = await startShopPurchase({
@@ -543,19 +677,84 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
         token,
         product,
         provider,
-        returnUrl: `${appOrigin}/shop?checkout=success`,
-        cancelUrl: `${appOrigin}/shop?checkout=cancel`,
+        returnUrl: checkoutUrl(appOrigin, 'success', provider, product),
+        cancelUrl: checkoutUrl(appOrigin, 'cancel', provider, product),
       });
       if (result.status === 'redirect' && result.redirectUrl) {
+        setPurchasePrompt({
+          product,
+          provider,
+          busyProvider: provider,
+          phase: 'redirecting',
+          message: result.message ?? `Opening ${provider} checkout.`,
+        });
+        await wait(350);
         window.location.href = result.redirectUrl;
         return;
       }
+      if (provider === 'razorpay' && result.paymentId) {
+        const data = result.providerData;
+        const keyId = providerDataString(data, 'keyId');
+        const orderId = providerDataString(data, 'orderId');
+        const amount = providerDataNumber(data, 'amount');
+        const currency = providerDataString(data, 'currency');
+        if (keyId && orderId && amount > 0 && currency) {
+          await loadRazorpayCheckoutScript();
+          const Razorpay = window.Razorpay;
+          if (!Razorpay) throw new Error('Razorpay checkout failed to load');
+          const checkout = new Razorpay({
+            key: keyId,
+            amount,
+            currency,
+            name: providerDataString(data, 'name') || 'Ocentra Games',
+            description: providerDataString(data, 'description') || product.displayName,
+            order_id: orderId,
+            handler: (checkoutResponse) => {
+              void verifyRazorpayPaymentApi({
+                apiBaseUrl,
+                token,
+                paymentId: result.paymentId!,
+                razorpayOrderId: checkoutResponse.razorpay_order_id ?? orderId,
+                razorpayPaymentId: checkoutResponse.razorpay_payment_id ?? '',
+                razorpaySignature: checkoutResponse.razorpay_signature ?? '',
+              })
+                .then(settlement => {
+                  setPurchasePrompt({ product, provider, phase: 'success', message: settlement.message ?? CHECKOUT_SUCCESS_MESSAGE });
+                })
+                .catch(errorValue => {
+                  setPurchasePrompt({ product, provider, phase: 'error', message: errorValue instanceof Error ? errorValue.message : paymentCopy.checkoutFailed });
+                });
+            },
+            modal: {
+              ondismiss: () => setPurchasePrompt({ product, provider, phase: 'cancelled', message: 'Razorpay checkout closed.' }),
+            },
+          });
+          checkout.open();
+          setPurchasePrompt({ product, provider, phase: 'processing', message: result.message ?? 'Razorpay checkout opened.' });
+          return;
+        }
+      }
+      if (provider === 'solana') {
+        const solanaPayUrl = providerDataString(result.providerData, 'solanaPayUrl');
+        if (solanaPayUrl) {
+          window.open(solanaPayUrl, '_blank', 'noopener,noreferrer');
+          setPurchasePrompt({
+            product,
+            provider,
+            phase: 'processing',
+            message: 'Solana Pay request opened. Payment will not be granted until chain confirmation is submitted.',
+          });
+          return;
+        }
+      }
       setPurchasePrompt({
         product,
+        provider,
+        phase: result.success ? 'success' : 'error',
         message: result.message ?? (result.success ? paymentCopy.successAccepted : paymentCopy.providerNotConfigured),
       });
     } catch (e) {
-      setPurchasePrompt({ product, message: e instanceof Error ? e.message : paymentCopy.checkoutFailed });
+      setPurchasePrompt({ product, provider, phase: 'error', message: e instanceof Error ? e.message : paymentCopy.checkoutFailed });
     } finally {
       setLoadingId(null);
     }
