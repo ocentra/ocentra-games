@@ -3,6 +3,8 @@ export const PaymentDOStoragePrefix = {
   StripeEvent: 'stripe:',
   PaymentEvents: 'payment-events:',
   Machine: 'machine:',
+  StripeCustomer: 'stripe-customer',
+  PurchaseHistory: 'purchase-history',
 } as const;
 
 export type PaymentDOStoragePrefix = (typeof PaymentDOStoragePrefix)[keyof typeof PaymentDOStoragePrefix];

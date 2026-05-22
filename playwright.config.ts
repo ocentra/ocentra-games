@@ -1,5 +1,32 @@
 import { defineConfig, devices } from '@playwright/test'
 
+function resolvePlaywrightPort(): string {
+  if (process.env.PLAYWRIGHT_PORT) return process.env.PLAYWRIGHT_PORT
+  if (process.env.E2E_PORT) return process.env.E2E_PORT
+  if (process.env.VITE_PREVIEW_PORT) return process.env.VITE_PREVIEW_PORT
+  if (process.env.PLAYWRIGHT_BASE_URL) {
+    try {
+      const url = new URL(process.env.PLAYWRIGHT_BASE_URL)
+      return url.port || (url.protocol === 'https:' ? '443' : '80')
+    } catch {
+      return '3000'
+    }
+  }
+  return '3000'
+}
+
+function resolveWebServerTimeoutMs(): number {
+  const raw = process.env.PLAYWRIGHT_WEB_SERVER_TIMEOUT_MS
+  if (!raw) return 420 * 1000
+
+  const parsed = Number.parseInt(raw, 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 420 * 1000
+}
+
+const playwrightPort = resolvePlaywrightPort()
+const playwrightBaseUrl = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${playwrightPort}`
+const webServerTimeoutMs = resolveWebServerTimeoutMs()
+
 export default defineConfig({
   testDir: '.',
   testMatch: /.*\/__tests__\/e2e\/.*\.spec\.ts$/, // Only match e2e .spec.ts files in __tests__/e2e directories
@@ -10,7 +37,7 @@ export default defineConfig({
   workers: 1, // Run tests sequentially for WebRTC (signaling exchange between contexts)
   reporter: [['list']],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: playwrightBaseUrl,
     trace: 'on-first-retry',
     video: 'retain-on-failure',
     screenshot: 'only-on-failure',
@@ -80,15 +107,15 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'cross-env VITE_PREVIEW_PORT=3000 npm run dev -- --quick=web-preview-local',
-    url: 'http://localhost:3000',
+    command: `cross-env VITE_PREVIEW_PORT=${playwrightPort} npm run dev -- --quick=web-preview-local`,
+    url: playwrightBaseUrl,
     reuseExistingServer:
       process.env.PLAYWRIGHT_REUSE_SERVER === '0'
         ? false
         : process.env.PLAYWRIGHT_REUSE_SERVER === '1'
           ? true
           : !process.env.CI,
-    timeout: process.env.CI ? 420 * 1000 : 180 * 1000,
+    timeout: webServerTimeoutMs,
     stdout: 'pipe',
     stderr: 'pipe',
   },

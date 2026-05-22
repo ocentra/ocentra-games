@@ -2,9 +2,19 @@ import type {
   DeckPreviewCell,
   DeckPreviewModel,
 } from '../../Common/DeckPreview/DeckPreviewView';
-import type { ShopProduct, ShopTab } from '@ocentra/endpoint-domain/schemas/shop';
+import type { ShopPaymentProvider, ShopProduct, ShopTab } from '@ocentra/endpoint-domain/schemas/shop';
 
 export type { ShopProduct, ShopTab };
+export type ShopPaymentPhase = 'selecting' | 'processing' | 'redirecting' | 'success' | 'cancelled' | 'error';
+
+export type ShopPaymentPrompt = {
+  product?: ShopProduct | null;
+  productName?: string;
+  message?: string | null;
+  busyProvider?: ShopPaymentProvider | null;
+  provider?: ShopPaymentProvider | null;
+  phase?: ShopPaymentPhase;
+};
 
 export type ShopDeckPreviewCard = Pick<DeckPreviewCell, 'id' | 'label' | 'imageHash' | 'imagePath' | 'assetType'>;
 

@@ -9,6 +9,10 @@ import {
   type ShopPurchaseResponse,
 } from '@ocentra/endpoint-domain/schemas/shop';
 import {
+  PaymentCustomerPortalResponseSchema,
+  PaymentProviderSettlementResponseSchema,
+} from '@ocentra/endpoint-domain/schemas/payments';
+import {
   PlayerStatsResponseSchema,
   type PlayerStatsResponse,
 } from '@ocentra/endpoint-domain/schemas/players';
@@ -137,5 +141,93 @@ export async function startShopPurchase({
     }
     throw new Error('Shop API returned an invalid purchase payload');
   }
+  return parsed.data;
+}
+
+export async function startCustomerPortal({
+  apiBaseUrl,
+  token,
+  returnUrl,
+}: {
+  apiBaseUrl: string;
+  token: string;
+  returnUrl: string;
+}): Promise<string> {
+  const response = await fetch(buildApiUrl(ApiEndpoint.Payment.CustomerPortal, { baseUrl: apiBaseUrl }), {
+    method: HttpMethod.Post,
+    headers: {
+      [HttpHeader.Accept]: HttpContentType.ApplicationJson,
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      [HttpHeader.Authorization]: `${HttpAuthScheme.Bearer} ${token}`,
+    },
+    body: JSON.stringify({ returnUrl }),
+  });
+  if (!response.ok && !isJsonResponse(response)) {
+    throw new Error(`Customer portal request failed: ${response.status}`);
+  }
+  const parsed = PaymentCustomerPortalResponseSchema.safeParse(await response.json() as unknown);
+  if (!parsed.success) {
+    throw new Error('Payment API returned an invalid customer portal payload');
+  }
+  return parsed.data.url;
+}
+
+export async function capturePayPalOrder({
+  apiBaseUrl,
+  token,
+  paymentId,
+  orderId,
+}: {
+  apiBaseUrl: string;
+  token: string;
+  paymentId: string;
+  orderId: string;
+}) {
+  const response = await fetch(buildApiUrl(ApiEndpoint.Payment.PayPalCapture, { baseUrl: apiBaseUrl }), {
+    method: HttpMethod.Post,
+    headers: {
+      [HttpHeader.Accept]: HttpContentType.ApplicationJson,
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      [HttpHeader.Authorization]: `${HttpAuthScheme.Bearer} ${token}`,
+    },
+    body: JSON.stringify({ paymentId, orderId }),
+  });
+  if (!response.ok && !isJsonResponse(response)) {
+    throw new Error(`PayPal capture request failed: ${response.status}`);
+  }
+  const parsed = PaymentProviderSettlementResponseSchema.safeParse(await response.json() as unknown);
+  if (!parsed.success) throw new Error('Payment API returned an invalid PayPal capture payload');
+  return parsed.data;
+}
+
+export async function verifyRazorpayPayment({
+  apiBaseUrl,
+  token,
+  paymentId,
+  razorpayOrderId,
+  razorpayPaymentId,
+  razorpaySignature,
+}: {
+  apiBaseUrl: string;
+  token: string;
+  paymentId: string;
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}) {
+  const response = await fetch(buildApiUrl(ApiEndpoint.Payment.RazorpayVerify, { baseUrl: apiBaseUrl }), {
+    method: HttpMethod.Post,
+    headers: {
+      [HttpHeader.Accept]: HttpContentType.ApplicationJson,
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      [HttpHeader.Authorization]: `${HttpAuthScheme.Bearer} ${token}`,
+    },
+    body: JSON.stringify({ paymentId, razorpayOrderId, razorpayPaymentId, razorpaySignature }),
+  });
+  if (!response.ok && !isJsonResponse(response)) {
+    throw new Error(`Razorpay verification request failed: ${response.status}`);
+  }
+  const parsed = PaymentProviderSettlementResponseSchema.safeParse(await response.json() as unknown);
+  if (!parsed.success) throw new Error('Payment API returned an invalid Razorpay verification payload');
   return parsed.data;
 }

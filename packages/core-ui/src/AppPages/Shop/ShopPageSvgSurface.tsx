@@ -36,6 +36,11 @@ import {
   type DailySpinRewardStatus,
 } from '../../Common/Rewards/DailySpinSvg';
 import {
+  PictureViewerFrame,
+  type PictureViewerFrameLayout,
+} from '../../Common/PictureViewerFrame/PictureViewerFrame';
+import type { PictureViewerFrameSurfaceControls } from '../../Common/PictureViewerFrame/PictureViewerFrameControls';
+import {
   DeckPreviewView,
   type DeckPreviewAxis,
   type DeckPreviewCell,
@@ -47,6 +52,8 @@ import type {
   ShopAccountSummary,
   ShopDeckImageResolver,
   ShopDeckPreviewCard,
+  ShopPaymentPhase,
+  ShopPaymentPrompt,
   ShopProduct,
   ShopTab,
   ShopVaultDeckPreviewItem,
@@ -83,11 +90,7 @@ export type ShopPageSvgSurfaceProps = {
   onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;
-  purchasePrompt?: {
-    product: ShopProduct;
-    message?: string | null;
-    busyProvider?: ShopPaymentProvider | null;
-  } | null;
+  purchasePrompt?: ShopPaymentPrompt | null;
   onPurchaseProviderSelect?: (product: ShopProduct, provider: ShopPaymentProvider) => void;
   onPurchaseCancel?: () => void;
   controls?: Partial<ShopPageSvgControls> | null;
@@ -178,6 +181,11 @@ function productToTile(product: ShopProduct, index: number, content: ShopPageCon
   if (product.productType === 'SUBSCRIPTION') {
     return {
       ...staticPassForProduct(product, index, content),
+      title: product.displayName,
+      subtitle: product.description || staticPassForProduct(product, index, content).subtitle,
+      badge: product.badge ?? staticPassForProduct(product, index, content).badge,
+      price: productPriceLabel(product),
+      benefits: product.benefits ?? staticPassForProduct(product, index, content).benefits,
       product,
     };
   }
@@ -261,64 +269,295 @@ function previewItemsForRow(row: ShopPreviewSourceRow, products: ShopProduct[], 
   return tilesForTab(products, row.tab, content).map((item, index) => staticItemToPreviewItem(item, index, `${row.tab.toLowerCase()}-preview`));
 }
 
-function PurchaseProviderDialog({
-  x,
-  y,
-  w,
-  product,
-  message,
-  busyProvider,
+const SHOP_PAYMENT_FRAME_CONTROLS = {
+  orientation: 'landscape',
+  viewBox: { w: 1800, h: 1100 },
+  frameGroup: { inset: 10, offsetX: 0, offsetY: 0 },
+  navArrows: { enabled: false },
+  outerAnchor: { sideInset: 54, topInset: 66, bottomInset: 78 },
+  innerAnchor: { sideInset: 104, topInset: 138, bottomInset: 134 },
+  outerFrame: {
+    color: '#58e7ff',
+    glowColor: '#23ff98',
+    glowOpacity: 0.32,
+    glowBlur: 24,
+    topRise: 48,
+    topStepWidth: 650,
+    bottomTabWidth: 620,
+    bottomTabDepth: 54,
+    bottomTabDirection: 'down',
+    cornerCut: 78,
+    lineCap: 'round',
+  },
+  innerFrame: {
+    color: '#ffd36a',
+    glowEnabled: true,
+    glowColor: '#ffd36a',
+    glowOpacity: 0.18,
+    glowBlur: 12,
+    topRise: 0,
+    bottomTabDepth: 0,
+    cornerCut: 44,
+    lineCap: 'round',
+  },
+} as Partial<PictureViewerFrameSurfaceControls>;
+
+function paymentPhaseForPrompt(prompt: ShopPaymentPrompt): ShopPaymentPhase {
+  if (prompt.phase) return prompt.phase;
+  if (prompt.busyProvider) return 'processing';
+  return prompt.message ? 'error' : 'selecting';
+}
+
+function paymentProviderLabel(provider: ShopPaymentProvider | null | undefined, content: ShopPageContentData): string {
+  if (!provider) return 'Not selected';
+  return content.uiCopy.payment.providerOptions.find(option => (option.provider as ShopPaymentProvider) === provider)?.label ?? provider;
+}
+
+function paymentProductTypeLabel(product: ShopProduct | null | undefined): string {
+  if (!product) return 'Marketplace checkout';
+  if (product.productType === 'AC_CREDITS') return 'Arena Credits';
+  if (product.productType === 'SUBSCRIPTION') return 'Premium Pass';
+  if (product.productType === 'MARKETPLACE') return 'Vault Item';
+  if (product.productType === 'TOURNAMENT_ENTRY') return 'Event Entry';
+  return String(product.productType).replace(/_/g, ' ');
+}
+
+function paymentPhaseTitle(phase: ShopPaymentPhase): string {
+  if (phase === 'processing') return 'Preparing secure checkout';
+  if (phase === 'redirecting') return 'Opening hosted checkout';
+  if (phase === 'success') return 'Thank you. Payment complete.';
+  if (phase === 'cancelled') return 'Checkout cancelled';
+  if (phase === 'error') return 'Checkout needs attention';
+  return 'Choose payment method';
+}
+
+function paymentPhaseDetail(phase: ShopPaymentPhase, providerLabel: string, copy: ShopPageContentData['uiCopy']['payment']): string {
+  if (phase === 'processing') return `${providerLabel} is starting. Keep this window open.`;
+  if (phase === 'redirecting') return `${providerLabel} is ready. Sending you to the secure checkout page.`;
+  if (phase === 'success') return 'Your checkout completed. Entitlements and balances refresh after the payment sync finishes.';
+  if (phase === 'cancelled') return 'No payment was completed. You can choose another provider or close this panel.';
+  if (phase === 'error') return copy.checkoutFailed;
+  return copy.idleMessage;
+}
+
+function paymentProgressState(phase: ShopPaymentPhase, index: number): 'complete' | 'active' | 'idle' {
+  const activeIndex = phase === 'selecting'
+    ? 1
+    : phase === 'processing'
+      ? 2
+      : phase === 'redirecting'
+        ? 2
+        : phase === 'success'
+          ? 3
+          : phase === 'cancelled' || phase === 'error'
+            ? 2
+            : 1;
+  if (phase === 'success' && index <= activeIndex) return 'complete';
+  if (index < activeIndex) return 'complete';
+  if (index === activeIndex) return 'active';
+  return 'idle';
+}
+
+function paymentFrameInsetRect(layout: PictureViewerFrameLayout): { x: number; y: number; w: number; h: number } {
+  const rect = layout.viewerRect;
+  return {
+    x: rect.x + 70,
+    y: rect.y + 64,
+    w: rect.w - 140,
+    h: rect.h - 128,
+  };
+}
+
+function PaymentProviderDialog({
+  prompt,
   content,
-  cfg,
   onProviderSelect,
   onCancel,
 }: {
-  x: number;
-  y: number;
-  w: number;
-  product: ShopProduct;
-  message?: string | null;
-  busyProvider?: ShopPaymentProvider | null;
+  prompt: ShopPaymentPrompt;
   content: ShopPageContentData;
-  cfg: ShopPageSvgControls;
   onProviderSelect: (product: ShopProduct, provider: ShopPaymentProvider) => void;
   onCancel: () => void;
 }) {
-  const h = 246;
+  const dialogRef = useRef<HTMLDivElement | null>(null);
   const copy = content.uiCopy.payment;
-  const providers = paymentProvidersForProduct(product, content);
-  const pad = 22;
-  const providerGap = 12;
-  const providerW = (w - pad * 2 - providerGap * (providers.length - 1)) / providers.length;
-  const providerY = y + 122;
-  const title = `${copy.titlePrefix} ${product.displayName}`;
-  const price = productPriceLabel(product);
-  return (
-    <g>
-      <rect x={x - 18} y={y - 18} width={w + 36} height={h + 36} fill="rgba(2,10,18,.72)" />
-      <path d={lobbyRoundedRectPath(x, y, w, h, 10)} fill="rgba(6,22,41,.96)" stroke={cfg.colors.activeBlue} strokeWidth="1.8" filter="url(#shopSoftGlow)" />
-      <Txt x={x + pad} y={y + 34} size="24" weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{title}</Txt>
-      <Txt x={x + w - pad} y={y + 34} anchor="end" size="18" weight="950" fill={cfg.colors.gold} cfg={cfg}>{price}</Txt>
-      <WrappedText x={x + pad} y={y + 66} width={w - pad * 2} lines={product.description ?? copy.defaultDescription} size={11.5} lineHeight={15} fill={cfg.colors.mutedText} weight={700} maxLines={2} cfg={cfg} />
-      {message ? (
-        <WrappedText x={x + pad} y={y + 101} width={w - pad * 2} lines={message} size={12.2} lineHeight={15} fill={cfg.colors.gold} weight={850} maxLines={2} cfg={cfg} />
-      ) : (
-        <Txt x={x + pad} y={y + 101} size="12.2" weight="850" fill={cfg.colors.mutedText} cfg={cfg}>{copy.idleMessage}</Txt>
-      )}
-      {providers.map((option, index) => {
-        const optionX = x + pad + index * (providerW + providerGap);
-        const isBusy = busyProvider === option.provider;
-        return (
-          <g key={option.provider}>
-            <rect x={optionX} y={providerY} width={providerW} height="74" fill={alphaColor(cfg.colors.panelFill, 0.84)} stroke={isBusy ? cfg.colors.gold : cfg.colors.activeBlue} strokeWidth="1.2" />
-            <Txt x={optionX + 12} y={providerY + 25} size="15" weight="950" fill={isBusy ? cfg.colors.gold : cfg.colors.bodyText} cfg={cfg}>{isBusy ? copy.starting : option.label}</Txt>
-            <WrappedText x={optionX + 12} y={providerY + 45} width={providerW - 24} lines={option.detail} size={8.3} lineHeight={10.5} fill={cfg.colors.mutedText} weight={700} maxLines={2} cfg={cfg} />
-            <SvgButton x={optionX + providerW - 116} y={providerY + 46} w={104} h={22} label={isBusy ? copy.working : copy.select} active={isBusy} small arrow={false} disabled={Boolean(busyProvider)} onClick={() => onProviderSelect(product, option.provider)} cfg={cfg} />
-          </g>
-        );
-      })}
-      <SvgButton x={x + w - pad - 132} y={y + h - 42} w={132} h={26} label={copy.cancel} small arrow={false} onClick={onCancel} cfg={cfg} />
-    </g>
+  const product = prompt.product ?? null;
+  const phase = paymentPhaseForPrompt(prompt);
+  const selectedProvider = prompt.provider ?? prompt.busyProvider ?? null;
+  const providerLabel = paymentProviderLabel(selectedProvider, content);
+  const providers = product ? paymentProvidersForProduct(product, content) : [];
+  const productName = prompt.productName ?? product?.displayName ?? 'Checkout';
+  const price = product ? productPriceLabel(product) : '';
+  const benefits = product?.benefits?.slice(0, 4) ?? [];
+  const showProviderChoices = Boolean(product) && phase === 'selecting';
+  const canDismiss = phase !== 'processing' && phase !== 'redirecting';
+  const phaseTitle = paymentPhaseTitle(phase);
+  const phaseDetail = prompt.message ?? paymentPhaseDetail(phase, providerLabel, copy);
+  const progress = [
+    { label: 'Product', value: productName },
+    { label: 'Provider', value: providerLabel },
+    { label: 'Checkout', value: phase === 'selecting' ? 'Waiting' : phaseTitle },
+    { label: 'Confirm', value: phase === 'success' ? 'Complete' : 'Pending' },
+  ];
+  const statusRows = [
+    { label: 'Provider', value: selectedProvider ? providerLabel : 'Not selected' },
+    { label: 'Amount', value: price || 'Pending' },
+    {
+      label: phase === 'cancelled' ? 'Payment' : 'Sync',
+      value: phase === 'success'
+        ? 'Entitlement refresh queued'
+        : phase === 'cancelled'
+          ? 'No payment completed'
+          : phase === 'error'
+            ? 'No entitlement change'
+            : 'Waiting for provider',
+    },
+  ];
+
+  useEffect(() => {
+    dialogRef.current?.focus();
+  }, [phase, productName]);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape' && canDismiss) {
+      event.preventDefault();
+      onCancel();
+    }
+  };
+
+  const renderInset = (layout: PictureViewerFrameLayout) => {
+    const rect = paymentFrameInsetRect(layout);
+    return (
+      <foreignObject x={rect.x} y={rect.y} width={rect.w} height={rect.h}>
+        <div className="shop-payment-frame">
+          <header className="shop-payment-frame__header">
+            <div>
+              <div className="shop-payment-frame__eyebrow">{paymentProductTypeLabel(product)}</div>
+              <h2>{phase === 'success' ? 'Thank you for your purchase' : `${copy.titlePrefix} ${productName}`}</h2>
+            </div>
+            <div className="shop-payment-frame__amount" aria-label="Payment amount">{price || 'Pending'}</div>
+          </header>
+          <section className={`shop-payment-frame__status shop-payment-frame__status--${phase}`} aria-live="polite">
+            <div className="shop-payment-frame__status-icon" aria-hidden="true">
+              {phase === 'processing' || phase === 'redirecting' ? <span className="shop-payment-frame__spinner" /> : null}
+              {phase === 'success' ? <span className="shop-payment-frame__check">OK</span> : null}
+              {phase === 'cancelled' || phase === 'error' ? <span className="shop-payment-frame__warn">!</span> : null}
+              {phase === 'selecting' ? <span className="shop-payment-frame__dot" /> : null}
+            </div>
+            <div>
+              <strong>{phaseTitle}</strong>
+              <span>{phaseDetail}</span>
+            </div>
+          </section>
+          <div className="shop-payment-frame__body">
+            <section className="shop-payment-frame__summary" aria-label="Checkout summary">
+              <div className="shop-payment-frame__section-label">Order</div>
+              <h3>{productName}</h3>
+              <p>{product?.description ?? copy.defaultDescription}</p>
+              <dl>
+                <div>
+                  <dt>Type</dt>
+                  <dd>{paymentProductTypeLabel(product)}</dd>
+                </div>
+                <div>
+                  <dt>Provider</dt>
+                  <dd>{providerLabel}</dd>
+                </div>
+                <div>
+                  <dt>Status</dt>
+                  <dd>{phaseTitle}</dd>
+                </div>
+              </dl>
+              {benefits.length > 0 ? (
+                <ul>
+                  {benefits.map(benefit => <li key={benefit}>{benefit}</li>)}
+                </ul>
+              ) : null}
+            </section>
+            <section className={`shop-payment-frame__providers${showProviderChoices ? '' : ' shop-payment-frame__providers--status'}`} aria-label={showProviderChoices ? 'Payment providers' : 'Payment status'}>
+              <div className="shop-payment-frame__section-label">{showProviderChoices ? 'Payment Method' : 'Payment Status'}</div>
+              {showProviderChoices ? (
+                providers.length > 0 ? providers.map(option => {
+                  const isBusy = prompt.busyProvider === option.provider;
+                  const isSelected = selectedProvider === option.provider;
+                  return (
+                    <button
+                      key={option.provider}
+                      type="button"
+                      className={`shop-payment-frame__provider${isSelected ? ' is-selected' : ''}${isBusy ? ' is-busy' : ''}`}
+                      disabled={Boolean(prompt.busyProvider)}
+                      onClick={() => product && onProviderSelect(product, option.provider)}
+                    >
+                      <span className="shop-payment-frame__provider-main">
+                        <span>{isBusy ? copy.starting : option.label}</span>
+                        <small>{option.detail}</small>
+                      </span>
+                      <span className="shop-payment-frame__provider-action">{isBusy ? copy.working : copy.select}</span>
+                    </button>
+                  );
+                }) : (
+                  <div className="shop-payment-frame__empty-provider">{copy.providerNotConfigured}</div>
+                )
+              ) : (
+                <div className="shop-payment-frame__status-card">
+                  <strong>{phaseTitle}</strong>
+                  <span>{phaseDetail}</span>
+                  <dl>
+                    {statusRows.map(row => (
+                      <div key={row.label}>
+                        <dt>{row.label}</dt>
+                        <dd>{row.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
+            </section>
+          </div>
+          <ol className="shop-payment-frame__progress" aria-label="Checkout progress">
+            {progress.map((item, index) => {
+              const state = paymentProgressState(phase, index);
+              return (
+                <li key={item.label} className={`shop-payment-frame__progress-item is-${state}`}>
+                  <span>{index + 1}</span>
+                  <strong>{item.label}</strong>
+                  <small>{item.value}</small>
+                </li>
+              );
+            })}
+          </ol>
+          <footer className="shop-payment-frame__footer">
+            <button type="button" className="shop-payment-frame__secondary" disabled={!canDismiss} onClick={onCancel}>
+              {phase === 'success' ? content.uiCopy.actions.backToShop : copy.cancel}
+            </button>
+          </footer>
+        </div>
+      </foreignObject>
+    );
+  };
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div
+      ref={dialogRef}
+      className={`shop-payment-viewer shop-payment-viewer--${phase}`}
+      role="dialog"
+      aria-label={`${productName} checkout`}
+      tabIndex={-1}
+      onKeyDown={handleKeyDown}
+    >
+      <button type="button" className="shop-payment-viewer__backdrop" aria-label="Close checkout" disabled={!canDismiss} onClick={canDismiss ? onCancel : undefined} />
+      <section className="shop-payment-viewer__panel" aria-label="Payment checkout panel" onClick={event => event.stopPropagation()}>
+        <PictureViewerFrame
+          className="shop-payment-viewer__frame"
+          ariaLabel="Payment checkout frame"
+          controls={SHOP_PAYMENT_FRAME_CONTROLS}
+          renderInset={renderInset}
+        />
+      </section>
+    </div>,
+    document.body,
   );
 }
 
@@ -581,6 +820,7 @@ function EliteBottomActionButton({
   return (
     <g
       role="button"
+      aria-label={label}
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled}
       onClick={disabled ? undefined : (event) => {
@@ -2880,15 +3120,9 @@ export function ShopPageSvgSurface({
           </g>
         ) : null}
         {purchasePrompt && onPurchaseProviderSelect && onPurchaseCancel ? (
-          <PurchaseProviderDialog
-            x={metrics.mainX + metrics.mainW / 2 - Math.min(620, metrics.mainW - 120) / 2}
-            y={cfg.layout.mainY + 118}
-            w={Math.min(620, metrics.mainW - 120)}
-            product={purchasePrompt.product}
-            message={purchasePrompt.message}
-            busyProvider={purchasePrompt.busyProvider}
+          <PaymentProviderDialog
+            prompt={purchasePrompt}
             content={shopContent}
-            cfg={cfg}
             onProviderSelect={onPurchaseProviderSelect}
             onCancel={onPurchaseCancel}
           />

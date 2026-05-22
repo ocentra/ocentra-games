@@ -8,6 +8,7 @@ import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/en
 import { TestConfig } from '@tests/constants/test-constants';
 import { getValidRequestHeaders, buildCreditsApiUrl } from '@tests/helpers/test-helpers';
 import { CreditAction } from '@ocentra/endpoint-domain/constants/credits';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import {
@@ -45,17 +46,40 @@ function buildStripeWebhookPayload(opts: {
   paymentId?: string;
   amountCents?: number;
   chargeId?: string;
+  usePaymentIntentAmount?: boolean;
+  includeClientReference?: boolean;
+  metadata?: Record<string, string>;
+  subscriptionDetailsMetadata?: Record<string, string>;
+  customerId?: string;
+  subscriptionId?: string;
 }): string {
+  const stripeObject: Record<string, unknown> = {
+    id: opts.paymentId ? `pi_test_${opts.paymentId.slice(0, 8)}` : `pi_test_${Date.now()}`,
+    metadata: opts.userId ? { userId: opts.userId, paymentId: opts.paymentId, ...(opts.metadata ?? {}) } : {},
+  };
+  if (opts.usePaymentIntentAmount) {
+    stripeObject.amount = opts.amountCents ?? 10000;
+  } else {
+    stripeObject.amount_total = opts.amountCents ?? 10000;
+  }
+  if (opts.includeClientReference ?? true) {
+    stripeObject.client_reference_id = opts.paymentId;
+  }
+  if (opts.subscriptionDetailsMetadata) {
+    stripeObject.subscription_details = { metadata: opts.subscriptionDetailsMetadata };
+  }
+  if (opts.customerId) {
+    stripeObject.customer = opts.customerId;
+  }
+  if (opts.subscriptionId) {
+    stripeObject.subscription = opts.subscriptionId;
+  }
+
   const base: Record<string, unknown> = {
     id: opts.eventId,
     type: opts.type,
     data: {
-      object: {
-        id: opts.paymentId ? `pi_test_${opts.paymentId.slice(0, 8)}` : `pi_test_${Date.now()}`,
-        metadata: opts.userId ? { userId: opts.userId, paymentId: opts.paymentId } : {},
-        amount_total: opts.amountCents ?? 10000,
-        client_reference_id: opts.paymentId,
-      },
+      object: stripeObject,
     },
   };
 
@@ -260,6 +284,206 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       
       // Balance should not change
       expect(balanceAfter2.ac_balance).toBe(balanceAfter1.ac_balance);
+    });
+
+    it(testName('should settle real payment_intent payload from metadata payment id'), async (testCtx) => {
+      await ensureContextReady();
+      const context = createTestContext(testCtx.task, RunType.SinglePool, RunType.SinglePool);
+      if (context) setCurrentContext(context);
+      const token = context ? createSetupContextToken(context) : undefined;
+      expect(token).not.toBeUndefined();
+      expect(typeof token).toBe('object');
+
+      const userId = `webhook-real-pi-${Date.now()}`;
+      const paymentId = crypto.randomUUID();
+      const acAmount = 75;
+
+      const initUrl = buildApiUrl(StripeEndpoint.TestInitPayment, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const initRes = await worker.fetch(initUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({ paymentId, amount: acAmount }),
+      }, token);
+      expect(initRes.status).toBe(HttpStatus.Ok);
+      await consumeResponse(initRes);
+
+      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
+      const balanceBeforeRes = await worker.fetch(balanceUrl, {
+        method: HttpMethod.Get,
+        headers: getValidRequestHeaders(userId),
+      }, token);
+      const balanceBefore = await balanceBeforeRes.json() as { ac_balance: number };
+
+      const payload = buildStripeWebhookPayload({
+        eventId: `evt_realpi_${paymentId.slice(0, 8)}`,
+        type: StripeEventType.PaymentIntentSucceeded,
+        userId,
+        paymentId,
+        amountCents: acAmount * 100,
+        usePaymentIntentAmount: true,
+        includeClientReference: false,
+      });
+      const signature = await signStripeWebhook(payload, WEBHOOK_SECRET);
+      const webhookUrl = buildApiUrl(StripeEndpoint.Webhook, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const webhookRes = await worker.fetch(webhookUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          [HttpHeader.StripeSignature]: signature,
+        },
+        body: payload,
+      }, token);
+      expect(webhookRes.status).toBe(HttpStatus.Ok);
+      await consumeResponse(webhookRes);
+
+      const balanceAfterRes = await worker.fetch(balanceUrl, {
+        method: HttpMethod.Get,
+        headers: getValidRequestHeaders(userId),
+      }, token);
+      const balanceAfter = await balanceAfterRes.json() as { ac_balance: number };
+      expect(balanceAfter.ac_balance).toBe(balanceBefore.ac_balance + acAmount);
+    });
+
+    it(testName('should fulfill subscription pass from invoice.paid subscription metadata'), async (testCtx) => {
+      await ensureContextReady();
+      const context = createTestContext(testCtx.task, RunType.SinglePool, RunType.SinglePool);
+      if (context) setCurrentContext(context);
+      const token = context ? createSetupContextToken(context) : undefined;
+      expect(token).not.toBeUndefined();
+      expect(typeof token).toBe('object');
+
+      const userId = `webhook-pass-${Date.now()}`;
+      const paymentId = crypto.randomUUID();
+      const initUrl = buildApiUrl(StripeEndpoint.TestInitPayment, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const initRes = await worker.fetch(initUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({
+          paymentId,
+          amount: 1,
+          productType: 'SUBSCRIPTION',
+          productId: 'sub-arena-pass',
+          entitlementKind: 'pass',
+          subscriptionTier: 'pro',
+        }),
+      }, token);
+      expect(initRes.status).toBe(HttpStatus.Ok);
+      await consumeResponse(initRes);
+
+      const subscriptionMetadata = {
+        userId,
+        paymentId,
+        productType: 'SUBSCRIPTION',
+        productId: 'sub-arena-pass',
+        entitlementKind: 'pass',
+        subscriptionTier: 'pro',
+      };
+      const payload = buildStripeWebhookPayload({
+        eventId: `evt_invoice_${paymentId.slice(0, 8)}`,
+        type: StripeEventType.InvoicePaid,
+        userId,
+        paymentId,
+        includeClientReference: false,
+        metadata: {},
+        subscriptionDetailsMetadata: subscriptionMetadata,
+        customerId: `cus_${paymentId.slice(0, 8)}`,
+        subscriptionId: `sub_${paymentId.slice(0, 8)}`,
+      });
+      const signature = await signStripeWebhook(payload, WEBHOOK_SECRET);
+      const webhookUrl = buildApiUrl(StripeEndpoint.Webhook, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const webhookRes = await worker.fetch(webhookUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          [HttpHeader.StripeSignature]: signature,
+        },
+        body: payload,
+      }, token);
+      expect(webhookRes.status).toBe(HttpStatus.Ok);
+      await consumeResponse(webhookRes);
+
+      const statusUrl = buildApiUrl(ApiEndpoint.Payment.StatusById(paymentId), { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const statusRes = await worker.fetch(statusUrl, {
+        method: HttpMethod.Get,
+        headers: getValidRequestHeaders(userId),
+      }, token);
+      expect(statusRes.status).toBe(HttpStatus.Ok);
+      const statusData = await statusRes.json() as { currentState?: string; stripeSubscriptionId?: string };
+      expect(statusData.currentState).toBe('ENTITLEMENT_GRANTED');
+      expect(statusData.stripeSubscriptionId).toBe(`sub_${paymentId.slice(0, 8)}`);
+    });
+
+    it(testName('should fulfill cosmetic inventory item from payment_intent metadata'), async (testCtx) => {
+      await ensureContextReady();
+      const context = createTestContext(testCtx.task, RunType.SinglePool, RunType.SinglePool);
+      if (context) setCurrentContext(context);
+      const token = context ? createSetupContextToken(context) : undefined;
+      expect(token).not.toBeUndefined();
+      expect(typeof token).toBe('object');
+
+      const userId = `webhook-cosmetic-${Date.now()}`;
+      const paymentId = crypto.randomUUID();
+      const productId = 'vault-card-back-neon';
+      const initUrl = buildApiUrl(StripeEndpoint.TestInitPayment, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const initRes = await worker.fetch(initUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({
+          paymentId,
+          amount: 1,
+          productType: 'MARKETPLACE',
+          productId,
+          entitlementKind: 'cosmetic',
+          quantity: 1,
+        }),
+      }, token);
+      expect(initRes.status).toBe(HttpStatus.Ok);
+      await consumeResponse(initRes);
+
+      const payload = buildStripeWebhookPayload({
+        eventId: `evt_cosmetic_${paymentId.slice(0, 8)}`,
+        type: StripeEventType.PaymentIntentSucceeded,
+        userId,
+        paymentId,
+        amountCents: 999,
+        metadata: {
+          productType: 'MARKETPLACE',
+          productId,
+          entitlementKind: 'cosmetic',
+        },
+      });
+      const signature = await signStripeWebhook(payload, WEBHOOK_SECRET);
+      const webhookUrl = buildApiUrl(StripeEndpoint.Webhook, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const webhookRes = await worker.fetch(webhookUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          [HttpHeader.StripeSignature]: signature,
+        },
+        body: payload,
+      }, token);
+      expect(webhookRes.status).toBe(HttpStatus.Ok);
+      await consumeResponse(webhookRes);
+
+      const inventoryUrl = buildApiUrl(ApiEndpoint.Inventory.Base, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const inventoryRes = await worker.fetch(inventoryUrl, {
+        method: HttpMethod.Get,
+        headers: getValidRequestHeaders(userId),
+      }, token);
+      expect(inventoryRes.status).toBe(HttpStatus.Ok);
+      const inventory = await inventoryRes.json() as { items?: Array<{ itemId?: string; type?: string; count?: number }> };
+      const item = inventory.items?.find((entry) => entry.itemId === productId);
+      expect(item?.type).toBe('cosmetic');
+      expect(item?.count).toBe(1);
     });
 
     it(testName('should return 200 for duplicate events to prevent retry loops'), async (testCtx) => {

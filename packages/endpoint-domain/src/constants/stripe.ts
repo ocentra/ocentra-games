@@ -30,6 +30,10 @@ export const PaymentTrigger = {
   RefundRequest: 'refund_request',
   StripePrefix: 'stripe:',
   ReconcileRepair: 'reconcile_repair',
+  FulfillmentGranted: 'fulfillment_granted',
+  PayPalCaptureCompleted: 'paypal_capture_completed',
+  RazorpaySignatureVerified: 'razorpay_signature_verified',
+  SolanaPaymentConfirmed: 'solana_payment_confirmed',
 } as const;
 
 export type PaymentTriggerType = (typeof PaymentTrigger)[keyof typeof PaymentTrigger];

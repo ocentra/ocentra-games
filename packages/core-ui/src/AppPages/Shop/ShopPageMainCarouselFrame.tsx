@@ -906,13 +906,23 @@ function ShopMainCarouselCard({
       ? `xMid${imageCardYAlign} slice`
       : 'xMidYMid meet';
   const cardImageUrl = card.imageUrl ? resolveShopPageImageUrl(card.imageUrl) : '';
+  const actionName = card.actionLabel ? `${card.actionLabel} ${card.title}` : card.title;
+  const handleKeyDown = (event: React.KeyboardEvent<SVGGElement>) => {
+    if (!interactive || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    onAction?.(card);
+  };
 
   return (
     <g
       className={interactive ? 'shop-page-svg-clickable' : undefined}
+      role={interactive ? 'button' : undefined}
+      aria-label={interactive ? actionName : undefined}
+      tabIndex={interactive ? 0 : undefined}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={interactive ? () => onAction?.(card) : undefined}
+      onKeyDown={handleKeyDown}
     >
       <defs>
         <clipPath id={headerClipId}>

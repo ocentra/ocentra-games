@@ -46,6 +46,10 @@ const duplicateCatalogGameDescriptions = new Set(
 );
 const defaultSeoImagePath = '/OcentraLogoCommet.png';
 const defaultSeoImageAlt = 'Ocentra Games card game platform artwork';
+const seoFallbackMainAttributes = [
+  'class="ocentra-seo-fallback"',
+  'style="position:fixed;inset-inline-start:-100vw;inset-block-start:0;inline-size:1px;block-size:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;pointer-events:none;user-select:none;opacity:0;"',
+];
 
 interface CatalogSeoCategoryEntry {
   slug: string;
@@ -276,6 +280,10 @@ function renderSeoParagraph(value: string | undefined): string {
   return value ? `<p>${escapeHtml(value)}</p>` : '';
 }
 
+function renderSeoFallbackMainOpen(bodyKey: string): string {
+  return `<main ${[...seoFallbackMainAttributes, `data-ocentra-seo-body="${bodyKey}"`].join(' ')}>`;
+}
+
 function renderGameFallbackSections(sections: ReadonlyArray<{ title: string; value?: string }>): string {
   return sections
     .filter(section => Boolean(section.value))
@@ -291,7 +299,7 @@ function renderCatalogGameBodyFallback(metadata: RouteSeoMetadata, game: Catalog
   const rulesPath = buildPublicRulesPath(game.slug);
   const titleName = catalogSeoTitleName(game);
   return [
-    '<main class="ocentra-seo-fallback" data-ocentra-seo-body="game">',
+    renderSeoFallbackMainOpen('game'),
     '<article>',
     '<p>Catalog game guide</p>',
     `<h1>${escapeHtml(titleName)} Rules, History and Deck</h1>`,
@@ -321,7 +329,7 @@ function renderCatalogGameBodyFallback(metadata: RouteSeoMetadata, game: Catalog
 function renderAuthoredGameBodyFallback(metadata: RouteSeoMetadata, game: SeoGameEntry): string {
   const rulesPath = buildPublicRulesPath(game.gameId);
   return [
-    '<main class="ocentra-seo-fallback" data-ocentra-seo-body="game">',
+    renderSeoFallbackMainOpen('game'),
     '<article>',
     '<p>Playable game page</p>',
     `<h1>${escapeHtml(game.name)}</h1>`,
@@ -345,7 +353,7 @@ function renderCatalogRulesBodyFallback(metadata: RouteSeoMetadata, game: Catalo
   const categoryPath = categoryPathForGame(game);
   const titleName = catalogSeoTitleName(game);
   return [
-    '<main class="ocentra-seo-fallback" data-ocentra-seo-body="rules">',
+    renderSeoFallbackMainOpen('rules'),
     '<article>',
     '<p>Rules guide</p>',
     `<h1>${escapeHtml(titleName)} Rules</h1>`,
@@ -375,7 +383,7 @@ function renderCatalogRulesBodyFallback(metadata: RouteSeoMetadata, game: Catalo
 function renderAuthoredRulesBodyFallback(metadata: RouteSeoMetadata, game: SeoGameEntry): string {
   const gamePath = `/games/${encodeURIComponent(game.gameId)}`;
   return [
-    '<main class="ocentra-seo-fallback" data-ocentra-seo-body="rules">',
+    renderSeoFallbackMainOpen('rules'),
     '<article>',
     '<p>Rules guide</p>',
     `<h1>${escapeHtml(game.name)} Rules</h1>`,
@@ -441,7 +449,7 @@ function renderStaticIndexableBodyFallback(metadata: RouteSeoMetadata): string {
   ];
 
   return [
-    '<main class="ocentra-seo-fallback" data-ocentra-seo-body="public-page">',
+    renderSeoFallbackMainOpen('public-page'),
     '<section>',
     '<p>Ocentra Games public page</p>',
     `<h1>${escapeHtml(title)}</h1>`,
@@ -490,7 +498,7 @@ function renderSeoBodyFallback(metadata: RouteSeoMetadata): string {
       description: game.description,
     }));
     return [
-      '<main class="ocentra-seo-fallback" data-ocentra-seo-body="catalog">',
+      renderSeoFallbackMainOpen('catalog'),
       '<section>',
       '<p>Catalog index</p>',
       `<h1>${escapeHtml(metadata.title.replace(' | Ocentra Games', ''))}</h1>`,
@@ -510,7 +518,7 @@ function renderSeoBodyFallback(metadata: RouteSeoMetadata): string {
     const category = catalogCategoryForMetadata(metadata);
     const catalogLinks = category ? catalogCategoryGameLinks(category.slug, catalogCategoryGameLinkLimit) : [];
     return [
-      '<main class="ocentra-seo-fallback" data-ocentra-seo-body="category">',
+      renderSeoFallbackMainOpen('category'),
       '<section>',
       '<p>Catalog category</p>',
       `<h1>${escapeHtml(metadata.title.replace(' | Ocentra Games', ''))}</h1>`,

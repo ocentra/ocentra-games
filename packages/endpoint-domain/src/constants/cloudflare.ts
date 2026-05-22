@@ -404,6 +404,11 @@ export const ApiEndpoint = {
     Events: `${paymentsBase}/events` as ApiPath,
     Reconcile: `${paymentsBase}/reconcile` as ApiPath,
     AIEscrow: `${paymentsBase}/ai/escrow` as ApiPath,
+    CustomerPortal: `${paymentsBase}/customer-portal` as ApiPath,
+    PurchaseHistory: `${paymentsBase}/purchase-history` as ApiPath,
+    PayPalCapture: `${paymentsBase}/paypal/capture` as ApiPath,
+    RazorpayVerify: `${paymentsBase}/razorpay/verify` as ApiPath,
+    SolanaConfirm: `${paymentsBase}/solana/confirm` as ApiPath,
   },
 
   Sync: {

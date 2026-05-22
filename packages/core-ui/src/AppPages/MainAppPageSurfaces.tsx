@@ -20,6 +20,7 @@ import type { ShopPageContentData } from './Shop/ShopPageSvgContent';
 import type {
   ShopAccountSummary,
   ShopDeckImageResolver,
+  ShopPaymentPrompt,
   ShopProduct,
   ShopTab,
   ShopVaultDeckPreviewItem,
@@ -58,6 +59,7 @@ export type { SocialWorldPresence, SocialWorldQuickGame } from './SocialWorld/So
 export type {
   ShopAccountSummary,
   ShopDeckImageResolver,
+  ShopPaymentPrompt,
   ShopProduct,
   ShopTab,
   ShopVaultDeckPreviewItem,
@@ -921,11 +923,7 @@ export function ShopPageContent({
   onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;
-  purchasePrompt?: {
-    product: ShopProduct;
-    message?: string | null;
-    busyProvider?: ShopPaymentProvider | null;
-  } | null;
+  purchasePrompt?: ShopPaymentPrompt | null;
   onPurchaseProviderSelect?: (product: ShopProduct, provider: ShopPaymentProvider) => void;
   onPurchaseCancel?: () => void;
   dailyRewardStatus?: LobbyRewardStatus | null;

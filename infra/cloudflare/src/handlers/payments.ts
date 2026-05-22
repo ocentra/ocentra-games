@@ -11,6 +11,13 @@ import {
   PaymentDOGetResponseSchema,
   ReconcileRequestSchema,
   StripeExpandableIdSchema,
+  PaymentCustomerPortalRequestSchema,
+  PaymentCustomerPortalResponseSchema,
+  PaymentPurchaseHistoryResponseSchema,
+  PayPalCaptureRequestSchema,
+  RazorpayVerifyRequestSchema,
+  SolanaConfirmRequestSchema,
+  PaymentProviderSettlementResponseSchema,
 } from '@ocentra/endpoint-domain/schemas/payments';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { DOBaseUrl, PaymentDO as PaymentDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
@@ -24,6 +31,12 @@ import { checkAdminStatus } from '@/utils/admin-check';
 import { runReconciliation } from '@/logic/reconciliation';
 import { StripeApiVersion } from '@/constants/stripe';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
+import {
+  capturePayPalOrder,
+  confirmSolanaPayment,
+  verifyRazorpayPayment,
+} from '@/payments/shop-payment-provider-router';
+import { fulfillShopPaymentSettlement } from '@/payments/shop-fulfillment';
 import type { FlowResult } from '@/flows/core/FlowResult';
 
 const log = Logger.instance;
@@ -53,6 +66,27 @@ async function doFetch(
   });
   const body = await res.text().catch(() => '');
   return new Response(body, { status: res.status, statusText: res.statusText, headers: res.headers });
+}
+
+async function readStripeCustomerId(stub: DurableObjectStub): Promise<string | undefined> {
+  const response = await doFetch(stub, PaymentDOPaths.StripeCustomer);
+  const data = await response.json().catch(() => ({})) as { stripeCustomerId?: string | null };
+  return typeof data.stripeCustomerId === 'string' && data.stripeCustomerId ? data.stripeCustomerId : undefined;
+}
+
+async function storeStripeCustomerId(stub: DurableObjectStub, stripeCustomerId: string): Promise<void> {
+  const response = await doFetch(stub, PaymentDOPaths.StripeCustomer, {
+    method: HttpMethod.Post,
+    body: JSON.stringify({ stripeCustomerId }),
+  });
+  await response.text().catch(() => undefined);
+}
+
+async function readPaymentRecord(stub: DurableObjectStub, paymentId: string) {
+  const response = await doFetch(stub, PaymentDOPaths.GetPayment(paymentId));
+  const data = await response.json().catch(() => null);
+  const parsed = data != null ? PaymentDOGetResponseSchema.safeParse(data) : null;
+  return parsed?.success ? parsed.data : null;
 }
 
 function flowResponse<TBody>(env: Env, result: FlowResult<TBody>): Response {
@@ -86,7 +120,15 @@ export async function handlePaymentRequest(
     const userId = authResult.userId;
     const validation = await validateSchemaBody(request, env, TestInitPaymentRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
-    const { paymentId, amount } = validation.data!;
+    const {
+      paymentId,
+      amount,
+      productType,
+      productId,
+      entitlementKind,
+      subscriptionTier,
+      quantity,
+    } = validation.data!;
     const flowResult = await flowRunner.run(
       paymentCheckoutFlow,
       createFlowContext({
@@ -101,6 +143,11 @@ export async function handlePaymentRequest(
         kind: 'test-init',
         paymentId,
         amount,
+        productType,
+        productId,
+        entitlementKind,
+        subscriptionTier,
+        quantity,
       }
     );
     return flowResponse(env, flowResult);
@@ -164,6 +211,114 @@ export async function handlePaymentRequest(
       status: HttpStatus.ServiceUnavailable,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
     });
+  }
+
+  if (path === ApiEndpoint.Payment.CustomerPortal && request.method === HttpMethod.Post) {
+    const validation = await validateSchemaBody(request, env, PaymentCustomerPortalRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    const secret = env.STRIPE_SECRET_KEY;
+    if (!secret) {
+      return json({ error: 'Stripe not configured' }, HttpStatus.ServiceUnavailable);
+    }
+    try {
+      const Stripe = (await import('stripe')).default;
+      const stripe = new Stripe(secret, {
+        apiVersion: StripeApiVersion,
+        httpClient: (Stripe as { createFetchHttpClient?: () => unknown }).createFetchHttpClient?.() as never,
+      });
+      let stripeCustomerId = await readStripeCustomerId(stub);
+      if (!stripeCustomerId) {
+        const customer = await stripe.customers.create({ metadata: { userId } });
+        stripeCustomerId = customer.id;
+        await storeStripeCustomerId(stub, stripeCustomerId);
+      }
+      const session = await stripe.billingPortal.sessions.create({
+        customer: stripeCustomerId,
+        return_url: validation.data!.returnUrl,
+      });
+      return json(PaymentCustomerPortalResponseSchema.parse({ url: session.url }), HttpStatus.Ok);
+    } catch (error) {
+      log.logWarn('Stripe customer portal session creation failed', getStackTrace(), { error, userId });
+      return json({ error: 'Customer portal unavailable' }, HttpStatus.BadGateway);
+    }
+  }
+
+  if (path === ApiEndpoint.Payment.PurchaseHistory && request.method === HttpMethod.Get) {
+    const res = await doFetch(stub, PaymentDOPaths.ListPurchases);
+    const data = await res.json().catch(() => ({ purchases: [] }));
+    return json(PaymentPurchaseHistoryResponseSchema.parse(data), res.status);
+  }
+
+  if (path === ApiEndpoint.Payment.PayPalCapture && request.method === HttpMethod.Post) {
+    const validation = await validateSchemaBody(request, env, PayPalCaptureRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    const { paymentId, orderId } = validation.data!;
+    const payment = await readPaymentRecord(stub, paymentId);
+    if (!payment || payment.provider !== 'paypal' || payment.providerOrderId !== orderId) {
+      return json({ error: 'PayPal payment reference mismatch' }, HttpStatus.BadRequest);
+    }
+    try {
+      await capturePayPalOrder(env, userId, paymentId, orderId);
+      await fulfillShopPaymentSettlement({ env, userId, paymentId, provider: 'paypal' });
+      return json(PaymentProviderSettlementResponseSchema.parse({
+        success: true,
+        provider: 'paypal',
+        paymentId,
+        status: 'completed',
+        message: 'PayPal payment captured and fulfilled.',
+      }), HttpStatus.Ok);
+    } catch (error) {
+      log.logWarn('PayPal capture failed', getStackTrace(), { error, userId, paymentId });
+      return json({ error: 'PayPal capture failed' }, HttpStatus.BadGateway);
+    }
+  }
+
+  if (path === ApiEndpoint.Payment.RazorpayVerify && request.method === HttpMethod.Post) {
+    const validation = await validateSchemaBody(request, env, RazorpayVerifyRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    const input = validation.data!;
+    const payment = await readPaymentRecord(stub, input.paymentId);
+    if (!payment || payment.provider !== 'razorpay' || payment.providerOrderId !== input.razorpayOrderId) {
+      return json({ error: 'Razorpay payment reference mismatch' }, HttpStatus.BadRequest);
+    }
+    try {
+      await verifyRazorpayPayment(env, userId, input);
+      await fulfillShopPaymentSettlement({ env, userId, paymentId: input.paymentId, provider: 'razorpay' });
+      return json(PaymentProviderSettlementResponseSchema.parse({
+        success: true,
+        provider: 'razorpay',
+        paymentId: input.paymentId,
+        status: 'completed',
+        message: 'Razorpay payment verified and fulfilled.',
+      }), HttpStatus.Ok);
+    } catch (error) {
+      log.logWarn('Razorpay verification failed', getStackTrace(), { error, userId, paymentId: input.paymentId });
+      return json({ error: 'Razorpay verification failed' }, HttpStatus.BadGateway);
+    }
+  }
+
+  if (path === ApiEndpoint.Payment.SolanaConfirm && request.method === HttpMethod.Post) {
+    const validation = await validateSchemaBody(request, env, SolanaConfirmRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    const input = validation.data!;
+    const payment = await readPaymentRecord(stub, input.paymentId);
+    if (!payment || payment.provider !== 'solana' || !payment.providerReference) {
+      return json({ error: 'Solana payment reference mismatch' }, HttpStatus.BadRequest);
+    }
+    try {
+      await confirmSolanaPayment(env, userId, input);
+      await fulfillShopPaymentSettlement({ env, userId, paymentId: input.paymentId, provider: 'solana' });
+      return json(PaymentProviderSettlementResponseSchema.parse({
+        success: true,
+        provider: 'solana',
+        paymentId: input.paymentId,
+        status: 'completed',
+        message: 'Solana payment confirmed and fulfilled.',
+      }), HttpStatus.Ok);
+    } catch (error) {
+      log.logWarn('Solana confirmation failed', getStackTrace(), { error, userId, paymentId: input.paymentId });
+      return json({ error: 'Solana confirmation failed' }, HttpStatus.BadGateway);
+    }
   }
 
   if (path === ApiEndpoint.Payment.Base && request.method === HttpMethod.Get) {

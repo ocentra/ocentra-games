@@ -248,6 +248,7 @@ export function SvgButton({
   return (
     <g
       role="button"
+      aria-label={label}
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled}
       onClick={disabled ? undefined : (event) => {

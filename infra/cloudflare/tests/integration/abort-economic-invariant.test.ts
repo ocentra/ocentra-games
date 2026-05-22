@@ -16,6 +16,28 @@ import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/en
 import { TestConfig } from '@tests/constants/test-constants';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
+async function consumeRedeemRequest(request: Promise<Response>): Promise<number> {
+  try {
+    const response = await request;
+    await response.text().catch(() => undefined);
+    return response.status;
+  } catch {
+    return 0;
+  }
+}
+
+async function resolveAfterAbandonment(request: Promise<number>, timeoutMs: number): Promise<number> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const abandoned = new Promise<number>((resolve) => {
+    timeout = setTimeout(() => resolve(0), timeoutMs);
+  });
+  try {
+    return await Promise.race([request, abandoned]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   let worker: TestWorker;
 
@@ -28,10 +50,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     if (worker.stop) await worker.stop();
   });
 
-  it(testName('Rule 15.4.5: repeated aborts on redeem do not leak value - final state at most one grant'), async () => {
+  it(testName('Rule 15.4.5: repeated abandoned redeem requests do not leak value - final state at most one grant'), async () => {
     const token = await createToken();
-    const userId = generateTestUserId('abort-redeem');
-    const code = `ABORT_ECON_${Date.now()}`;
+    const userId = generateTestUserId('abandoned-redeem');
+    const code = `ABANDONED_ECON_${Date.now()}`;
     const acGrant = 25;
     const gpGrant = 15;
 
@@ -55,28 +77,20 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const balanceBefore = (await balanceBeforeRes.json()) as { ac_balance: number; gp_balance: number };
 
     const redeemUrl = buildCreditsApiUrl(userId, CreditAction.Redeem);
-    const abortCount = 8;
-    const abortRequests = Array.from({ length: abortCount }, () => {
-      const controller = new AbortController();
-      setTimeout(() => controller.abort(), 5);
-      return worker
-        .fetch(redeemUrl, {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          },
-          body: JSON.stringify({ code }),
-          signal: controller.signal,
-        }, token)
-        .then(async (r) => {
-          await r.text().catch(() => undefined);
-          return r.status;
-        })
-        .catch(() => 0);
+    const abandonedRequestCount = 8;
+    const abandonedRequests = Array.from({ length: abandonedRequestCount }, () => {
+      const request = consumeRedeemRequest(worker.fetch(redeemUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({ code }),
+      }, token));
+      return resolveAfterAbandonment(request, 5);
     });
 
-    await Promise.all(abortRequests);
+    await Promise.all(abandonedRequests);
     await new Promise((r) => setTimeout(r, 300));
 
     const balanceAfterRes = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {

@@ -1,11 +1,16 @@
 import { describe, it, expect, extractName, TestSuiteType } from '@tests/helpers/test-utils';
 import { testName } from '@tests/helpers/test-name';
-import { afterAll, vi } from 'vitest';
+import { afterAll, afterEach, vi } from 'vitest';
 import { FlowRunner } from '@/flows/core/FlowRunner';
 import { BaseFlow } from '@/flows/core/BaseFlow';
 import { createFlowContext } from '@/flows/core/FlowContext';
 import type { FlowContext } from '@/flows/core/FlowContext';
 import { PaymentCheckoutFlow } from '@/flows/payment-checkout-flow';
+import {
+  capturePayPalOrder,
+  confirmSolanaPayment,
+  verifyRazorpayPayment,
+} from '@/payments/shop-payment-provider-router';
 import { RewardClaimFlow } from '@/flows/reward-claim-flow';
 import { Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { HttpStatus } from '@ocentra/endpoint-domain/constants/http';
@@ -48,7 +53,18 @@ function createRewardStub(): { stub: DurableObjectStub; requests: Request[]; fet
   return { stub, requests, fetchMock };
 }
 
+async function testHmacSha256Hex(secret: string, payload: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+  return Array.from(new Uint8Array(signature)).map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
 describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   afterAll(async () => {
     await flushAllBatchesAndTestLogs();
   });
@@ -105,6 +121,7 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     const { stub: paymentStub, fetchMock } = createPaymentStub({
       '/v1/init-payment': new Response('{}', { status: HttpStatus.Ok }),
       '/v1/transition': new Response('{}', { status: HttpStatus.Ok }),
+      '/v1/stripe/customer': new Response(JSON.stringify({ stripeCustomerId: 'cus_existing' }), { status: HttpStatus.Ok }),
     });
     const createStripeClient = vi.fn(async () => ({
       checkout: {
@@ -115,6 +132,15 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
             expires_at: 1234567890,
           })),
         },
+      },
+      customers: {
+        create: vi.fn(async () => ({ id: 'cus_created' })),
+      },
+      products: {
+        create: vi.fn(async () => ({ id: 'prod_created' })),
+      },
+      prices: {
+        create: vi.fn(async () => ({ id: 'price_created' })),
       },
     }));
     const flow = new PaymentCheckoutFlow({
@@ -163,6 +189,109 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
       expiresAt: 1234567890,
     });
     expect(createStripeClient).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it(testName('PayPal capture transitions the provider payment after completed capture'), async () => {
+    const { stub: paymentStub, fetchMock } = createPaymentStub({
+      '/v1/transition': new Response('{}', { status: HttpStatus.Ok }),
+    });
+    const providerFetch = vi.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url.includes('/v1/oauth2/token')) {
+        return new Response(JSON.stringify({ access_token: 'paypal-token' }), { status: HttpStatus.Ok });
+      }
+      if (url.includes('/v2/checkout/orders/order-1/capture')) {
+        return new Response(JSON.stringify({
+          status: 'COMPLETED',
+          purchase_units: [{ payments: { captures: [{ id: 'capture-1', status: 'COMPLETED' }] } }],
+        }), { status: HttpStatus.Ok });
+      }
+      return new Response('{}', { status: HttpStatus.NotFound });
+    });
+    vi.stubGlobal('fetch', providerFetch);
+    const env = {
+      PAYPAL_CLIENT_ID: 'paypal-client',
+      PAYPAL_CLIENT_SECRET: 'paypal-secret',
+      PAYPAL_API_BASE_URL: 'https://paypal.test',
+      PAYMENT_DO: {
+        idFromName: vi.fn(() => ({}) as never),
+        get: vi.fn(() => paymentStub),
+      },
+    } as never;
+
+    const result = await capturePayPalOrder(env, 'user-1', 'payment-1', 'order-1');
+
+    expect(result.captureId).toBe('capture-1');
+    expect(providerFetch).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it(testName('Razorpay verification checks signature and captured status before transition'), async () => {
+    const { stub: paymentStub, fetchMock } = createPaymentStub({
+      '/v1/transition': new Response('{}', { status: HttpStatus.Ok }),
+    });
+    const providerFetch = vi.fn(async () => new Response(JSON.stringify({
+      status: 'captured',
+      order_id: 'order_1',
+    }), { status: HttpStatus.Ok }));
+    vi.stubGlobal('fetch', providerFetch);
+    const secret = 'razorpay-secret';
+    const signature = await testHmacSha256Hex(secret, 'order_1|pay_1');
+    const env = {
+      RAZORPAY_KEY_ID: 'razorpay-key',
+      RAZORPAY_KEY_SECRET: secret,
+      PAYMENT_DO: {
+        idFromName: vi.fn(() => ({}) as never),
+        get: vi.fn(() => paymentStub),
+      },
+    } as never;
+
+    await verifyRazorpayPayment(env, 'user-1', {
+      paymentId: 'payment-1',
+      razorpayOrderId: 'order_1',
+      razorpayPaymentId: 'pay_1',
+      razorpaySignature: signature,
+    });
+
+    expect(providerFetch).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it(testName('Solana confirmation verifies reference and USDC delta before transition'), async () => {
+    const { stub: paymentStub, fetchMock } = createPaymentStub({
+      '/v1/get-payment': new Response(JSON.stringify({ amount: 100, providerReference: 'reference-1' }), { status: HttpStatus.Ok }),
+      '/v1/transition': new Response('{}', { status: HttpStatus.Ok }),
+    });
+    const providerFetch = vi.fn(async () => new Response(JSON.stringify({
+      result: {
+        transaction: {
+          message: { accountKeys: [{ pubkey: 'reference-1' }] },
+        },
+        meta: {
+          err: null,
+          preTokenBalances: [{ owner: 'recipient-1', mint: 'usdc-mint', uiTokenAmount: { uiAmountString: '0' } }],
+          postTokenBalances: [{ owner: 'recipient-1', mint: 'usdc-mint', uiTokenAmount: { uiAmountString: '1.00' } }],
+        },
+      },
+    }), { status: HttpStatus.Ok }));
+    vi.stubGlobal('fetch', providerFetch);
+    const env = {
+      SOLANA_RPC_URL: 'https://solana.test',
+      SOLANA_PAY_RECIPIENT: 'recipient-1',
+      SOLANA_PAY_USDC_MINT: 'usdc-mint',
+      PAYMENT_DO: {
+        idFromName: vi.fn(() => ({}) as never),
+        get: vi.fn(() => paymentStub),
+      },
+    } as never;
+
+    await confirmSolanaPayment(env, 'user-1', {
+      paymentId: 'payment-1',
+      signature: 'signature-1',
+    });
+
+    expect(providerFetch).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 

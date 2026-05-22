@@ -330,7 +330,8 @@ async function execute(
   webMode: WebFrontendMode,
   backend: Backend,
   output: OutputChoice,
-  androidMode?: AndroidMode
+  androidMode?: AndroidMode,
+  frontendPort?: string
 ): Promise<number> {
   const { teeToFile, profile } = output;
   const workerBase = CloudflareLocalConfig.BaseUrl;
@@ -355,6 +356,12 @@ async function execute(
   }
 
   if (profile) env.VITE_PROFILE = '1';
+  if (frontendPort) {
+    env.VITE_PORT = frontendPort;
+    env.VITE_PREVIEW_PORT = frontendPort;
+    env.PAGES_PREVIEW_PORT = frontendPort;
+    env.PREVIEW_PORT = frontendPort;
+  }
 
   if (target === 'web') {
     if (webMode === 'preview') {
@@ -416,6 +423,7 @@ function parsePresetFromArgv(): {
   androidMode?: AndroidMode;
   output?: OutputChoice;
   preset?: LaunchPreset;
+  frontendPort?: string;
 } {
   const argv = process.argv.slice(2);
   let target: Target | undefined;
@@ -424,9 +432,20 @@ function parsePresetFromArgv(): {
   let androidMode: AndroidMode | undefined;
   let output: OutputChoice | undefined;
   let preset: LaunchPreset | undefined;
+  let frontendPort: string | undefined;
   let tee = false;
   let profile = false;
-  for (const arg of argv) {
+
+  const parsePortValue = (raw: string | undefined, flag: string): string => {
+    const parsed = Number.parseInt(raw ?? '', 10);
+    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 65535) {
+      throw new Error(`Invalid ${flag} value: ${raw ?? '<missing>'}`);
+    }
+    return String(parsed);
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
     if (arg === '--target=web' || arg === '--web') target = 'web';
     else if (arg === '--target=tauri' || arg === '--tauri') target = 'tauri';
     else if (arg === '--target=android' || arg === '--android') target = 'android';
@@ -442,6 +461,15 @@ function parsePresetFromArgv(): {
     else if (arg === '--android-mode=emulator') androidMode = 'emulator';
     else if (arg === '--output' || arg === '--tee') tee = true;
     else if (arg === '--profile') profile = true;
+    else if (arg === '--port' || arg === '--use' || arg === '--preview-port') {
+      frontendPort = parsePortValue(argv[i + 1], arg);
+      i += 1;
+    }
+    else if (arg.startsWith('--port=')) frontendPort = parsePortValue(arg.slice('--port='.length), '--port');
+    else if (arg.startsWith('--use=')) frontendPort = parsePortValue(arg.slice('--use='.length), '--use');
+    else if (arg.startsWith('--preview-port=')) {
+      frontendPort = parsePortValue(arg.slice('--preview-port='.length), '--preview-port');
+    }
     else if (arg === '--quick=web-preview-local') {
       preset = {
         target: 'web',
@@ -476,7 +504,7 @@ function parsePresetFromArgv(): {
     }
   }
   if (tee || profile) output = { teeToFile: tee, profile };
-  return { target, webMode, backend, androidMode, output, preset };
+  return { target, webMode, backend, androidMode, output, preset, frontendPort };
 }
 
 async function main(): Promise<void> {
@@ -507,8 +535,15 @@ async function main(): Promise<void> {
   } catch {
     /* non-fatal - file may already exist */
   }
-  const { target: presetTarget, webMode: presetWebMode, backend: presetBackend, output: presetOutput, androidMode: presetAndroidMode, preset } =
-    parsePresetFromArgv();
+  const {
+    target: presetTarget,
+    webMode: presetWebMode,
+    backend: presetBackend,
+    output: presetOutput,
+    androidMode: presetAndroidMode,
+    preset,
+    frontendPort,
+  } = parsePresetFromArgv();
 
   const rl = createInterface({ input: process.stdin, output: process.stdout });
 
@@ -524,12 +559,13 @@ async function main(): Promise<void> {
   const { teeToFile } = output;
   const androidLabel = target === 'android' ? ` | android: ${androidMode}` : '';
   const webModeLabel = target === 'web' ? ` | web: ${webMode}` : '';
+  const portLabel = frontendPort ? ` | port: ${frontendPort}` : '';
   const outLabel = teeToFile
     ? output.profile
       ? ' | log + profile → .temp/dev-output.log | .temp/performance-profile.json'
       : ' | log → .temp/dev-output.log'
     : '';
-  console.log(`\n  → ${target}${webModeLabel} | ${backend}${androidLabel}${outLabel}${isForce ? ' [force]' : ''}\n`);
+  console.log(`\n  → ${target}${webModeLabel} | ${backend}${androidLabel}${portLabel}${outLabel}${isForce ? ' [force]' : ''}\n`);
   
   // Propagate force flag if present
   if (isForce && !process.env.VITE_FORCE) {
@@ -537,7 +573,7 @@ async function main(): Promise<void> {
     process.env.FORCE = 'true';
   }
 
-  const code = await execute(target, webMode, backend, output, androidMode);
+  const code = await execute(target, webMode, backend, output, androidMode, frontendPort);
   process.exit(code);
 }
 

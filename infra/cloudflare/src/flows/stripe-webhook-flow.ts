@@ -2,8 +2,8 @@ import { BaseFlow } from '@/flows/core/BaseFlow';
 import type { FlowContext } from '@/flows/core/FlowContext';
 import type { FlowResult } from '@/flows/core/FlowResult';
 import { fetchFromDO } from '@/utils/durable-object-request';
-import { PaymentDO as PaymentDOPaths, CreditsDO as CreditsDOPaths, DOBaseUrl } from '@ocentra/endpoint-domain/constants/cloudflare-do';
-import { HttpHeader, HttpContentType, HttpMethod, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
+import { PaymentDO as PaymentDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { HttpMethod, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { StripeEventType, PaymentTrigger } from '@ocentra/endpoint-domain/constants/stripe';
 import { mapStripeEventType, stripeEventTypeToState } from '@/logic/payment-event-mapping';
 import {
@@ -17,12 +17,32 @@ import {
 } from '@ocentra/endpoint-domain/schemas/payments';
 import type { PaymentEvent } from '@ocentra/endpoint-domain/schemas/payments';
 import { StripeApiVersion } from '@/constants/stripe';
+import { fulfillShopPaymentSettlement } from '@/payments/shop-fulfillment';
 
 type StripeWebhookEvent = {
   id: string;
   type: string;
   data?: { object?: unknown };
 };
+
+function resolveStripeAmountCents(eventObj: { amount_total?: number; amount?: number } | undefined): number {
+  return eventObj?.amount_total ?? eventObj?.amount ?? 0;
+}
+
+function resolvePaymentIdFromStripeObject(
+  eventObj: { metadata?: Record<string, string>; subscription_details?: { metadata?: Record<string, string> }; client_reference_id?: string; id?: string } | undefined
+): string {
+  return eventObj?.metadata?.paymentId ?? eventObj?.subscription_details?.metadata?.paymentId ?? eventObj?.client_reference_id ?? eventObj?.id ?? '';
+}
+
+function resolveStripePaymentIntentId(
+  eventType: string,
+  eventObj: { id?: string } | undefined
+): string | undefined {
+  return eventType === StripeEventType.PaymentIntentSucceeded || eventType === StripeEventType.PaymentIntentPaymentFailed
+    ? eventObj?.id
+    : undefined;
+}
 
 function getPaymentStub(env: FlowContext['env'], userId: string): DurableObjectStub | null {
   const ns = env.PAYMENT_DO;
@@ -37,6 +57,37 @@ function extractUserIdFromEvent(event: StripeWebhookEvent): string | null {
   const fromMeta = obj.metadata?.userId ?? null;
   if (fromMeta) return fromMeta;
   return obj.subscription_details?.metadata?.userId ?? null;
+}
+
+function resolveExpandableId(value: unknown): string | undefined {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object' && 'id' in value) {
+    const id = (value as { id?: unknown }).id;
+    return typeof id === 'string' ? id : undefined;
+  }
+  return undefined;
+}
+
+function normalizeProductType(value: string | undefined): PaymentEvent['metadata']['productType'] {
+  if (value === 'SUBSCRIPTION' || value === 'TOURNAMENT_ENTRY' || value === 'MARKETPLACE') return value;
+  return 'AC_CREDITS';
+}
+
+function normalizeEntitlementKind(value: string | undefined): PaymentEvent['metadata']['entitlementKind'] {
+  if (
+    value === 'credits' ||
+    value === 'pass' ||
+    value === 'cosmetic' ||
+    value === 'play_access' ||
+    value === 'event_ticket'
+  ) {
+    return value;
+  }
+  return undefined;
+}
+
+function nonEmpty(value: string | undefined): string | undefined {
+  return value && value.length > 0 ? value : undefined;
 }
 
 async function resolveDisputeUserIdAndPaymentId(
@@ -98,8 +149,14 @@ async function processPaymentSettlement(
 
   const objParsedForIds = StripeEventDataObjectSchema.safeParse(event.data?.object);
   const eventObj = objParsedForIds.success ? objParsedForIds.data : undefined;
+  const machineRes = await fetchFromDO(stub, PaymentDOPaths.GetPayment(paymentId), {
+    method: HttpMethod.Get,
+  });
+  const rawMachine = await machineRes.json().catch(() => null);
+  const machine = rawMachine != null ? PaymentDOGetResponseSchema.safeParse(rawMachine) : null;
+  const machineData = machine?.success ? machine.data : undefined;
   const mappedEventType = mapStripeEventType(event.type);
-  const amount = eventObj?.amount_total ?? 0;
+  const amount = resolveStripeAmountCents(eventObj);
   const paymentEvent: PaymentEvent = {
     eventId: crypto.randomUUID(),
     stripeEventId: event.id,
@@ -107,10 +164,17 @@ async function processPaymentSettlement(
     paymentId,
     userId,
     amount: amount / 100,
-    currency: 'usd',
+    currency: machineData?.currency ?? 'usd',
     metadata: {
-      productType: 'AC_CREDITS',
-      productId: event.type,
+      productType: normalizeProductType(eventObj?.metadata?.productType ?? eventObj?.subscription_details?.metadata?.productType ?? machineData?.productType),
+      productId: eventObj?.metadata?.productId ?? eventObj?.subscription_details?.metadata?.productId ?? machineData?.productId ?? event.type,
+      entitlementKind: normalizeEntitlementKind(nonEmpty(eventObj?.metadata?.entitlementKind) ?? nonEmpty(eventObj?.subscription_details?.metadata?.entitlementKind) ?? nonEmpty(machineData?.entitlementKind)),
+      provider: 'stripe',
+      quantity: machineData?.quantity,
+      acAmount: machineData?.acAmount,
+      subscriptionTier: nonEmpty(eventObj?.metadata?.subscriptionTier) ?? nonEmpty(eventObj?.subscription_details?.metadata?.subscriptionTier) ?? nonEmpty(machineData?.subscriptionTier),
+      stripeCustomerId: resolveExpandableId(eventObj?.customer) ?? machineData?.stripeCustomerId,
+      stripeSubscriptionId: resolveExpandableId(eventObj?.subscription) ?? machineData?.stripeSubscriptionId,
     },
     createdAt: Date.now(),
     processedAt: Date.now(),
@@ -123,10 +187,11 @@ async function processPaymentSettlement(
     return;
   }
 
-  await fetchFromDO(stub, PaymentDOPaths.StoreEvent, {
+  const storeEventRes = await fetchFromDO(stub, PaymentDOPaths.StoreEvent, {
     method: HttpMethod.Post,
     body: JSON.stringify(stored.data),
-  }).then((res) => res.text().catch(() => undefined));
+  });
+  await storeEventRes.text().catch(() => undefined);
 
   const toState = stripeEventTypeToState(event.type);
   if (toState && paymentId) {
@@ -137,35 +202,22 @@ async function processPaymentSettlement(
         paymentId,
         toState,
         trigger: `${PaymentTrigger.StripePrefix}${event.type}`,
-        stripePaymentIntentId: objectId,
+        stripePaymentIntentId: resolveStripePaymentIntentId(event.type, eventObj),
         stripeCheckoutSessionId: event.type === StripeEventType.CheckoutSessionCompleted ? objectId : undefined,
+        stripeCustomerId: resolveExpandableId(eventObj?.customer),
+        stripeSubscriptionId: resolveExpandableId(eventObj?.subscription),
       }),
     });
     await transitionRes.text().catch(() => undefined);
   }
 
-  if (toState === 'PAYMENT_SUCCEEDED' && env.CREDITS_DO) {
-    const getRes = await fetchFromDO(stub, PaymentDOPaths.GetPayment(paymentId), {
-      method: HttpMethod.Get,
+  if (toState === 'PAYMENT_SUCCEEDED') {
+    await fulfillShopPaymentSettlement({
+      env,
+      userId,
+      paymentId,
+      provider: 'stripe',
     });
-    const rawMachine = await getRes.json().catch(() => null);
-    const machine = rawMachine != null ? PaymentDOGetResponseSchema.safeParse(rawMachine) : null;
-    const acAmount = machine?.success ? machine.data.amount : undefined;
-    if (acAmount != null && acAmount > 0) {
-      const creditsId = env.CREDITS_DO.idFromName(userId);
-      const creditsStub = env.CREDITS_DO.get(creditsId);
-      const purchaseUrl = `${DOBaseUrl}${CreditsDOPaths.Purchase}`;
-      const purchaseRes = await creditsStub.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify({
-          purchaseId: paymentId,
-          amount: acAmount,
-          description: 'Stripe purchase',
-        }),
-      });
-      await purchaseRes.text().catch(() => undefined);
-    }
   }
 }
 
@@ -201,7 +253,7 @@ export class StripeWebhookFlow extends BaseFlow<StripeWebhookFlowInput, { receiv
 
     const eventObjectParsed = StripeEventDataObjectSchema.safeParse(event.data?.object);
     const eventObj = eventObjectParsed.success ? eventObjectParsed.data : undefined;
-    const paymentId = paymentIdFromDispute ?? eventObj?.client_reference_id ?? eventObj?.id ?? '';
+    const paymentId = paymentIdFromDispute ?? resolvePaymentIdFromStripeObject(eventObj);
     if (!paymentId) {
       return {
         status: HttpStatus.Ok,

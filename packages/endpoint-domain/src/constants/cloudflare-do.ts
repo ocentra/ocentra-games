@@ -100,6 +100,9 @@ export const PaymentDOSegment = {
   Transition: 'transition',
   GetPayment: 'get-payment',
   ListPayments: 'list-payments',
+  StripeCustomer: 'stripe/customer',
+  StorePurchase: 'purchase-history/store',
+  ListPurchases: 'purchase-history',
   AIEscrowReserve: 'ai/escrow/reserve',
   AIEscrowConsume: 'ai/escrow/consume',
 } as const;
@@ -115,6 +118,9 @@ export const PaymentDO = {
   Transition: `${paymentDoPrefix}/${PaymentDOSegment.Transition}` as DOPath,
   GetPayment: (paymentId: string): DOPath => `${paymentDoPrefix}/${PaymentDOSegment.GetPayment}?paymentId=${encodeURIComponent(paymentId)}` as DOPath,
   ListPayments: `${paymentDoPrefix}/${PaymentDOSegment.ListPayments}` as DOPath,
+  StripeCustomer: `${paymentDoPrefix}/${PaymentDOSegment.StripeCustomer}` as DOPath,
+  StorePurchase: `${paymentDoPrefix}/${PaymentDOSegment.StorePurchase}` as DOPath,
+  ListPurchases: `${paymentDoPrefix}/${PaymentDOSegment.ListPurchases}` as DOPath,
   AIEscrowReserve: `${paymentDoPrefix}/${PaymentDOSegment.AIEscrowReserve}` as DOPath,
   AIEscrowConsume: `${paymentDoPrefix}/${PaymentDOSegment.AIEscrowConsume}` as DOPath,
 } as const;

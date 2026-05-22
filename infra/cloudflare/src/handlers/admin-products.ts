@@ -46,6 +46,17 @@ const cors = (env: Env) => ({ [HttpHeader.ContentType]: HttpContentType.Applicat
 interface StripeProductResponse {
   id: string;
   default_price?: { id: string } | string | null;
+  billingMode: 'payment' | 'subscription';
+}
+
+function resolveBillingMode(product: Product): 'payment' | 'subscription' {
+  if (product.billingMode === 'payment' || product.billingMode === 'subscription') return product.billingMode;
+  if (product.productType === 'SUBSCRIPTION' && product.subscriptionTier !== 'founder') return 'subscription';
+  return 'payment';
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 async function createStripeProduct(env: Env, product: Product): Promise<StripeProductResponse> {
@@ -60,26 +71,35 @@ async function createStripeProduct(env: Env, product: Product): Promise<StripePr
     httpClient: Stripe.createFetchHttpClient?.(),
   });
 
-  // Create product in Stripe
+  const billingMode = resolveBillingMode(product);
   const stripeProduct = await stripe.products.create({
     name: product.displayName,
     metadata: {
       productId: product.productId,
       productType: product.productType,
+      entitlementKind: product.entitlementKind ?? '',
       acAmount: product.acAmount?.toString() || '',
+      subscriptionTier: product.subscriptionTier ?? '',
     },
   });
 
-  // Create price for the product
   const price = await stripe.prices.create({
     product: stripeProduct.id,
     unit_amount: product.unitPriceCents ?? 0,
     currency: product.currency,
+    metadata: {
+      productId: product.productId,
+      productType: product.productType,
+      entitlementKind: product.entitlementKind ?? '',
+      subscriptionTier: product.subscriptionTier ?? '',
+    },
+    ...(billingMode === 'subscription' ? { recurring: { interval: 'month' as const } } : {}),
   });
 
   return {
     id: stripeProduct.id,
     default_price: { id: price.id },
+    billingMode,
   };
 }
 
@@ -177,14 +197,29 @@ export async function handleAdminProductRequest(
       }
 
       let productWithStripe = product;
-      if (env.STRIPE_SECRET_KEY && product.unitPriceCents !== undefined && !product.stripePriceId) {
+      if (env.STRIPE_SECRET_KEY && product.unitPriceCents !== undefined && product.unitPriceCents > 0 && !product.stripePriceId) {
         try {
           const stripeProduct = await createStripeProduct(env, product);
           const stripeProductId = stripeProduct.id;
           const stripePriceId = typeof stripeProduct.default_price === 'object' && stripeProduct.default_price
             ? stripeProduct.default_price.id
             : undefined;
-          productWithStripe = { ...product, stripePriceId, stripeProductId };
+          const refs = isRecord(product.providerRefs?.stripe) ? product.providerRefs.stripe : {};
+          productWithStripe = {
+            ...product,
+            billingMode: stripeProduct.billingMode,
+            stripePriceId,
+            stripeProductId,
+            providerRefs: {
+              ...product.providerRefs,
+              stripe: {
+                ...refs,
+                productId: stripeProductId,
+                priceId: stripePriceId,
+                mode: stripeProduct.billingMode,
+              },
+            },
+          };
         } catch (error) {
           logError('Failed to create Stripe product', getStackTrace(), { error, productId: product.productId });
           return new Response(JSON.stringify({ error: 'Failed to create Stripe product' }), {
