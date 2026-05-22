@@ -7,6 +7,7 @@ import {
   type SelectedGameContentPlan,
   type SelectedGameLayoutControls,
 } from '@/ui/selectedGame/SelectedGamePresentation';
+import type { PartialLeaderboardPageContentData } from '@/schemas/leaderboard-page-content-schema';
 import type { PartialShopPageContentData } from '@/schemas/shop-page-content-schema';
 
 export type PageLayoutKind =
@@ -68,6 +69,8 @@ export interface PageLayoutDocument {
   layoutControls?: SelectedGameLayoutControls;
   lobbyControls?: Record<string, unknown>;
   authControls?: Record<string, unknown>;
+  leaderboardControls?: Record<string, unknown>;
+  leaderboardContent?: PartialLeaderboardPageContentData;
   shopControls?: Record<string, unknown>;
   shopContent?: PartialShopPageContentData;
   contentPlan?: SelectedGameContentPlan;
@@ -173,6 +176,12 @@ export class PageLayout extends Layout {
 
   @serializable({ label: 'Auth Controls' })
   authControls: Record<string, unknown> = {};
+
+  @serializable({ label: 'Leaderboard Controls' })
+  leaderboardControls: Record<string, unknown> = {};
+
+  @serializable({ label: 'Leaderboard Content' })
+  leaderboardContent: PartialLeaderboardPageContentData = {};
 
   @serializable({ label: 'Shop Controls' })
   shopControls: Record<string, unknown> = {};

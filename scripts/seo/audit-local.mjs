@@ -30,6 +30,7 @@ const INDEXABLE_STATIC_PATHS = new Set([
   PublicRoutePath[PublicRouteKey.GamesCatalog],
   PublicRoutePath[PublicRouteKey.Shop],
   PublicRoutePath[PublicRouteKey.Competition],
+  PublicRoutePath[PublicRouteKey.Events],
   PublicRoutePath[PublicRouteKey.Tournaments],
   PublicRoutePath[PublicRouteKey.Leaderboard],
   PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard],
@@ -40,6 +41,7 @@ const PRIVATE_STATIC_PATHS = new Set([
   PublicRoutePath[PublicRouteKey.PlayerHub],
   PublicRoutePath[PublicRouteKey.Lobby],
   PublicRoutePath[PublicRouteKey.Matchmaking],
+  PublicRoutePath[PublicRouteKey.Matches],
   PublicRoutePath[PublicRouteKey.Admin],
   PublicRoutePath[PublicRouteKey.AdminTools],
   PublicRoutePath[PublicRouteKey.AdminUsers],
@@ -92,6 +94,16 @@ function isCategoryPath(path) {
 function isRulesPath(path) {
   const parts = path.split('/').filter(Boolean);
   return parts.length === 2 && parts[0] === PublicRouteSegment.Rules;
+}
+
+function isEventDetailPath(path) {
+  const parts = path.split('/').filter(Boolean);
+  return parts.length === 2 && parts[0] === PublicRouteSegment.Events;
+}
+
+function isMatchDetailPath(path) {
+  const parts = path.split('/').filter(Boolean);
+  return parts.length === 2 && parts[0] === PublicRouteSegment.Matches;
 }
 
 function rulesSlug(path) {
@@ -253,6 +265,12 @@ function createTargetForPath(path, context) {
   }
   if (INDEXABLE_STATIC_PATHS.has(path)) {
     return createIndexableStaticTarget(path, context);
+  }
+  if (isEventDetailPath(path)) {
+    return createIndexableStaticTarget(path, context);
+  }
+  if (isMatchDetailPath(path)) {
+    return createPrivateTarget(path, context);
   }
   if (isCategoryPath(path)) {
     return createCategoryTarget(path, context);
