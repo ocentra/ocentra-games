@@ -3,18 +3,23 @@ import { testName } from '@tests/helpers/test-name';
 import { beforeAll, afterAll } from 'vitest';
 import { createToken } from '@tests/test-context';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
-import { TestConfig } from '@tests/constants/test-constants';
-import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
-import { Currency, CreditAction } from '@ocentra/endpoint-domain/constants/credits';
-import {  IdempotencyKeyPrefix } from '@ocentra/endpoint-domain/constants/idempotency';
-import { generateIdempotencyKey } from '@ocentra/endpoint-domain/validators/idempotency-validators';
 import {
   buildCreditsApiUrl,
+  buildTestApiUrlForEndpoint,
   generateTestUserId,
+  getAdminAuthHeaders,
   getValidRequestHeaders,
 } from '@tests/helpers/test-helpers';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { Currency, CreditAction } from '@ocentra/endpoint-domain/constants/credits';
+import { IdempotencyKeyPrefix } from '@ocentra/endpoint-domain/constants/idempotency';
+import { generateIdempotencyKey } from '@ocentra/endpoint-domain/validators/idempotency-validators';
+import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
+import { TestConfig } from '@tests/constants/test-constants';
+import { seedCreditsViaStripe } from '@tests/helpers/payment-credit-helpers';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import type { SetupContextToken } from '@tests/test-setup-core';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -33,22 +38,147 @@ const logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
   log.logError(message, stackTrace, data);
 };
 
+type CreditBalance = {
+  ac_balance: number;
+  gp_balance: number;
+};
+
+type CreditMutationResponse = {
+  success: boolean;
+  already_processed?: boolean;
+  new_balance: number;
+  transaction_id?: string;
+};
+
+type RedeemResponse = {
+  success: boolean;
+  already_redeemed?: boolean;
+  ac_added?: number;
+  gp_added?: number;
+  new_ac_balance?: number;
+  new_gp_balance?: number;
+};
+
+type CreditTransaction = {
+  transaction_id: string;
+  type: string;
+  amount: number;
+  currency: string;
+};
+
 async function consumeResponseBody(response: Response): Promise<void> {
   if (!response.bodyUsed) {
-    try {
-      await response.arrayBuffer();
-    } catch {
-      try {
-        await response.text();
-      } catch {
-        try {
-          await response.blob();
-        } catch {
-          void 0;
-        }
-      }
-    }
+    await response.text().catch(() => undefined);
   }
+}
+
+function uniquePromoCode(prefix: string): string {
+  return `${prefix}_${crypto.randomUUID().replaceAll('-', '').slice(0, 12).toUpperCase()}`;
+}
+
+async function seedPromo(worker: TestWorker, code: string, ac: number, gp: number): Promise<void> {
+  const seedUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Test.SeedPromo);
+  const response = await worker.fetch(seedUrl, {
+    method: HttpMethod.Post,
+    headers: {
+      ...getAdminAuthHeaders(),
+      [HttpHeader.Origin]: TestConfig.LocalhostOrigin,
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+    },
+    body: JSON.stringify({ code, ac, gp }),
+  });
+  expect(response.status).toBe(HttpStatus.Ok);
+  await consumeResponseBody(response);
+}
+
+async function redeemPromo(
+  worker: TestWorker,
+  token: SetupContextToken,
+  userId: string,
+  code: string
+): Promise<RedeemResponse> {
+  const redeemUrl = buildCreditsApiUrl(userId, CreditAction.Redeem);
+  const response = await worker.fetch(redeemUrl, {
+    method: HttpMethod.Post,
+    headers: {
+      ...getValidRequestHeaders(userId),
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+    },
+    body: JSON.stringify({ code }),
+  }, token);
+
+  expect(response.status).toBe(HttpStatus.Ok);
+  return await response.json() as RedeemResponse;
+}
+
+async function seedGpViaRedeem(
+  worker: TestWorker,
+  token: SetupContextToken,
+  userId: string,
+  gpAmount: number,
+  codePrefix: string = 'GP_SEED'
+): Promise<RedeemResponse> {
+  const code = uniquePromoCode(codePrefix);
+  await seedPromo(worker, code, 0, gpAmount);
+  return await redeemPromo(worker, token, userId, code);
+}
+
+async function getBalance(worker: TestWorker, token: SetupContextToken, userId: string): Promise<CreditBalance> {
+  const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
+  const response = await worker.fetch(balanceUrl, {
+    method: HttpMethod.Get,
+    headers: {
+      ...getValidRequestHeaders(userId),
+      [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
+    },
+  }, token);
+
+  expect(response.status).toBe(HttpStatus.Ok);
+  return await response.json() as CreditBalance;
+}
+
+async function getTransactions(
+  worker: TestWorker,
+  token: SetupContextToken,
+  userId: string,
+  limit?: number
+): Promise<{ transactions: CreditTransaction[]; count: number }> {
+  const baseUrl = buildCreditsApiUrl(userId, CreditAction.Transactions);
+  const transactionsUrl = limit === undefined ? baseUrl : `${baseUrl}?limit=${limit}`;
+  const response = await worker.fetch(transactionsUrl, {
+    method: HttpMethod.Get,
+    headers: {
+      ...getValidRequestHeaders(userId),
+      [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
+    },
+  }, token);
+
+  expect(response.status).toBe(HttpStatus.Ok);
+  return await response.json() as { transactions: CreditTransaction[]; count: number };
+}
+
+async function consumeGp(
+  worker: TestWorker,
+  token: SetupContextToken,
+  userId: string,
+  amount: number,
+  idempotencyKey: string = generateIdempotencyKey(IdempotencyKeyPrefix.Consume)
+): Promise<Response> {
+  const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
+  return await worker.fetch(consumeUrl, {
+    method: HttpMethod.Post,
+    headers: {
+      ...getValidRequestHeaders(userId),
+      [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      [HttpHeader.IdempotencyKey]: idempotencyKey,
+    },
+    body: JSON.stringify({
+      amount,
+      currency: Currency.GP,
+      description: 'Test consume',
+    }),
+  }, token);
 }
 
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
@@ -71,1311 +201,367 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     if (worker.stop) await worker.stop();
   });
 
-  it(testName('Award Endpoint: should award GP to user successfully'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-award');
-      const awardId = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
+  it(testName('Award Endpoint: should award GP through trusted promo redemption'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-award');
 
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: awardId
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
+    const data = await seedGpViaRedeem(worker, token, userId, 100);
 
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { success: boolean; new_balance: number; transaction_id?: string };
-      expect(data.success).toBe(true);
-      expect(data.new_balance).toBe(100);
-      expect(data.transaction_id).toBeTypeOf('string');
-      expect(data.transaction_id!.length).toBeGreaterThan(0);
+    expect(data.success).toBe(true);
+    expect(data.gp_added).toBe(100);
+    expect(data.new_gp_balance).toBe(100);
   });
 
-  it(testName('Award Endpoint: should reject negative GP amount'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-negative');
+  it(testName('Award Endpoint: should reject direct client GP awards'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-client-award');
+    const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
+    const response = await worker.fetch(earnUrl, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(userId),
+        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Earn),
+      },
+      body: JSON.stringify({
+        gp_amount: 100,
+        description: 'Client award',
+      }),
+    }, token);
 
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Earn)
-        },
-        body: JSON.stringify({
-          gp_amount: -10,
-          description: 'Test award'
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
-  });
-
-  it(testName('Award Endpoint: should reject zero GP amount'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-zero');
-
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Earn)
-        },
-        body: JSON.stringify({
-          gp_amount: 0,
-          description: 'Test award'
-        }),
-      }, token);
-
-    expect(response.status).toBe(HttpStatus.BadRequest);
-    await consumeResponseBody(response);
+    expect(response.status).toBe(HttpStatus.Forbidden);
+    const body = await response.text();
+    expect(body.toLowerCase()).toContain('trusted server workflows');
   });
 
   it(testName('Consume Endpoint: should consume GP successfully when balance is sufficient'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-consume');
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-consume');
+    await seedGpViaRedeem(worker, token, userId, 200);
 
-      const url = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const earnIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-      const earnRes = await worker.fetch(url, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: earnIdempotencyKey
-        },
-        body: JSON.stringify({
-          gp_amount: 200,
-          description: 'Initial balance'
-        }),
-      }, token);
-      await consumeResponseBody(earnRes);
+    const response = await consumeGp(worker, token, userId, 50);
 
-      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const consumeIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
-      const response = await worker.fetch(consumeUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeIdempotencyKey
-        },
-        body: JSON.stringify({
-          amount: 50,
-          currency: Currency.GP,
-          description: 'Test consume'
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { success: boolean; new_balance: number };
-      expect(data.success).toBe(true);
-      expect(data.new_balance).toBe(150);
+    expect(response.status).toBe(HttpStatus.Ok);
+    const data = await response.json() as CreditMutationResponse;
+    expect(data.success).toBe(true);
+    expect(data.new_balance).toBe(150);
   });
 
   it(testName('Consume Endpoint: should reject consume when balance is insufficient'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-insufficient');
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-insufficient');
 
-      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const consumeIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
-      const response = await worker.fetch(consumeUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeIdempotencyKey
-        },
-        body: JSON.stringify({
-          amount: 100,
-          currency: Currency.GP,
-          description: 'Test consume'
-        }),
-      }, token);
+    const response = await consumeGp(worker, token, userId, 100);
 
-      expect(response.status).toBe(HttpStatus.Conflict);
-      const data = await response.json() as { error: string };
-      expect(data.error).toContain('Insufficient');
+    expect(response.status).toBe(HttpStatus.Conflict);
+    const data = await response.json() as { error: string };
+    expect(data.error).toContain('Insufficient');
   });
 
   it(testName('Consume Endpoint: should reject zero amount'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('test-user-zero-consume');
 
-      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const consumeIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
-      const response = await worker.fetch(consumeUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeIdempotencyKey
-        },
-        body: JSON.stringify({
-          amount: 0,
-          currency: Currency.GP,
-          description: 'Test consume'
-        }),
-      }, token);
+    const response = await consumeGp(worker, token, userId, 0);
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
+    expect(response.status).toBe(HttpStatus.BadRequest);
+    await consumeResponseBody(response);
   });
 
   it(testName('Consume Endpoint: should reject negative amount'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('test-user-negative-consume');
 
-      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const consumeIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
-      const response = await worker.fetch(consumeUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeIdempotencyKey
-        },
-        body: JSON.stringify({
-          amount: -10,
-          currency: Currency.GP,
-          description: 'Test consume'
-        }),
-      }, token);
+    const response = await consumeGp(worker, token, userId, -10);
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
+    expect(response.status).toBe(HttpStatus.BadRequest);
+    await consumeResponseBody(response);
   });
 
   it(testName('Consume Endpoint: should reject non-integer amount'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('test-user-non-integer-consume');
 
-      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const consumeIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
-      const response = await worker.fetch(consumeUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeIdempotencyKey
-        },
-        body: JSON.stringify({
-          amount: 10.5,
-          currency: Currency.GP,
-          description: 'Test consume'
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
-  });
-
-  it(testName('Purchase Endpoint: should purchase AC successfully'), async () => {
-      const token = await createToken();
-      const userId = `test-user-purchase-${Date.now()}`;
-      const purchaseId = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const response = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: purchaseId,
-        },
-        body: JSON.stringify({
-          ac_amount: 100,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { success: boolean; new_balance: number; transaction_id?: string };
-      expect(data.success).toBe(true);
-      expect(data.new_balance).toBe(100);
-      expect(data.transaction_id).toBeTypeOf('string');
-  });
-
-  it(testName('Purchase Endpoint: should reject zero AC amount'), async () => {
-    const token = await createToken();
-    const userId = generateTestUserId('test-user-zero-purchase');
-
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const response = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Purchase),
-        },
-        body: JSON.stringify({
-          ac_amount: 0,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
-  });
-
-  it(testName('Purchase Endpoint: should reject negative AC amount'), async () => {
-    const token = await createToken();
-    const userId = generateTestUserId('test-user-negative-purchase');
-
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const response = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Purchase),
-        },
-        body: JSON.stringify({
-          ac_amount: -10,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
-  });
-
-  it(testName('Purchase Endpoint: should reject non-integer AC amount'), async () => {
-    const token = await createToken();
-    const userId = generateTestUserId('test-user-non-integer-purchase');
-
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const response = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Purchase),
-        },
-        body: JSON.stringify({
-          ac_amount: 10.5,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
-  });
-
-  it(testName('Purchase Endpoint: should reject missing idempotency key'), async () => {
-    const token = await createToken();
-    const userId = generateTestUserId('test-user-no-key-purchase');
-
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const response = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        },
-        body: JSON.stringify({
-          ac_amount: 100,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
-  });
-
-  it(testName('Purchase Endpoint: should return same result when same purchaseId is used twice (Rule 14.8.1)'), async () => {
-      const token = await createToken();
-      const userId = `test-user-purchase-idempotency-${Date.now()}`;
-      const purchaseId = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-
-      const purchaseUrl1 = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const response1 = await worker.fetch(purchaseUrl1, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: purchaseId,
-        },
-        body: JSON.stringify({
-          ac_amount: 100,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-
-      expect(response1.status).toBe(HttpStatus.Ok);
-      const data1 = await response1.json() as { success: boolean; new_balance: number };
-      expect(data1.success).toBe(true);
-      expect(data1.new_balance).toBe(100);
-
-      const purchaseUrl2 = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const response2 = await worker.fetch(purchaseUrl2, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: purchaseId,
-        },
-        body: JSON.stringify({
-          ac_amount: 100,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-
-      expect(response2.status).toBe(HttpStatus.Ok);
-      const data2 = await response2.json() as { success: boolean; already_processed?: boolean; new_balance: number };
-      expect(data2.success).toBe(true);
-      expect(data2.already_processed).toBe(true);
-      expect(data2.new_balance).toBe(100);
-
-      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-      const balanceResponse = await worker.fetch(balanceUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-    const balanceData = await balanceResponse.json() as { ac_balance: number };
-    expect(balanceData.ac_balance).toBe(100);
-  });
-
-  it(testName('Balance Endpoint: should return balance for user'), async () => {
-      const token = await createToken();
-      const userId = `test-user-balance-${Date.now()}`;
-
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const earnIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-      const earnRes = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: earnIdempotencyKey
-        },
-        body: JSON.stringify({
-          gp_amount: 75,
-          description: 'Test award'
-        }),
-      }, token);
-      await earnRes.text().catch(() => undefined);
-
-      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-      const response = await worker.fetch(balanceUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { gp_balance: number; ac_balance: number };
-      expect(data.gp_balance).toBe(75);
-    expect(data.ac_balance).toBe(0);
-  });
-
-  it(testName('Idempotency (Rule 14.8): should return same result when same awardId is used twice (Rule 14.8.1)'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-idempotency');
-      const awardId = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-
-      const url1 = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response1 = await worker.fetch(url1, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: awardId
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
-
-      expect(response1.status).toBe(HttpStatus.Ok);
-      const data1 = await response1.json() as { success: boolean; new_balance: number };
-      expect(data1.success).toBe(true);
-      expect(data1.new_balance).toBe(100);
-
-      const url2 = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response2 = await worker.fetch(url2, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: awardId
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
-
-      expect(response2.status).toBe(HttpStatus.Ok);
-      const data2 = await response2.json() as { success: boolean; already_processed?: boolean; new_balance: number };
-      expect(data2.success).toBe(true);
-      expect(data2.already_processed).toBe(true);
-      expect(data2.new_balance).toBe(100);
-
-      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-      const balanceResponse = await worker.fetch(balanceUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      const balanceData = await balanceResponse.json() as { gp_balance: number };
-      expect(balanceData.gp_balance).toBe(100);
-  });
-
-  it(testName('Idempotency (Rule 14.8): should return same result when same consumeId is used twice (Rule 14.8.2)'), async () => {
-    const token = await createToken();
-    const userId = `test-user-consume-idempotency-${Date.now()}`;
-    const consumeId = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
-
-    const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-    const earnIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-    const earnRes2 = await worker.fetch(earnUrl, {
-      method: HttpMethod.Post,
-      headers: {
-        ...getValidRequestHeaders(userId),
-        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        [HttpHeader.IdempotencyKey]: earnIdempotencyKey
-      },
-      body: JSON.stringify({
-        gp_amount: 200,
-        description: 'Initial balance'
-      }),
-    }, token);
-    await earnRes2.text().catch(() => undefined);
-
-    const consumeUrl1 = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-    const response1 = await worker.fetch(consumeUrl1, {
-      method: HttpMethod.Post,
-      headers: {
-        ...getValidRequestHeaders(userId),
-        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        [HttpHeader.IdempotencyKey]: consumeId
-      },
-      body: JSON.stringify({
-        amount: 50,
-        currency: Currency.GP,
-        description: 'Test consume'
-      }),
-    }, token);
-
-    expect(response1.status).toBe(HttpStatus.Ok);
-    const data1 = await response1.json() as { success: boolean; new_balance: number };
-    expect(data1.success).toBe(true);
-    expect(data1.new_balance).toBe(150);
-
-    const url2 = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-    const response2 = await worker.fetch(url2, {
-      method: HttpMethod.Post,
-      headers: {
-        ...getValidRequestHeaders(userId),
-        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        [HttpHeader.IdempotencyKey]: consumeId
-      },
-      body: JSON.stringify({
-        amount: 50,
-        currency: Currency.GP,
-        description: 'Test consume'
-      }),
-    }, token);
-
-    expect(response2.status).toBe(HttpStatus.Ok);
-    const data2 = await response2.json() as { success: boolean; already_processed?: boolean; new_balance: number };
-    expect(data2.success).toBe(true);
-    expect(data2.already_processed).toBe(true);
-    expect(data2.new_balance).toBe(150);
-
-    const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-    const balanceResponse = await worker.fetch(balanceUrl, {
-      method: HttpMethod.Get,
-      headers: {
-        ...getValidRequestHeaders(userId),
-        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-      },
-    }, token);
-
-    const balanceData = await balanceResponse.json() as { gp_balance: number };
-    expect(balanceData.gp_balance).toBe(150);
-  });
-
-  it(testName('Concurrency (Rule 14.8.5, 15.5): should prevent duplicate awards under concurrency (state safety, not HTTP semantics)'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-concurrent');
-      const awardId = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-
-      const concurrentRequests = Array.from({ length: 10 }, () => {
-        const url = buildCreditsApiUrl(userId, CreditAction.Earn);
-        return worker.fetch(url, {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.IdempotencyKey]: awardId
-          },
-          body: JSON.stringify({
-            gp_amount: 100,
-            description: 'Concurrent award'
-          }),
-        }, token);
-      });
-
-      const responses = await Promise.all(concurrentRequests);
-
-      const successful = responses.filter(r => r.status === HttpStatus.Ok);
-      expect(successful.length).toBeGreaterThanOrEqual(1);
-
-      for (const r of responses) await r.text().catch(() => undefined);
-
-      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-      const balanceResponse = await worker.fetch(balanceUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      const balanceData = await balanceResponse.json() as { gp_balance: number };
-      expect(balanceData.gp_balance).toBe(100);
-  });
-
-  it(testName('Concurrency (Rule 14.8.5, 15.5): should prevent duplicate consumption under concurrency (state safety)'), async () => {
-      const token = await createToken();
-      const userId = `test-user-consume-concurrent-${Date.now()}`;
-      const consumeId = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
-
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const earnIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-      const earnConcur = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: earnIdempotencyKey
-        },
-        body: JSON.stringify({
-          gp_amount: 200,
-          description: 'Initial balance'
-        }),
-      }, token);
-      await earnConcur.text().catch(() => undefined);
-
-      const concurrentRequests = Array.from({ length: 10 }, () => {
-        const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-        return worker.fetch(consumeUrl, {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.IdempotencyKey]: consumeId
-          },
-          body: JSON.stringify({
-            amount: 50,
-            currency: Currency.GP,
-            description: 'Concurrent consume'
-          }),
-        }, token);
-      });
-
-      const concurResponses = await Promise.all(concurrentRequests);
-      for (const r of concurResponses) await r.text().catch(() => undefined);
-
-      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-      const balanceResponse = await worker.fetch(balanceUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      const balanceData = await balanceResponse.json() as { gp_balance: number };
-    expect(balanceData.gp_balance).toBe(150);
-  });
-
-  it(testName('Error Handling: should accept valid custom idempotency key format'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-adapter-error');
-      const customKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: customKey
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { success: boolean; new_balance: number };
-      expect(data.success).toBe(true);
-      expect(data.new_balance).toBe(100);
-  });
-
-  it(testName('Error Handling: should reject malformed request body'), async () => {
-    const token = await createToken();
-    const userId = `test-user-malformed-${Date.now()}`;
-
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        },
-        body: 'invalid-json-{',
-      }, token);
+    const response = await consumeGp(worker, token, userId, 10.5);
 
     expect(response.status).toBe(HttpStatus.BadRequest);
     await consumeResponseBody(response);
   });
 
-  it(testName('Input Validation (Rule 14.3): should reject invalid idempotency key format (too short)'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-idempotency-short');
-
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: 'short'
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      const errorData = await response.json() as { error?: string; message?: string };
-      expect((errorData.message || errorData.error || '').toLowerCase()).toContain('idempotency key');
-  });
-
-  it(testName('Input Validation (Rule 14.3): should reject invalid idempotency key format (invalid characters)'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-idempotency-invalid');
-
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: 'invalid@key#with$special'
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      const errorData = await response.json() as { error?: string; message?: string };
-      expect((errorData.message || errorData.error || '').toLowerCase()).toContain('idempotency key');
-  });
-
-  it(testName('Input Validation (Rule 14.3): should reject invalid idempotency key format (too long)'), async () => {
+  it(testName('Purchase Endpoint: should purchase AC through payment fulfillment'), async () => {
     const token = await createToken();
-    const userId = generateTestUserId('test-user-idempotency-long');
-      const longKey = 'a'.repeat(101);
+    const userId = generateTestUserId('test-user-purchase');
 
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: longKey
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
+    await seedCreditsViaStripe(worker, userId, 100, token);
+    const balance = await getBalance(worker, token, userId);
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      const errorData = await response.json() as { error?: string; message?: string };
-      expect((errorData.message || errorData.error || '').toLowerCase()).toContain('idempotency key');
+    expect(balance.ac_balance).toBe(100);
   });
 
-  it(testName('Input Validation (Rule 14.3): should reject missing amount field'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-validation');
-
-      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const response = await worker.fetch(consumeUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        },
-        body: JSON.stringify({
-          currency: Currency.GP,
-          description: 'Test consume',
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
-  });
-
-  it(testName('Input Validation (Rule 14.3): should reject invalid currency'), async () => {
+  it(testName('Purchase Endpoint: should reject direct client AC purchases'), async () => {
     const token = await createToken();
-    const userId = `test-user-currency-${Date.now()}`;
-      const consumeId = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
+    const userId = generateTestUserId('test-user-client-purchase');
+    const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
+    const response = await worker.fetch(purchaseUrl, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(userId),
+        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Purchase),
+      },
+      body: JSON.stringify({
+        ac_amount: 100,
+        amount: 1,
+        currency: 'USD',
+      }),
+    }, token);
 
-      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const response = await worker.fetch(consumeUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeId
-        },
-        body: JSON.stringify({
-          amount: 50,
-          currency: 'INVALID' as Currency,
-          description: 'Test consume'
-        }),
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
+    expect(response.status).toBe(HttpStatus.Forbidden);
+    const body = await response.text();
+    expect(body.toLowerCase()).toContain('checkout flow');
   });
 
-  it(testName('Input Validation (Rule 14.3): should reject missing description'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-desc');
+  it(testName('Balance Endpoint: should return balance for user'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-balance');
+    await seedGpViaRedeem(worker, token, userId, 75);
 
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const response = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-        }),
-      }, token);
+    const data = await getBalance(worker, token, userId);
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
+    expect(data.gp_balance).toBe(75);
+    expect(data.ac_balance).toBe(0);
   });
 
-  it(testName('Economic Invariants (Rule 0.1.1, 15.4): should maintain economic safety: no double awards (Rule 0.1.1)'), async () => {
-      const token = await createToken();
-      const userId = `test-user-economic-${Date.now()}`;
-      const awardId = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
+  it(testName('Redeem Idempotency: should return already_redeemed when same code is used twice'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-redeem-idempotency');
+    const code = uniquePromoCode('IDEM_PROMO');
+    await seedPromo(worker, code, 0, 100);
 
-      const earnUrl1 = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const earn1Res = await worker.fetch(earnUrl1, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: awardId
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'First award'
-        }),
-      }, token);
-      await earn1Res.text().catch(() => undefined);
+    const first = await redeemPromo(worker, token, userId, code);
+    const second = await redeemPromo(worker, token, userId, code);
+    const balance = await getBalance(worker, token, userId);
 
-      const earnUrl2 = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const earn2Res = await worker.fetch(earnUrl2, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: awardId
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Duplicate award'
-        }),
-      }, token);
-      await earn2Res.text().catch(() => undefined);
-
-      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-      const balanceResponse = await worker.fetch(balanceUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      const balanceData = await balanceResponse.json() as { gp_balance: number };
-      expect(balanceData.gp_balance).toBe(100);
+    expect(first.success).toBe(true);
+    expect(first.gp_added).toBe(100);
+    expect(second.success).toBe(true);
+    expect(second.already_redeemed).toBe(true);
+    expect(second.gp_added).toBeUndefined();
+    expect(balance.gp_balance).toBe(100);
   });
 
-  it(testName('Economic Invariants (Rule 0.1.1, 15.4): should maintain economic safety: no double consumption (Rule 0.1.1)'), async () => {
-      const token = await createToken();
-      const userId = generateTestUserId('test-user-consume-economic');
-      const consumeId = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
+  it(testName('Consume Idempotency: should return same result when same consumeId is used twice'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-consume-idempotency');
+    const consumeId = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
+    await seedGpViaRedeem(worker, token, userId, 200);
 
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const earnIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-      const earnRes3 = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: earnIdempotencyKey
-        },
-        body: JSON.stringify({
-          gp_amount: 200,
-          description: 'Initial balance'
-        }),
-      }, token);
-      await earnRes3.text().catch(() => undefined);
+    const response1 = await consumeGp(worker, token, userId, 50, consumeId);
+    const response2 = await consumeGp(worker, token, userId, 50, consumeId);
 
-      const consumeUrl1 = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const consume1Res = await worker.fetch(consumeUrl1, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeId
-        },
-        body: JSON.stringify({
-          amount: 50,
-          currency: Currency.GP,
-          description: 'First consume'
-        }),
-      }, token);
-      await consume1Res.text().catch(() => undefined);
+    expect(response1.status).toBe(HttpStatus.Ok);
+    const data1 = await response1.json() as CreditMutationResponse;
+    expect(data1.success).toBe(true);
+    expect(data1.new_balance).toBe(150);
 
-      const consumeUrl2 = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
-      const consume2Res = await worker.fetch(consumeUrl2, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeId
-        },
-        body: JSON.stringify({
-          amount: 50,
-          currency: Currency.GP,
-          description: 'Duplicate consume'
-        }),
-      }, token);
-      await consume2Res.text().catch(() => undefined);
+    expect(response2.status).toBe(HttpStatus.Ok);
+    const data2 = await response2.json() as CreditMutationResponse;
+    expect(data2.success).toBe(true);
+    expect(data2.already_processed).toBe(true);
+    expect(data2.new_balance).toBe(150);
 
-      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-      const balanceResponse = await worker.fetch(balanceUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
+    const balance = await getBalance(worker, token, userId);
+    expect(balance.gp_balance).toBe(150);
+  });
 
-      const balanceData = await balanceResponse.json() as { gp_balance: number };
-      expect(balanceData.gp_balance).toBe(150);
+  it(testName('Redeem Concurrency: should prevent duplicate awards under concurrency'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-concurrent');
+    const code = uniquePromoCode('CONC_PROMO');
+    await seedPromo(worker, code, 0, 100);
+    const redeemUrl = buildCreditsApiUrl(userId, CreditAction.Redeem);
+    const body = JSON.stringify({ code });
+    const headers = {
+      ...getValidRequestHeaders(userId),
+      [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+    };
+
+    const responses = await Promise.all(
+      Array.from({ length: 10 }, () =>
+        worker.fetch(redeemUrl, { method: HttpMethod.Post, headers, body }, token)
+      )
+    );
+
+    const successful = responses.filter(r => r.status === HttpStatus.Ok);
+    expect(successful.length).toBeGreaterThanOrEqual(1);
+    for (const response of responses) await consumeResponseBody(response);
+    const balance = await getBalance(worker, token, userId);
+    expect(balance.gp_balance).toBe(100);
+  });
+
+  it(testName('Consume Concurrency: should prevent duplicate consumption under concurrency'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-consume-concurrent');
+    const consumeId = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
+    await seedGpViaRedeem(worker, token, userId, 200);
+
+    const responses = await Promise.all(
+      Array.from({ length: 10 }, () => consumeGp(worker, token, userId, 50, consumeId))
+    );
+
+    for (const response of responses) await consumeResponseBody(response);
+    const balance = await getBalance(worker, token, userId);
+    expect(balance.gp_balance).toBe(150);
+  });
+
+  it(testName('Input Validation: should reject malformed consume body'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-validation');
+    const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
+    const response = await worker.fetch(consumeUrl, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(userId),
+        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      },
+      body: JSON.stringify({
+        currency: Currency.GP,
+        description: 'Test consume',
+      }),
+    }, token);
+
+    expect(response.status).toBe(HttpStatus.BadRequest);
+    await consumeResponseBody(response);
+  });
+
+  it(testName('Input Validation: should reject invalid consume currency'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-currency');
+    const consumeUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
+    const response = await worker.fetch(consumeUrl, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(userId),
+        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Consume),
+      },
+      body: JSON.stringify({
+        amount: 50,
+        currency: 'INVALID' as Currency,
+        description: 'Test consume',
+      }),
+    }, token);
+
+    expect(response.status).toBe(HttpStatus.BadRequest);
+    await consumeResponseBody(response);
   });
 
   it(testName('Transactions Endpoint: should return transactions for user'), async () => {
-      const token = await createToken();
-      const userId = `test-user-transactions-${Date.now()}`;
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-transactions');
+    await seedGpViaRedeem(worker, token, userId, 100);
+    await seedCreditsViaStripe(worker, userId, 50, token);
 
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const earnIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-      const earnTx = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: earnIdempotencyKey
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
-      await earnTx.text().catch(() => undefined);
+    const data = await getTransactions(worker, token, userId);
 
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseTx = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Purchase),
-        },
-        body: JSON.stringify({
-          ac_amount: 50,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseTx.text().catch(() => undefined);
-
-      const transactionsUrl = buildCreditsApiUrl(userId, CreditAction.Transactions);
-      const response = await worker.fetch(transactionsUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { transactions: Array<{ transaction_id: string; type: string; amount: number; currency: string }>; count: number };
-      expect(data.count).toBeGreaterThanOrEqual(2);
-      expect(data.transactions.length).toBeGreaterThanOrEqual(2);
-      expect(data.transactions.some(t => t.type === 'earned')).toBe(true);
-      expect(data.transactions.some(t => t.type === 'purchase')).toBe(true);
+    expect(data.count).toBeGreaterThanOrEqual(2);
+    expect(data.transactions.length).toBeGreaterThanOrEqual(2);
+    expect(data.transactions.some(t => t.type === 'earned')).toBe(true);
+    expect(data.transactions.some(t => t.type === 'purchase')).toBe(true);
   });
 
   it(testName('Transactions Endpoint: should enforce limit parameter'), async () => {
     const token = await createToken();
-    const userId = `test-user-transactions-limit-${Date.now()}`;
+    const userId = generateTestUserId('test-user-transactions-limit');
+    await seedGpViaRedeem(worker, token, userId, 10, 'LIMIT_PROMO_A');
+    await seedGpViaRedeem(worker, token, userId, 10, 'LIMIT_PROMO_B');
+    await seedGpViaRedeem(worker, token, userId, 10, 'LIMIT_PROMO_C');
+    await seedGpViaRedeem(worker, token, userId, 10, 'LIMIT_PROMO_D');
+    await seedGpViaRedeem(worker, token, userId, 10, 'LIMIT_PROMO_E');
 
-      for (let i = 0; i < 5; i++) {
-        const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-        const earnIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-        const earnLimitRes = await worker.fetch(earnUrl, {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.IdempotencyKey]: earnIdempotencyKey
-          },
-          body: JSON.stringify({
-            gp_amount: 10,
-            description: `Test award ${i}`
-          }),
-        }, token);
-        await earnLimitRes.text().catch(() => undefined);
-      }
+    const data = await getTransactions(worker, token, userId, 3);
 
-      const transactionsUrl = `${buildCreditsApiUrl(userId, CreditAction.Transactions)}?limit=3`;
-      const response = await worker.fetch(transactionsUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { transactions: unknown[]; count: number };
-      expect(data.count).toBeLessThanOrEqual(3);
-      expect(data.transactions.length).toBeLessThanOrEqual(3);
+    expect(data.count).toBeLessThanOrEqual(3);
+    expect(data.transactions.length).toBeLessThanOrEqual(3);
   });
 
   it(testName('Transactions Endpoint: should return empty transactions for new user'), async () => {
     const token = await createToken();
-    const userId = `test-user-transactions-empty-${Date.now()}`;
+    const userId = generateTestUserId('test-user-transactions-empty');
 
-      const transactionsUrl = buildCreditsApiUrl(userId, CreditAction.Transactions);
-      const response = await worker.fetch(transactionsUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
+    const data = await getTransactions(worker, token, userId);
 
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { transactions: unknown[]; count: number };
-      expect(data.count).toBe(0);
+    expect(data.count).toBe(0);
     expect(data.transactions.length).toBe(0);
   });
 
   it(testName('R2 Archiving: should archive purchase transaction to R2 after successful purchase'), async () => {
-      const token = await createToken();
-      const userId = `test-user-archive-purchase-${Date.now()}`;
-      const purchaseId = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-archive-purchase');
+    await seedCreditsViaStripe(worker, userId, 100, token);
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseResponse = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: purchaseId,
-        },
-        body: JSON.stringify({
-          ac_amount: 100,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
+    const transactionsData = await getTransactions(worker, token, userId);
+    const archivedTransaction = transactionsData.transactions.find(t => t.type === 'purchase');
 
-      expect(purchaseResponse.status).toBe(HttpStatus.Ok);
-      const purchaseData = await purchaseResponse.json() as { success: boolean; transaction_id?: string };
-      expect(purchaseData.success).toBe(true);
-      expect(purchaseData.transaction_id).toBeTypeOf('string');
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const transactionsUrl = buildCreditsApiUrl(userId, CreditAction.Transactions);
-      const transactionsResponse = await worker.fetch(transactionsUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      expect(transactionsResponse.status).toBe(HttpStatus.Ok);
-      const transactionsData = await transactionsResponse.json() as {
-        transactions: Array<{
-          transaction_id: string;
-          type: string;
-          amount: number;
-          currency: string;
-        }>;
-        count: number;
-      };
-
-      const archivedTransaction = transactionsData.transactions.find(
-        t => t.transaction_id === purchaseData.transaction_id
-      );
-      expect(archivedTransaction).not.toBeNull();
-      expect(archivedTransaction!.transaction_id).toBe(purchaseData.transaction_id);
-      expect(archivedTransaction!.type).toBe('purchase');
-      expect(archivedTransaction!.amount).toBe(100);
-      expect(archivedTransaction!.currency).toBe('AC');
+    expect(archivedTransaction).not.toBeNull();
+    expect(archivedTransaction!.amount).toBe(100);
+    expect(archivedTransaction!.currency).toBe('AC');
   });
 
   it(testName('R2 Archiving: should archive consume AC transaction to R2 after successful consume'), async () => {
-      const token = await createToken();
-      const userId = `test-user-archive-consume-ac-${Date.now()}`;
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-archive-consume-ac');
+    await seedCreditsViaStripe(worker, userId, 200, token);
 
-      const purchaseId = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseArchive = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: purchaseId,
-        },
-        body: JSON.stringify({
-          ac_amount: 200,
-          amount: 2,
-          currency: 'USD',
-        }),
-      }, token);
-      await purchaseArchive.text().catch(() => undefined);
+    const consumeId = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
+    const consumeUrl = buildCreditsApiUrl(userId, CreditAction.Consume);
+    const consumeResponse = await worker.fetch(consumeUrl, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(userId),
+        [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        [HttpHeader.IdempotencyKey]: consumeId,
+      },
+      body: JSON.stringify({
+        ac_amount: 50,
+        description: 'Test consume AC',
+      }),
+    }, token);
 
-      const consumeId = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
-      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.Consume);
-      const consumeResponse = await worker.fetch(consumeUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: consumeId
-        },
-        body: JSON.stringify({
-          ac_amount: 50,
-          description: 'Test consume AC'
-        }),
-      }, token);
+    expect(consumeResponse.status).toBe(HttpStatus.Ok);
+    const consumeData = await consumeResponse.json() as CreditMutationResponse;
+    expect(consumeData.success).toBe(true);
+    expect(consumeData.transaction_id).toBeTypeOf('string');
 
-      expect(consumeResponse.status).toBe(HttpStatus.Ok);
-      const consumeData = await consumeResponse.json() as { success: boolean; transaction_id?: string };
-      expect(consumeData.success).toBe(true);
-      expect(consumeData.transaction_id).toBeTypeOf('string');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const transactionsData = await getTransactions(worker, token, userId);
+    const archivedTransaction = transactionsData.transactions.find(
+      t => t.transaction_id === consumeData.transaction_id
+    );
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const transactionsUrl = buildCreditsApiUrl(userId, CreditAction.Transactions);
-      const transactionsResponse = await worker.fetch(transactionsUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      expect(transactionsResponse.status).toBe(HttpStatus.Ok);
-      const transactionsData = await transactionsResponse.json() as {
-        transactions: Array<{
-          transaction_id: string;
-          type: string;
-          amount: number;
-          currency: string;
-        }>;
-        count: number;
-      };
-
-      const archivedTransaction = transactionsData.transactions.find(
-        t => t.transaction_id === consumeData.transaction_id
-      );
-      expect(archivedTransaction).not.toBeNull();
-      expect(archivedTransaction!.transaction_id).toBe(consumeData.transaction_id);
-      expect(archivedTransaction!.type).toBe('consumption');
-      expect(archivedTransaction!.amount).toBe(-50);
-      expect(archivedTransaction!.currency).toBe('AC');
+    expect(archivedTransaction).not.toBeNull();
+    expect(archivedTransaction!.type).toBe('consumption');
+    expect(archivedTransaction!.amount).toBe(-50);
+    expect(archivedTransaction!.currency).toBe('AC');
   });
 
-  it(testName('R2 Archiving: should archive GP award transaction to R2 after successful award'), async () => {
-      const token = await createToken();
-      const userId = `test-user-archive-award-${Date.now()}`;
-      const awardId = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
+  it(testName('R2 Archiving: should archive GP award transaction after promo redemption'), async () => {
+    const token = await createToken();
+    const userId = generateTestUserId('test-user-archive-award');
+    await seedGpViaRedeem(worker, token, userId, 100);
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-      const earnResponse = await worker.fetch(earnUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: awardId
-        },
-        body: JSON.stringify({
-          gp_amount: 100,
-          description: 'Test award'
-        }),
-      }, token);
+    const transactionsData = await getTransactions(worker, token, userId);
+    const archivedTransaction = transactionsData.transactions.find(t => t.type === 'earned');
 
-      expect(earnResponse.status).toBe(HttpStatus.Ok);
-      const earnData = await earnResponse.json() as { success: boolean; transaction_id?: string };
-      expect(earnData.success).toBe(true);
-      expect(earnData.transaction_id).toBeTypeOf('string');
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const transactionsUrl = buildCreditsApiUrl(userId, CreditAction.Transactions);
-      const transactionsResponse = await worker.fetch(transactionsUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      expect(transactionsResponse.status).toBe(HttpStatus.Ok);
-      const transactionsData = await transactionsResponse.json() as {
-        transactions: Array<{
-          transaction_id: string;
-          type: string;
-          amount: number;
-          currency: string;
-        }>;
-        count: number;
-      };
-
-      const archivedTransaction = transactionsData.transactions.find(
-        t => t.transaction_id === earnData.transaction_id
-      );
-      expect(archivedTransaction).not.toBeNull();
-      expect(archivedTransaction!.transaction_id).toBe(earnData.transaction_id);
-      expect(archivedTransaction!.type).toBe('earned');
-      expect(archivedTransaction!.amount).toBe(100);
-      expect(archivedTransaction!.currency).toBe('GP');
-  });
-
-  it(testName('R2 Archiving: should handle R2 archiving failure gracefully without affecting DO operation'), async () => {
-      const token = await createToken();
-      const userId = `test-user-archive-failure-${Date.now()}`;
-      const purchaseId = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseResponse = await worker.fetch(purchaseUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.IdempotencyKey]: purchaseId,
-        },
-        body: JSON.stringify({
-          ac_amount: 100,
-          amount: 1,
-          currency: 'USD',
-        }),
-      }, token);
-
-      expect(purchaseResponse.status).toBe(HttpStatus.Ok);
-      const purchaseData = await purchaseResponse.json() as { success: boolean; new_balance: number };
-      expect(purchaseData.success).toBe(true);
-      expect(purchaseData.new_balance).toBe(100);
-
-      const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
-      const balanceResponse = await worker.fetch(balanceUrl, {
-        method: HttpMethod.Get,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
-        },
-      }, token);
-
-      expect(balanceResponse.status).toBe(HttpStatus.Ok);
-      const balanceData = await balanceResponse.json() as { ac_balance: number };
-    expect(balanceData.ac_balance).toBe(100);
+    expect(archivedTransaction).not.toBeNull();
+    expect(archivedTransaction!.amount).toBe(100);
+    expect(archivedTransaction!.currency).toBe('GP');
   });
 });
