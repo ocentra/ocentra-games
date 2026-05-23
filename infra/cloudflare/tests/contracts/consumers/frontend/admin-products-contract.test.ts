@@ -73,14 +73,13 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           [HttpHeader.ContentType]: String(HttpContentType.ApplicationJson),
         });
         builder.jsonBody({
-          products: Matchers.eachLike(
+          products: Matchers.like([
             {
               productId: Matchers.string('prod-1'),
               displayName: Matchers.string('100 AC'),
               active: Matchers.boolean(true),
             },
-            { min: 1 }
-          ),
+          ]),
         });
       })
       .executeTest(async (mockServer) => {

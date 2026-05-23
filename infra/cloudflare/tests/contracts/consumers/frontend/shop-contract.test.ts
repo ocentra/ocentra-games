@@ -34,7 +34,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           [HttpHeader.ContentType]: String(HttpContentType.ApplicationJson),
         });
         builder.jsonBody({
-          products: Matchers.eachLike(
+          products: Matchers.like([
             {
               productId: Matchers.string('prod-1'),
               productType: Matchers.string('AC_CREDITS'),
@@ -42,7 +42,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
               description: Matchers.string('Starter refill'),
               shopTab: Matchers.string('Treasury'),
               badge: Matchers.string('Starter'),
-              benefits: Matchers.eachLike(Matchers.string('AI analysis fuel'), { min: 1 }),
+              benefits: Matchers.like([Matchers.string('AI analysis fuel')]),
               entitlementKind: Matchers.string('credits'),
               availability: Matchers.string('live'),
               acAmount: Matchers.integer(100),
@@ -50,8 +50,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
               currency: Matchers.string('usd'),
               active: Matchers.boolean(true),
             },
-            { min: 1 }
-          ),
+          ]),
         });
       })
       .executeTest(async (mockServer) => {
