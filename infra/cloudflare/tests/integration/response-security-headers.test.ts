@@ -115,16 +115,16 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('response security headers: bad-request responses from money-critical flows include anti-sniff and frame-deny headers'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-headers-badreq`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.ConsumeGP(userId));
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: '{"ac_amount":100',
+        body: '{"amount":100',
       },
       token
     );
