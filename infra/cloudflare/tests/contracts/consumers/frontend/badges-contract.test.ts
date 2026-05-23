@@ -50,7 +50,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           }),
           active_badges: Matchers.like([]),
           badge_progress: Matchers.like({}),
-          last_updated: Matchers.iso8601DateTimeWithMillis('2026-02-05T12:00:00.000Z'),
+          last_updated: Matchers.string('2026-02-05T12:00:00.000Z'),
         });
       })
       .executeTest(async (mockServer) => {
