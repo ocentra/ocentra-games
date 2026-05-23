@@ -11,6 +11,7 @@ import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/dom
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { IdempotencyKeyPrefix } from '@ocentra/endpoint-domain/constants/idempotency';
 import { generateIdempotencyKey } from '@ocentra/endpoint-domain/validators/idempotency-validators';
+import { seedCreditsViaStripe } from '@tests/helpers/payment-credit-helpers';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -110,50 +111,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
             const initialData = await initialBalance.json() as { ac_balance: number };
             const initialAC = initialData.ac_balance;
 
-            const purchasePayload = {
-              ac_amount: acAmount,
-              amount: acAmount / 100,
-              currency: Currency.USD,
-            };
-
-            const idempotencyKey1 = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const response1 = await worker.fetch(
-              buildCreditsApiUrl(uniqueUserId, CreditAction.Purchase),
-              {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey1
-                },
-                body: JSON.stringify(purchasePayload)
-              },
-              token
-            );
-
-            expect(response1.status).toBe(HttpStatus.Ok);
-            const data1 = await response1.json() as { new_balance: number; transaction_id: string };
-            expect(data1.new_balance).toBe(initialAC + acAmount);
-
-            const idempotencyKey2 = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const response2 = await worker.fetch(
-              buildCreditsApiUrl(uniqueUserId, CreditAction.Purchase),
-              {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey2
-                },
-                body: JSON.stringify(purchasePayload)
-              },
-              token
-            );
-
-            expect(response2.status).toBe(HttpStatus.Ok);
-            const data2 = await response2.json() as { new_balance: number; transaction_id: string };
-            expect(data2.transaction_id).not.toBe(data1.transaction_id);
-            expect(data2.new_balance).toBe(initialAC + (acAmount * 2));
+            const firstPayment = await seedCreditsViaStripe(worker, uniqueUserId, acAmount, token);
+            const secondPayment = await seedCreditsViaStripe(worker, uniqueUserId, acAmount, token);
+            expect(firstPayment.paymentId).not.toBe(secondPayment.paymentId);
 
             const finalBalance = await worker.fetch(
               buildCreditsApiUrl(uniqueUserId, CreditAction.Balance),
@@ -211,7 +171,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
               token
             );
 
-            expect(purchaseResponse.status).toBe(HttpStatus.BadRequest);
+            expect(purchaseResponse.status).toBe(HttpStatus.Forbidden);
+            await consumeResponseBody(purchaseResponse);
 
             const finalBalance = await worker.fetch(
               buildCreditsApiUrl(uniqueUserId, CreditAction.Balance),
@@ -252,50 +213,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
             const initialData = await initialBalance.json() as { ac_balance: number };
             const initialAC = initialData.ac_balance;
 
-            const purchasePayload = {
-              ac_amount: acAmount,
-              amount: acAmount / 100,
-              currency: Currency.USD,
-            };
-
-            const idempotencyKey1 = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const idempotencyKey2 = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const [response1, response2] = await Promise.all([
-              worker.fetch(
-                buildCreditsApiUrl(uniqueUserId, CreditAction.Purchase),
-                {
-                  method: HttpMethod.Post,
-                  headers: {
-                    ...getValidRequestHeaders(uniqueUserId),
-                    [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                    [HttpHeader.IdempotencyKey]: idempotencyKey1
-                  },
-                  body: JSON.stringify(purchasePayload)
-                },
-                token
-              ),
-              worker.fetch(
-                buildCreditsApiUrl(uniqueUserId, CreditAction.Purchase),
-                {
-                  method: HttpMethod.Post,
-                  headers: {
-                    ...getValidRequestHeaders(uniqueUserId),
-                    [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                    [HttpHeader.IdempotencyKey]: idempotencyKey2
-                  },
-                  body: JSON.stringify(purchasePayload)
-                },
-                token
-              )
+            const [payment1, payment2] = await Promise.all([
+              seedCreditsViaStripe(worker, uniqueUserId, acAmount, token),
+              seedCreditsViaStripe(worker, uniqueUserId, acAmount, token)
             ]);
-
-            expect(response1.status).toBe(HttpStatus.Ok);
-            expect(response2.status).toBe(HttpStatus.Ok);
-
-            const data1 = await response1.json() as { new_balance: number; transaction_id: string };
-            const data2 = await response2.json() as { new_balance: number; transaction_id: string };
-
-            expect(data1.transaction_id).not.toBe(data2.transaction_id);
+            expect(payment1.paymentId).not.toBe(payment2.paymentId);
 
             await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -328,18 +250,6 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
             const uniqueUserId1 = generateTestUserId(`${seed}-order1`);
             const uniqueUserId2 = generateTestUserId(`${seed}-order2`);
 
-            const purchase1 = {
-              ac_amount: amount1,
-              amount: amount1 / 100,
-              currency: Currency.USD,
-            };
-
-            const purchase2 = {
-              ac_amount: amount2,
-              amount: amount2 / 100,
-              currency: Currency.USD,
-            };
-
             const balanceUrl1 = buildCreditsApiUrl(uniqueUserId1, CreditAction.Balance);
             const initialBalance1 = await worker.fetch(balanceUrl1, {
                 method: HttpMethod.Get,
@@ -364,66 +274,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
             const initialAC1 = initialData1.ac_balance;
             const initialAC2 = initialData2.ac_balance;
 
-            const idempotencyKey1a = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const idempotencyKey1b = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const idempotencyKey2a = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const idempotencyKey2b = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const purchaseUrl1a = buildCreditsApiUrl(uniqueUserId1, CreditAction.Purchase);
-            const response1a = await worker.fetch(purchaseUrl1a, {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId1),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey1a
-                },
-                body: JSON.stringify(purchase1)
-              },
-              token
-            );
-
-            const purchaseUrl1b = buildCreditsApiUrl(uniqueUserId1, CreditAction.Purchase);
-            const response1b = await worker.fetch(purchaseUrl1b, {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId1),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey1b
-                },
-                body: JSON.stringify(purchase2)
-              },
-              token
-            );
-
-            const purchaseUrl2a = buildCreditsApiUrl(uniqueUserId2, CreditAction.Purchase);
-            const response2a = await worker.fetch(purchaseUrl2a, {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId2),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey2a
-                },
-                body: JSON.stringify(purchase2)
-              },
-              token
-            );
-
-            const purchaseUrl2b = buildCreditsApiUrl(uniqueUserId2, CreditAction.Purchase);
-            const response2b = await worker.fetch(purchaseUrl2b, {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId2),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey2b
-                },
-                body: JSON.stringify(purchase1)
-              },
-              token
-            );
-
-            expect(response1a.status).toBe(HttpStatus.Ok);
-            expect(response1b.status).toBe(HttpStatus.Ok);
-            expect(response2a.status).toBe(HttpStatus.Ok);
-            expect(response2b.status).toBe(HttpStatus.Ok);
+            await seedCreditsViaStripe(worker, uniqueUserId1, amount1, token);
+            await seedCreditsViaStripe(worker, uniqueUserId1, amount2, token);
+            await seedCreditsViaStripe(worker, uniqueUserId2, amount2, token);
+            await seedCreditsViaStripe(worker, uniqueUserId2, amount1, token);
 
             await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -479,54 +333,36 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
             const initialData = await initialBalance.json() as { ac_balance: number };
             const initialAC = initialData.ac_balance;
 
-            const purchasePayload = {
-              ac_amount: acAmount,
-              amount: acAmount / 100,
-              currency: Currency.USD,
-            };
-
-            const idempotencyKey1 = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const response1 = await worker.fetch(
-              buildCreditsApiUrl(uniqueUserId, CreditAction.Purchase),
+            const paymentId = crypto.randomUUID();
+            const eventId = `evt_retry_${paymentId.slice(0, 8)}`;
+            await seedCreditsViaStripe(worker, uniqueUserId, acAmount, token, { paymentId, eventId });
+            const balanceAfterFirstResponse = await worker.fetch(
+              buildCreditsApiUrl(uniqueUserId, CreditAction.Balance),
               {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey1
-                },
-                body: JSON.stringify(purchasePayload)
+                method: HttpMethod.Get,
+                headers: getValidRequestHeaders(uniqueUserId)
               },
               token
             );
-
-            expect(response1.status).toBe(HttpStatus.Ok);
-            const data1 = await response1.json() as { new_balance: number; transaction_id: string };
-            const balanceAfterFirst = data1.new_balance;
+            expect(balanceAfterFirstResponse.status).toBe(HttpStatus.Ok);
+            const balanceAfterFirstData = await balanceAfterFirstResponse.json() as { ac_balance: number };
+            const balanceAfterFirst = balanceAfterFirstData.ac_balance;
             expect(balanceAfterFirst).toBe(initialAC + acAmount);
 
             await new Promise(resolve => setTimeout(resolve, 100));
 
-            const idempotencyKey2 = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const response2 = await worker.fetch(
-              buildCreditsApiUrl(uniqueUserId, CreditAction.Purchase),
+            await seedCreditsViaStripe(worker, uniqueUserId, acAmount, token, { paymentId, eventId, initPayment: false });
+            const finalBalance = await worker.fetch(
+              buildCreditsApiUrl(uniqueUserId, CreditAction.Balance),
               {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey2
-                },
-                body: JSON.stringify(purchasePayload)
+                method: HttpMethod.Get,
+                headers: getValidRequestHeaders(uniqueUserId)
               },
               token
             );
-
-            expect(response2.status).toBe(HttpStatus.Ok);
-            const data2 = await response2.json() as { new_balance: number; transaction_id: string };
-            
-            expect(data1.transaction_id).not.toBe(data2.transaction_id);
-            expect(data2.new_balance).toBe(balanceAfterFirst + acAmount);
+            expect(finalBalance.status).toBe(HttpStatus.Ok);
+            const finalData = await finalBalance.json() as { ac_balance: number };
+            expect(finalData.ac_balance).toBe(balanceAfterFirst);
 
             return true;
           },
@@ -560,7 +396,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
               token
             );
 
-            expect(response1.status).toBe(HttpStatus.BadRequest);
+            expect(response1.status).toBe(HttpStatus.Forbidden);
+            await consumeResponseBody(response1);
 
             await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -577,7 +414,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
               token
             );
 
-            expect(response2.status).toBe(HttpStatus.BadRequest);
+            expect(response2.status).toBe(HttpStatus.Forbidden);
+            await consumeResponseBody(response2);
             return true;
           },
         10
@@ -763,28 +601,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
             const initialData = await initialBalance.json() as { ac_balance: number };
             const initialAC = initialData.ac_balance;
 
-            const idempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-            const purchaseResponse = await worker.fetch(
-              buildCreditsApiUrl(uniqueUserId, CreditAction.Purchase),
-              {
-                method: HttpMethod.Post,
-                headers: {
-                  ...getValidRequestHeaders(uniqueUserId),
-                  [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-                  [HttpHeader.IdempotencyKey]: idempotencyKey
-                },
-                body: JSON.stringify({
-                  ac_amount: acAmount,
-                  amount: acAmount / 100,
-                  currency: Currency.USD,
-                })
-              },
-              token
-            );
-
-            expect(purchaseResponse.status).toBe(HttpStatus.Ok);
-            const purchaseData = await purchaseResponse.json() as { new_balance: number };
-            expect(purchaseData.new_balance).toBe(initialAC + acAmount);
+            await seedCreditsViaStripe(worker, uniqueUserId, acAmount, token);
 
             const finalBalance = await worker.fetch(
               buildCreditsApiUrl(uniqueUserId, CreditAction.Balance),

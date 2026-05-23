@@ -18,11 +18,6 @@ import { generateIdempotencyKey } from '@ocentra/endpoint-domain/validators/idem
 import { TestConfig } from '@tests/constants/test-constants';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
-type PurchaseData = {
-  transaction_id?: string;
-  new_balance?: number;
-};
-
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   let worker: TestWorker;
 
@@ -35,7 +30,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     if (worker.stop) await worker.stop();
   });
 
-  it(testName('human misuse: rapid double-click purchase with same idempotency key applies credits once'), async () => {
+  it(testName('human misuse: rapid double-click direct purchase is rejected without balance mutation'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('human-misuse-double-click');
     const idempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
@@ -60,14 +55,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       worker.fetch(purchaseUrl, requestInit, token),
     ]);
 
-    expect(first.status).toBe(HttpStatus.Ok);
-    expect(second.status).toBe(HttpStatus.Ok);
-
-    const firstData = (await first.json()) as PurchaseData;
-    const secondData = (await second.json()) as PurchaseData;
-
-    expect(firstData.transaction_id).toBe(secondData.transaction_id);
-    expect(firstData.new_balance).toBe(secondData.new_balance);
+    expect(first.status).toBe(HttpStatus.Forbidden);
+    expect(second.status).toBe(HttpStatus.Forbidden);
+    await first.text().catch(() => undefined);
+    await second.text().catch(() => undefined);
 
     const balanceResponse = await worker.fetch(
       buildCreditsApiUrl(userId, CreditAction.Balance),
@@ -79,7 +70,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     );
     expect(balanceResponse.status).toBe(HttpStatus.Ok);
     const balanceData = (await balanceResponse.json()) as { ac_balance: number };
-    expect(balanceData.ac_balance).toBe(40);
+    expect(balanceData.ac_balance).toBe(0);
   });
 
   it(testName('human misuse: repeated promo-code submit returns already_redeemed without extra credits'), async () => {

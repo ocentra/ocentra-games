@@ -137,7 +137,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       await response.text().catch(() => undefined);
     });
 
-  it(testName('Security Event Completeness: rate limit violations should be logged with correlation ID'), async () => {
+  it(testName('Security Event Completeness: direct purchase rejections should be logged with correlation ID'), async () => {
       const token = await createToken();
       const walletId = `test-wallet-${Date.now()}`;
       const userId = generateTestUserId('test-user');
@@ -181,8 +181,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       }
       expect(statuses.length).toBe(totalRequests);
       const rateLimitedCount = statuses.filter(status => status === HttpStatus.TooManyRequests).length;
+      const forbiddenCount = statuses.filter(status => status === HttpStatus.Forbidden).length;
       if (!isRealMode) {
-        expect(rateLimitedCount).toBeGreaterThan(0);
+        expect(forbiddenCount + rateLimitedCount).toBeGreaterThan(0);
       } else {
         expect(statuses.every(status => status >= HttpStatus.Ok && status < HttpStatus.InternalServerError)).toBe(true);
       }
@@ -237,7 +238,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         token
       );
 
-      expect([HttpStatus.Ok, HttpStatus.BadRequest]).toContain(purchaseResponse.status);
+      expect([HttpStatus.Forbidden, HttpStatus.BadRequest]).toContain(purchaseResponse.status);
       await consumeResponseBody(purchaseResponse);
     });
 

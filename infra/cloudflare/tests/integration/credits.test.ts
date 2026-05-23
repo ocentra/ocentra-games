@@ -18,6 +18,7 @@ import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/dom
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { IdempotencyKeyPrefix } from '@ocentra/endpoint-domain/constants/idempotency';
 import { generateIdempotencyKey } from '@ocentra/endpoint-domain/validators/idempotency-validators';
+import { seedCreditsViaStripe } from '@tests/helpers/payment-credit-helpers';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -138,11 +139,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(data.ac_balance).toBe(0);
     });
 
-  it(testName('Credit Purchase: should allow user to purchase AC credits'), async () => {
+  it(testName('Credit Purchase: should add AC credits through payment checkout fulfillment'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('purchase');
       const purchaseAmount = 1000;
-      logInfo('[TEST] Starting credit purchase test', getStackTrace(), { userId, amount: purchaseAmount }, LOG_TEST_OPERATIONS);
+      logInfo('[TEST] Starting checkout credit fulfillment test', getStackTrace(), { userId, amount: purchaseAmount }, LOG_TEST_OPERATIONS);
 
       const initialBalanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
       const initialBalanceResponse = await worker.fetch(initialBalanceUrl,
@@ -156,49 +157,33 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const expectedNewBalance = initialBalance.ac_balance + purchaseAmount;
       logInfo('[TEST] Initial balance retrieved', getStackTrace(), { initialBalance: initialBalance.ac_balance, expectedNew: expectedNewBalance }, LOG_TEST_OPERATIONS);
 
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-      const response = await worker.fetch(purchaseUrl,
+      const payment = await seedCreditsViaStripe(worker, userId, purchaseAmount, token);
+      const response = await worker.fetch(initialBalanceUrl,
         {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.IdempotencyKey]: purchaseIdempotencyKey
-          },
-          body: JSON.stringify({
-            ac_amount: purchaseAmount,
-            amount: 10,
-            currency: Currency.USD,
-          })
+          method: HttpMethod.Get,
+          headers: getValidRequestHeaders(userId)
         },
         token
       );
 
-      logInfo('[TEST] Purchase response received', getStackTrace(), { status: response.status, userId }, LOG_TEST_RESPONSE_DETAILS);
+      logInfo('[TEST] Fulfillment balance response received', getStackTrace(), { status: response.status, userId }, LOG_TEST_RESPONSE_DETAILS);
       expect(response.status).toBe(HttpStatus.Ok);
-      if (response.status !== HttpStatus.Ok) {
-        logError('[TEST] Unexpected status for purchase', getStackTrace(), { expected: HttpStatus.Ok, actual: response.status, userId });
-      }
       const data = await response.json() as {
-        success: boolean;
-        transaction_id: string;
-        new_balance: number;
-        ac_added: number;
+        ac_balance: number;
+        total_ac_purchased: number;
       };
 
-      logInfo('[TEST] Purchase validated', getStackTrace(), { success: data.success, transactionId: data.transaction_id, newBalance: data.new_balance, added: data.ac_added }, LOG_TEST_OPERATIONS);
-      expect(data.success).toBe(true);
-      expect(typeof data.transaction_id).toBe('string');
-      expect(data.transaction_id.length).toBeGreaterThan(0);
-      expect(data.new_balance).toBe(expectedNewBalance);
-      expect(data.ac_added).toBe(purchaseAmount);
-      if (!data.success || data.new_balance !== expectedNewBalance || data.ac_added !== purchaseAmount) {
-        logError('[TEST] Purchase validation failed', getStackTrace(), { success: data.success, expectedBalance: expectedNewBalance, actualBalance: data.new_balance, expectedAdded: purchaseAmount, actualAdded: data.ac_added });
+      logInfo('[TEST] Fulfillment validated', getStackTrace(), { paymentId: payment.paymentId, newBalance: data.ac_balance }, LOG_TEST_OPERATIONS);
+      expect(typeof payment.paymentId).toBe('string');
+      expect(payment.paymentId.length).toBeGreaterThan(0);
+      expect(data.ac_balance).toBe(expectedNewBalance);
+      expect(data.total_ac_purchased).toBe(expectedNewBalance);
+      if (data.ac_balance !== expectedNewBalance) {
+        logError('[TEST] Fulfillment validation failed', getStackTrace(), { expectedBalance: expectedNewBalance, actualBalance: data.ac_balance });
       }
     });
 
-  it(testName('Credit Purchase: should reject purchase with invalid amount'), async () => {
+  it(testName('Credit Purchase: should reject direct client purchase mutations'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('purchase-invalid');
       logInfo('[TEST] Testing purchase validation with invalid amount', getStackTrace(), { userId, invalidAmount: -100 }, LOG_TEST_OPERATIONS);
@@ -223,19 +208,19 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       );
 
       logInfo('[TEST] Invalid purchase validation response', getStackTrace(), { status: response.status }, LOG_TEST_RESPONSE_DETAILS);
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      if (response.status !== HttpStatus.BadRequest) {
-        logError('[TEST] Unexpected status for invalid purchase', getStackTrace(), { expected: HttpStatus.BadRequest, actual: response.status });
+      expect(response.status).toBe(HttpStatus.Forbidden);
+      if (response.status !== HttpStatus.Forbidden) {
+        logError('[TEST] Unexpected status for client purchase mutation', getStackTrace(), { expected: HttpStatus.Forbidden, actual: response.status });
       }
       const data = await response.json() as { error: string; message: string };
-      expect(data.error).toBe('Bad Request');
-      if (data.error !== 'Bad Request') {
-        logError('[TEST] Unexpected error message for invalid purchase', getStackTrace(), { expected: 'Bad Request', actual: data.error });
+      expect(data.error).toBe('Forbidden');
+      if (data.error !== 'Forbidden') {
+        logError('[TEST] Unexpected error message for client purchase mutation', getStackTrace(), { expected: 'Forbidden', actual: data.error });
       }
-      expect(data.message).toContain('Invalid request payload');
+      expect(data.message).toContain('payment checkout flow');
     });
 
-  it(testName('Credit Purchase: should reject purchase with zero amount'), async () => {
+  it(testName('Credit Purchase: should reject direct client purchase mutation before amount validation'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('purchase-zero');
       logInfo('[TEST] Testing purchase validation with zero amount', getStackTrace(), { userId }, LOG_TEST_OPERATIONS);
@@ -260,7 +245,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       );
 
       logInfo('[TEST] Zero amount validation response', getStackTrace(), { status: response.status }, LOG_TEST_OPERATIONS);
-      expect(response.status).toBe(HttpStatus.BadRequest);
+      expect(response.status).toBe(HttpStatus.Forbidden);
       await consumeResponseBody(response);
     });
 
@@ -269,25 +254,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const userId = generateTestUserId('consume');
       logInfo('[TEST] Starting credit consumption test', getStackTrace(), { userId }, LOG_TEST_OPERATIONS);
 
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-      const purchaseRes = await worker.fetch(purchaseUrl,
-        {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.IdempotencyKey]: purchaseIdempotencyKey
-          },
-          body: JSON.stringify({
-            ac_amount: 500,
-            amount: 5,
-            currency: Currency.USD,
-          })
-        },
-        token
-      );
-      await consumeResponseBody(purchaseRes);
+      await seedCreditsViaStripe(worker, userId, 500, token);
 
       const consumeAmount = 200;
       logInfo('[TEST] Consuming credits', getStackTrace(), { userId, amount: consumeAmount }, LOG_TEST_OPERATIONS);
@@ -453,7 +420,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(data.transactions.length).toBeLessThanOrEqual(limit);
     });
 
-  it(testName('Rate Limiting: should enforce rate limit on purchase operations'), async () => {
+  it(testName('Rate Limiting: should reject repeated direct client purchase mutations'), async () => {
       const token = await createToken();
       const rateLimitUserId = generateTestUserId('rate-limit-purchase');
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
@@ -485,10 +452,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       }
 
       const responses = await Promise.all(requests);
+      const forbiddenResponses = responses.filter(r => r.status === HttpStatus.Forbidden);
       const rateLimitedResponses = responses.filter(r => r.status === HttpStatus.TooManyRequests);
       
       if (!isRealMode) {
-        expect(rateLimitedResponses.length).toBeGreaterThan(0);
+        expect(forbiddenResponses.length + rateLimitedResponses.length).toBe(iterations);
         if (rateLimitedResponses.length > 0) {
           const rateLimitResponse = rateLimitedResponses[0];
           expect(rateLimitResponse.headers.get(HttpHeader.XRateLimitRemaining)).toBe('0');
@@ -518,25 +486,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
       const isRealMode = TEST_MODE === TestEnvValue.Real || TEST_MODE === TestEnvValue.Cloud;
 
-      const purchaseUrl = buildCreditsApiUrl(rateLimitUserId, CreditAction.Purchase);
-      const purchaseIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-      const purchaseForConsumeLimit = await worker.fetch(purchaseUrl,
-        {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(rateLimitUserId),
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.IdempotencyKey]: purchaseIdempotencyKey
-          },
-          body: JSON.stringify({
-            ac_amount: 10000,
-            amount: 100,
-            currency: Currency.USD,
-          })
-        },
-        token
-      );
-      await purchaseForConsumeLimit.text().catch(() => undefined);
+      await seedCreditsViaStripe(worker, rateLimitUserId, 10000, token);
 
       const requests = [];
       const iterations = isRealMode ? 5 : 105;
@@ -590,23 +540,23 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       for (const r of responses) await r.text().catch(() => undefined);
     }, 60000);
 
-  it(testName('Rate Limiting: should include rate limit headers in successful responses'), async () => {
+  it(testName('Rate Limiting: should include rate limit headers in successful consume responses'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('rate-limit-headers');
-      const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-      const purchaseIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-      const response = await worker.fetch(purchaseUrl,
+      await seedCreditsViaStripe(worker, userId, 100, token);
+      const consumeUrl = buildCreditsApiUrl(userId, CreditAction.Consume);
+      const consumeIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
+      const response = await worker.fetch(consumeUrl,
         {
           method: HttpMethod.Post,
           headers: {
             ...getValidRequestHeaders(userId),
             [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.IdempotencyKey]: purchaseIdempotencyKey
+            [HttpHeader.IdempotencyKey]: consumeIdempotencyKey
           },
           body: JSON.stringify({
-            ac_amount: 100,
-            amount: 1,
-            currency: Currency.USD,
+            ac_amount: 1,
+            description: 'Rate limit header probe'
           })
         },
         token
@@ -620,10 +570,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       
       const remaining = parseInt(response.headers.get(HttpHeader.XRateLimitRemaining) || '0', 10);
       expect(remaining).toBeGreaterThanOrEqual(0);
-      expect(remaining).toBeLessThanOrEqual(10);
+      expect(remaining).toBeLessThanOrEqual(100);
     });
 
-  it(testName('Edge Cases: should handle concurrent purchase requests correctly'), async () => {
+  it(testName('Edge Cases: should reject concurrent direct purchase mutations without changing balance'), async () => {
       const token = await createToken();
       const concurrentUserId = generateTestUserId('concurrent');
 
@@ -676,7 +626,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       ]);
 
       const successfulPurchases = purchases.filter(r => r.status === HttpStatus.Ok);
-      expect(successfulPurchases.length).toBeGreaterThan(0);
+      expect(successfulPurchases.length).toBe(0);
+      expect(purchases.every(r => r.status === HttpStatus.Forbidden)).toBe(true);
       for (const r of purchases) await r.text().catch(() => undefined);
 
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -690,38 +641,28 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         token
       );
       const finalData = await finalBalance.json() as { ac_balance: number };
-      expect(finalData.ac_balance).toBeGreaterThan(initialAC);
+      expect(finalData.ac_balance).toBe(initialAC);
     });
 
-  it(testName('Edge Cases: should handle very large AC amounts'), async () => {
+  it(testName('Edge Cases: should handle very large AC amounts through checkout fulfillment'), async () => {
       const token = await createToken();
       const largeAmountUserId = generateTestUserId('large-amount');
 
-      const purchaseUrl = buildCreditsApiUrl(largeAmountUserId, CreditAction.Purchase);
-      const purchaseIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-      const response = await worker.fetch(purchaseUrl,
+      await seedCreditsViaStripe(worker, largeAmountUserId, 1000000, token);
+      const response = await worker.fetch(buildCreditsApiUrl(largeAmountUserId, CreditAction.Balance),
         {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(largeAmountUserId),
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.IdempotencyKey]: purchaseIdempotencyKey
-          },
-          body: JSON.stringify({
-            ac_amount: 1000000,
-            amount: 10000,
-            currency: Currency.USD,
-          })
+          method: HttpMethod.Get,
+          headers: getValidRequestHeaders(largeAmountUserId)
         },
         token
       );
 
       expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { new_balance: number };
-      expect(data.new_balance).toBe(1000000);
+      const data = await response.json() as { ac_balance: number };
+      expect(data.ac_balance).toBe(1000000);
     });
 
-  it(testName('Edge Cases: should handle fractional AC amounts correctly'), async () => {
+  it(testName('Edge Cases: should reject fractional direct purchase mutation at public boundary'), async () => {
       const token = await createToken();
       const fractionalUserId = generateTestUserId('fractional');
 
@@ -744,9 +685,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         token
       );
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
+      expect(response.status).toBe(HttpStatus.Forbidden);
       const data = await response.json() as { error: string; message: string };
-      expect(data.message).toContain('Invalid request payload');
+      expect(data.message).toContain('payment checkout flow');
     });
 
   it(testName('Authorization: should require authentication'), async () => {

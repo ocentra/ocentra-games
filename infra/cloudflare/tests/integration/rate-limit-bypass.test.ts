@@ -49,13 +49,14 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
     const rateLimited = responses.filter((r) => r.status === HttpStatus.TooManyRequests);
     const ok = responses.filter((r) => r.status === HttpStatus.Ok);
+    const forbidden = responses.filter((r) => r.status === HttpStatus.Forbidden);
     const hasLimitHeader = responses.some(
       (r) => r.headers.has(HttpHeader.XRateLimitRemaining) || r.headers.has(HttpHeader.XRateLimitReset)
     );
     const testMode = process.env[TestEnvVar.TestMode] ?? TestEnvValue.Local;
     if (testMode === TestEnvValue.Local && limit > 0) {
-      expect(ok.length + rateLimited.length).toBe(limit);
-      expect(hasLimitHeader || rateLimited.length > 0).toBe(true);
+      expect(ok.length + rateLimited.length + forbidden.length).toBe(limit);
+      expect(forbidden.length > 0 || hasLimitHeader || rateLimited.length > 0).toBe(true);
     }
   });
 
@@ -71,6 +72,6 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       },
     }, token);
     await response.text().catch(() => undefined);
-    expect([HttpStatus.MethodNotAllowed, HttpStatus.NotFound, HttpStatus.BadRequest, HttpStatus.Unauthorized]).toContain(response.status);
+    expect([HttpStatus.MethodNotAllowed, HttpStatus.NotFound, HttpStatus.BadRequest, HttpStatus.Unauthorized, HttpStatus.Forbidden]).toContain(response.status);
   });
 });

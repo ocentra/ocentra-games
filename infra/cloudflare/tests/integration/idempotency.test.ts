@@ -55,7 +55,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     if (worker.stop) await worker.stop();
   });
 
-  it(testName('Credits Purchase Idempotency: should return same result for duplicate requests with same idempotency key'), async () => {
+  it(testName('Credits Purchase Idempotency: duplicate direct purchase requests are rejected without mutation'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('idempotency-integration');
       const idempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
@@ -81,12 +81,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       );
 
       logInfo('[TEST] First idempotent request response', getStackTrace(), { status: response1.status, idempotencyKey }, LOG_TEST_RESPONSE_DETAILS);
-      expect(response1.status).toBe(HttpStatus.Ok);
-      const data1 = await response1.json() as { success: boolean; transaction_id: string; new_balance: number; ac_added: number };
-      logInfo('[TEST] First request data', getStackTrace(), { success: data1.success, transactionId: data1.transaction_id, balance: data1.new_balance }, LOG_TEST_OPERATIONS);
-      expect(data1.success).toBe(true);
-      expect(data1.transaction_id).toBeTypeOf('string');
-      expect(data1.new_balance).toBe(100);
+      expect(response1.status).toBe(HttpStatus.Forbidden);
+      await response1.text().catch(() => undefined);
 
       const purchaseUrl2 = buildCreditsApiUrl(userId, CreditAction.Purchase);
       const response2 = await worker.fetch(purchaseUrl2, {
@@ -102,18 +98,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       );
 
       logInfo('[TEST] Second idempotent request response', getStackTrace(), { status: response2.status, idempotencyKey }, LOG_TEST_RESPONSE_DETAILS);
-      expect(response2.status).toBe(HttpStatus.Ok);
-      if (response2.status !== HttpStatus.Ok) {
-        logError('[TEST] Unexpected status for second idempotent request', getStackTrace(), { expected: HttpStatus.Ok, actual: response2.status, idempotencyKey });
+      expect(response2.status).toBe(HttpStatus.Forbidden);
+      if (response2.status !== HttpStatus.Forbidden) {
+        logError('[TEST] Unexpected status for second blocked purchase request', getStackTrace(), { expected: HttpStatus.Forbidden, actual: response2.status, idempotencyKey });
       }
-      const data2 = await response2.json() as { success: boolean; transaction_id: string; new_balance: number; ac_added: number };
-      expect(data2.success).toBe(true);
-      if (data1.transaction_id !== data2.transaction_id || data1.new_balance !== data2.new_balance) {
-        logError('[TEST] Idempotency violation detected', getStackTrace(), { transactionId1: data1.transaction_id, transactionId2: data2.transaction_id, balance1: data1.new_balance, balance2: data2.new_balance });
-      }
-      expect(data2.transaction_id).toBe(data1.transaction_id);
-      expect(data2.new_balance).toBe(data1.new_balance);
-      expect(data2.ac_added).toBe(data1.ac_added);
+      await response2.text().catch(() => undefined);
 
       const balanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
       const balanceResponse = await worker.fetch(balanceUrl, {
@@ -125,10 +114,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
       expect(balanceResponse.status).toBe(HttpStatus.Ok);
       const balanceData = await balanceResponse.json() as { ac_balance: number };
-      expect(balanceData.ac_balance).toBe(100);
+      expect(balanceData.ac_balance).toBe(0);
     });
 
-  it(testName('Credits Purchase Idempotency: should create separate transactions for requests with different idempotency keys'), async () => {
+  it(testName('Credits Purchase Idempotency: different keys do not bypass checkout-only purchase boundary'), async () => {
       const token = await createToken();
       const userId = `idempotency-diff-integration-${Date.now()}`;
 
@@ -151,10 +140,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         token
       );
 
-      expect(response1.status).toBe(HttpStatus.Ok);
-      const data1 = await response1.json() as { success: boolean; transaction_id: string; new_balance: number };
-      expect(data1.success).toBe(true);
-      expect(data1.new_balance).toBe(50);
+      expect(response1.status).toBe(HttpStatus.Forbidden);
+      await response1.text().catch(() => undefined);
 
       const purchaseUrl2 = buildCreditsApiUrl(userId, CreditAction.Purchase);
       const response2 = await worker.fetch(purchaseUrl2, {
@@ -170,14 +157,21 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         token
       );
 
-      expect(response2.status).toBe(HttpStatus.Ok);
-      const data2 = await response2.json() as { success: boolean; transaction_id: string; new_balance: number };
-      expect(data2.success).toBe(true);
-      expect(data2.transaction_id).not.toBe(data1.transaction_id);
-      expect(data2.new_balance).toBe(100);
+      expect(response2.status).toBe(HttpStatus.Forbidden);
+      await response2.text().catch(() => undefined);
+
+      const balanceResponse = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {
+          method: HttpMethod.Get,
+          headers: getValidRequestHeaders(userId)
+        },
+        token
+      );
+      expect(balanceResponse.status).toBe(HttpStatus.Ok);
+      const balanceData = await balanceResponse.json() as { ac_balance: number };
+      expect(balanceData.ac_balance).toBe(0);
     });
 
-  it(testName('Credits Purchase Idempotency: should require idempotency key for purchase requests'), async () => {
+  it(testName('Credits Purchase Idempotency: public purchase path rejects before idempotency validation'), async () => {
       const token = await createToken();
       const userId = `idempotency-no-key-${Date.now()}`;
 
@@ -200,10 +194,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         token
       );
 
-      expect(response1.status).toBe(HttpStatus.BadRequest);
+      expect(response1.status).toBe(HttpStatus.Forbidden);
       const error1 = await response1.json() as { error?: string; message?: string };
-      expect(error1.error).toBe('Bad Request');
-      expect(error1.message).toContain('Idempotency key');
+      expect(error1.error).toBe('Forbidden');
+      expect(error1.message).toContain('payment checkout flow');
     });
 
   it(testName('Redeem Idempotency: same user same code twice returns 200 with already_redeemed on second and balance unchanged (Rule 14.8)'), async () => {
