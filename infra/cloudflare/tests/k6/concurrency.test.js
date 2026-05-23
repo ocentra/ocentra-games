@@ -25,16 +25,16 @@
  *   - "No retry can change economic outcome"
  * 
  * INVARIANTS ASSERTED:
- * 1. Economic Correctness: Concurrent purchase requests maintain balance correctness
- *    - Initial balance + purchase amount = new balance (no double counting)
- *    - Final balance matches purchase result (no state corruption)
- * 2. Idempotency: Same purchase request executed concurrently does not create duplicate value
+ * 1. Economic Correctness: Concurrent public purchase attempts are rejected safely
+ *    - Client-authoritative purchase mutations are blocked
+ *    - Final balance is unchanged after rejected public purchase attempts
+ * 2. Boundary Safety: Credit purchases must use trusted checkout fulfillment
  * 3. Rate Limiting: System correctly handles 429 (TooManyRequests) during load
  * 
  * WHAT FAILURE MEANS:
  * - If correctness rate < 95%: Concurrent requests can cause economic violations
- *   - Possible double spending
- *   - Incorrect balance calculations
+ *   - Public purchase attempts may mint AC
+ *   - Rejected mutations may alter balances
  *   - State corruption under concurrency
  * - If error rate > 10%: System fails under load (violates Rule 4.3.1 - graceful degradation)
  * - If p95 response time > 2000ms: System degrades under load (violates Rule 4.3.1)
@@ -47,9 +47,9 @@
  * - ✅ Documents failure meaning: See "WHAT FAILURE MEANS" above
  * 
  * TEST SCENARIO:
- * - Simulates 50 concurrent virtual users (VUs) over 50 seconds
- * - Each VU performs: balance check → purchase → balance verification
- * - Tests race conditions in credit purchase operations
+ * - Simulates concurrent virtual users (VUs) over a short load profile
+ * - Each VU performs: balance check -> rejected public purchase -> balance verification
+ * - Tests public credit-purchase rejection under load
  * - Verifies economic invariants hold under concurrent load
  */
 
@@ -161,26 +161,26 @@ export default function () {
 
   const purchaseRes = http.post(purchaseUrl, purchasePayload, { headers });
   const purchaseCheck = check(purchaseRes, {
-    'purchase request succeeds': (r) => {
-      const acceptableStatuses = [HttpStatus.Ok, HttpStatus.TooManyRequests];
+    'purchase request is rejected safely': (r) => {
+      const acceptableStatuses = [HttpStatus.Forbidden, HttpStatus.TooManyRequests];
       return acceptableStatuses.includes(r.status);
     },
-    'purchase response has valid JSON': (r) => {
-      if (r.status === HttpStatus.Ok) {
+    'purchase rejection has valid JSON': (r) => {
+      if (r.status === HttpStatus.Forbidden) {
         try {
           const data = JSON.parse(r.body);
-          return typeof data.new_balance === 'number' && typeof data.ac_added === 'number';
+          return data.error === 'Forbidden' && typeof data.message === 'string';
         } catch {
           return false;
         }
       }
       return true;
     },
-    'purchase increases balance correctly': (r) => {
-      if (r.status === HttpStatus.Ok) {
+    'purchase rejection explains checkout flow': (r) => {
+      if (r.status === HttpStatus.Forbidden) {
         try {
           const data = JSON.parse(r.body);
-          return data.new_balance === initialAC + TestDefaults.TestAcAmount && data.ac_added === TestDefaults.TestAcAmount;
+          return data.message.includes('payment checkout');
         } catch {
           return false;
         }
@@ -192,12 +192,11 @@ export default function () {
 
   const finalBalanceRes = http.get(balanceUrl, { headers });
   const finalBalanceCheck = check(finalBalanceRes, {
-    'final balance matches purchase result': (r) => {
-      if (r.status === HttpStatus.Ok && purchaseRes.status === HttpStatus.Ok) {
+    'final balance is unchanged after rejected purchase': (r) => {
+      if (r.status === HttpStatus.Ok && purchaseRes.status === HttpStatus.Forbidden) {
         try {
           const finalData = JSON.parse(r.body);
-          const purchaseData = JSON.parse(purchaseRes.body);
-          return finalData.ac_balance === purchaseData.new_balance && finalData.gp_balance === initialGP;
+          return finalData.ac_balance === initialAC && finalData.gp_balance === initialGP;
         } catch {
           return false;
         }
