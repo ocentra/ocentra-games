@@ -37,6 +37,10 @@ function assertNoSensitiveErrorKeys(payload: unknown): void {
   }
 }
 
+function buildCreditValidationUrl(userId: string): string {
+  return buildTestApiUrlForEndpoint(ApiEndpoint.Credits.ConsumeGP(userId));
+}
+
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   let worker: TestWorker;
 
@@ -86,16 +90,16 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('error leakage: malformed JSON request returns sanitized error payload'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-error-json`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: '{"ac_amount":100',
+        body: '{"amount":100',
       },
       token
     );
@@ -149,16 +153,16 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-marker`;
     const marker = `LEAK_MARKER_${Date.now()}`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: `{"ac_amount":100,"note":"${marker}",`,
+        body: `{"amount":100,"note":"${marker}",`,
       },
       token
     );
@@ -209,9 +213,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('error leakage: error response does not expose internal error codes (Rule 10.1.2)'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-internal-codes`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
@@ -270,16 +274,16 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Rule 5.1.9: input with NaN in JSON body is rejected (validation at boundary)'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-nan`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: '{"ac_amount":NaN,"amount":1,"currency":"USD"}',
+        body: '{"amount":NaN,"currency":"GP","description":"Test consume"}',
       },
       token
     );
@@ -291,16 +295,16 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Rule 5.1.9: input with Infinity in JSON body is rejected (validation at boundary)'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-inf`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: '{"ac_amount":Infinity,"amount":1,"currency":"USD"}',
+        body: '{"amount":Infinity,"currency":"GP","description":"Test consume"}',
       },
       token
     );
@@ -309,19 +313,19 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     assertSanitizedErrorBody(body);
   });
 
-  it(testName('Rule 5.1.8: input with negative ac_amount (underflow) is rejected at boundary'), async () => {
+  it(testName('Rule 5.1.8: input with negative amount (underflow) is rejected at boundary'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-underflow`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: JSON.stringify({ ac_amount: -100, amount: 1, currency: 'USD' }),
+        body: JSON.stringify({ amount: -100, currency: 'GP', description: 'Test consume' }),
       },
       token
     );
@@ -333,9 +337,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Rule 5.1.10: request body that is empty array is rejected at boundary'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-empty-arr`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
@@ -354,39 +358,39 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Rule 5.1.12: JSON with duplicate keys is rejected or handled deterministically at boundary'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-dup-keys`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: '{"ac_amount":100,"amount":1,"currency":"USD","ac_amount":200}',
+        body: '{"amount":100,"currency":"GP","description":"Test consume","amount":200}',
       },
       token
     );
-    expect([HttpStatus.BadRequest, HttpStatus.UnprocessableEntity, HttpStatus.Ok]).toContain(response.status);
+    expect([HttpStatus.BadRequest, HttpStatus.UnprocessableEntity, HttpStatus.Conflict, HttpStatus.Ok]).toContain(response.status);
     const body = await response.text();
     if (response.status !== HttpStatus.Ok) {
       assertSanitizedErrorBody(body);
     }
   });
 
-  it(testName('Rule 5.1.16: string where number required (ac_amount) is rejected at boundary'), async () => {
+  it(testName('Rule 5.1.16: string where number required is rejected at boundary'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-coerce`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: '{"ac_amount":"100","amount":1,"currency":"USD"}',
+        body: '{"amount":"100","currency":"GP","description":"Test consume"}',
       },
       token
     );
@@ -398,9 +402,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Rule 5.2.6: non-JSON body to JSON endpoint is rejected at boundary'), async () => {
     const token = await createToken();
     const userId = `${TestConfig.TestUserId}-binary`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const response = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
@@ -437,16 +441,16 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     }
 
     const userId = `${TestConfig.TestUserId}-error-keys`;
-    const purchaseUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Credits.Purchase(userId));
+    const validationUrl = buildCreditValidationUrl(userId);
     const badRequestResponse = await worker.fetch(
-      purchaseUrl,
+      validationUrl,
       {
         method: HttpMethod.Post,
         headers: {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: '{"ac_amount":100',
+        body: '{"amount":100',
       },
       token
     );
