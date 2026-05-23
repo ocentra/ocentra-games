@@ -21,6 +21,8 @@ log.register(import.meta.url);
 
 const LOG_TEST_OPERATIONS = false;
 const LOG_TEST_RESPONSE_DETAILS = false;
+const LOCAL_CONSUME_LIMIT_ITERATIONS = 105;
+const REAL_CONSUME_LIMIT_ITERATIONS = 5;
 
 const logInfo = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
   log.logInfo(message, stackTrace, data, enabled);
@@ -48,6 +50,49 @@ async function consumeResponseBody(response: Response): Promise<void> {
   }
 }
 
+function buildConsumeRequest(userId: string, index: number, token: Awaited<ReturnType<typeof createToken>>) {
+  const consumeUrl = buildCreditsApiUrl(userId, CreditAction.Consume);
+  return workerFetchOptions(consumeUrl, userId, token, {
+    [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Consume),
+  }, {
+    ac_amount: 1,
+    description: `Rate limit consume ${index}`,
+  });
+}
+
+function buildConsumeGpRequest(userId: string, index: number, token: Awaited<ReturnType<typeof createToken>>) {
+  const consumeGpUrl = buildCreditsApiUrl(userId, CreditAction.ConsumeGP);
+  return workerFetchOptions(consumeGpUrl, userId, token, {
+    [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Consume),
+  }, {
+    amount: 1,
+    currency: Currency.AC,
+    description: `Rate limit consume GP ${index}`,
+  });
+}
+
+function workerFetchOptions(
+  url: string,
+  userId: string,
+  token: Awaited<ReturnType<typeof createToken>>,
+  extraHeaders: Record<string, string>,
+  body: Record<string, unknown>
+) {
+  return {
+    url,
+    init: {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(userId),
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...extraHeaders,
+      },
+      body: JSON.stringify(body),
+    },
+    token,
+  };
+}
+
 describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
   let worker: TestWorker;
 
@@ -70,27 +115,17 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const userId = generateTestUserId('rate-limit-bypass');
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
       const isRealMode = TEST_MODE === TestEnvValue.Real || TEST_MODE === TestEnvValue.Cloud;
-      logInfo('[TEST] Testing rate limit bypass prevention', getStackTrace(), { userId, requestCount: 15 }, LOG_TEST_OPERATIONS);
+      logInfo('[TEST] Testing rate limit bypass prevention', getStackTrace(), { userId, requestCount: LOCAL_CONSUME_LIMIT_ITERATIONS }, LOG_TEST_OPERATIONS);
 
-      const iterations = isRealMode ? 10 : 15;
-      const purchaseRequests = Array.from({ length: iterations }, () => {
-        const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
-        return worker.fetch(purchaseUrl, {
-            method: HttpMethod.Post,
-            headers: {
-              ...getValidRequestHeaders(userId),
-              [HttpHeader.ContentType]: HttpContentType.ApplicationJson
-            },
-            body: JSON.stringify({
-              ac_amount: 100,
-              amount: 1,
-              currency: Currency.USD,
-            })
-          }, token
-        );
+      const iterations = isRealMode ? REAL_CONSUME_LIMIT_ITERATIONS : LOCAL_CONSUME_LIMIT_ITERATIONS;
+      const consumeRequests = Array.from({ length: iterations }, (_, index) => {
+        const request = index % 2 === 0
+          ? buildConsumeRequest(userId, index, token)
+          : buildConsumeGpRequest(userId, index, token);
+        return worker.fetch(request.url, request.init, request.token);
       });
 
-      const responses = await Promise.all(purchaseRequests);
+      const responses = await Promise.all(consumeRequests);
       const statusCounts = responses.reduce((acc, r) => {
         acc[r.status] = (acc[r.status] || 0) + 1;
         return acc;
@@ -122,39 +157,15 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
       const isRealMode = TEST_MODE === TestEnvValue.Real || TEST_MODE === TestEnvValue.Cloud;
 
-      const iterations = isRealMode ? 5 : 12;
-      const requests1 = Array.from({ length: iterations }, () => {
-        const purchaseUrl1 = buildCreditsApiUrl(user1, CreditAction.Purchase);
-        return worker.fetch(purchaseUrl1, {
-            method: HttpMethod.Post,
-            headers: {
-              ...getValidRequestHeaders(user1),
-              [HttpHeader.ContentType]: HttpContentType.ApplicationJson
-            },
-            body: JSON.stringify({
-              ac_amount: 100,
-              amount: 1,
-              currency: Currency.USD,
-            })
-          }, token
-        );
+      const iterations = isRealMode ? REAL_CONSUME_LIMIT_ITERATIONS : LOCAL_CONSUME_LIMIT_ITERATIONS;
+      const requests1 = Array.from({ length: iterations }, (_, index) => {
+        const request = buildConsumeRequest(user1, index, token);
+        return worker.fetch(request.url, request.init, request.token);
       });
 
-      const requests2 = Array.from({ length: iterations }, () => {
-        const purchaseUrl2 = buildCreditsApiUrl(user2, CreditAction.Purchase);
-        return worker.fetch(purchaseUrl2, {
-            method: HttpMethod.Post,
-            headers: {
-              ...getValidRequestHeaders(user2),
-              [HttpHeader.ContentType]: HttpContentType.ApplicationJson
-            },
-            body: JSON.stringify({
-              ac_amount: 100,
-              amount: 1,
-              currency: Currency.USD,
-            })
-          }, token
-        );
+      const requests2 = Array.from({ length: iterations }, (_, index) => {
+        const request = buildConsumeRequest(user2, index, token);
+        return worker.fetch(request.url, request.init, request.token);
       });
 
       const [responses1, responses2] = await Promise.all([
@@ -178,32 +189,19 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       }
     }, 60000);
 
-    it(testName('should enforce rate limits on earn GP endpoint'), async () => {
+    it(testName('should enforce rate limits on consume GP endpoint'), async () => {
       const token = await createToken();
-      const userId = generateTestUserId('rate-earn');
+      const userId = generateTestUserId('rate-consume-gp');
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
       const isRealMode = TEST_MODE === TestEnvValue.Real || TEST_MODE === TestEnvValue.Cloud;
 
-      const iterations = isRealMode ? 10 : 60;
-      const earnRequests = Array.from({ length: iterations }, (_, i) => {
-        const earnUrl = buildCreditsApiUrl(userId, CreditAction.Earn);
-        const earnIdempotencyKey = generateIdempotencyKey(IdempotencyKeyPrefix.Earn);
-        return worker.fetch(earnUrl, {
-            method: HttpMethod.Post,
-            headers: {
-              ...getValidRequestHeaders(userId),
-              [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-              [HttpHeader.IdempotencyKey]: earnIdempotencyKey
-            },
-            body: JSON.stringify({
-              gp_amount: 10,
-              description: `Test GP earning ${i}`
-            })
-          }, token
-        );
+      const iterations = isRealMode ? REAL_CONSUME_LIMIT_ITERATIONS : LOCAL_CONSUME_LIMIT_ITERATIONS;
+      const consumeGpRequests = Array.from({ length: iterations }, (_, index) => {
+        const request = buildConsumeGpRequest(userId, index, token);
+        return worker.fetch(request.url, request.init, request.token);
       });
 
-      const responses = await Promise.all(earnRequests);
+      const responses = await Promise.all(consumeGpRequests);
       const rateLimited = responses.filter(r => r.status === HttpStatus.TooManyRequests);
 
       if (!isRealMode) {

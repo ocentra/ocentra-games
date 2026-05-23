@@ -8,6 +8,7 @@ import {
   generateTestUserId,
   getValidRequestHeaders,
 } from '@tests/helpers/test-helpers';
+import { seedIssuedBadges } from '@tests/helpers/badge-test-helpers';
 import { BadgeAction, BadgeApiBodyKey, BadgeId } from '@/constants/badges';
 import { HttpContentType, HttpHeader, HttpMethod, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { TestEnvVar, TestEnvValue, TestR2LockWait, TestR2LockWaitLong } from '@tests/constants/test-constants';
@@ -71,9 +72,10 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
     if (worker.stop) await worker.stop();
   });
 
-  it(testName('Concurrent Badge Unlocks (Security: Rule 15.5, 14.8.5; state safety): should handle concurrent badge unlock attempts correctly'), async () => {
+  it(testName('Concurrent Badge Claims (Security: Rule 15.5, 14.8.5; state safety): should handle concurrent reward claim attempts correctly'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-concurrent-unlock');
+      await seedIssuedBadges(userId, [BadgeId.ProBronze]);
       logInfo('[TEST] Starting concurrent badge unlock test', getStackTrace(), { userId, badgeId: BadgeId.ProBronze, concurrentRequests: 10 }, LOG_TEST_OPERATIONS);
 
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
@@ -126,20 +128,10 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       expect(badgeId).toBe(BadgeId.ProBronze);
     });
 
-  it(testName('Concurrent Badge Unlocks (Security: Rule 15.5, 14.8.5; state safety): should handle concurrent active badge updates correctly'), async () => {
+  it(testName('Concurrent Badge Claims (Security: Rule 15.5, 14.8.5; state safety): should handle concurrent active badge updates correctly'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-concurrent-active');
-
-      const badgesClaimUrl = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
-      const initialClaim = await worker.fetch(badgesClaimUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        },
-        body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: BadgeId.ProBronze }),
-      }, token);
-      await consumeResponseBody(initialClaim);
+      await seedIssuedBadges(userId, [BadgeId.ProBronze]);
 
       const concurrentActive = Array.from({ length: 5 }, () => {
         const badgesActiveUrl = buildTestBadgesApiUrl(userId, BadgeAction.Active);
@@ -165,9 +157,10 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       expect(profile.active_badges).toEqual([BadgeId.ProBronze]);
     });
 
-  it(testName('Concurrent Badge Unlocks (Security: Rule 15.5, 14.8.5; state safety): should prevent duplicate badge unlocks under concurrency'), async () => {
+  it(testName('Concurrent Badge Claims (Security: Rule 15.5, 14.8.5; state safety): should prevent duplicate badge records under concurrency'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-concurrent-duplicate');
+      await seedIssuedBadges(userId, [BadgeId.ProBronze]);
 
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
       const isRealMode = TEST_MODE === TestEnvValue.Real || TEST_MODE === TestEnvValue.Cloud;
@@ -202,11 +195,12 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       expect(profile.badge_counts.total).toBe(1);
     });
 
-  it(testName('Concurrent Badge Unlocks (Security: Rule 15.5, 14.8.5; state safety): should handle concurrent different badge unlocks'), async () => {
+  it(testName('Concurrent Badge Claims (Security: Rule 15.5, 14.8.5; state safety): should handle concurrent different badge claims'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-concurrent-different');
 
       const badgeIds = [BadgeId.ProBronze, BadgeId.ProSilver, BadgeId.ManOfMatch];
+      await seedIssuedBadges(userId, badgeIds);
       const concurrentUnlocks = badgeIds.map((badgeId) => {
         const badgesClaimUrl = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
         return worker.fetch(badgesClaimUrl, {
@@ -231,13 +225,14 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         badges: Array<{ badge_id: string }>;
         badge_counts: { total: number };
       };
-      expect(profile.badges.length).toBeGreaterThanOrEqual(1);
+      expect(profile.badges.length).toBe(3);
       expect(profile.badge_counts.total).toBe(profile.badges.length);
     });
 
   it(testName('ETag Retry Behavior (Rule 15.5): should retry on ETag mismatch and eventually succeed'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-etag-retry');
+      await seedIssuedBadges(userId, [BadgeId.ProBronze, BadgeId.ProSilver]);
 
       const badgesClaimUrl1 = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
       const unlock1Promise = worker.fetch(badgesClaimUrl1, {
@@ -262,9 +257,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       }, token);
 
       const unlockResponses = await Promise.all([unlock1Promise, unlock2Promise]);
-      
+
       for (const response of unlockResponses) {
-        expect([HttpStatus.Ok, HttpStatus.Conflict]).toContain(response.status);
+        expect(response.status).toBe(HttpStatus.Ok);
         await consumeResponseBody(response);
       }
       

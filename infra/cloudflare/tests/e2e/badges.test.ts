@@ -8,6 +8,7 @@ import {
   generateTestUserId,
   getValidRequestHeaders,
 } from '@tests/helpers/test-helpers';
+import { seedIssuedBadges } from '@tests/helpers/badge-test-helpers';
 import {
   BadgeAction,
   BadgeApiBodyKey,
@@ -186,6 +187,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
   it(testName('Unlock Badge: should unlock badge and claim rewards'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-unlock');
+      await seedIssuedBadges(userId, [BadgeId.ProBronze]);
 
       const badgesClaimUrl = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
       const response = await worker.fetch(badgesClaimUrl, {
@@ -235,6 +237,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
   it(testName('Unlock Badge: should not unlock already unlocked badge'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-unlock-duplicate');
+      await seedIssuedBadges(userId, [BadgeId.ProBronze]);
 
       const badgesClaimUrl1 = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
       const response1 = await worker.fetch(badgesClaimUrl1, {
@@ -266,17 +269,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
   it(testName('Set Active Badges: should set active badges'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-active');
-
-      const badgesClaimUrl = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
-      const claimRes = await worker.fetch(badgesClaimUrl, {
-        method: HttpMethod.Post,
-        headers: {
-          ...getValidRequestHeaders(userId),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        },
-        body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: BadgeId.ProBronze }),
-      }, token);
-      await consumeResponseBody(claimRes);
+      await seedIssuedBadges(userId, [BadgeId.ProBronze]);
 
       const badgesActiveUrl = buildTestBadgesApiUrl(userId, BadgeAction.Active);
       const response = await worker.fetch(badgesActiveUrl, {

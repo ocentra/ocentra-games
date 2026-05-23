@@ -21,9 +21,11 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { SecurityHeaderValue } from '@/constants/security-headers';
-import { CreditAction, Currency } from '@ocentra/endpoint-domain/constants/credits';
+import { CreditAction } from '@ocentra/endpoint-domain/constants/credits';
 import { ResourceType } from '@ocentra/endpoint-domain/constants/resources';
 import { ApiAction } from '@ocentra/endpoint-domain/constants/api-actions';
+import { IdempotencyKeyPrefix } from '@ocentra/endpoint-domain/constants/idempotency';
+import { generateIdempotencyKey } from '@ocentra/endpoint-domain/validators/idempotency-validators';
 import { TestConfig, TestEnvVar, TestEnvValue, TestValues } from '@tests/constants/test-constants';
 import {
   getEndpointsByParamType,
@@ -295,18 +297,18 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const iterations = isRealMode ? 5 : 105;
 
       for (let i = 0; i < iterations; i++) {
-        const resourceUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
+        const resourceUrl = buildCreditsApiUrl(userId, CreditAction.Consume);
         const response = await worker.fetch(resourceUrl, {
           method: HttpMethod.Post,
           headers: {
             ...getValidRequestHeaders(userId, false, TestConfig.TestCorsOrigin),
             [HttpHeader.XWalletId]: walletId,
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Consume)
           },
           body: JSON.stringify({
-            ac_amount: 100,
-            amount: 1,
-            currency: Currency.USD,
+            ac_amount: 1,
+            description: `Security rate-limit consume ${i}`
           })
         }, token);
         responses.push(response.status);
