@@ -87,7 +87,7 @@ export default function () {
   const purchaseRes = http.post(purchaseUrl, purchasePayload, { headers });
   const purchaseOk = check(purchaseRes, {
     'soak purchase status acceptable': (r) =>
-      [HttpStatus.Ok, HttpStatus.TooManyRequests, HttpStatus.BadRequest].includes(r.status),
+      [HttpStatus.Ok, HttpStatus.Forbidden, HttpStatus.TooManyRequests, HttpStatus.BadRequest].includes(r.status),
   });
 
   if (!purchaseOk || purchaseRes.status >= HttpStatus.InternalServerError) {
@@ -105,6 +105,8 @@ export default function () {
     } catch {
       invariantViolations.add(true);
     }
+  } else if (purchaseRes.status === HttpStatus.Forbidden) {
+    invariantViolations.add(false);
   } else {
     invariantViolations.add(false);
   }

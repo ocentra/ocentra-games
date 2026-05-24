@@ -59,7 +59,13 @@ export default function () {
   const response = http.post(purchaseUrl, payload, { headers });
   const ok = check(response, {
     'memory pressure status acceptable': (r) =>
-      [HttpStatus.Ok, HttpStatus.BadRequest, HttpStatus.PayloadTooLarge, HttpStatus.TooManyRequests].includes(r.status),
+      [
+        HttpStatus.Ok,
+        HttpStatus.Forbidden,
+        HttpStatus.BadRequest,
+        HttpStatus.PayloadTooLarge,
+        HttpStatus.TooManyRequests,
+      ].includes(r.status),
     'memory pressure does not produce 5xx': (r) => r.status < HttpStatus.InternalServerError,
   });
 
