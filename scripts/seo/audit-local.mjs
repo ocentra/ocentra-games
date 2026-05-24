@@ -5,7 +5,6 @@ import {
   PublicRoutePath,
   PublicRouteSegment,
   buildPublicCategoryPath,
-  buildPublicGameLeaderboardPath,
   buildPublicGamePath,
   buildPublicGamePlayPath,
   buildPublicRulesPath,
@@ -33,7 +32,6 @@ const INDEXABLE_STATIC_PATHS = new Set([
   PublicRoutePath[PublicRouteKey.Events],
   PublicRoutePath[PublicRouteKey.Tournaments],
   PublicRoutePath[PublicRouteKey.Leaderboard],
-  PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard],
 ]);
 const PRIVATE_STATIC_PATHS = new Set([
   PublicRoutePath[PublicRouteKey.Settings],
@@ -206,14 +204,14 @@ function createRulesTarget(path, context) {
   };
 }
 
-function createGameLeaderboardTarget(path, context) {
+function createRetiredLeaderboardAliasTarget(path, context) {
   return {
     path,
     source: context.source,
     discoveredFrom: context.fromPath,
     depth: context.depth,
-    expectedCanonicalPath: path,
-    expectedRobots: 'index,follow',
+    expectedCanonicalPath: PublicRoutePath[PublicRouteKey.Leaderboard],
+    expectedRobots: 'noindex,follow',
     requireH1: false,
     requireJsonLd: true,
     minTextLength: 0,
@@ -260,6 +258,9 @@ function createTargetForPath(path, context) {
   if (path === PublicRoutePath[PublicRouteKey.CardGameTemplate]) {
     return createNoindexFollowTarget(path, context);
   }
+  if (path === PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard]) {
+    return createRetiredLeaderboardAliasTarget(path, context);
+  }
   if (PRIVATE_STATIC_PATHS.has(path)) {
     return createPrivateTarget(path, context);
   }
@@ -282,7 +283,7 @@ function createTargetForPath(path, context) {
     return createPrivateTarget(path, context);
   }
   if (path.endsWith(`/${PublicRouteSegment.Leaderboard}`) && isGamePath(path)) {
-    return createGameLeaderboardTarget(path, context);
+    return createRetiredLeaderboardAliasTarget(path, context);
   }
   if (isGamePath(path)) {
     return createGameTarget(path, context);
@@ -388,10 +389,6 @@ const seedTargets = [
     depth: 0,
   }),
   createPrivateTarget(buildPublicGamePlayPath('claim'), {
-    source: SeoAuditDiscoverySource.Seed,
-    depth: 0,
-  }),
-  createGameLeaderboardTarget(buildPublicGameLeaderboardPath('claim'), {
     source: SeoAuditDiscoverySource.Seed,
     depth: 0,
   }),

@@ -5,7 +5,6 @@ import {
   PublicRouteSegment,
   buildPublicCategoryPath,
   buildPublicEventDetailPath,
-  buildPublicGameLeaderboardPath,
   buildPublicGameLobbyPath,
   buildPublicGameMatchmakingPath,
   buildPublicGamePath,
@@ -68,8 +67,6 @@ const pageLayoutAssetPath = {
   tournaments: 'Resources/Pages/TournamentsPageLayout.asset',
   tournamentDetail: 'Resources/Pages/TournamentDetailPageLayout.asset',
   leaderboard: 'Resources/Pages/LeaderboardPageLayout.asset',
-  gameLeaderboard: 'Resources/Pages/GameLeaderboardPageLayout.asset',
-  aiBenchmarkLeaderboard: 'Resources/Pages/AiBenchmarkLeaderboardPageLayout.asset',
   lobby: 'Resources/Pages/LobbyPageLayout.asset',
   matches: 'Resources/Pages/MatchesPageLayout.asset',
   matchDetail: 'Resources/Pages/MatchDetailPageLayout.asset',
@@ -227,14 +224,6 @@ const staticPageMetadata = {
     canonicalPath: PublicRoutePath[PublicRouteKey.Leaderboard],
     privacy: PublicRoutePrivacy.Indexable,
     pageLayoutAssetPath: pageLayoutAssetPath.leaderboard,
-  },
-  [PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard]]: {
-    routeKey: PublicRouteKey.AiBenchmarkLeaderboard,
-    title: 'AI Benchmark Leaderboard | Ocentra Games',
-    description: 'Compare AI-versus-AI model benchmark performance across Ocentra game simulations.',
-    canonicalPath: PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard],
-    privacy: PublicRoutePrivacy.Indexable,
-    pageLayoutAssetPath: pageLayoutAssetPath.aiBenchmarkLeaderboard,
   },
   [PublicRoutePath[PublicRouteKey.Social]]: {
     routeKey: PublicRouteKey.Social,
@@ -491,7 +480,7 @@ function resolveStaticMetadata(pathname: string, siteOrigin: string): RouteSeoMe
       ? [structuredWebsite(siteOrigin)]
       : metadata.routeKey === PublicRouteKey.GamesCatalog || metadata.routeKey === PublicRouteKey.CardGamesCatalog
         ? [structuredCollection(siteOrigin, metadata.canonicalPath, metadata.title)]
-        : metadata.routeKey === PublicRouteKey.Leaderboard || metadata.routeKey === PublicRouteKey.AiBenchmarkLeaderboard
+        : metadata.routeKey === PublicRouteKey.Leaderboard
           ? [structuredLeaderboard(siteOrigin, metadata.canonicalPath, metadata.title)]
           : metadata.routeKey === PublicRouteKey.Tournaments || metadata.routeKey === PublicRouteKey.Events
             ? [structuredTournament(siteOrigin, metadata.canonicalPath, metadata.title)]
@@ -537,6 +526,18 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
       description: 'Ocentra Games route.',
       canonicalPath: normalizedPathname,
       privacy: PublicRoutePrivacy.Alias,
+    });
+  }
+
+  if (first === PublicRouteSegment.Leaderboard && second === PublicRouteSegment.AiBenchmarks && !third) {
+    return completeMetadata(siteOrigin, {
+      routeKey: PublicRouteKey.Leaderboard,
+      title: 'Leaderboard | Ocentra Games',
+      description: 'View the overall Ocentra leaderboard across supported games and competitive score tracks.',
+      canonicalPath: PublicRoutePath[PublicRouteKey.Leaderboard],
+      privacy: PublicRoutePrivacy.Alias,
+      pageLayoutAssetPath: pageLayoutAssetPath.leaderboard,
+      structuredData: [structuredLeaderboard(siteOrigin, PublicRoutePath[PublicRouteKey.Leaderboard], 'Leaderboard | Ocentra Games')],
     });
   }
 
@@ -633,13 +634,13 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
     }
     if (third === PublicRouteSegment.Leaderboard) {
       return completeMetadata(siteOrigin, {
-        routeKey: PublicRouteKey.GameLeaderboard,
-        title: `${game.name} Leaderboard | Ocentra Games`,
-        description: `View the ${game.name} leaderboard and score tracks on Ocentra Games.`,
-        canonicalPath: buildPublicGameLeaderboardPath(game.gameId),
-        privacy: PublicRoutePrivacy.Indexable,
-        pageLayoutAssetPath: pageLayoutAssetPath.gameLeaderboard,
-        structuredData: [structuredLeaderboard(siteOrigin, buildPublicGameLeaderboardPath(game.gameId), `${game.name} Leaderboard`)],
+        routeKey: PublicRouteKey.Leaderboard,
+        title: 'Leaderboard | Ocentra Games',
+        description: 'View the overall Ocentra leaderboard across supported games and competitive score tracks.',
+        canonicalPath: PublicRoutePath[PublicRouteKey.Leaderboard],
+        privacy: PublicRoutePrivacy.Alias,
+        pageLayoutAssetPath: pageLayoutAssetPath.leaderboard,
+        structuredData: [structuredLeaderboard(siteOrigin, PublicRoutePath[PublicRouteKey.Leaderboard], 'Leaderboard | Ocentra Games')],
       });
     }
     if (third) {
@@ -793,12 +794,10 @@ export function getSitemapEntries(): SitemapEntry[] {
     { path: PublicRoutePath[PublicRouteKey.Events], priority: '0.7', changefreq: 'daily' },
     { path: PublicRoutePath[PublicRouteKey.Tournaments], priority: '0.8', changefreq: 'daily' },
     { path: PublicRoutePath[PublicRouteKey.Leaderboard], priority: '0.8', changefreq: 'daily' },
-    { path: PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard], priority: '0.8', changefreq: 'daily' },
   ];
   const gameEntries = seoGameCatalog.flatMap(game => [
     { path: buildPublicGamePath(game.gameId), priority: '0.8', changefreq: 'weekly' },
     { path: buildPublicRulesPath(game.gameId), priority: '0.8', changefreq: 'weekly' },
-    { path: buildPublicGameLeaderboardPath(game.gameId), priority: '0.7', changefreq: 'daily' },
   ]);
   const categoryEntries = seoCategoryCatalog.map(category => ({
     path: buildPublicCategoryPath(category.slug),

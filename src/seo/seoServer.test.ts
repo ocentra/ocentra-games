@@ -12,10 +12,10 @@ const siteOrigin = 'https://example.ocentra.test';
 
 describe('SEO server rendering', () => {
   it('injects route-specific title, canonical, robots, and structured data', () => {
-    const rendered = injectSeoIntoHtml(html, resolveSeoMetadata('/leaderboard/ai-benchmarks', siteOrigin));
-    expect(rendered).toContain('<title>AI Benchmark Leaderboard | Ocentra Games</title>');
+    const rendered = injectSeoIntoHtml(html, resolveSeoMetadata('/leaderboard', siteOrigin));
+    expect(rendered).toContain('<title>Leaderboard | Ocentra Games</title>');
     expect(rendered).toContain('name="robots" content="index,follow"');
-    expect(rendered).toContain('rel="canonical" href="https://example.ocentra.test/leaderboard/ai-benchmarks"');
+    expect(rendered).toContain('rel="canonical" href="https://example.ocentra.test/leaderboard"');
     expect(rendered).toContain('property="og:image" content="https://example.ocentra.test/OcentraLogoCommet.png"');
     expect(rendered).toContain('name="twitter:image" content="https://example.ocentra.test/OcentraLogoCommet.png"');
     expect(rendered).toContain('application/ld+json');

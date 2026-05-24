@@ -189,7 +189,8 @@ function catalogGameDetail(game: Game): string {
 }
 
 function catalogGameRoute(game: Game): string {
-  return `/games/${catalogGameId(game)}/leaderboard`;
+  void game;
+  return '/leaderboard';
 }
 
 function catalogGameType(game: Game): number | undefined {

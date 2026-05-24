@@ -39,14 +39,14 @@ describe('appRoutes', () => {
     expect(buildMatchesPath()).toBe('/matches');
     expect(buildMatchDetailPath('match-123')).toBe('/matches/match-123');
     expect(buildLeaderboardPath()).toBe('/leaderboard');
-    expect(buildAiBenchmarkLeaderboardPath()).toBe('/leaderboard/ai-benchmarks');
+    expect(buildAiBenchmarkLeaderboardPath()).toBe('/leaderboard');
     expect(buildTournamentsPath()).toBe('/tournaments');
     expect(buildTournamentDetailPath('may-2026')).toBe('/tournaments/may-2026');
   });
 
   it('builds game-scoped multiplayer and leaderboard paths', () => {
     const gameId = 'claim:ddc6d965-14a7-4586-8a15-674e0daf8b5c';
-    expect(buildGameLeaderboardPath(gameId)).toBe('/games/claim%3Addc6d965-14a7-4586-8a15-674e0daf8b5c/leaderboard');
+    expect(buildGameLeaderboardPath(gameId)).toBe('/leaderboard');
     expect(buildGameLobbyPath(gameId)).toBe('/games/claim%3Addc6d965-14a7-4586-8a15-674e0daf8b5c/lobby');
     expect(buildGameMatchmakingPath(gameId)).toBe('/games/claim%3Addc6d965-14a7-4586-8a15-674e0daf8b5c/matchmaking');
   });
@@ -65,10 +65,10 @@ describe('appRoutes', () => {
     expect(parseAppRoute('/matches')).toEqual({ kind: 'matches' });
     expect(parseAppRoute('/matches/match-123')).toEqual({ kind: 'matchDetail', matchId: 'match-123' });
     expect(parseAppRoute('/leaderboard')).toEqual({ kind: 'leaderboard' });
-    expect(parseAppRoute('/leaderboard/ai-benchmarks')).toEqual({ kind: 'aiBenchmarkLeaderboard' });
+    expect(parseAppRoute('/leaderboard/ai-benchmarks')).toEqual({ kind: 'leaderboard' });
     expect(parseAppRoute('/tournaments')).toEqual({ kind: 'tournaments' });
     expect(parseAppRoute('/tournaments/may-2026')).toEqual({ kind: 'tournamentDetail', tournamentId: 'may-2026' });
-    expect(parseAppRoute('/games/claim/leaderboard')).toEqual({ kind: 'gameLeaderboard', gameId: 'claim' });
+    expect(parseAppRoute('/games/claim/leaderboard')).toEqual({ kind: 'leaderboard' });
     expect(parseAppRoute('/games/claim/lobby')).toEqual({ kind: 'lobby', gameId: 'claim' });
     expect(parseAppRoute('/games/claim/matchmaking')).toEqual({ kind: 'matchmaking', gameId: 'claim' });
   });
