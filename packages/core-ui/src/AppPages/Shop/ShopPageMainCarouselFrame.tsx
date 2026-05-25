@@ -1195,6 +1195,7 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   onCardAction,
   showBadges = true,
   showLearnMore = true,
+  showHeaderCount = true,
   rightActionLabel,
   onRightAction,
   showNavigation = true,
@@ -1356,7 +1357,8 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   const marginBottom = isNarrow ? c.overall.narrowMarginBottom : c.overall.marginBottom;
   const contentX = stageX + c.header.insetX;
   const contentW = stageW - c.header.insetX * 2;
-  const tabTextSize = getFittingTabTextSize(tabs, contentW - 44, c.header.tabMinFont, c.header.tabMaxFont, c.header.tabFirstBoost, c.header.tabCountW);
+  const headerCountW = showHeaderCount ? c.header.tabCountW : 0;
+  const tabTextSize = getFittingTabTextSize(tabs, contentW - 44, c.header.tabMinFont, c.header.tabMaxFont, c.header.tabFirstBoost, headerCountW);
   const tabFirstSize = tabTextSize + c.header.tabFirstBoost;
   const tabsH = Math.max(c.header.minTabsH, tabFirstSize + 18);
   const lineY = stageY + tabsH;
@@ -1425,7 +1427,7 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   const rightActionKind = rightActionLabel?.match(/^what is/i) ? 'arena' : rightActionLabel?.match(/^compare/i) ? 'compare' : 'default';
   const rightActionFullTextSize = Math.max(9.4, Math.min(11.8, tabTextSize * 0.64));
   const rightActionFullW = rightActionLabel ? Math.max(88, Math.min(178, rightActionLabel.length * rightActionFullTextSize * 0.58 + 28)) : 0;
-  const tabsTotalW = tabs.reduce((sum, tab) => sum + getTabBlockWidth(tab.label, tabTextSize, c.header.tabFirstBoost, c.header.tabCountW), 0);
+  const tabsTotalW = tabs.reduce((sum, tab) => sum + getTabBlockWidth(tab.label, tabTextSize, c.header.tabFirstBoost, headerCountW), 0);
   const rightActionAvailableW = Math.max(0, bodyX + bodyW - (contentX + tabsTotalW) - 12);
   const rightActionCompact = rightActionKind !== 'default' && rightActionFullW > Math.max(76, rightActionAvailableW);
   const rightActionDisplayLabel = rightActionCompact ? rightActionKind === 'arena' ? 'AC?' : '' : rightActionLabel ?? '';
@@ -1535,14 +1537,14 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
             <g>
               {tabs.map((tab, tabIndex) => {
                 const priorWidth = tabs.slice(0, tabIndex).reduce(
-                  (sum, prior) => sum + getTabBlockWidth(prior.label, tabTextSize, c.header.tabFirstBoost, c.header.tabCountW),
+                  (sum, prior) => sum + getTabBlockWidth(prior.label, tabTextSize, c.header.tabFirstBoost, headerCountW),
                   0,
                 );
                 const mainX = contentX + priorWidth;
                 const mainY = stageY + c.header.tabTop;
-                const mainW = getTabBlockWidth(tab.label, tabTextSize, c.header.tabFirstBoost, c.header.tabCountW);
+                const mainW = getTabBlockWidth(tab.label, tabTextSize, c.header.tabFirstBoost, headerCountW);
                 const mainH = lineY - mainY;
-                const countW = c.header.tabCountW;
+                const countW = headerCountW;
                 const labelX = mainX + countW;
                 const labelW = mainW - countW;
                 const isActive = tab.id === activeTabId;
@@ -1553,7 +1555,7 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
                 const mainPath = roundedRectPath(mainX, mainY, mainW, mainH, 12, 'top');
                 const countPath = roundedRectPath(mainX, mainY, countW, mainH, 12, 'top');
                 const labelRadius = Math.max(0, Math.min(12, labelW / 2, mainH / 2));
-                const labelPath = `M${labelX} ${mainY} H${labelX + labelW - labelRadius} Q${labelX + labelW} ${mainY} ${labelX + labelW} ${mainY + labelRadius} V${mainY + mainH} H${labelX} Z`;
+                const labelPath = showHeaderCount ? `M${labelX} ${mainY} H${labelX + labelW - labelRadius} Q${labelX + labelW} ${mainY} ${labelX + labelW} ${mainY + labelRadius} V${mainY + mainH} H${labelX} Z` : mainPath;
                 const countFontSize = Math.min(mainH * 0.5, countW * 0.42);
                 const textY = mainY + mainH - 11;
                 const labelCenterX = labelX + labelW / 2;
@@ -1561,26 +1563,32 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
                 return (
                   <g key={tab.id} onClick={() => handleTabChange(tab.id)} onMouseEnter={() => setHoverTabId(tab.id)} onMouseLeave={() => setHoverTabId(null)} style={{ cursor: 'pointer' }} filter={isHover ? `url(#${ids('tabGreenGlow')})` : undefined}>
                     <path d={mainPath} fill={isActive ? `url(#${ids('tabSelectedFill')})` : isHover ? `url(#${ids('tabHoverFill')})` : '#071827'} fillOpacity={isActive ? 0.9 : isHover ? 0.78 : 0.14} stroke={isActive ? '#f5c84b' : isHover ? c.colors.tabHover : '#5fc9ff'} strokeOpacity={isActive ? 0.82 : isHover ? 0.86 : 0.28} strokeWidth="1.5" />
-                    <path d={countPath} fill={isHover ? `url(#${ids('tabHoverFill')})` : `url(#${ids('tabCountGoldFill')})`} stroke={isHover ? c.colors.tabHover : '#f7c84a'} strokeOpacity={isHover ? 0.86 : 0.92} strokeWidth="1.35" filter={!isHover ? `url(#${ids('goldGlow')})` : undefined} />
-                    <path d={countPath} fill={`url(#${ids('tabCountGoldShine')})`} opacity={isHover ? 0.1 : 0.32} pointerEvents="none" />
+                    {showHeaderCount ? (
+                      <>
+                        <path d={countPath} fill={isHover ? `url(#${ids('tabHoverFill')})` : `url(#${ids('tabCountGoldFill')})`} stroke={isHover ? c.colors.tabHover : '#f7c84a'} strokeOpacity={isHover ? 0.86 : 0.92} strokeWidth="1.35" filter={!isHover ? `url(#${ids('goldGlow')})` : undefined} />
+                        <path d={countPath} fill={`url(#${ids('tabCountGoldShine')})`} opacity={isHover ? 0.1 : 0.32} pointerEvents="none" />
+                      </>
+                    ) : null}
                     <path d={labelPath} fill={isActive ? '#1b2f22' : isHover ? '#0d4029' : '#071827'} fillOpacity={isActive ? 0.58 : isHover ? 0.66 : 0.18} stroke={isActive ? '#f5c84b' : isHover ? c.colors.tabHover : '#5fc9ff'} strokeOpacity={isActive ? 0.62 : isHover ? 0.78 : 0.22} strokeWidth="1.1" />
-                    <text
-                      x={mainX + countW / 2}
-                      y={mainY + mainH / 2 + countFontSize * 0.35}
-                      textAnchor="middle"
-                      fontFamily="Arial Narrow, Arial, sans-serif"
-                      fontSize={countFontSize * 0.95}
-                      fontWeight="900"
-                      fill={isHover ? '#eafff4' : '#07111a'}
-                      stroke={isHover ? '#02100b' : '#fff3a3'}
-                      strokeOpacity={isHover ? 0.9 : 0.48}
-                      strokeWidth={isHover ? Math.max(1.2, countFontSize * 0.12) : Math.max(0.45, countFontSize * 0.035)}
-                      strokeLinejoin="round"
-                      paintOrder="stroke fill"
-                      filter={isHover ? `url(#${ids('tabGreenGlow')})` : undefined}
-                    >
-                      {cards.length > 0 ? cards.length : tab.games.length}
-                    </text>
+                    {showHeaderCount ? (
+                      <text
+                        x={mainX + countW / 2}
+                        y={mainY + mainH / 2 + countFontSize * 0.35}
+                        textAnchor="middle"
+                        fontFamily="Arial Narrow, Arial, sans-serif"
+                        fontSize={countFontSize * 0.95}
+                        fontWeight="900"
+                        fill={isHover ? '#eafff4' : '#07111a'}
+                        stroke={isHover ? '#02100b' : '#fff3a3'}
+                        strokeOpacity={isHover ? 0.9 : 0.48}
+                        strokeWidth={isHover ? Math.max(1.2, countFontSize * 0.12) : Math.max(0.45, countFontSize * 0.035)}
+                        strokeLinejoin="round"
+                        paintOrder="stroke fill"
+                        filter={isHover ? `url(#${ids('tabGreenGlow')})` : undefined}
+                      >
+                        {cards.length > 0 ? cards.length : tab.games.length}
+                      </text>
+                    ) : null}
                     <text x={labelCenterX} y={textY} textAnchor="middle" fontFamily="Impact, Arial Black" fill={isActive ? '#8fd8ff' : isHover ? '#9dffc2' : '#d9edff'} opacity={isActive || isHover ? 1 : 0.58} filter={isActive ? `url(#${ids('cyanGlow')})` : undefined}>
                       <tspan fontSize={tabFirstSize} letterSpacing="2">{firstLetter}</tspan>
                       <tspan fontSize={tabTextSize} letterSpacing="5" dx="4">{restLetters}</tspan>

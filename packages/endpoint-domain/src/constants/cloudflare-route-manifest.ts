@@ -186,6 +186,12 @@ export const CloudflareRouteManifest: readonly RouteSpec[] = [
     handlerKey: CloudflareHandlerKey.Leaderboard,
   },
   {
+    path: ApiEndpoint.Competition.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Competition,
+    priority: 10,
+  },
+  {
     path: ApiEndpoint.Players.Base,
     match: RouteMatch.Prefix,
     handlerKey: CloudflareHandlerKey.Players,

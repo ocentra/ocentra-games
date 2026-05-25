@@ -38,6 +38,7 @@ export const CloudflareHandlerKey = {
   AIGenerate: 'aiGenerate' as HandlerKey,
   AIEscrow: 'aiEscrow' as HandlerKey,
   Leaderboard: 'leaderboard' as HandlerKey,
+  Competition: 'competition' as HandlerKey,
   Players: 'players' as HandlerKey,
   Credits: 'credits' as HandlerKey,
   Badges: 'badges' as HandlerKey,

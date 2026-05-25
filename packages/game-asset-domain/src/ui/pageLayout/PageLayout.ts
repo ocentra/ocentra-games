@@ -73,6 +73,7 @@ export interface PageLayoutDocument {
   leaderboardContent?: PartialLeaderboardPageContentData;
   shopControls?: Record<string, unknown>;
   shopContent?: PartialShopPageContentData;
+  competitionPrograms?: Record<string, unknown>;
   contentPlan?: SelectedGameContentPlan;
   preview?: {
     sampleGameRef?: {
@@ -188,6 +189,9 @@ export class PageLayout extends Layout {
 
   @serializable({ label: 'Shop Content' })
   shopContent: PartialShopPageContentData = {};
+
+  @serializable({ label: 'Competition Programs' })
+  competitionPrograms: Record<string, unknown> = {};
 
   @serializable({ label: 'Content Plan' })
   contentPlan: SelectedGameContentPlan = DEFAULT_SELECTED_GAME_CONTENT_PLAN;

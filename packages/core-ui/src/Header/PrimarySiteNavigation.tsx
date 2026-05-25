@@ -176,8 +176,12 @@ function resolveActiveItem(pathname: string, items: SiteNavItem[]) {
   if (pathname.startsWith('/player-hub')) {
     return 'Profile';
   }
-  if (pathname.startsWith(PublicRoutePath[PublicRouteKey.Tournaments])) {
-    return 'Tournaments';
+  if (
+    pathname.startsWith(PublicRoutePath[PublicRouteKey.Competition])
+    || pathname.startsWith(PublicRoutePath[PublicRouteKey.Events])
+    || pathname.startsWith(PublicRoutePath[PublicRouteKey.Tournaments])
+  ) {
+    return 'Competition';
   }
   if (pathname.startsWith('/social')) {
     return 'Social';
@@ -674,7 +678,15 @@ export function PrimarySiteNavigation({ includeAdmin = false, config, extraItems
       { label: 'Shop', path: PublicRoutePath[PublicRouteKey.Shop] },
       { label: 'Social', path: PublicRoutePath[PublicRouteKey.Social] },
       { label: 'Games', path: PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer] },
-      { label: 'Tournaments', path: PublicRoutePath[PublicRouteKey.Tournaments] },
+      {
+        label: 'Competition',
+        path: PublicRoutePath[PublicRouteKey.Competition],
+        matchPrefixes: [
+          PublicRoutePath[PublicRouteKey.Competition],
+          PublicRoutePath[PublicRouteKey.Events],
+          PublicRoutePath[PublicRouteKey.Tournaments],
+        ],
+      },
       { label: 'Leaderboard', path: PublicRoutePath[PublicRouteKey.Leaderboard] },
       { label: 'Profile', path: PublicRoutePath[PublicRouteKey.PlayerHub], matchPrefixes: [PublicRoutePath[PublicRouteKey.PlayerHub], PublicRoutePath[PublicRouteKey.Settings]] },
       ...(includeAdmin ? [{ label: 'Admin', path: PublicRoutePath[PublicRouteKey.Admin] }] : []),

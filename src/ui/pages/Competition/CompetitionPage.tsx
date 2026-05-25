@@ -4,9 +4,13 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+import type { HeaderIconRenderArgs } from '@ocentra/core-ui/Header/UnifiedHeader.config';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { CompetitionPageContent } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
+import type { CompetitionPageSvgControls } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
+import type { ShopPageContentData } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
+import { shopPageWeeklyCupImageUrl } from '@ocentra/app-assets/shop-page';
 import {
   resolveLeaderboardPageGameType,
   type LeaderboardGameOption,
@@ -16,6 +20,15 @@ import {
   type LeaderboardTone,
 } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgContent';
 import type { LeaderboardPageSvgControls } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgSurfaceControls';
+import type { CompetitionProgram } from '@ocentra/endpoint-domain/schemas/competition';
+import {
+  PublicRouteKey,
+  PublicRoutePath,
+  buildPublicEventDetailPath,
+  buildPublicGameLeaderboardPath,
+  buildPublicGameLobbyPath,
+  buildPublicTournamentDetailPath,
+} from '@ocentra/endpoint-domain/constants/public-routes';
 import { APP_VERSION } from '@/constants/version';
 import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
@@ -51,6 +64,8 @@ type LeaderboardPageMode = Extract<
   'leaderboard' | 'gameLeaderboard' | 'aiBenchmarkLeaderboard'
 >;
 
+type CompetitionProgramPageMode = Exclude<NonNullable<CompetitionPageProps['pageMode']>, LeaderboardPageMode>;
+
 type ResourceEntryRef = {
   guid?: string;
   path?: string;
@@ -74,6 +89,33 @@ const LEADERBOARD_PAGE_LAYOUT_ASSET_PATH_BY_MODE: Record<LeaderboardPageMode, st
   gameLeaderboard: 'Resources/Pages/GameLeaderboardPageLayout.asset',
   aiBenchmarkLeaderboard: 'Resources/Pages/AiBenchmarkLeaderboardPageLayout.asset',
 };
+
+const COMPETITION_PAGE_LAYOUT_ASSET_PATH_BY_MODE: Record<CompetitionProgramPageMode, string> = {
+  competition: 'Resources/Pages/CompetitionPageLayout.asset',
+  events: 'Resources/Pages/EventsPageLayout.asset',
+  eventDetail: 'Resources/Pages/EventDetailPageLayout.asset',
+  tournaments: 'Resources/Pages/TournamentsPageLayout.asset',
+  tournamentDetail: 'Resources/Pages/TournamentDetailPageLayout.asset',
+  matches: 'Resources/Pages/MatchesPageLayout.asset',
+  matchDetail: 'Resources/Pages/MatchDetailPageLayout.asset',
+};
+const SHOP_PAGE_LAYOUT_ASSET_PATH = 'Resources/Pages/ShopPageLayout.asset';
+const COMPETITION_HEADER_CUP_ASPECT = 1.2;
+
+function renderCompetitionHeaderCup({ cx, cy, size }: HeaderIconRenderArgs) {
+  const height = Math.min(38, Math.max(28, size * 2.6));
+  const width = height * COMPETITION_HEADER_CUP_ASPECT;
+  return (
+    <image
+      href={shopPageWeeklyCupImageUrl}
+      x={cx - width / 2}
+      y={cy - height / 2}
+      width={width}
+      height={height}
+      preserveAspectRatio="xMidYMid meet"
+    />
+  );
+}
 
 function asRecord(value: unknown): LooseRecord {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as LooseRecord : {};
@@ -230,12 +272,47 @@ async function loadLeaderboardPageLayoutData(
   };
 }
 
+async function loadCompetitionPageLayoutData(
+  pageMode: CompetitionProgramPageMode,
+): Promise<{
+  controls?: Partial<CompetitionPageSvgControls>;
+  content?: Partial<ShopPageContentData>;
+}> {
+  const resources = await getEntryIndexResourceEntries();
+  const assetPath = COMPETITION_PAGE_LAYOUT_ASSET_PATH_BY_MODE[pageMode];
+  const resource = findResourceByPath(resources, assetPath, 'PageLayout');
+  if (!resource?.guid) throw new Error('Competition layout asset not found');
+  const layoutDocument = await loadRawAssetDocumentByGuid(resource.guid, {
+    cache: 'no-store',
+    checksum: resource.checksum,
+  });
+  const data = dataOf(layoutDocument);
+  const controls = asRecord(data.shopControls);
+  const content = asRecord(data.shopContent);
+  const selectedControls = Object.keys(controls).length > 0 ? controls : await loadShopPageControls(resources);
+  return {
+    controls: Object.keys(selectedControls).length > 0 ? selectedControls as Partial<CompetitionPageSvgControls> : undefined,
+    content: Object.keys(content).length > 0 ? content as Partial<ShopPageContentData> : undefined,
+  };
+}
+
+async function loadShopPageControls(resources: ResourceEntryRef[]): Promise<LooseRecord> {
+  const resource = findResourceByPath(resources, SHOP_PAGE_LAYOUT_ASSET_PATH, 'PageLayout');
+  if (!resource?.guid) return {};
+  const layoutDocument = await loadRawAssetDocumentByGuid(resource.guid, {
+    cache: 'no-store',
+    checksum: resource.checksum,
+  });
+  const data = dataOf(layoutDocument);
+  return asRecord(data.shopControls);
+}
+
 function getCompetitionHeader(
   pageMode: NonNullable<CompetitionPageProps['pageMode']>,
   gameId?: string,
-  tournamentId?: string,
-  eventId?: string,
-  matchId?: string
+  _tournamentId?: string,
+  _eventId?: string,
+  _matchId?: string
 ): { gameName: string; tagline: string } {
   if (pageMode === 'leaderboard') {
     return { gameName: 'Leaderboard', tagline: 'Overall ranks across every game.' };
@@ -247,24 +324,24 @@ function getCompetitionHeader(
     return { gameName: 'AI Benchmarks', tagline: 'AI-vs-AI model standings and benchmark runs.' };
   }
   if (pageMode === 'events') {
-    return { gameName: 'Events', tagline: 'Campaigns, seasonal entry paths, and shop-backed access.' };
+    return { gameName: 'Events', tagline: '' };
   }
   if (pageMode === 'eventDetail') {
-    return { gameName: 'Event Detail', tagline: `Rules, access, and rewards for ${eventId ?? 'the selected event'}.` };
+    return { gameName: 'Event Detail', tagline: '' };
   }
   if (pageMode === 'tournaments') {
-    return { gameName: 'Tournaments', tagline: 'Scheduled competitive events and active brackets.' };
+    return { gameName: 'Tournaments', tagline: '' };
   }
   if (pageMode === 'tournamentDetail') {
-    return { gameName: 'Tournament Detail', tagline: `Bracket, registration, and status for ${tournamentId ?? 'the selected tournament'}.` };
+    return { gameName: 'Tournament Detail', tagline: '' };
   }
   if (pageMode === 'matches') {
-    return { gameName: 'Matches', tagline: 'Account match history, table receipts, and result records.' };
+    return { gameName: 'Matches', tagline: '' };
   }
   if (pageMode === 'matchDetail') {
-    return { gameName: 'Match Detail', tagline: `Result record and table receipt for ${matchId ?? 'the selected match'}.` };
+    return { gameName: 'Match Detail', tagline: '' };
   }
-  return { gameName: 'Competition', tagline: 'Rank ladders, nearby standings, and tournament brackets.' };
+  return { gameName: 'Competition', tagline: '' };
 }
 
 export function CompetitionPage({
@@ -281,14 +358,22 @@ export function CompetitionPage({
   const accountUserId = user && user.isGuest !== true ? user.uid : null;
   const hasAccount = accountUserId !== null;
   const isLeaderboardMode = isLeaderboardPageMode(pageMode);
+  const selectedProgramId = eventId ?? routeTournamentId ?? undefined;
+  const programType = pageMode === 'events' || pageMode === 'eventDetail'
+    ? 'event'
+    : pageMode === 'tournaments' || pageMode === 'tournamentDetail'
+      ? 'tournament'
+      : undefined;
   const [leaderboardControls, setLeaderboardControls] = useState<Partial<LeaderboardPageSvgControls> | undefined>(undefined);
   const [leaderboardContent, setLeaderboardContent] = useState<PartialLeaderboardPageContentData | undefined>(undefined);
+  const [competitionControls, setCompetitionControls] = useState<Partial<CompetitionPageSvgControls> | undefined>(undefined);
+  const [competitionContent, setCompetitionContent] = useState<Partial<ShopPageContentData> | undefined>(undefined);
   const [requestedLeaderboardGameType, setRequestedLeaderboardGameType] = useState<number | null>(null);
   const {
     loading,
     registering,
-    error,
     leaderboardError,
+    programsError,
     gameType,
     seasonId,
     lastUpdated,
@@ -298,10 +383,30 @@ export function CompetitionPage({
     nearbyBelow,
     tournamentId,
     tournamentBracket,
+    programs,
+    featuredProgramId,
+    selectedProgram,
+    programsLoading,
+    registeringProgramId,
+    checkingInProgramId,
+    registrationResult,
+    checkInResult,
     refreshLeaderboard,
     loadTournamentBracket,
     registerForTournament,
-  } = useCompetitionData(accountUserId, { loadDefaultTournament: !isLeaderboardMode });
+    refreshPrograms,
+    loadProgram,
+    registerProgram,
+    checkInProgram,
+  } = useCompetitionData(accountUserId, {
+    loadDefaultTournament: isLeaderboardMode,
+    loadPrograms: !isLeaderboardMode,
+    selectedProgramId,
+    programFilter: {
+      type: programType,
+      gameId,
+    },
+  });
 
   const handleLogout = () => {
     if (onLogoutClick) {
@@ -311,7 +416,7 @@ export function CompetitionPage({
   };
   const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
   const headerDynamicData = getCompetitionHeader(pageMode, gameId, routeTournamentId ?? tournamentId, eventId, matchId);
-  const contentError = isLeaderboardMode ? leaderboardError : error;
+  const contentError = isLeaderboardMode ? leaderboardError : programsError;
 
   useEffect(() => {
     let cancelled = false;
@@ -348,6 +453,29 @@ export function CompetitionPage({
   }, [isLeaderboardMode, pageMode]);
 
   useEffect(() => {
+    let cancelled = false;
+    if (isLeaderboardMode) {
+      setCompetitionControls(undefined);
+      setCompetitionContent(undefined);
+      return () => { cancelled = true; };
+    }
+    void loadCompetitionPageLayoutData(pageMode as CompetitionProgramPageMode)
+      .then((layoutData) => {
+        if (!cancelled) {
+          setCompetitionControls(layoutData.controls);
+          setCompetitionContent(layoutData.content);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCompetitionControls(undefined);
+          setCompetitionContent(undefined);
+        }
+      });
+    return () => { cancelled = true; };
+  }, [isLeaderboardMode, pageMode]);
+
+  useEffect(() => {
     if (!isLeaderboardMode) return;
     const nextGameType = resolveLeaderboardPageGameType(leaderboardContent, pageMode, gameId);
     if (typeof nextGameType !== 'number' || nextGameType === gameType || requestedLeaderboardGameType === nextGameType) return;
@@ -355,26 +483,62 @@ export function CompetitionPage({
     void refreshLeaderboard(nextGameType);
   }, [gameId, gameType, isLeaderboardMode, leaderboardContent, pageMode, refreshLeaderboard, requestedLeaderboardGameType]);
 
+  const publishRoute = (path: string | undefined) => {
+    if (!path) return;
+    EventBus.instance.publish(new ShowScreenEvent(path));
+  };
+
+  const programDetailPath = (program: CompetitionProgram): string => (
+    program.routes.detailPath
+    ?? (program.programType === 'tournament'
+      ? buildPublicTournamentDetailPath(program.programId)
+      : buildPublicEventDetailPath(program.programId))
+  );
+
+  const programLobbyPath = (program: CompetitionProgram): string => (
+    program.routes.lobbyPath
+    ?? (program.gameIds[0] ? buildPublicGameLobbyPath(program.gameIds[0]) : PublicRoutePath[PublicRouteKey.Lobby])
+  );
+
+  const programLeaderboardPath = (program: CompetitionProgram): string => (
+    program.routes.leaderboardPath
+    ?? (program.gameIds[0] ? buildPublicGameLeaderboardPath(program.gameIds[0]) : PublicRoutePath[PublicRouteKey.Leaderboard])
+  );
+
   return (
     <UnifiedPageShell
       className="cp-page"
+      workClassName="sp-shell-work"
+      workScrollMode="auto"
       background={<DynamicBackground />}
       header={
         <UnifiedHeader
           dynamicData={headerDynamicData}
-          showPrimaryNavigation={!isLeaderboardMode}
+          showPrimaryNavigation={false}
           config={{
             right: headerRightConfig,
             left: {
               onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
-            }
+            },
+            center: isLeaderboardMode ? undefined : {
+              mode: 'B',
+              contentGap: 44,
+              modeB: {
+                tagline: '',
+                iconSize: 28,
+                pairGap: 0,
+                icons: [],
+                leftIcons: [renderCompetitionHeaderCup],
+                rightIcons: [renderCompetitionHeaderCup],
+              },
+            },
           }}
         />
       }
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
       <CompetitionPageContent
-        loading={loading}
+        loading={isLeaderboardMode ? loading : programsLoading}
         registering={registering}
         error={contentError}
         gameType={gameType}
@@ -387,10 +551,19 @@ export function CompetitionPage({
         nearbyBelow={nearbyBelow}
         tournamentId={tournamentId}
         tournamentRounds={Array.isArray(tournamentBracket?.rounds) ? tournamentBracket.rounds : []}
+        programs={programs}
+        featuredProgramId={featuredProgramId}
+        selectedProgram={selectedProgram}
+        registeringProgramId={registeringProgramId}
+        checkingInProgramId={checkingInProgramId}
+        registrationResult={registrationResult}
+        checkInResult={checkInResult}
         pageMode={pageMode}
         gameId={gameId}
         eventId={eventId}
         matchId={matchId}
+        competitionControls={competitionControls}
+        competitionContent={competitionContent}
         leaderboardControls={leaderboardControls}
         leaderboardContent={leaderboardContent}
         onRefreshLeaderboard={(nextGameType) => { void refreshLeaderboard(nextGameType); }}
@@ -400,6 +573,22 @@ export function CompetitionPage({
             await registerForTournament(nextTournamentId);
           });
         }}
+        onRefreshPrograms={(filter) => { void refreshPrograms(filter); }}
+        onSelectProgram={(programId) => { void loadProgram(programId); }}
+        onRegisterProgram={(programId) => {
+          void runWithAccount(async () => {
+            await registerProgram(programId);
+          });
+        }}
+        onCheckInProgram={(programId) => {
+          void runWithAccount(async () => {
+            await checkInProgram(programId);
+          });
+        }}
+        onOpenProgram={(program) => publishRoute(programDetailPath(program))}
+        onOpenShop={(program) => publishRoute(program.routes.shopPath ?? PublicRoutePath[PublicRouteKey.Shop])}
+        onOpenLobby={(program) => publishRoute(programLobbyPath(program))}
+        onOpenLeaderboard={(program) => publishRoute(programLeaderboardPath(program))}
         onMatchmaking={() => EventBus.instance.publish(new ShowScreenEvent('matchmaking'))}
       />
     </UnifiedPageShell>

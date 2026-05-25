@@ -41,6 +41,10 @@ export const EndpointIds = {
   LeaderboardUser: 'leaderboard.user' as EndpointId,
   LeaderboardNearby: 'leaderboard.nearby' as EndpointId,
 
+  CompetitionBase: 'competition.base' as EndpointId,
+  CompetitionPrograms: 'competition.programs' as EndpointId,
+  CompetitionProgramById: 'competition.programById' as EndpointId,
+
   PlayersBase: 'players.base' as EndpointId,
   PlayersStats: 'players.stats' as EndpointId,
   PlayersLearning: 'players.learning' as EndpointId,
@@ -157,6 +161,7 @@ const dataExportBase = `${ApiPathPrefix}/data-export`;
 const dataBase = `${ApiPathPrefix}/data`;
 const aiBase = `${ApiPathPrefix}/ai`;
 const leaderboardBase = `${ApiPathPrefix}/leaderboard`;
+const competitionBase = `${ApiPathPrefix}/competition`;
 const playersBase = `${ApiPathPrefix}/players`;
 const creditsBase = `${ApiPathPrefix}/credits`;
 const badgesBase = `${ApiPathPrefix}/badges`;
@@ -280,6 +285,14 @@ export const ApiEndpoint = {
     ByGameType: (gameType: string | number): ApiPath => `${leaderboardBase}/${gameType}` as ApiPath,
     User: (gameType: string | number, userId: string): ApiPath => `${leaderboardBase}/${gameType}/user/${userId}` as ApiPath,
     Nearby: (gameType: string | number, userId: string): ApiPath => `${leaderboardBase}/${gameType}/nearby/${userId}` as ApiPath,
+  },
+
+  Competition: {
+    Base: competitionBase as ApiPath,
+    Programs: `${competitionBase}/programs` as ApiPath,
+    ProgramById: (programId: string): ApiPath => `${competitionBase}/programs/${encodeURIComponent(programId)}` as ApiPath,
+    Register: (programId: string): ApiPath => `${competitionBase}/programs/${encodeURIComponent(programId)}/register` as ApiPath,
+    CheckIn: (programId: string): ApiPath => `${competitionBase}/programs/${encodeURIComponent(programId)}/check-in` as ApiPath,
   },
 
   Players: {

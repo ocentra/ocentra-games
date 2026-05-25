@@ -28,6 +28,7 @@ type StandalonePanelKind =
   | 'lobby-page-layout-controls'
   | 'leaderboard-page-layout-controls'
   | 'shop-page-layout-controls'
+  | 'competition-page-layout-controls'
   | 'auth-page-layout-controls'
   | 'selected-game-layout-controls'
   | 'games-catalog-layout-controls'
@@ -39,6 +40,7 @@ function isLayoutControlsPanel(panel: StandalonePanelKind): boolean {
     panel === 'lobby-page-layout-controls' ||
     panel === 'leaderboard-page-layout-controls' ||
     panel === 'shop-page-layout-controls' ||
+    panel === 'competition-page-layout-controls' ||
     panel === 'auth-page-layout-controls' ||
     panel === 'selected-game-layout-controls' ||
     panel === 'games-catalog-layout-controls' ||

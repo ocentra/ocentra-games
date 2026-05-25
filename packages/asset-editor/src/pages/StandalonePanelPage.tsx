@@ -91,6 +91,7 @@ import {
 } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgSurfaceControls';
 import { ShopPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgControlsPanel';
 import { ShopPageContentControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageContentControlsPanel';
+import { CompetitionProgramsControlsPanel } from '@ocentra/core-ui/AppPages/Competition/CompetitionProgramsControlsPanel';
 import {
   DEFAULT_SHOP_PAGE_CONTENT,
   normalizeShopPageContent,
@@ -101,6 +102,7 @@ import {
   normalizeShopPageSvgControls,
   type ShopPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgSurfaceControls';
+import type { CompetitionProgramsResponse } from '@ocentra/endpoint-domain/schemas/competition';
 import { AuthPageSvgControlsPanel } from '@ocentra/core-ui/Auth/AuthPageSvgControlsPanel';
 import {
   DEFAULT_AUTH_PAGE_SVG_CONTROLS,
@@ -198,6 +200,16 @@ import {
   saveShopPageLayoutControlsToDisk,
 } from '@/utils/shopPageLayoutControlsPersistence';
 import {
+  COMPETITION_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type CompetitionPageLayoutControlsMessage,
+} from '@/utils/competitionPageLayoutControlsChannel';
+import {
+  COMPETITION_PROGRAMS_FEED_ASSET_PATH,
+  loadCompetitionPageLayoutControlsFromDisk,
+  normalizeCompetitionProgramsDocument,
+  saveCompetitionPageLayoutControlsToDisk,
+} from '@/utils/competitionPageLayoutControlsPersistence';
+import {
   AUTH_PAGE_LAYOUT_CONTROLS_CHANNEL,
   type AuthPageLayoutControlsMessage,
 } from '@/utils/authPageLayoutControlsChannel';
@@ -248,6 +260,7 @@ type StandalonePanel =
   | 'lobby-page-layout-controls'
   | 'leaderboard-page-layout-controls'
   | 'shop-page-layout-controls'
+  | 'competition-page-layout-controls'
   | 'auth-page-layout-controls'
   | 'selected-game-layout-controls'
   | 'games-catalog-layout-controls'
@@ -3975,6 +3988,230 @@ const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ ass
   );
 };
 
+const createEmptyCompetitionPrograms = (): CompetitionProgramsResponse =>
+  normalizeCompetitionProgramsDocument({
+    programs: [],
+    source: 'asset',
+    generatedAt: new Date().toISOString(),
+  });
+
+const StandaloneCompetitionPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
+  const [controls, setControls] = useState<ShopPageSvgControls>(DEFAULT_SHOP_PAGE_SVG_CONTROLS);
+  const [content, setContent] = useState<ShopPageContentData>(DEFAULT_SHOP_PAGE_CONTENT);
+  const [programs, setPrograms] = useState<CompetitionProgramsResponse>(createEmptyCompetitionPrograms);
+  const [activePane, setActivePane] = useState<'layout' | 'content' | 'programs'>('layout');
+  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState('');
+  const channelRef = useRef<BroadcastChannel | null>(null);
+  const controlsRef = useRef<ShopPageSvgControls>(DEFAULT_SHOP_PAGE_SVG_CONTROLS);
+  const contentRef = useRef<ShopPageContentData>(DEFAULT_SHOP_PAGE_CONTENT);
+  const programsRef = useRef<CompetitionProgramsResponse>(createEmptyCompetitionPrograms());
+
+  useEffect(() => {
+    controlsRef.current = controls;
+  }, [controls]);
+
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
+
+  useEffect(() => {
+    programsRef.current = programs;
+  }, [programs]);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadCompetitionPageLayoutControlsFromDisk(assetPath)
+      .then(result => {
+        if (cancelled) return;
+        controlsRef.current = result.controls;
+        contentRef.current = result.content;
+        programsRef.current = result.programs;
+        setControls(result.controls);
+        setContent(result.content);
+        setPrograms(result.programs);
+      })
+      .catch(error => {
+        if (!cancelled) setStatus(error instanceof Error ? error.message : 'Load failed');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    const channel = new BroadcastChannel(COMPETITION_PAGE_LAYOUT_CONTROLS_CHANNEL);
+    channelRef.current = channel;
+    const handler = (event: MessageEvent<CompetitionPageLayoutControlsMessage>) => {
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        const nextControls = normalizeShopPageSvgControls(event.data.controls);
+        controlsRef.current = nextControls;
+        setControls(nextControls);
+        if (event.data.content) {
+          const nextContent = normalizeShopPageContent(event.data.content);
+          contentRef.current = nextContent;
+          setContent(nextContent);
+        }
+        if (event.data.programs) {
+          const nextPrograms = normalizeCompetitionProgramsDocument(event.data.programs);
+          programsRef.current = nextPrograms;
+          setPrograms(nextPrograms);
+        }
+      }
+    };
+    channel.addEventListener('message', handler);
+    channel.postMessage({ type: 'request-state' } satisfies CompetitionPageLayoutControlsMessage);
+
+    return () => {
+      cancelled = true;
+      channel.removeEventListener('message', handler);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [assetPath]);
+
+  const broadcast = useCallback((nextControls: ShopPageSvgControls, nextContent: ShopPageContentData, nextPrograms: CompetitionProgramsResponse) => {
+    channelRef.current?.postMessage({
+      type: 'update',
+      controls: nextControls,
+      content: nextContent,
+      programs: nextPrograms,
+    } satisfies CompetitionPageLayoutControlsMessage);
+  }, []);
+
+  const updateControls = useCallback<React.Dispatch<React.SetStateAction<ShopPageSvgControls>>>((value) => {
+    setControls((previous: ShopPageSvgControls) => {
+      const next = normalizeShopPageSvgControls(
+        typeof value === 'function' ? value(previous) : value
+      );
+      controlsRef.current = next;
+      broadcast(next, contentRef.current, programsRef.current);
+      return next;
+    });
+  }, [broadcast]);
+
+  const updateContent = useCallback<React.Dispatch<React.SetStateAction<ShopPageContentData>>>((value) => {
+    setContent((previous: ShopPageContentData) => {
+      const next = normalizeShopPageContent(
+        typeof value === 'function' ? value(previous) : value
+      );
+      contentRef.current = next;
+      broadcast(controlsRef.current, next, programsRef.current);
+      return next;
+    });
+  }, [broadcast]);
+
+  const updatePrograms = useCallback<React.Dispatch<React.SetStateAction<CompetitionProgramsResponse>>>((value) => {
+    setPrograms((previous: CompetitionProgramsResponse) => {
+      const next = normalizeCompetitionProgramsDocument(
+        typeof value === 'function' ? value(previous) : value
+      );
+      programsRef.current = next;
+      broadcast(controlsRef.current, contentRef.current, next);
+      return next;
+    });
+  }, [broadcast]);
+
+  const saveAll = useCallback(async (
+    nextControls = controlsRef.current,
+    nextContent = contentRef.current,
+    nextPrograms = programsRef.current,
+  ) => {
+    const saved = await saveCompetitionPageLayoutControlsToDisk(
+      nextControls,
+      nextContent,
+      nextPrograms,
+      assetPath,
+    );
+    controlsRef.current = saved.controls;
+    contentRef.current = saved.content;
+    programsRef.current = saved.programs;
+    setControls(saved.controls);
+    setContent(saved.content);
+    setPrograms(saved.programs);
+    broadcast(saved.controls, saved.content, saved.programs);
+    const layoutSyncResult = await syncSavedLayoutAssetToR2(assetPath);
+    const feedSyncResult = await syncSavedLayoutAssetToR2(COMPETITION_PROGRAMS_FEED_ASSET_PATH);
+    return `${layoutSyncResult.message} ${feedSyncResult.message}`;
+  }, [assetPath, broadcast]);
+
+  const handleSave = useCallback(async (nextControls: ShopPageSvgControls) => {
+    return saveAll(nextControls, contentRef.current, programsRef.current);
+  }, [saveAll]);
+
+  const handleContentSave = useCallback(async (nextContent: ShopPageContentData) => {
+    return saveAll(controlsRef.current, normalizeShopPageContent(nextContent), programsRef.current);
+  }, [saveAll]);
+
+  const handleProgramsSave = useCallback(async (nextPrograms: CompetitionProgramsResponse) => {
+    return saveAll(controlsRef.current, contentRef.current, normalizeCompetitionProgramsDocument(nextPrograms));
+  }, [saveAll]);
+
+  if (isLoading) {
+    return <StandalonePanelLoading label="Loading competition layout controls" />;
+  }
+
+  return (
+    <main className="standalone-panel-page standalone-panel-page--shop-authoring">
+      <header className="standalone-panel-page__shop-authoring-header">
+        <div>
+          <span className="standalone-panel-page__shop-authoring-kicker">Competition Page</span>
+          <h1>Authoring Controls</h1>
+          <p>Layout tunes the shared surface. Content authors the waiting-state copy and imagery. Programs authors events, tournaments, entry, schedule, rewards, routes, and the generated public feed.</p>
+        </div>
+      </header>
+      <nav className="standalone-panel-page__shop-authoring-tabs" aria-label="Competition authoring panes">
+        <button
+          type="button"
+          className={activePane === 'layout' ? 'is-active' : ''}
+          aria-pressed={activePane === 'layout'}
+          onClick={() => setActivePane('layout')}
+        >
+          Layout
+        </button>
+        <button
+          type="button"
+          className={activePane === 'content' ? 'is-active' : ''}
+          aria-pressed={activePane === 'content'}
+          onClick={() => setActivePane('content')}
+        >
+          Content
+        </button>
+        <button
+          type="button"
+          className={activePane === 'programs' ? 'is-active' : ''}
+          aria-pressed={activePane === 'programs'}
+          onClick={() => setActivePane('programs')}
+        >
+          Programs
+        </button>
+      </nav>
+      <section className="standalone-panel-page__shop-authoring-body">
+        {activePane === 'layout' ? (
+          <ShopPageSvgControlsPanel
+            controls={controls}
+            onControlsChange={updateControls}
+            onSave={handleSave}
+          />
+        ) : activePane === 'content' ? (
+          <ShopPageContentControlsPanel
+            content={content}
+            onContentChange={updateContent}
+            onSave={handleContentSave}
+          />
+        ) : (
+          <CompetitionProgramsControlsPanel
+            programsDocument={programs}
+            onProgramsChange={updatePrograms}
+            onSave={handleProgramsSave}
+          />
+        )}
+      </section>
+      {status && (
+        <p className="standalone-panel-page__status">{status}</p>
+      )}
+    </main>
+  );
+};
+
 const StandaloneAuthPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
   const [controls, setControls] = useState<AuthPageSvgControls>(DEFAULT_AUTH_PAGE_SVG_CONTROLS);
   const [isLoading, setIsLoading] = useState(true);
@@ -4223,6 +4460,7 @@ export const StandalonePanelPage: React.FC = () => {
         panel === 'lobby-page-layout-controls' ||
         panel === 'leaderboard-page-layout-controls' ||
         panel === 'shop-page-layout-controls' ||
+        panel === 'competition-page-layout-controls' ||
         panel === 'auth-page-layout-controls' ||
         panel === 'selected-game-layout-controls' ||
         panel === 'games-catalog-layout-controls' ||
@@ -4260,6 +4498,7 @@ export const StandalonePanelPage: React.FC = () => {
     params.panel !== 'lobby-page-layout-controls' &&
     params.panel !== 'leaderboard-page-layout-controls' &&
     params.panel !== 'shop-page-layout-controls' &&
+    params.panel !== 'competition-page-layout-controls' &&
     params.panel !== 'auth-page-layout-controls' &&
     params.panel !== 'selected-game-layout-controls' &&
     params.panel !== 'games-catalog-layout-controls';
@@ -4321,6 +4560,10 @@ export const StandalonePanelPage: React.FC = () => {
 
   if (params.panel === 'shop-page-layout-controls') {
     return <StandaloneShopPageLayoutControls assetPath={params.assetPath} />;
+  }
+
+  if (params.panel === 'competition-page-layout-controls') {
+    return <StandaloneCompetitionPageLayoutControls assetPath={params.assetPath} />;
   }
 
   if (params.panel === 'auth-page-layout-controls') {

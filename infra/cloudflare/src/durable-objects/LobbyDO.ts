@@ -97,6 +97,10 @@ interface RoomStored {
   hostId: string;
   gameType?: string;
   variantId?: string;
+  competitionProgramId?: string;
+  eventId?: string;
+  tournamentId?: string;
+  bracketMatchId?: string;
   allowAI?: boolean;
   aiCount?: number;
   aiProviderId?: string;
@@ -139,6 +143,10 @@ interface RoomView {
   hostId: string;
   gameType?: string;
   variantId?: string;
+  competitionProgramId?: string;
+  eventId?: string;
+  tournamentId?: string;
+  bracketMatchId?: string;
   allowAI: boolean;
   aiCount: number;
   aiProviderId?: string;
@@ -183,6 +191,10 @@ interface CreateRoomBody {
   maxPlayers?: number;
   gameType?: string;
   variantId?: string;
+  competitionProgramId?: string;
+  eventId?: string;
+  tournamentId?: string;
+  bracketMatchId?: string;
   hostId: string;
   hostDisplayName?: string;
   roomId?: string;
@@ -658,6 +670,10 @@ export class LobbyDO implements DurableObject {
       hostId,
       gameType: this.cleanText(body.gameType, 128),
       variantId: this.cleanText(body.variantId, 128),
+      competitionProgramId: this.cleanText(body.competitionProgramId, 128),
+      eventId: this.cleanText(body.eventId, 128),
+      tournamentId: this.cleanText(body.tournamentId, 128),
+      bracketMatchId: this.cleanText(body.bracketMatchId, 128),
       allowAI,
       aiCount,
       aiProviderId: this.cleanText(body.aiProviderId, 128),
@@ -1038,6 +1054,10 @@ export class LobbyDO implements DurableObject {
       hostId: room.hostId,
       gameType: room.gameType,
       variantId: room.variantId,
+      competitionProgramId: room.competitionProgramId,
+      eventId: room.eventId,
+      tournamentId: room.tournamentId,
+      bracketMatchId: room.bracketMatchId,
       allowAI: room.allowAI ?? true,
       aiCount: room.aiCount ?? 0,
       aiProviderId: room.aiProviderId,

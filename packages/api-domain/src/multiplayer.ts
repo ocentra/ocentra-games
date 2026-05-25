@@ -41,6 +41,10 @@ export interface LobbyRoom {
   status?: string;
   gameType?: string;
   variantId?: string;
+  competitionProgramId?: string;
+  eventId?: string;
+  tournamentId?: string;
+  bracketMatchId?: string;
   allowAI?: boolean;
   aiCount?: number;
   allowSpectators?: boolean;
@@ -103,6 +107,10 @@ export interface CreateLobbyRoomRequest {
   maxPlayers: number;
   gameType: string;
   variantId?: string;
+  competitionProgramId?: string;
+  eventId?: string;
+  tournamentId?: string;
+  bracketMatchId?: string;
   allowAI?: boolean;
   aiCount?: number;
   aiProviderId?: string;

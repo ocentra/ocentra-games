@@ -101,6 +101,28 @@ export type ShopPageSvgSurfaceProps = {
   accountSummary?: ShopAccountSummary | null;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
+  chrome?: Partial<ShopPageSvgSurfaceChrome>;
+};
+
+export type ShopPageSvgSurfaceMode = 'shop' | 'programs';
+
+export type ShopPageSvgSurfaceChrome = {
+  ariaLabel: string;
+  headerIcon: 'cart' | ShopIcon;
+  balanceIcon: 'ac' | ShopIcon;
+  productTileMode: ShopPageSvgSurfaceMode;
+  showHeaderIcon: boolean;
+  showHeaderPanel: boolean;
+  showHeaderBadges: boolean;
+  showHeaderSubtitle: boolean;
+  showHeaderBalance: boolean;
+  showTopStats: boolean;
+  showRightPanel: boolean;
+  showEarnPanel: boolean;
+  showFooter: boolean;
+  showMainHeaderCount: boolean;
+  showMainTopRightAction: boolean;
+  sideInfoItemKey?: ShopTab | null;
 };
 
 type Metrics = {
@@ -124,11 +146,42 @@ type TileItem = ShopStaticItem & {
 
 type ShopPreviewSourceRow = ShopPageContentData['previews'][number];
 
+function staticItemsWithProducts(
+  items: ShopStaticItem[] | undefined,
+  products: ShopProduct[],
+): TileItem[] {
+  if (!items?.length) return [];
+  const productByDisplayName = new Map(products.map(product => [product.displayName, product]));
+  return items.map(item => {
+    const existingProduct = (item as TileItem).product;
+    const product = existingProduct ?? productByDisplayName.get(item.title);
+    return product ? { ...item, product } : item;
+  });
+}
+
 const PREFERRED_BOTTOM_PREVIEW_ITEMS = 4;
 const SHOP_RESPONSIVE_MIN_LEFT_W = 118;
 const SHOP_RESPONSIVE_MIN_RIGHT_W = 212;
 const SHOP_RESPONSIVE_MIN_MAIN_W = 390;
 type VaultGridFrameArtMode = 'cards' | 'table';
+
+const DEFAULT_SURFACE_CHROME: ShopPageSvgSurfaceChrome = {
+  ariaLabel: 'Arena Marketplace page layout',
+  headerIcon: 'cart',
+  balanceIcon: 'ac',
+  productTileMode: 'shop',
+  showHeaderIcon: true,
+  showHeaderPanel: true,
+  showHeaderBadges: true,
+  showHeaderSubtitle: true,
+  showHeaderBalance: true,
+  showTopStats: true,
+  showRightPanel: true,
+  showEarnPanel: true,
+  showFooter: true,
+  showMainHeaderCount: true,
+  showMainTopRightAction: true,
+};
 
 function paymentProvidersForProduct(product: ShopProduct, content: ShopPageContentData): Array<{
   provider: ShopPaymentProvider;
@@ -211,9 +264,22 @@ function tileFallbacks(tab: ShopTab, content: ShopPageContentData): TileItem[] {
   return content.sections[tab].featured ?? content.sections[tab].categories ?? [];
 }
 
-function tilesForTab(products: ShopProduct[], tab: ShopTab, content: ShopPageContentData): TileItem[] {
-  const real = productsForShopTab(products, tab).map((product, index) => productToTile(product, index, content));
-  if (tab === 'Treasury' && real.length > 0) {
+function staticTileForProduct(tile: TileItem, tab: ShopTab, content: ShopPageContentData): TileItem {
+  const staticItems = [
+    ...content.creditPacks,
+    ...content.passes,
+    ...(content.sections[tab].categories ?? []),
+    ...(content.sections[tab].featured ?? []),
+  ];
+  const match = staticItems.find(item => item.title === tile.title);
+  return match ? { ...match, product: tile.product, price: tile.price ?? match.price, benefits: tile.benefits ?? match.benefits } : tile;
+}
+
+function tilesForTab(products: ShopProduct[], tab: ShopTab, content: ShopPageContentData, mode: ShopPageSvgSurfaceMode = 'shop'): TileItem[] {
+  const real = productsForShopTab(products, tab)
+    .map((product, index) => productToTile(product, index, content))
+    .map(tile => mode === 'programs' ? staticTileForProduct(tile, tab, content) : tile);
+  if (mode === 'shop' && tab === 'Treasury' && real.length > 0) {
     return [
       ...real.slice(0, content.creditPacks.length - 1),
       ...content.creditPacks.slice(real.length),
@@ -243,7 +309,7 @@ function staticItemToPreviewItem(item: ShopStaticItem, index: number, prefix: st
   };
 }
 
-function previewItemsForRow(row: ShopPreviewSourceRow, products: ShopProduct[], content: ShopPageContentData): PreviewPanelItem[] {
+function previewItemsForRow(row: ShopPreviewSourceRow, products: ShopProduct[], content: ShopPageContentData, mode: ShopPageSvgSurfaceMode): PreviewPanelItem[] {
   if (row.tab === 'Earn Free AC') {
     return content.quests.map(quest => ({
       key: quest.key,
@@ -266,7 +332,7 @@ function previewItemsForRow(row: ShopPreviewSourceRow, products: ShopProduct[], 
     const items = content.sections.Events.featured ?? content.sections.Events.categories ?? [];
     return items.map((item, index) => staticItemToPreviewItem(item, index, 'events-preview'));
   }
-  return tilesForTab(products, row.tab, content).map((item, index) => staticItemToPreviewItem(item, index, `${row.tab.toLowerCase()}-preview`));
+  return tilesForTab(products, row.tab, content, mode).map((item, index) => staticItemToPreviewItem(item, index, `${row.tab.toLowerCase()}-preview`));
 }
 
 const SHOP_PAYMENT_FRAME_CONTROLS = {
@@ -561,32 +627,35 @@ function PaymentProviderDialog({
   );
 }
 
-function minimumShopCanvasWidth(cfg: ShopPageSvgControls): number {
+function minimumShopCanvasWidth(cfg: ShopPageSvgControls, showRightPanel: boolean): number {
+  const rightW = showRightPanel ? SHOP_RESPONSIVE_MIN_RIGHT_W : 0;
+  const gapCount = showRightPanel ? 2 : 1;
   return Math.ceil(
     cfg.layout.outerPad * 2
     + SHOP_RESPONSIVE_MIN_LEFT_W
-    + SHOP_RESPONSIVE_MIN_RIGHT_W
+    + rightW
     + SHOP_RESPONSIVE_MIN_MAIN_W
-    + cfg.layout.mainGap * 2,
+    + cfg.layout.mainGap * gapCount,
   );
 }
 
-function shopCanvasWidthForSurface(cfg: ShopPageSvgControls, surfaceSize: { width: number; height: number }): number {
+function shopCanvasWidthForSurface(cfg: ShopPageSvgControls, surfaceSize: { width: number; height: number }, showRightPanel: boolean): number {
   if (surfaceSize.width <= 0 || surfaceSize.height <= 0) return cfg.canvas.width;
-  const minimumWidth = minimumShopCanvasWidth(cfg);
+  const minimumWidth = minimumShopCanvasWidth(cfg, showRightPanel);
   if (surfaceSize.width <= minimumWidth) return minimumWidth;
   const ratioWidth = Math.round(cfg.canvas.height * (surfaceSize.width / surfaceSize.height));
   return Math.max(minimumWidth, Math.min(2600, ratioWidth));
 }
 
-function responsiveColumnWidths(canvasWidth: number, cfg: ShopPageSvgControls): { leftW: number; mainW: number; rightW: number } {
-  const availableW = canvasWidth - cfg.layout.outerPad * 2 - cfg.layout.mainGap * 2;
-  const desiredSideW = cfg.layout.leftW + cfg.layout.rightW;
+function responsiveColumnWidths(canvasWidth: number, cfg: ShopPageSvgControls, showRightPanel: boolean): { leftW: number; mainW: number; rightW: number } {
+  const gapCount = showRightPanel ? 2 : 1;
+  const availableW = canvasWidth - cfg.layout.outerPad * 2 - cfg.layout.mainGap * gapCount;
+  const desiredSideW = cfg.layout.leftW + (showRightPanel ? cfg.layout.rightW : 0);
   const sideScale = desiredSideW > 0
     ? clampNumber((availableW - SHOP_RESPONSIVE_MIN_MAIN_W) / desiredSideW, 0, 1)
     : 1;
   const leftW = clampNumber(cfg.layout.leftW * sideScale, SHOP_RESPONSIVE_MIN_LEFT_W, cfg.layout.leftW);
-  const rightW = clampNumber(cfg.layout.rightW * sideScale, SHOP_RESPONSIVE_MIN_RIGHT_W, cfg.layout.rightW);
+  const rightW = showRightPanel ? clampNumber(cfg.layout.rightW * sideScale, SHOP_RESPONSIVE_MIN_RIGHT_W, cfg.layout.rightW) : 0;
   const mainW = Math.max(SHOP_RESPONSIVE_MIN_MAIN_W, availableW - leftW - rightW);
   return { leftW, mainW, rightW };
 }
@@ -1029,6 +1098,7 @@ function BottomDetailCardsLayer({
   w,
   h,
   label,
+  displayLabel,
   items,
   content,
   cfg,
@@ -1039,6 +1109,7 @@ function BottomDetailCardsLayer({
   expandedAction,
   rightActionLabel,
   onRightAction,
+  showHeaderCount,
   onInspect,
   onBuy,
   onPageChange,
@@ -1048,6 +1119,7 @@ function BottomDetailCardsLayer({
   w: number;
   h: number;
   label: ShopTab;
+  displayLabel?: string;
   items: TileItem[];
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
@@ -1058,6 +1130,7 @@ function BottomDetailCardsLayer({
   expandedAction?: 'buy' | 'inspect';
   rightActionLabel?: string;
   onRightAction?: () => void;
+  showHeaderCount?: boolean;
   onInspect: (item: TileItem) => void;
   onBuy: (product: ShopProduct) => void;
   onPageChange: (pageIndex: number) => void;
@@ -1096,6 +1169,7 @@ function BottomDetailCardsLayer({
   const rowX = contentX + Math.max(0, (contentW - rowW) / 2);
   const hitTop = y + Math.max(16, h * 0.16);
   const hitH = Math.max(80, h * 0.62);
+  const frameLabel = displayLabel ?? label;
   return (
     <g>
       <MainBottom
@@ -1103,10 +1177,12 @@ function BottomDetailCardsLayer({
         y={y}
         w={w}
         h={h}
-        label={label}
+        label={frameLabel}
+        profileLabel={label}
         count={items.length}
         rightActionLabel={rightActionLabel}
         onRightAction={onRightAction}
+        showHeaderCount={showHeaderCount}
         showNavigation={!expanded}
         navigationPageCount={pageCount}
         navigationPageIndex={safePageIndex}
@@ -1114,10 +1190,10 @@ function BottomDetailCardsLayer({
       />
       {canPage ? (
         <>
-          <g role="button" tabIndex={0} aria-label={`Previous ${label} items`} className="shop-page-svg-clickable" onClick={() => onPageChange(safePageIndex - 1)}>
+          <g role="button" tabIndex={0} aria-label={`Previous ${frameLabel} items`} className="shop-page-svg-clickable" onClick={() => onPageChange(safePageIndex - 1)}>
             <rect x={x - 34} y={hitTop} width="74" height={hitH} fill="transparent" />
           </g>
-          <g role="button" tabIndex={0} aria-label={`Next ${label} items`} className="shop-page-svg-clickable" onClick={() => onPageChange(safePageIndex + 1)}>
+          <g role="button" tabIndex={0} aria-label={`Next ${frameLabel} items`} className="shop-page-svg-clickable" onClick={() => onPageChange(safePageIndex + 1)}>
             <rect x={x + w - 40} y={hitTop} width="74" height={hitH} fill="transparent" />
           </g>
         </>
@@ -1508,6 +1584,7 @@ function VaultShowcaseLayer({
   onDeckInspect,
   rightActionLabel,
   onRightAction,
+  showHeaderCount = true,
 }: {
   x: number;
   y: number;
@@ -1523,6 +1600,7 @@ function VaultShowcaseLayer({
   onDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
   rightActionLabel?: string;
   onRightAction?: () => void;
+  showHeaderCount?: boolean;
 }) {
   const [gridScrollState, setGridScrollState] = useState<{ groupKey: string; value: number }>({ groupKey: activeGroupKey, value: 0 });
   const [gridDrag, setGridDrag] = useState<{ groupKey: string; pointerX: number; scrollX: number } | null>(null);
@@ -1600,6 +1678,7 @@ function VaultShowcaseLayer({
         count={isDeckGrid ? deckItems.length : activeGroup.items.length}
         rightActionLabel={rightActionLabel}
         onRightAction={onRightAction}
+        showHeaderCount={showHeaderCount}
         showNavigation
         navigationPageCount={pageCount}
         navigationPageIndex={pageIndex}
@@ -1729,6 +1808,7 @@ function ShopDeckPreviewLayer({
   content,
   resolveDeckImageUrl,
   onClose,
+  showHeaderCount = true,
 }: {
   x: number;
   y: number;
@@ -1738,6 +1818,7 @@ function ShopDeckPreviewLayer({
   content: ShopPageContentData;
   resolveDeckImageUrl?: ShopDeckImageResolver;
   onClose: () => void;
+  showHeaderCount?: boolean;
 }) {
   const [selectedCell, setSelectedCell] = useState<DeckPreviewCell | null>(null);
   const viewerCells = useMemo(() => deckPreviewViewerCells(deck), [deck]);
@@ -1760,7 +1841,7 @@ function ShopDeckPreviewLayer({
 
   return (
     <g>
-      <MainBottom x={x} y={y} w={w} h={h} label={copy.title} count={pieceCount} rightActionLabel={copy.backToVault} onRightAction={onClose} showNavigation={false} />
+      <MainBottom x={x} y={y} w={w} h={h} label={copy.title} count={pieceCount} rightActionLabel={copy.backToVault} onRightAction={onClose} showHeaderCount={showHeaderCount} showNavigation={false} />
       <foreignObject x={body.x} y={body.y} width={body.w} height={body.h}>
         <div className="shop-deck-preview-host">
           <aside className="shop-deck-preview-host__commerce">
@@ -2022,6 +2103,7 @@ function InfoDetailLayer({
   content,
   cfg,
   onClose,
+  showHeaderCount = true,
 }: {
   x: number;
   y: number;
@@ -2031,6 +2113,7 @@ function InfoDetailLayer({
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   onClose: () => void;
+  showHeaderCount?: boolean;
 }) {
   const token = cfg.componentTokens.sectionFrame;
   const accent = mode === 'arenaCredits' ? cfg.colors.activeBlue : cfg.colors.gold;
@@ -2048,7 +2131,7 @@ function InfoDetailLayer({
     const rowH = Math.min(token.comparisonMaxRowH, (body.h - headH - token.comparisonBottomReserve) / detail.rows.length);
     return (
       <g>
-        <MainBottom x={x} y={y} w={w} h={h} label={detail.title} count={detail.rows.length} rightActionLabel={detail.cta} onRightAction={onClose} showNavigation={false} />
+        <MainBottom x={x} y={y} w={w} h={h} label={detail.title} count={detail.rows.length} rightActionLabel={detail.cta} onRightAction={onClose} showHeaderCount={showHeaderCount} showNavigation={false} />
         <rect x={tableX} y={tableY} width={tableW} height={headH + rowH * detail.rows.length} fill={cfg.colors.tableFill} stroke={accent} strokeOpacity=".35" />
         <rect x={tableX} y={tableY} width={labelW} height={headH} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.tableGridStroke} />
         <Txt x={tableX + token.comparisonBenefitX} y={tableY + token.comparisonBenefitY} size={token.comparisonBenefitSize} weight="950" fill={accent} cfg={cfg}>{detail.title}</Txt>
@@ -2093,7 +2176,7 @@ function InfoDetailLayer({
   const textX = imageX + imageW + token.detailTextGap;
   return (
     <g>
-      <MainBottom x={x} y={y} w={w} h={h} label={detail.title} count={detail.bullets.length} rightActionLabel={detail.cta} onRightAction={onClose} showNavigation={false} />
+      <MainBottom x={x} y={y} w={w} h={h} label={detail.title} count={detail.bullets.length} rightActionLabel={detail.cta} onRightAction={onClose} showHeaderCount={showHeaderCount} showNavigation={false} />
       <ProductImage x={imageX} y={imageY} w={imageW} h={imageH} imageUrl={(content.creditPacks[2] ?? content.creditPacks[0])?.imageUrl ?? ''} cfg={cfg} />
       <rect x={imageX} y={imageY} width={imageW} height={imageH} fill="none" stroke={accent} strokeOpacity=".32" />
       <Txt x={textX} y={bodyY + token.detailTitleTop} size={token.detailTitleSize} weight="950" fill={accent} cfg={cfg}>{detail.title}</Txt>
@@ -2122,6 +2205,9 @@ function MainBody({
   bottomPreviewTarget,
   rightPanelDetail,
   accountSummary,
+  productTileMode,
+  showMainHeaderCount,
+  showMainTopRightAction,
   sectionBottomY,
   cfg,
   onClearSpecial,
@@ -2149,6 +2235,9 @@ function MainBody({
   bottomPreviewTarget: BottomPreviewTarget | null;
   rightPanelDetail: ShopRightTabId | null;
   accountSummary?: ShopAccountSummary | null;
+  productTileMode: ShopPageSvgSurfaceMode;
+  showMainHeaderCount: boolean;
+  showMainTopRightAction: boolean;
   sectionBottomY?: number;
   cfg: ShopPageSvgControls;
   onClearSpecial: () => void;
@@ -2178,6 +2267,9 @@ function MainBody({
   const bottomH = resolvedSectionBottomY - y - topH - cfg.mainBody.boxGap;
   const bottomY = y + topH + cfg.mainBody.boxGap;
   const displayedBottomTab = bottomPreviewTarget && bottomPreviewTarget !== 'Earn Free AC' ? bottomPreviewTarget : topRoutedBottomTab ?? nextSidePanelTab(activeTab, content);
+  const labelForTab = (tab: ShopTab) => content.sections[tab].title;
+  const activeTabLabel = labelForTab(activeTab);
+  const displayedBottomLabel = labelForTab(displayedBottomTab);
   const bottomPageSizeForTab = (tab: ShopTab) => {
     if (tab === 'Treasury') return Math.max(1, Math.min(2, Math.round(cfg.mainBody.treasuryMaxVisible)));
     if (tab === 'Elite') return Math.max(1, Math.min(2, Math.round(cfg.mainBody.passMaxVisible)));
@@ -2270,10 +2362,10 @@ function MainBody({
     const topAction = actionForTab(activeTab);
     const bottomAction = actionForTab(displayedBottomTab);
     const showEarnRewards = specialView === 'earnRewards' || bottomPreviewTarget === 'Earn Free AC';
-    const topTileItems = tilesForTab(products, activeTab, content);
+    const topTileItems = tilesForTab(products, activeTab, content, productTileMode);
     const topVaultGroups = activeTab === 'Vault' ? content.vaultShowcaseGroups : [];
-    const topPlayAccessItems = activeTab === 'Play Access' ? content.sections['Play Access'].categories ?? [] : [];
-    const topEventItems = activeTab === 'Events' ? content.sections.Events.featured ?? content.sections.Events.categories ?? [] : [];
+    const topPlayAccessItems = activeTab === 'Play Access' ? staticItemsWithProducts(content.sections['Play Access'].categories, products) : [];
+    const topEventItems = activeTab === 'Events' ? staticItemsWithProducts(content.sections.Events.featured ?? content.sections.Events.categories, products) : [];
     const topCards = activeTab === 'Vault'
       ? topVaultGroups.map(group => vaultGroupToMainCarouselCard(group, content))
       : activeTab === 'Play Access'
@@ -2282,11 +2374,11 @@ function MainBody({
           ? topEventItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'events', content))
           : topTileItems.map((item, index) => tileToMainCarouselCard(item, index, loadingId, content, activeTab));
     const bottomTileItems = displayedBottomTab === 'Treasury' || displayedBottomTab === 'Elite'
-      ? tilesForTab(products, displayedBottomTab, content)
+      ? tilesForTab(products, displayedBottomTab, content, productTileMode)
       : [];
     const bottomVaultItems = displayedBottomTab === 'Vault' ? content.vaultShowcaseGroups.map(vaultGroupToTile) : [];
-    const bottomPlayAccessItems = displayedBottomTab === 'Play Access' ? content.sections['Play Access'].featured ?? content.sections['Play Access'].categories ?? [] : [];
-    const bottomEventItems = displayedBottomTab === 'Events' ? content.sections.Events.featured ?? content.sections.Events.categories ?? [] : [];
+    const bottomPlayAccessItems = displayedBottomTab === 'Play Access' ? staticItemsWithProducts(content.sections['Play Access'].featured ?? content.sections['Play Access'].categories, products) : [];
+    const bottomEventItems = displayedBottomTab === 'Events' ? staticItemsWithProducts(content.sections.Events.featured ?? content.sections.Events.categories, products) : [];
     const bottomDetailItems = displayedBottomTab === 'Vault'
       ? bottomVaultItems
       : displayedBottomTab === 'Play Access'
@@ -2354,6 +2446,7 @@ function MainBody({
           }}
           dailyRewardStatus={dailyRewardStatus}
           onDailyRewardSpin={onDailyRewardSpin}
+          showHeaderCount={showMainHeaderCount}
         />
       );
     }
@@ -2388,6 +2481,7 @@ function MainBody({
           content={content}
           resolveDeckImageUrl={resolveDeckImageUrl}
           onClose={() => setSelectedVaultDeckKey(null)}
+          showHeaderCount={showMainHeaderCount}
         />
       );
     }
@@ -2415,6 +2509,7 @@ function MainBody({
           onDeckInspect={openVaultDeckDetail}
           rightActionLabel={content.uiCopy.actions.backToShop}
           onRightAction={closeBottomDetail}
+          showHeaderCount={showMainHeaderCount}
         />
       );
     }
@@ -2430,6 +2525,7 @@ function MainBody({
           content={content}
           cfg={cfg}
           onClose={closeBottomDetail}
+          showHeaderCount={showMainHeaderCount}
         />
       );
     }
@@ -2442,6 +2538,7 @@ function MainBody({
           w={bottomFrameBounds.w}
           h={resolvedSectionBottomY - y}
           label={displayedBottomTab}
+          displayLabel={displayedBottomLabel}
           items={bottomDetailItems.length > 0 ? bottomDetailItems : [selectedTileDetail]}
           expandedItem={selectedTileDetail}
           content={content}
@@ -2450,6 +2547,7 @@ function MainBody({
           pageIndex={bottomPageIndex}
           rightActionLabel={content.uiCopy.actions.backToShop}
           onRightAction={closeBottomDetail}
+          showHeaderCount={showMainHeaderCount}
           onInspect={inspectBottomItem}
           onBuy={onBuy}
           onPageChange={setBottomPageIndex}
@@ -2459,7 +2557,7 @@ function MainBody({
 
     return (
       <g>
-        <MainTop x={topFrameBounds.x} y={y} w={topFrameBounds.w} h={topH} label={activeTab} cards={topCards} onCardAction={handleTopCardAction} rightActionLabel={topAction?.label} onRightAction={topAction?.onAction} />
+        <MainTop x={topFrameBounds.x} y={y} w={topFrameBounds.w} h={topH} label={activeTabLabel} profileLabel={activeTab} cards={topCards} onCardAction={handleTopCardAction} rightActionLabel={showMainTopRightAction ? topAction?.label : undefined} onRightAction={showMainTopRightAction ? topAction?.onAction : undefined} showHeaderCount={showMainHeaderCount} />
         {bottomTileDetail ? (
           <BottomDetailCardsLayer
             x={bottomFrameBounds.x}
@@ -2467,6 +2565,7 @@ function MainBody({
             w={bottomFrameBounds.w}
             h={bottomH}
             label={displayedBottomTab}
+            displayLabel={displayedBottomLabel}
             items={bottomDetailItems.length > 0 ? bottomDetailItems : [bottomTileDetail]}
             expandedItem={bottomTileDetail}
             content={content}
@@ -2475,6 +2574,7 @@ function MainBody({
             pageIndex={bottomPageIndex}
             rightActionLabel={`${content.uiCopy.actions.backToPrefix} ${content.sections[displayedBottomTab].title}`}
             onRightAction={() => setBottomTileDetail(null)}
+            showHeaderCount={showMainHeaderCount}
             onInspect={inspectBottomItem}
             onBuy={onBuy}
             onPageChange={setBottomPageIndex}
@@ -2496,11 +2596,12 @@ function MainBody({
             deckPreviews={vaultDecks}
             resolveDeckImageUrl={resolveDeckImageUrl}
             onDeckInspect={openVaultDeckDetail}
+            showHeaderCount={showMainHeaderCount}
           />
         ) : bottomDetailItems.length > 0 ? (
-          <BottomDetailCardsLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} items={bottomDetailItems} content={content} cfg={cfg} loadingId={loadingId} pageIndex={bottomPageIndex} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} onInspect={inspectBottomItem} onBuy={onBuy} onPageChange={setBottomPageIndex} />
+          <BottomDetailCardsLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} displayLabel={displayedBottomLabel} items={bottomDetailItems} content={content} cfg={cfg} loadingId={loadingId} pageIndex={bottomPageIndex} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} showHeaderCount={showMainHeaderCount} onInspect={inspectBottomItem} onBuy={onBuy} onPageChange={setBottomPageIndex} />
         ) : (
-          <MainBottom x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} />
+          <MainBottom x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomLabel} profileLabel={displayedBottomTab} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} showHeaderCount={showMainHeaderCount} />
         )}
       </g>
     );
@@ -2683,6 +2784,7 @@ function EarnRewardsBottomLayer({
   onClose,
   dailyRewardStatus,
   onDailyRewardSpin,
+  showHeaderCount = true,
 }: {
   x: number;
   y: number;
@@ -2693,6 +2795,7 @@ function EarnRewardsBottomLayer({
   onClose: () => void;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
+  showHeaderCount?: boolean;
 }) {
   const [selectedQuestKey, setSelectedQuestKey] = useState(content.quests[0]?.key ?? '');
   const [actionQuestKey, setActionQuestKey] = useState<string | null>(null);
@@ -2739,6 +2842,7 @@ function EarnRewardsBottomLayer({
         count={content.quests.length}
         rightActionLabel={content.uiCopy.earnRewards.backLabel}
         onRightAction={onClose}
+        showHeaderCount={showHeaderCount}
         showNavigation={false}
       />
       {selectedQuest ? <EarnRewardFrameCard x={contentX} y={contentY} w={featureW} h={contentH} quest={selectedQuest} cfg={cfg} featured selected onAction={openQuestAction} dailyRewardStatus={dailyRewardStatus} /> : null}
@@ -2808,8 +2912,10 @@ export function ShopPageSvgSurface({
   accountSummary,
   dailyRewardStatus,
   onDailyRewardSpin,
+  chrome: chromeOverride,
 }: ShopPageSvgSurfaceProps) {
   const cfg = useMemo(() => normalizeShopPageSvgControls(controls), [controls]);
+  const chrome = useMemo<ShopPageSvgSurfaceChrome>(() => ({ ...DEFAULT_SURFACE_CHROME, ...chromeOverride }), [chromeOverride]);
   const shopContent = content;
   const mainRef = useRef<HTMLElement | null>(null);
   const [surfaceSize, setSurfaceSize] = useState({ width: 0, height: 0 });
@@ -2830,9 +2936,9 @@ export function ShopPageSvgSurface({
       tab: row.tab,
       subtitle: row.subtitle,
       accent: row.accent,
-      previewItems: previewItemsForRow(row, products, shopContent),
+      previewItems: previewItemsForRow(row, products, shopContent, chrome.productTileMode),
     }));
-  }, [products, shopContent]);
+  }, [chrome.productTileMode, products, shopContent]);
   const previewRowCount = resolvedPreviewRows.length;
 
   useEffect(() => {
@@ -2875,25 +2981,29 @@ export function ShopPageSvgSurface({
   }, [previewRowCount, previewStart]);
 
   const metrics = useMemo<Metrics>(() => {
-    const canvasWidth = shopCanvasWidthForSurface(cfg, surfaceSize);
-    const columns = responsiveColumnWidths(canvasWidth, cfg);
+    const canvasWidth = shopCanvasWidthForSurface(cfg, surfaceSize, chrome.showRightPanel);
+    const columns = responsiveColumnWidths(canvasWidth, cfg, chrome.showRightPanel);
     const leftX = cfg.layout.outerPad;
     const leftY = cfg.layout.topY;
     const mainX = leftX + columns.leftW + cfg.layout.mainGap;
     const rightX = canvasWidth - cfg.layout.outerPad - columns.rightW;
-    const mainW = rightX - mainX - cfg.layout.mainGap;
+    const mainW = rightX - mainX - (chrome.showRightPanel ? cfg.layout.mainGap : 0);
     const headerTotalW = canvasWidth - cfg.layout.outerPad - mainX;
-    const headerCreditW = Math.max(cfg.header.arenaCreditW, cfg.componentTokens.headerLayer.balanceMinWidth);
-    const naturalHeaderSideW = (headerTotalW - headerCreditW - cfg.header.gap * 2) / 2;
-    const showHeaderMarketplace = naturalHeaderSideW >= 218;
+    const headerCreditW = chrome.showHeaderBalance ? Math.max(cfg.header.arenaCreditW, cfg.componentTokens.headerLayer.balanceMinWidth) : 0;
+    const naturalHeaderSideW = !chrome.showHeaderBalance
+      ? headerTotalW
+      : chrome.showTopStats
+      ? (headerTotalW - headerCreditW - cfg.header.gap * 2) / 2
+      : headerTotalW - headerCreditW - cfg.header.gap;
+    const showHeaderMarketplace = chrome.showHeaderPanel && naturalHeaderSideW >= 218;
     const headerSideW = showHeaderMarketplace ? naturalHeaderSideW : 0;
     const headerCenterX = showHeaderMarketplace ? mainX + headerSideW + cfg.header.gap : mainX;
     const headerStatsX = headerCenterX + headerCreditW + cfg.header.gap;
-    const headerStatsW = Math.max(80, canvasWidth - cfg.layout.outerPad - headerStatsX);
+    const headerStatsW = chrome.showTopStats ? Math.max(80, canvasWidth - cfg.layout.outerPad - headerStatsX) : 0;
     return { leftX, leftY, leftW: columns.leftW, mainX, mainW, rightX, rightW: columns.rightW, headerSideW, headerStatsW, headerCenterX, headerStatsX, showHeaderMarketplace };
-  }, [cfg, surfaceSize]);
+  }, [chrome.showHeaderBalance, chrome.showHeaderPanel, chrome.showRightPanel, chrome.showTopStats, cfg, surfaceSize]);
 
-  const canvasWidth = shopCanvasWidthForSurface(cfg, surfaceSize);
+  const canvasWidth = shopCanvasWidthForSurface(cfg, surfaceSize, chrome.showRightPanel);
   const idealCanvasWidth = surfaceSize.width > 0 && surfaceSize.height > 0
     ? Math.round(cfg.canvas.height * (surfaceSize.width / surfaceSize.height))
     : canvasWidth;
@@ -3009,8 +3119,10 @@ export function ShopPageSvgSurface({
   const frameToken = cfg.componentTokens.sectionFrame;
   const bottomPreviewY = cfg.layout.footerY - cfg.layout.bottomPreviewH - frameToken.previewGap;
   const mainSectionBottomY = bottomPreviewY - frameToken.mainToPreviewGap;
+  const hasHeaderChrome = chrome.showHeaderPanel || chrome.showHeaderBalance || chrome.showTopStats;
+  const mainBodyY = hasHeaderChrome ? cfg.layout.mainY : cfg.layout.topY;
   const leftPanelH = mainSectionBottomY - cfg.layout.topY;
-  const rightPanelH = mainSectionBottomY - cfg.layout.mainY;
+  const rightPanelH = mainSectionBottomY - mainBodyY;
 
   return (
     <main ref={mainRef} className="shop-page-svg-main">
@@ -3018,7 +3130,7 @@ export function ShopPageSvgSurface({
         viewBox={`0 0 ${canvasWidth} ${cfg.canvas.height}`}
         className="shop-page-svg-surface"
         role="img"
-        aria-label="Arena Marketplace page layout"
+        aria-label={chrome.ariaLabel}
         preserveAspectRatio={preserveAspectRatio}
       >
         <LobbySvgDefs />
@@ -3036,7 +3148,7 @@ export function ShopPageSvgSurface({
           <clipPath id="shopPreviewTrackClip"><rect x={cfg.layout.outerPad - 6} y={bottomPreviewY - 6} width={previewViewportW + 12} height={cfg.layout.bottomPreviewH + 12} /></clipPath>
         </defs>
         <rect width={canvasWidth} height={cfg.canvas.height} fill={cfg.svgDefaults.canvasFill} />
-        <LeftSidePanel x={metrics.leftX} y={metrics.leftY} w={metrics.leftW} h={leftPanelH} activeTab={activeTab} earnActive={specialView === 'earnRewards' || bottomPreviewTarget === 'Earn Free AC'} content={shopContent} cfg={cfg} onTabChange={selectTab} onEarn={() => {
+        <LeftSidePanel x={metrics.leftX} y={metrics.leftY} w={metrics.leftW} h={leftPanelH} activeTab={activeTab} earnActive={specialView === 'earnRewards' || bottomPreviewTarget === 'Earn Free AC'} showEarnPanel={chrome.showEarnPanel} sideInfoItemKey={chrome.sideInfoItemKey} content={shopContent} cfg={cfg} onTabChange={selectTab} onEarn={() => {
           setBottomPreviewTarget(null);
           setRightDetailTarget(null);
           setSpecialView('earnRewards');
@@ -3048,6 +3160,12 @@ export function ShopPageSvgSurface({
           h={cfg.layout.headerH}
           rightX={metrics.headerCenterX + cfg.header.arenaCreditW + cfg.header.gap}
           showMarketplace={metrics.showHeaderMarketplace}
+          headerIcon={chrome.headerIcon}
+          balanceIcon={chrome.balanceIcon}
+          showHeaderIcon={chrome.showHeaderIcon}
+          showHeaderBadges={chrome.showHeaderBadges}
+          showHeaderSubtitle={chrome.showHeaderSubtitle}
+          showBalancePanel={chrome.showHeaderBalance}
           acBalance={acBalance}
           content={shopContent}
           cfg={cfg}
@@ -3059,11 +3177,11 @@ export function ShopPageSvgSurface({
             onTabChange('Treasury');
           }}
         />
-        <TopStatsLayer x={metrics.headerStatsX} y={cfg.layout.topY} w={metrics.headerStatsW} h={cfg.layout.headerH} content={shopContent} cfg={cfg} onActivePass={openActivePassDetail} />
+        {chrome.showTopStats ? <TopStatsLayer x={metrics.headerStatsX} y={cfg.layout.topY} w={metrics.headerStatsW} h={cfg.layout.headerH} content={shopContent} cfg={cfg} onActivePass={openActivePassDetail} /> : null}
         <MainBody
           key={`${activeTab}-${bottomPreviewVersion}-${rightDetailTarget ?? 'right-preview-idle'}`}
           x={metrics.mainX}
-          y={cfg.layout.mainY}
+          y={mainBodyY}
           w={metrics.mainW}
           activeTab={activeTab}
           products={products}
@@ -3075,6 +3193,9 @@ export function ShopPageSvgSurface({
           bottomPreviewTarget={bottomPreviewTarget}
           rightPanelDetail={rightDetailTarget}
           accountSummary={accountSummary}
+          productTileMode={chrome.productTileMode}
+          showMainHeaderCount={chrome.showMainHeaderCount}
+          showMainTopRightAction={chrome.showMainTopRightAction}
           sectionBottomY={mainSectionBottomY}
           cfg={cfg}
           onClearSpecial={() => setSpecialView(null)}
@@ -3089,7 +3210,7 @@ export function ShopPageSvgSurface({
           dailyRewardStatus={dailyRewardStatus}
           onDailyRewardSpin={onDailyRewardSpin}
         />
-        <RightSidePanel x={metrics.rightX} y={cfg.layout.mainY} w={metrics.rightW} h={rightPanelH} content={shopContent} cfg={cfg} acBalance={acBalance} accountSummary={accountSummary} active={rightPreviewTarget} onActiveChange={selectRightPreview} onPreviewOpen={openRightPreviewDetail} />
+        {chrome.showRightPanel ? <RightSidePanel x={metrics.rightX} y={mainBodyY} w={metrics.rightW} h={rightPanelH} content={shopContent} cfg={cfg} acBalance={acBalance} accountSummary={accountSummary} active={rightPreviewTarget} onActiveChange={selectRightPreview} onPreviewOpen={openRightPreviewDetail} /> : null}
         <BottomPanel
           y={bottomPreviewY}
           h={cfg.layout.bottomPreviewH}
@@ -3105,18 +3226,18 @@ export function ShopPageSvgSurface({
           onMouseUp={() => setPreviewDrag(null)}
           onWheel={handlePreviewWheel}
         />
-        <FooterLayer x={cfg.layout.outerPad} y={cfg.layout.footerY} w={canvasWidth - cfg.layout.outerPad * 2} h={cfg.layout.footerH} content={shopContent} cfg={cfg} />
+        {chrome.showFooter ? <FooterLayer x={cfg.layout.outerPad} y={cfg.layout.footerY} w={canvasWidth - cfg.layout.outerPad * 2} h={cfg.layout.footerH} content={shopContent} cfg={cfg} /> : null}
         {loadingProducts ? (
           <g>
-            <rect x={metrics.mainX} y={cfg.layout.mainY} width={metrics.mainW} height={mainSectionBottomY - cfg.layout.mainY} fill="rgba(2,10,19,.52)" />
-            <Txt x={metrics.mainX + metrics.mainW / 2} y={cfg.layout.mainY + 250} anchor="middle" size="24" weight="950" fill="#bcecff" cfg={cfg}>{shopContent.uiCopy.status.loadingMarketplace}</Txt>
+            <rect x={metrics.mainX} y={mainBodyY} width={metrics.mainW} height={mainSectionBottomY - mainBodyY} fill="rgba(2,10,19,.52)" />
+            <Txt x={metrics.mainX + metrics.mainW / 2} y={mainBodyY + 250} anchor="middle" size="24" weight="950" fill="#bcecff" cfg={cfg}>{shopContent.uiCopy.status.loadingMarketplace}</Txt>
           </g>
         ) : null}
         {error ? (
           <g>
-            <rect x={metrics.mainX + 80} y={cfg.layout.mainY + 150} width={metrics.mainW - 160} height="120" rx="0" fill="rgba(60,10,22,.86)" stroke={cfg.colors.danger} />
-            <Txt x={metrics.mainX + metrics.mainW / 2} y={cfg.layout.mainY + 195} anchor="middle" size="17" weight="950" fill="#ffd7dd" cfg={cfg}>{error}</Txt>
-            <SvgButton x={metrics.mainX + metrics.mainW / 2 - 80} y={cfg.layout.mainY + 230} w={160} h={28} label={shopContent.uiCopy.status.clearError} active small onClick={onClearError} cfg={cfg} />
+            <rect x={metrics.mainX + 80} y={mainBodyY + 150} width={metrics.mainW - 160} height="120" rx="0" fill="rgba(60,10,22,.86)" stroke={cfg.colors.danger} />
+            <Txt x={metrics.mainX + metrics.mainW / 2} y={mainBodyY + 195} anchor="middle" size="17" weight="950" fill="#ffd7dd" cfg={cfg}>{error}</Txt>
+            <SvgButton x={metrics.mainX + metrics.mainW / 2 - 80} y={mainBodyY + 230} w={160} h={28} label={shopContent.uiCopy.status.clearError} active small onClick={onClearError} cfg={cfg} />
           </g>
         ) : null}
         {purchasePrompt && onPurchaseProviderSelect && onPurchaseCancel ? (

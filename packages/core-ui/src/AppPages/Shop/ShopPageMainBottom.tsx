@@ -12,11 +12,13 @@ type MainBottomProps = {
   w: number;
   h: number;
   label: string;
+  profileLabel?: string;
   count?: number;
   cards?: ShopMainCarouselCardItem[];
   onCardAction?: (card: ShopMainCarouselCardItem) => void;
   rightActionLabel?: string;
   onRightAction?: () => void;
+  showHeaderCount?: boolean;
   showNavigation?: boolean;
   navigationPageCount?: number;
   navigationPageIndex?: number;
@@ -131,18 +133,20 @@ export function MainBottom({
   w,
   h,
   label,
+  profileLabel,
   count = 0,
   cards,
   onCardAction,
   rightActionLabel,
   onRightAction,
+  showHeaderCount = true,
   showNavigation = true,
   navigationPageCount,
   navigationPageIndex,
   onNavigationPageChange,
 }: MainBottomProps) {
   if (w <= 0 || h <= 0) return null;
-  const controls = createMainBottomControls(w, h, label);
+  const controls = createMainBottomControls(w, h, profileLabel ?? label);
   const resolvedCards = cards ?? [];
   const featured = resolvedCards.length > 0 ? [] : Array.from({ length: Math.max(0, Math.round(count)) }, (_, index) => ({
     gameId: `${label.toLowerCase().replace(/\s+/g, '-')}-${index}`,
@@ -172,6 +176,7 @@ export function MainBottom({
           onCardAction={onCardAction}
           showBadges={false}
           showLearnMore={false}
+          showHeaderCount={showHeaderCount}
           rightActionLabel={rightActionLabel}
           onRightAction={onRightAction}
           showNavigation={showNavigation}
