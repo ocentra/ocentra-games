@@ -84,6 +84,12 @@ import {
   type LobbyPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Lobby/LobbyPageSvgSurfaceControls';
 import { LeaderboardPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgControlsPanel';
+import { LeaderboardPageContentControlsPanel } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageContentControlsPanel';
+import {
+  DEFAULT_LEADERBOARD_PAGE_CONTENT,
+  normalizeLeaderboardPageContent,
+  type LeaderboardPageContentData,
+} from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgContent';
 import {
   DEFAULT_LEADERBOARD_PAGE_SVG_CONTROLS,
   normalizeLeaderboardPageSvgControls,
@@ -3738,16 +3744,31 @@ const StandaloneLobbyPageLayoutControls: React.FC<{ assetPath: string }> = ({ as
 
 const StandaloneLeaderboardPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
   const [controls, setControls] = useState<LeaderboardPageSvgControls>(DEFAULT_LEADERBOARD_PAGE_SVG_CONTROLS);
+  const [content, setContent] = useState<LeaderboardPageContentData>(DEFAULT_LEADERBOARD_PAGE_CONTENT);
+  const [activePane, setActivePane] = useState<'layout' | 'content'>('layout');
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState('');
   const channelRef = useRef<BroadcastChannel | null>(null);
+  const controlsRef = useRef<LeaderboardPageSvgControls>(DEFAULT_LEADERBOARD_PAGE_SVG_CONTROLS);
+  const contentRef = useRef<LeaderboardPageContentData>(DEFAULT_LEADERBOARD_PAGE_CONTENT);
+
+  useEffect(() => {
+    controlsRef.current = controls;
+  }, [controls]);
+
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
 
   useEffect(() => {
     let cancelled = false;
     loadLeaderboardPageLayoutControlsFromDisk(assetPath)
       .then(result => {
         if (cancelled) return;
+        controlsRef.current = result.controls;
+        contentRef.current = result.content;
         setControls(result.controls);
+        setContent(result.content);
       })
       .catch(error => {
         if (!cancelled) setStatus(error instanceof Error ? error.message : 'Load failed');
@@ -3760,7 +3781,14 @@ const StandaloneLeaderboardPageLayoutControls: React.FC<{ assetPath: string }> =
     channelRef.current = channel;
     const handler = (event: MessageEvent<LeaderboardPageLayoutControlsMessage>) => {
       if (event.data.type === 'state' || event.data.type === 'update') {
-        setControls(normalizeLeaderboardPageSvgControls(event.data.controls));
+        const nextControls = normalizeLeaderboardPageSvgControls(event.data.controls);
+        controlsRef.current = nextControls;
+        setControls(nextControls);
+        if (event.data.content) {
+          const nextContent = normalizeLeaderboardPageContent(event.data.content);
+          contentRef.current = nextContent;
+          setContent(nextContent);
+        }
       }
     };
     channel.addEventListener('message', handler);
@@ -3779,20 +3807,57 @@ const StandaloneLeaderboardPageLayoutControls: React.FC<{ assetPath: string }> =
       const next = normalizeLeaderboardPageSvgControls(
         typeof value === 'function' ? value(previous) : value
       );
+      controlsRef.current = next;
       channelRef.current?.postMessage({
         type: 'update',
         controls: next,
+        content: contentRef.current,
+      } satisfies LeaderboardPageLayoutControlsMessage);
+      return next;
+    });
+  }, []);
+
+  const updateContent = useCallback<React.Dispatch<React.SetStateAction<LeaderboardPageContentData>>>((value) => {
+    setContent((previous: LeaderboardPageContentData) => {
+      const next = normalizeLeaderboardPageContent(
+        typeof value === 'function' ? value(previous) : value
+      );
+      contentRef.current = next;
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: controlsRef.current,
+        content: next,
       } satisfies LeaderboardPageLayoutControlsMessage);
       return next;
     });
   }, []);
 
   const handleSave = useCallback(async (nextControls: LeaderboardPageSvgControls) => {
-    const savedControls = await saveLeaderboardPageLayoutControlsToDisk(nextControls, assetPath);
-    setControls(savedControls);
+    const saved = await saveLeaderboardPageLayoutControlsToDisk(nextControls, contentRef.current, assetPath);
+    controlsRef.current = saved.controls;
+    contentRef.current = saved.content;
+    setControls(saved.controls);
+    setContent(saved.content);
     channelRef.current?.postMessage({
       type: 'update',
-      controls: savedControls,
+      controls: saved.controls,
+      content: saved.content,
+    } satisfies LeaderboardPageLayoutControlsMessage);
+    const syncResult = await syncSavedLayoutAssetToR2(assetPath);
+    return syncResult.message;
+  }, [assetPath]);
+
+  const handleContentSave = useCallback(async (nextContent: LeaderboardPageContentData) => {
+    const normalizedContent = normalizeLeaderboardPageContent(nextContent);
+    const saved = await saveLeaderboardPageLayoutControlsToDisk(controlsRef.current, normalizedContent, assetPath);
+    controlsRef.current = saved.controls;
+    contentRef.current = saved.content;
+    setControls(saved.controls);
+    setContent(saved.content);
+    channelRef.current?.postMessage({
+      type: 'update',
+      controls: saved.controls,
+      content: saved.content,
     } satisfies LeaderboardPageLayoutControlsMessage);
     const syncResult = await syncSavedLayoutAssetToR2(assetPath);
     return syncResult.message;
@@ -3803,12 +3868,47 @@ const StandaloneLeaderboardPageLayoutControls: React.FC<{ assetPath: string }> =
   }
 
   return (
-    <main className="standalone-panel-page standalone-panel-page--homepage-layout">
-      <LeaderboardPageSvgControlsPanel
-        controls={controls}
-        onControlsChange={updateControls}
-        onSave={handleSave}
-      />
+    <main className="standalone-panel-page standalone-panel-page--shop-authoring">
+      <header className="standalone-panel-page__shop-authoring-header">
+        <div>
+          <span className="standalone-panel-page__shop-authoring-kicker">Leaderboard Page</span>
+          <h1>Authoring Controls</h1>
+          <p>Layout tunes the SVG surface. Content authors modes, tabs, games, rows, season copy, and route-specific leaderboard text.</p>
+        </div>
+      </header>
+      <nav className="standalone-panel-page__shop-authoring-tabs" aria-label="Leaderboard authoring panes">
+        <button
+          type="button"
+          className={activePane === 'layout' ? 'is-active' : ''}
+          aria-pressed={activePane === 'layout'}
+          onClick={() => setActivePane('layout')}
+        >
+          Layout
+        </button>
+        <button
+          type="button"
+          className={activePane === 'content' ? 'is-active' : ''}
+          aria-pressed={activePane === 'content'}
+          onClick={() => setActivePane('content')}
+        >
+          Content
+        </button>
+      </nav>
+      <section className="standalone-panel-page__shop-authoring-body">
+        {activePane === 'layout' ? (
+          <LeaderboardPageSvgControlsPanel
+            controls={controls}
+            onControlsChange={updateControls}
+            onSave={handleSave}
+          />
+        ) : (
+          <LeaderboardPageContentControlsPanel
+            content={content}
+            onContentChange={updateContent}
+            onSave={handleContentSave}
+          />
+        )}
+      </section>
       {status && (
         <p className="standalone-panel-page__status">{status}</p>
       )}

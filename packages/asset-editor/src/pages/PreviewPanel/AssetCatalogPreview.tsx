@@ -70,6 +70,11 @@ import {
   type LeaderboardPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgSurfaceControls'
 import {
+  normalizeLeaderboardPageContent,
+  type LeaderboardPageContentData,
+  type PartialLeaderboardPageContentData,
+} from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgContent'
+import {
   CyberAuthSurface,
   normalizeAuthPageSvgControls,
   type AuthPageSvgControls,
@@ -1833,6 +1838,7 @@ function PageLayoutMainAppPreview({
   selectedGameContent = null,
   lobbyControls,
   leaderboardControls,
+  leaderboardContent,
   authControls,
   shopControls,
   shopContent,
@@ -1852,6 +1858,7 @@ function PageLayoutMainAppPreview({
   selectedGameContent?: React.ReactNode
   lobbyControls?: LobbyPageSvgControls
   leaderboardControls?: LeaderboardPageSvgControls
+  leaderboardContent?: PartialLeaderboardPageContentData | null
   authControls?: AuthPageSvgControls
   shopControls?: ShopPageSvgControls
   shopContent?: Partial<ShopPageContentData> | null
@@ -1895,6 +1902,10 @@ function PageLayoutMainAppPreview({
   const resolvedLeaderboardControls = useMemo(
     () => normalizeLeaderboardPageSvgControls(leaderboardControls ?? document.leaderboardControls as Partial<LeaderboardPageSvgControls> | undefined),
     [leaderboardControls, document.leaderboardControls]
+  )
+  const resolvedLeaderboardContent = useMemo(
+    () => normalizeLeaderboardPageContent(leaderboardContent ?? document.leaderboardContent as PartialLeaderboardPageContentData | undefined),
+    [document.leaderboardContent, leaderboardContent]
   )
   const resolvedShopControls = useMemo(
     () => normalizeShopPageSvgControls(shopControls ?? document.shopControls as Partial<ShopPageSvgControls> | undefined),
@@ -2014,6 +2025,7 @@ function PageLayoutMainAppPreview({
         onMatchmaking={() => undefined}
         layoutControls={pageControls}
         leaderboardControls={resolvedLeaderboardControls}
+        leaderboardContent={resolvedLeaderboardContent}
       />
     ) : kind === 'profile' || kind === 'player-hub' ? (
       <PlayerHubPageContent
@@ -2842,6 +2854,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     () => normalizeLeaderboardPageSvgControls(pageLayoutData?.leaderboardControls as Partial<LeaderboardPageSvgControls> | undefined),
     [pageLayoutData]
   )
+  const initialLeaderboardPageLayoutContent = useMemo(
+    () => normalizeLeaderboardPageContent(pageLayoutData?.leaderboardContent as PartialLeaderboardPageContentData | undefined),
+    [pageLayoutData]
+  )
   const initialAuthPageLayoutControls = useMemo(
     () => normalizeAuthPageSvgControls(pageLayoutData?.authControls as Partial<AuthPageSvgControls> | undefined),
     [pageLayoutData]
@@ -2956,6 +2972,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useState<LobbyPageSvgControls>(() => initialLobbyPageLayoutControls)
   const [leaderboardPageLayoutControls, setLeaderboardPageLayoutControls] =
     useState<LeaderboardPageSvgControls>(() => initialLeaderboardPageLayoutControls)
+  const [leaderboardPageLayoutContent, setLeaderboardPageLayoutContent] =
+    useState<LeaderboardPageContentData>(() => initialLeaderboardPageLayoutContent)
   const [authPageLayoutControls, setAuthPageLayoutControls] =
     useState<AuthPageSvgControls>(() => initialAuthPageLayoutControls)
   const [shopPageLayoutControls, setShopPageLayoutControls] =
@@ -3018,6 +3036,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const leaderboardPageLayoutControlsRef = useRef<LeaderboardPageSvgControls>(
     initialLeaderboardPageLayoutControls
+  )
+  const leaderboardPageLayoutContentRef = useRef<LeaderboardPageContentData>(
+    initialLeaderboardPageLayoutContent
   )
   const authPageLayoutControlsRef = useRef<AuthPageSvgControls>(
     initialAuthPageLayoutControls
@@ -3157,6 +3178,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [leaderboardPageLayoutControls])
 
   useEffect(() => {
+    leaderboardPageLayoutContentRef.current = leaderboardPageLayoutContent
+  }, [leaderboardPageLayoutContent])
+
+  useEffect(() => {
     authPageLayoutControlsRef.current = authPageLayoutControls
   }, [authPageLayoutControls])
 
@@ -3208,9 +3233,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     }
     const timeoutId = window.setTimeout(() => {
       setLeaderboardPageLayoutControls(initialLeaderboardPageLayoutControls)
+      setLeaderboardPageLayoutContent(initialLeaderboardPageLayoutContent)
     }, 0)
     return () => window.clearTimeout(timeoutId)
-  }, [initialLeaderboardPageLayoutControls, isLeaderboardPageLayout])
+  }, [initialLeaderboardPageLayoutContent, initialLeaderboardPageLayoutControls, isLeaderboardPageLayout])
 
   useEffect(() => {
     if (!isAuthPageLayout) {
@@ -3551,6 +3577,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         channel.postMessage({
           type: 'state',
           controls: leaderboardPageLayoutControlsRef.current,
+          content: leaderboardPageLayoutContentRef.current,
         } satisfies LeaderboardPageLayoutControlsMessage)
         return
       }
@@ -3559,6 +3586,11 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         setLeaderboardPageLayoutControls(
           normalizeLeaderboardPageSvgControls(event.data.controls)
         )
+        if (event.data.content) {
+          setLeaderboardPageLayoutContent(
+            normalizeLeaderboardPageContent(event.data.content)
+          )
+        }
       }
     }
     channel.addEventListener('message', handler)
@@ -4798,7 +4830,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     void createPanelWindow(
       'leaderboard-page-layout-controls',
       assetPath ?? LEADERBOARD_PAGE_LAYOUT_ASSET_PATH,
-      'Leaderboard Layout Controls',
+      'Leaderboard Authoring Controls',
       true
     )
   }
@@ -5181,6 +5213,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           selectedGameContent={selectedGamePagePreviewContent}
           lobbyControls={lobbyPageLayoutControls}
           leaderboardControls={leaderboardPageLayoutControls}
+          leaderboardContent={leaderboardPageLayoutContent}
           authControls={authPageLayoutControls}
           shopControls={shopPageLayoutControls}
           shopContent={shopPageLayoutContent}
