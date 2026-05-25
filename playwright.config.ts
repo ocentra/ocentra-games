@@ -100,6 +100,13 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], navigationTimeout: 90000 },
     },
     {
+      name: 'competition-e2e',
+      testMatch: /.*\/Competition\/__tests__\/e2e\/.*\.spec\.ts$/,
+      timeout: 120000,
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'], navigationTimeout: 90000 },
+    },
+    {
       name: 'db-mobile-e2e',
       testMatch: /.*\/bootstrap\/__tests__\/e2e\/.*\.spec\.ts$/,
       timeout: 180000,

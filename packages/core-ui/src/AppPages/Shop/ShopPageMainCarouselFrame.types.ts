@@ -259,6 +259,7 @@ export type FeaturedGameShowcaseProps = {
   onCardAction?: (card: ShopMainCarouselCardItem) => void;
   showBadges?: boolean;
   showLearnMore?: boolean;
+  showHeaderCount?: boolean;
   rightActionLabel?: string;
   onRightAction?: () => void;
   showNavigation?: boolean;

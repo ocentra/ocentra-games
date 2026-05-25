@@ -17,6 +17,7 @@ export const BucketPath = {
   AuditArchive: 'audit/',
   Avatars: 'avatars/',
   MessageArchive: 'messages/',
+  CompetitionProgramsIndex: 'Resources/Competition/programs.json',
 } as const;
 
 export type BucketPath = typeof BucketPath[keyof typeof BucketPath];

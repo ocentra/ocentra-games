@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { AppPageSvgSurface } from './AppPageSvgSurface';
 import { LeaderboardPageSvgSurface } from './Leaderboard/LeaderboardPageSvgSurface';
 import { LobbyPageSvgSurface } from './Lobby/LobbyPageSvgSurface';
@@ -11,12 +11,25 @@ import type {
 } from './AppPageSvgSurfaceControls';
 import type { SocialWorldPresence, SocialWorldQuickGame } from './SocialWorld/SocialWorldTypes';
 import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
+import type {
+  CompetitionCheckInResponse,
+  CompetitionProgram,
+  CompetitionProgramType,
+  CompetitionRegistrationResponse,
+} from '@ocentra/endpoint-domain/schemas/competition';
 import type { LeaderboardPageMode } from './Leaderboard/LeaderboardPageSvgSurface';
 import type { PartialLeaderboardPageContentData } from './Leaderboard/LeaderboardPageSvgContent';
 import type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 import type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
-import type { ShopPageContentData } from './Shop/ShopPageSvgContent';
+import {
+  normalizeShopPageContent,
+  type ShopPageContentData,
+} from './Shop/ShopPageSvgContent';
+import {
+  shopPageEventBundleImageUrl,
+  shopPageWeeklyCupImageUrl,
+} from '@ocentra/app-assets/shop-page';
 import type {
   ShopAccountSummary,
   ShopDeckImageResolver,
@@ -54,6 +67,7 @@ export type {
 export type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 export type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
+export type CompetitionPageSvgControls = ShopPageSvgControls;
 export { SocialWorldSurface } from './SocialWorld/SocialWorldSurface';
 export type { SocialWorldPresence, SocialWorldQuickGame } from './SocialWorld/SocialWorldTypes';
 export type {
@@ -195,6 +209,11 @@ type LeaderboardPageSurfaceControlProps = {
   leaderboardContent?: PartialLeaderboardPageContentData | null;
 };
 
+type CompetitionPageSurfaceControlProps = {
+  competitionControls?: Partial<CompetitionPageSvgControls> | null;
+  competitionContent?: Partial<ShopPageContentData> | null;
+};
+
 type ShopPageSurfaceControlProps = {
   layoutControls?: Partial<ShopPageSvgControls> | null;
   shopContent: ShopPageContentData;
@@ -224,12 +243,583 @@ function noopAction(label: string): AppPageSvgAction {
   return { label };
 }
 
-function routeScopeLabel(value?: string): string {
-  return value && value.trim().length > 0 ? value : 'all games';
-}
-
 function isLeaderboardPageMode(pageMode: CompetitionPageMode): pageMode is LeaderboardPageMode {
   return pageMode === 'leaderboard' || pageMode === 'gameLeaderboard' || pageMode === 'aiBenchmarkLeaderboard';
+}
+
+function competitionShopTabForPageMode(pageMode: CompetitionPageMode): ShopTab {
+  if (pageMode === 'tournaments' || pageMode === 'tournamentDetail') return 'Play Access';
+  if (pageMode === 'events' || pageMode === 'eventDetail') return 'Events';
+  return 'Elite';
+}
+
+const COMPETITION_STATUS_LABELS: Record<CompetitionProgram['status'], string> = {
+  draft: 'Draft',
+  scheduled: 'Scheduled',
+  registration_open: 'Registration open',
+  registration_closed: 'Registration closed',
+  check_in: 'Check-in open',
+  live: 'Live now',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+};
+
+function competitionDateTimeLabel(value?: string): string {
+  if (!value) return 'Schedule pending';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Schedule pending';
+  return date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function competitionShortDateLabel(value?: string): string {
+  if (!value) return 'TBA';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'TBA';
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function competitionCapacityLabel(program: CompetitionProgram): string {
+  const registered = program.stats.registered ?? 0;
+  return typeof program.stats.capacity === 'number'
+    ? `${registered}/${program.stats.capacity} registered`
+    : `${registered} registered`;
+}
+
+function orderedCompetitionPrograms(
+  programs: CompetitionProgram[],
+  featuredProgramId?: string | null,
+  selectedProgramId?: string | null,
+): CompetitionProgram[] {
+  return [...programs].sort((a, b) => {
+    const aSelected = selectedProgramId && a.programId === selectedProgramId ? 1 : 0;
+    const bSelected = selectedProgramId && b.programId === selectedProgramId ? 1 : 0;
+    if (aSelected !== bSelected) return bSelected - aSelected;
+    const aFeatured = (featuredProgramId && a.programId === featuredProgramId) || a.featured ? 1 : 0;
+    const bFeatured = (featuredProgramId && b.programId === featuredProgramId) || b.featured ? 1 : 0;
+    if (aFeatured !== bFeatured) return bFeatured - aFeatured;
+    return new Date(a.lifecycle.startsAt).getTime() - new Date(b.lifecycle.startsAt).getTime();
+  });
+}
+
+function featuredCompetitionPrograms(programs: CompetitionProgram[], featuredProgramId?: string | null): CompetitionProgram[] {
+  const featured = programs.filter(program => program.featured || program.programId === featuredProgramId);
+  return featured.length > 0 ? orderedCompetitionPrograms(featured, featuredProgramId) : orderedCompetitionPrograms(programs, featuredProgramId).slice(0, 1);
+}
+
+function competitionProgramsForShopTab(programs: CompetitionProgram[], tab: ShopTab, featuredProgramId?: string | null): CompetitionProgram[] {
+  if (tab === 'Events') return orderedCompetitionPrograms(programs.filter(program => program.programType === 'event'), featuredProgramId);
+  if (tab === 'Play Access') return orderedCompetitionPrograms(programs.filter(program => program.programType === 'tournament'), featuredProgramId);
+  if (tab === 'Elite') return featuredCompetitionPrograms(programs, featuredProgramId);
+  if (tab === 'Vault') {
+    const rewardPrograms = programs.filter(program => program.rewards.length > 0);
+    return orderedCompetitionPrograms(rewardPrograms.length > 0 ? rewardPrograms : programs, featuredProgramId);
+  }
+  return orderedCompetitionPrograms(programs, featuredProgramId);
+}
+
+function competitionProductPriceLabel(program: CompetitionProgram): string {
+  if (program.entry.mode === 'free') return 'Free entry';
+  return program.entry.priceLabel ?? program.entry.requirementLabel ?? 'Entry required';
+}
+
+function competitionProductAvailability(program: CompetitionProgram): ShopProduct['availability'] {
+  if (program.status === 'cancelled' || program.status === 'completed') return 'coming_soon';
+  if (program.status === 'scheduled') return 'preview';
+  return 'live';
+}
+
+function competitionLobbyHandoffOpen(program: CompetitionProgram): boolean {
+  return program.status === 'check_in' || program.status === 'live';
+}
+
+function competitionProductForProgram(program: CompetitionProgram, tab: ShopTab): ShopProduct {
+  return {
+    productId: program.entry.productId ?? program.programId,
+    productType: 'TOURNAMENT_ENTRY',
+    displayName: program.title,
+    description: program.description,
+    shopTab: tab,
+    badge: program.programType === 'tournament' ? 'Tournament' : 'Event',
+    benefits: [
+      program.subtitle,
+      `${competitionDateTimeLabel(program.lifecycle.startsAt)} start`,
+      competitionCapacityLabel(program),
+      COMPETITION_STATUS_LABELS[program.status],
+      program.rewards[0]?.detail ?? program.stats.prizePoolLabel ?? 'Competition rewards',
+    ].filter(Boolean).slice(0, 4),
+    entitlementKind: 'event_ticket',
+    availability: competitionProductAvailability(program),
+    priceLabel: competitionProductPriceLabel(program),
+    currency: 'usd',
+    active: program.status !== 'cancelled' && program.status !== 'completed',
+    competitionProgramId: program.programId,
+  };
+}
+
+function competitionStaticItems(
+  programs: CompetitionProgram[],
+  tab: ShopTab,
+  imageUrls: string[],
+): ShopPageContentData['creditPacks'] {
+  const tones = ['cyan', 'gold', 'violet', 'green', 'orange', 'silver'] as const;
+  return programs.map((program, index) => ({
+    title: program.title,
+    subtitle: program.subtitle,
+    tone: program.programType === 'tournament' ? 'gold' : tones[index % tones.length],
+    icon: program.programType === 'tournament' ? 'trophy' : 'cards',
+    badge: COMPETITION_STATUS_LABELS[program.status],
+    imageUrl: imageUrls[index % Math.max(1, imageUrls.length)] ?? TRANSPARENT_COMPETITION_IMAGE_URL,
+    price: competitionProductPriceLabel(program),
+    benefits: competitionProductForProgram(program, tab).benefits,
+  }));
+}
+
+function compactCompetitionItems(programs: CompetitionProgram[], fallback: string): string[] {
+  const items = programs.map(program => `${program.title} - ${competitionShortDateLabel(program.lifecycle.startsAt)}`).slice(0, 6);
+  return items.length > 0 ? items : [fallback];
+}
+
+type CompetitionBetaEmptyKind = 'all' | 'featured' | 'events' | 'tournaments' | 'rewards';
+const TRANSPARENT_COMPETITION_IMAGE_URL = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%221%22%20height=%221%22/%3E';
+const COMPETITION_EVENT_IMAGE_URL = shopPageWeeklyCupImageUrl;
+const COMPETITION_TOURNAMENT_IMAGE_URL = shopPageEventBundleImageUrl;
+
+const COMPETITION_BETA_EMPTY_COPY: Record<CompetitionBetaEmptyKind, {
+  title: string;
+  subtitle: string;
+  badge: string;
+  icon: 'cards' | 'trophy' | 'shield';
+  tone: 'cyan' | 'gold' | 'violet' | 'silver';
+  benefits: string[];
+}> = {
+  all: {
+    title: 'Coming Soon',
+    subtitle: 'Official events and tournaments will appear here when registration opens.',
+    badge: 'Soon',
+    icon: 'trophy',
+    tone: 'cyan',
+    benefits: ['No registration is open right now', 'New drops will be posted here before start time', 'Live programs will connect to Shop access and the game lobby'],
+  },
+  featured: {
+    title: 'Coming Soon',
+    subtitle: 'Featured competitions will appear here once Ocentra opens registration.',
+    badge: 'Soon',
+    icon: 'trophy',
+    tone: 'gold',
+    benefits: ['No featured event is open right now', 'Only real published programs will show here', 'Tickets and passes appear only when entry is available'],
+  },
+  events: {
+    title: 'Coming Soon',
+    subtitle: 'Ocentra events will appear here when a date and entry window are published.',
+    badge: 'Not Open',
+    icon: 'cards',
+    tone: 'silver',
+    benefits: ['No event registration is open right now', 'Fixed-date sessions will be listed here first', 'Come back for official event announcements'],
+  },
+  tournaments: {
+    title: 'Coming Soon',
+    subtitle: 'Tournament brackets will appear here after Ocentra publishes a schedule.',
+    badge: 'Not Open',
+    icon: 'trophy',
+    tone: 'silver',
+    benefits: ['No tournament registration is open right now', 'Brackets and stages will be visible before play starts', 'Come back for official tournament announcements'],
+  },
+  rewards: {
+    title: 'Coming Soon',
+    subtitle: 'Prize pools, badges, and season rewards will appear with official programs.',
+    badge: 'Soon',
+    icon: 'shield',
+    tone: 'violet',
+    benefits: ['No prize pool is active right now', 'Rewards are published with real events and tournaments', 'Player rewards will be visible before entry opens'],
+  },
+};
+
+function competitionBetaEmptyItems(kind: CompetitionBetaEmptyKind, imageUrl = TRANSPARENT_COMPETITION_IMAGE_URL): ShopPageContentData['creditPacks'] {
+  const copy = COMPETITION_BETA_EMPTY_COPY[kind];
+  return [{
+    title: copy.title,
+    subtitle: copy.subtitle,
+    tone: copy.tone,
+    icon: copy.icon,
+    badge: copy.badge,
+    imageUrl,
+    price: 'Coming soon',
+    benefits: copy.benefits,
+  }];
+}
+
+function imageUrlsFromItems(items: Array<{ imageUrl?: string } | undefined>): string[] {
+  return items.map(item => item?.imageUrl ?? '').filter(Boolean);
+}
+
+function competitionPreferredImages(primaryImageUrl: string, imageUrls: string[], excludedImageUrls: string[] = []): string[] {
+  const excluded = new Set(excludedImageUrls);
+  return [
+    primaryImageUrl,
+    ...imageUrls.filter(imageUrl => imageUrl !== primaryImageUrl && !excluded.has(imageUrl)),
+  ];
+}
+
+function competitionImagePools(base: ShopPageContentData) {
+  const eventImages = competitionPreferredImages(COMPETITION_EVENT_IMAGE_URL, imageUrlsFromItems([
+    ...(base.sections.Events.featured ?? []),
+    ...(base.sections.Events.categories ?? []),
+    base.sideItems.find(item => item.key === 'Events'),
+  ]), [COMPETITION_TOURNAMENT_IMAGE_URL]);
+  const tournamentImages = competitionPreferredImages(COMPETITION_TOURNAMENT_IMAGE_URL, imageUrlsFromItems([
+    ...(base.sections['Play Access'].featured ?? []),
+    ...(base.sections['Play Access'].categories ?? []),
+    base.sideItems.find(item => item.key === 'Play Access'),
+  ]), [COMPETITION_EVENT_IMAGE_URL]);
+  const featuredImages = [
+    ...imageUrlsFromItems([base.sideItems.find(item => item.key === 'Elite')]),
+    ...eventImages,
+    ...tournamentImages,
+  ];
+  const rewardImages = [
+    ...tournamentImages,
+    ...eventImages,
+    ...featuredImages,
+  ];
+  return {
+    all: [...featuredImages, ...eventImages, ...tournamentImages],
+    events: eventImages,
+    featured: featuredImages,
+    rewards: rewardImages,
+    tournaments: tournamentImages,
+  };
+}
+
+function competitionRewardGroups(programs: CompetitionProgram[], imageUrls: string[]): ShopPageContentData['vaultShowcaseGroups'] {
+  return programs
+    .filter(program => program.rewards.length > 0)
+    .map((program, index) => ({
+      key: `competition-rewards-${program.programId}`,
+      title: `${program.title} Rewards`,
+      subtitle: program.stats.prizePoolLabel ?? program.rewards[0]?.detail ?? 'Competition rewards',
+      tone: program.programType === 'tournament' ? 'gold' : 'violet',
+      icon: 'trophy',
+      badge: program.stats.prizePoolLabel ?? COMPETITION_STATUS_LABELS[program.status],
+      heroImageUrl: imageUrls[index % Math.max(1, imageUrls.length)] ?? TRANSPARENT_COMPETITION_IMAGE_URL,
+      items: program.rewards.map((reward, rewardIndex) => ({
+        title: reward.title,
+        subtitle: reward.detail,
+        tone: rewardIndex === 0 ? 'gold' : 'cyan',
+        icon: reward.place === 1 ? 'trophy' : 'shield',
+        badge: reward.place ? `Place ${reward.place}` : program.programType,
+        imageUrl: imageUrls[(index + rewardIndex) % Math.max(1, imageUrls.length)] ?? TRANSPARENT_COMPETITION_IMAGE_URL,
+        price: reward.amount && reward.currency ? `${reward.amount.toLocaleString()} ${reward.currency}` : program.stats.prizePoolLabel,
+        benefits: [
+          reward.detail,
+          `${program.title} reward track`,
+          `${competitionCapacityLabel(program)} capacity`,
+        ],
+      })),
+    }));
+}
+
+function buildCompetitionShopContent(
+  programs: CompetitionProgram[],
+  pageMode: CompetitionPageMode,
+  activeTab: ShopTab,
+  featuredProgramId?: string | null,
+  selectedProgram?: CompetitionProgram | null,
+  contentOverride?: Partial<ShopPageContentData> | null,
+): ShopPageContentData {
+  const base = normalizeShopPageContent(contentOverride);
+  const pools = competitionImagePools(base);
+  const fallbackCompetitionImageUrl = pools.all[0] ?? TRANSPARENT_COMPETITION_IMAGE_URL;
+  const rewardFallbackImageUrl = pools.rewards[0] ?? fallbackCompetitionImageUrl;
+  const selectedProgramId = selectedProgram?.programId ?? null;
+  const orderedPrograms = orderedCompetitionPrograms(programs, featuredProgramId, selectedProgramId);
+  const hasPrograms = orderedPrograms.length > 0;
+  const events = orderedCompetitionPrograms(programs.filter(program => program.programType === 'event'), featuredProgramId, selectedProgramId);
+  const tournaments = orderedCompetitionPrograms(programs.filter(program => program.programType === 'tournament'), featuredProgramId, selectedProgramId);
+  const featuredPrograms = featuredCompetitionPrograms(orderedPrograms, featuredProgramId);
+  const rewardPrograms = orderedCompetitionPrograms(programs.filter(program => program.rewards.length > 0), featuredProgramId, selectedProgramId);
+  const tabPrograms = competitionProgramsForShopTab(programs, activeTab, featuredProgramId);
+  const eventItems = events.length > 0
+    ? competitionStaticItems(events, 'Events', pools.events.length > 0 ? pools.events : pools.all)
+    : competitionBetaEmptyItems('events', pools.events[0] ?? fallbackCompetitionImageUrl);
+  const tournamentItems = tournaments.length > 0
+    ? competitionStaticItems(tournaments, 'Play Access', pools.tournaments.length > 0 ? pools.tournaments : pools.all)
+    : competitionBetaEmptyItems('tournaments', pools.tournaments[0] ?? fallbackCompetitionImageUrl);
+  const featuredItems = featuredPrograms.length > 0
+    ? competitionStaticItems(featuredPrograms, 'Elite', pools.featured.length > 0 ? pools.featured : pools.all)
+    : competitionBetaEmptyItems('featured', pools.featured[0] ?? fallbackCompetitionImageUrl);
+  const rewardItems = rewardPrograms.length > 0
+    ? competitionStaticItems(rewardPrograms, 'Vault', pools.rewards.length > 0 ? pools.rewards : pools.all)
+    : competitionBetaEmptyItems('rewards', rewardFallbackImageUrl);
+  const allItems = hasPrograms
+    ? competitionStaticItems(tabPrograms.length > 0 ? tabPrograms : orderedPrograms, activeTab, pools.all)
+    : competitionBetaEmptyItems('all', fallbackCompetitionImageUrl);
+  const ticketedPrograms = orderedPrograms.filter(program => program.entry.mode === 'ticket' || program.entry.mode === 'pass');
+  const liveRooms = orderedPrograms.reduce((total, program) => total + (program.stats.liveRooms ?? 0), 0);
+  const rewardGroups = hasPrograms
+    ? competitionRewardGroups(rewardPrograms.length > 0 ? rewardPrograms : orderedPrograms, pools.rewards.length > 0 ? pools.rewards : pools.all)
+    : [];
+  const primaryProgram = selectedProgram ?? featuredPrograms[0] ?? orderedPrograms[0] ?? null;
+  const primaryLabel = primaryProgram ? `${primaryProgram.title} - ${competitionDateTimeLabel(primaryProgram.lifecycle.startsAt)}` : 'No live programs yet';
+  const comparisonPrograms = (featuredPrograms.length > 0 ? featuredPrograms : orderedPrograms).slice(0, 4);
+
+  return normalizeShopPageContent({
+    ...base,
+    headerStats: [],
+    sideItems: base.sideItems.map(item => {
+      const competitionSideItem = {
+        ...item,
+        imageUrl: item.key === 'Vault' ? rewardFallbackImageUrl : item.imageUrl,
+      };
+      if (item.key === 'Treasury') return { ...competitionSideItem, title: 'OPEN PROGRAMS', subtitle: `${orderedPrograms.length} open / ${liveRooms} live`, icon: 'trophy', tone: 'cyan' };
+      if (item.key === 'Elite') return { ...competitionSideItem, title: 'FEATURED', subtitle: hasPrograms ? 'Main events' : 'Pending', icon: 'crown', tone: 'gold' };
+      if (item.key === 'Vault') return { ...competitionSideItem, title: 'REWARDS', subtitle: hasPrograms ? 'Prize tracks' : 'No prize track', icon: 'chest', tone: 'orange' };
+      if (item.key === 'Play Access') return { ...competitionSideItem, imageUrl: COMPETITION_TOURNAMENT_IMAGE_URL, title: 'TOURNAMENTS', subtitle: tournaments.length > 0 ? 'Brackets and stages' : 'None scheduled', icon: 'cards', tone: 'silver' };
+      return { ...competitionSideItem, imageUrl: COMPETITION_EVENT_IMAGE_URL, title: 'EVENTS', subtitle: events.length > 0 ? 'Fixed-date play' : 'None scheduled', icon: 'trophy', tone: 'gold' };
+    }),
+    sections: {
+      ...base.sections,
+      Treasury: {
+        ...base.sections.Treasury,
+        title: pageMode === 'competition' ? 'ALL PROGRAMS' : pageMode.toUpperCase(),
+        subtitle: hasPrograms
+          ? 'Scheduled events and tournaments with entry, check-in, lobby handoff, and rewards.'
+          : 'No official competition is open right now. New events and tournaments will appear here when registration opens.',
+        footerTitle: hasPrograms ? 'Competition flow:' : 'What happens next:',
+        footerItems: hasPrograms
+          ? ['Pick a program', 'Enter or buy access', 'Check in before start', 'Join lobby when live', 'Play rounds', 'Track rewards']
+          : ['Official drops will be posted here before start time', 'Registration opens only for real events and tournaments', 'Ticket or pass entries will send players to Shop', 'Live programs will hand off to the correct game lobby'],
+        categories: allItems,
+      },
+      Elite: {
+        ...base.sections.Elite,
+        title: 'FEATURED PROGRAMS',
+        subtitle: primaryProgram ? primaryLabel : 'No featured competition is open right now. Published drops will appear here automatically.',
+        footerTitle: primaryProgram ? 'Featured program state:' : 'Featured program:',
+        footerItems: primaryProgram
+          ? [COMPETITION_STATUS_LABELS[primaryProgram.status], competitionProductPriceLabel(primaryProgram), competitionCapacityLabel(primaryProgram), primaryProgram.routes.lobbyPath ? 'Lobby handoff ready' : 'Lobby path pending']
+          : ['Nothing to enter today', 'No ticket or pass is for sale', 'Stay tuned for the first official schedule drop'],
+        categories: featuredItems,
+        featured: featuredItems,
+      },
+      Vault: {
+        ...base.sections.Vault,
+        title: 'REWARDS',
+        subtitle: hasPrograms
+          ? 'Prize pools, badges, profile rewards, and season placement.'
+          : 'Prize pools, badges, and season rewards will publish only with official competitions.',
+        footerTitle: hasPrograms ? 'Reward views:' : 'Reward status:',
+        footerItems: hasPrograms
+          ? ['Prize pool', 'Badge grants', 'Season points', 'Placement rewards', 'Final table rewards']
+          : ['No active prize pool', 'No beta reward claims', 'Rewards will be visible before entry opens'],
+        categories: rewardItems,
+        featured: rewardItems,
+      },
+      'Play Access': {
+        ...base.sections['Play Access'],
+        title: 'TOURNAMENTS',
+        subtitle: tournaments.length > 0
+          ? 'Bracket, group, semifinal, and final paths authored ahead of time.'
+          : 'No tournament registration is open right now. Brackets will appear here once a tournament is published.',
+        categories: tournamentItems,
+        featured: tournamentItems,
+      },
+      Events: {
+        ...base.sections.Events,
+        title: 'EVENTS',
+        subtitle: events.length > 0
+          ? 'Scheduled competitive sessions with registration and check-in windows.'
+          : 'No scheduled event is open right now. Event drops will appear here once registration opens.',
+        footerTitle: events.length > 0 ? 'Event path:' : 'Event status:',
+        footerItems: events.length > 0
+          ? ['Registration window', 'Entry requirement', 'Check-in window', 'Lobby handoff', 'Event leaderboard']
+          : ['No event registration open', 'Come back for official dates', 'Lobby handoff appears on event day'],
+        categories: eventItems,
+        featured: eventItems,
+      },
+    },
+    vaultShowcaseGroups: rewardGroups.length > 0 ? rewardGroups : [{
+      key: 'competition-rewards-empty',
+      title: 'Coming Soon',
+      subtitle: 'Prize tracks will appear here with official events and tournaments.',
+      tone: 'violet',
+      icon: 'shield',
+      badge: 'Soon',
+      heroImageUrl: rewardFallbackImageUrl,
+      items: rewardItems,
+    }],
+    creditPacks: hasPrograms ? competitionStaticItems(orderedPrograms, 'Treasury', pools.all) : allItems,
+    passes: hasPrograms
+      ? featuredItems.length > 0 ? featuredItems : competitionStaticItems(ticketedPrograms.length > 0 ? ticketedPrograms : orderedPrograms, 'Elite', pools.featured.length > 0 ? pools.featured : pools.all)
+      : featuredItems,
+    previews: [
+      { title: 'FEATURED PROGRAMS', tab: 'Elite', subtitle: primaryProgram ? primaryLabel : 'No featured competition is open right now', items: compactCompetitionItems(featuredPrograms, 'Coming soon'), accent: '#ffd36a', imageUrls: pools.featured.slice(0, 6) },
+      { title: 'EVENTS', tab: 'Events', subtitle: events.length > 0 ? 'Fixed-date sessions players can enter before start' : 'No event registration is open right now', items: compactCompetitionItems(events, 'Events will appear here when announced'), accent: '#54e2ff', imageUrls: pools.events.slice(0, 6) },
+      { title: 'TOURNAMENTS', tab: 'Play Access', subtitle: tournaments.length > 0 ? 'Brackets, groups, semifinals, and finals' : 'No tournament registration is open right now', items: compactCompetitionItems(tournaments, 'Tournaments will appear here when announced'), accent: '#20e39d', imageUrls: pools.tournaments.slice(0, 6) },
+      { title: 'REWARDS', tab: 'Vault', subtitle: hasPrograms ? 'Prize pools and placement rewards' : 'No competition reward track is active right now', items: hasPrograms ? rewardPrograms.flatMap(program => program.rewards.map(reward => `${program.title} - ${reward.title}`)).slice(0, 6) : ['Coming soon'], accent: '#bd76ff', imageUrls: pools.rewards.slice(0, 6) },
+      { title: 'CHECK-IN + LOBBY', tab: 'Treasury', subtitle: hasPrograms ? 'Enter now, check in near start, then join the game lobby' : 'Lobby handoff appears after an official program opens', items: compactCompetitionItems(orderedPrograms, 'Live programs will route to the game lobby'), accent: '#f59e0b', imageUrls: pools.all.slice(0, 6) },
+    ],
+    quests: [],
+    rightTabs: [
+      { id: 'account', title: 'PROGRAM PREVIEW', accent: '#54e2ff' },
+      { id: 'wallet', title: 'ENTRY STATUS', accent: '#ffd36a' },
+      { id: 'pass', title: 'FEATURED PROGRAM', accent: '#bd76ff' },
+      { id: 'events', title: 'SCHEDULE', accent: '#de4fe8' },
+      { id: 'recent', title: 'LOBBY HANDOFF', accent: '#20e39d' },
+    ],
+    rightRows: {
+      wallet: [
+        ['Open Programs', String(orderedPrograms.length)],
+        ['Events', String(events.length)],
+        ['Tournaments', String(tournaments.length)],
+        ['Ticketed', String(ticketedPrograms.length)],
+        ['Live Rooms', String(liveRooms)],
+      ],
+      events: hasPrograms
+        ? orderedPrograms.slice(0, 3).map(program => [
+          program.title,
+          competitionDateTimeLabel(program.lifecycle.startsAt),
+          COMPETITION_STATUS_LABELS[program.status],
+        ])
+        : [['No programs yet', 'Check back regularly', 'Beta schedule pending']],
+      recent: hasPrograms
+        ? orderedPrograms.slice(0, 4).map(program => [
+          program.title,
+          program.routes.lobbyPath ? 'Lobby route ready' : 'Lobby route pending',
+        ])
+        : [['Lobby handoff', 'No scheduled handoff yet']],
+    },
+    rightDetails: {
+      account: [
+        { label: 'Featured', value: primaryProgram?.title ?? 'N/A', detail: primaryProgram?.subtitle ?? 'Featured program appears here when available.' },
+        { label: 'Starts', value: primaryProgram ? competitionDateTimeLabel(primaryProgram.lifecycle.startsAt) : 'N/A', detail: 'Fixed competitive programs have scheduled start times.' },
+        { label: 'Entry', value: primaryProgram ? competitionProductPriceLabel(primaryProgram) : 'N/A', detail: 'Free programs register directly; paid programs open shop entry access.' },
+        { label: 'Capacity', value: primaryProgram ? competitionCapacityLabel(primaryProgram) : 'N/A', detail: 'Capacity comes from the authored competition program.' },
+      ],
+      wallet: [
+        { label: 'Open programs', value: String(orderedPrograms.length), detail: 'Programs currently available in the competition feed.' },
+        { label: 'Ticketed', value: String(ticketedPrograms.length), detail: 'Programs that require a ticket or pass before registration completes.' },
+        { label: 'Free entry', value: String(orderedPrograms.filter(program => program.entry.mode === 'free').length), detail: 'Programs that can be registered without a shop purchase.' },
+        { label: 'Live rooms', value: String(liveRooms), detail: 'Live room counts hand off to the lobby layer when play starts.' },
+      ],
+      pass: [
+        { label: 'Program', value: primaryProgram?.title ?? 'N/A', detail: primaryProgram?.description ?? 'Featured program detail appears here.' },
+        { label: 'Status', value: primaryProgram ? COMPETITION_STATUS_LABELS[primaryProgram.status] : 'N/A', detail: 'Status controls whether players enter, check in, join, or wait.' },
+        { label: 'Check-in', value: primaryProgram ? competitionDateTimeLabel(primaryProgram.lifecycle.checkInOpensAt) : 'N/A', detail: 'Check-in opens shortly before lobby handoff.' },
+        { label: 'Reward', value: primaryProgram?.stats.prizePoolLabel ?? primaryProgram?.rewards[0]?.title ?? 'N/A', detail: 'Reward data comes from the authored event or tournament.' },
+      ],
+      events: hasPrograms
+        ? orderedPrograms.slice(0, 5).map(program => ({
+          label: program.title,
+          value: competitionDateTimeLabel(program.lifecycle.startsAt),
+          detail: `${COMPETITION_STATUS_LABELS[program.status]} - ${competitionProductPriceLabel(program)}`,
+        }))
+        : [
+          { label: 'Events', value: 'None yet', detail: 'No public beta event registration is open.' },
+          { label: 'Tournaments', value: 'None yet', detail: 'No public beta tournament bracket is scheduled.' },
+          { label: 'Reminder', value: 'Check back', detail: 'Official programs will be published here before registration opens.' },
+        ],
+      recent: hasPrograms
+        ? orderedPrograms.slice(0, 5).map(program => ({
+          label: program.title,
+          value: program.routes.lobbyPath ? 'Lobby ready' : 'Pending',
+          detail: program.routes.lobbyPath ?? 'Lobby path is not authored yet.',
+        }))
+        : [
+          { label: 'Lobby handoff', value: 'Inactive', detail: 'Competition will send players to the lobby only when an official event is live.' },
+          { label: 'Shop access', value: 'Inactive', detail: 'Ticket or pass purchase links appear only with real programs.' },
+        ],
+    },
+    uiCopy: {
+      ...base.uiCopy,
+      header: {
+        ...base.uiCopy.header,
+        title: 'Competition',
+        subtitle: hasPrograms
+          ? 'Find scheduled events and tournaments, enter before registration closes, then check in for lobby handoff.'
+          : 'Official events and tournaments will appear here when registration opens.',
+        badges: [
+          { title: 'Schedule', sub: 'Fixed start', icon: 'trophy', tone: 'cyan' },
+          { title: 'Entry', sub: 'Ticket/pass', icon: 'link', tone: 'green' },
+          { title: 'Lobby', sub: 'Check-in', icon: 'cards', tone: 'gold' },
+        ],
+        balanceTitle: 'Open Programs',
+        balanceUnit: 'Live',
+        balanceSub: hasPrograms ? 'Registration' : 'None yet',
+      },
+      passCard: {
+        ...base.uiCopy.passCard,
+        compactSummary: 'Featured competitive program.',
+        summary: 'Scheduled program entry, check-in, lobby handoff, and rewards.',
+        compactBenefits: ['Fixed start time', 'Lobby handoff'],
+        benefits: ['Entry requirement', 'Registration window', 'Check-in window', 'Lobby handoff', 'Reward track'],
+        lifetimeButton: hasPrograms ? 'View Program' : 'Stay Tuned',
+        selectButton: hasPrograms ? 'View Program' : 'Stay Tuned',
+      },
+      earnPanel: {
+        ...base.uiCopy.earnPanel,
+        title: hasPrograms ? 'FEATURED EVENT' : 'NO EVENT YET',
+        description: primaryProgram?.subtitle ?? 'Official competition announcements will appear here when registration opens.',
+        buttonLabel: hasPrograms ? 'View Program' : 'Stay Tuned',
+      },
+      actions: {
+        ...base.uiCopy.actions,
+        purchase: hasPrograms ? 'Enter' : 'Not Open',
+        topUp: hasPrograms ? 'Open Entry' : 'Not Open',
+        select: hasPrograms ? 'View Program' : 'Stay Tuned',
+        view: hasPrograms ? 'Details' : 'Stay Tuned',
+        open: hasPrograms ? 'Open Program' : 'Stay Tuned',
+        claimFree: hasPrograms ? 'Register Free' : 'Not Open',
+        buyDigital: hasPrograms ? 'Enter Program' : 'Not Open',
+        openVaultGroup: hasPrograms ? 'View Rewards' : 'Stay Tuned',
+        backToShop: 'Back To Competition',
+        backToPrefix: 'Back To',
+      },
+      status: {
+        ...base.uiCopy.status,
+        loadingMarketplace: 'Loading competitions...',
+      },
+      footer: [
+        { title: 'Scheduled Play', sub: 'Events and tournaments have fixed start times', icon: 'trophy', tone: 'cyan' },
+        { title: 'Entry Access', sub: 'Free, ticketed, or pass-based programs', icon: 'link', tone: 'green' },
+        { title: 'Lobby Handoff', sub: 'Check in before live rooms open', icon: 'cards', tone: 'gold' },
+        { title: 'Tracked Rewards', sub: 'Prize pools, badges, and season points', icon: 'shield', tone: 'violet' },
+      ],
+    },
+    infoDetails: {
+      arenaCredits: {
+        title: 'HOW ENTRY WORKS',
+        subtitle: hasPrograms
+          ? 'Competition programs are authored ahead of time. Players enter before registration closes, check in near start, then move into the game lobby when live.'
+          : 'Competition is the schedule hub for official Ocentra drops. Right now there are no public events or tournaments open.',
+        cta: 'Back To Competition',
+        bullets: [
+          'Events and tournaments are scheduled per game or variant.',
+          'Free programs register directly; ticketed or pass programs open shop entry access.',
+          'Check-in opens shortly before the fixed start time.',
+          'Lobby routes handle live tables, private rooms, public rooms, and match execution.',
+          'When the first official program is published, this waiting state is replaced by the real entry flow.',
+        ],
+      },
+      eliteBenefits: {
+        title: 'FEATURED PROGRAMS',
+        subtitle: 'Featured programs are the main competitive items to surface first on the Competition hub.',
+        cta: 'Back To Featured',
+        tiers: comparisonPrograms.length > 0 ? comparisonPrograms.map((program, index) => ({
+          key: program.programId,
+          title: program.title,
+          price: competitionProductPriceLabel(program),
+          tone: index === 0 ? 'gold' : program.programType === 'tournament' ? 'violet' : 'cyan',
+        })) : [{ key: 'pending', title: 'Schedule pending', price: 'N/A', tone: 'silver' }],
+        rows: [
+          { label: 'Type', values: comparisonPrograms.length > 0 ? comparisonPrograms.map(program => program.programType) : ['N/A'] },
+          { label: 'Starts', values: comparisonPrograms.length > 0 ? comparisonPrograms.map(program => competitionShortDateLabel(program.lifecycle.startsAt)) : ['N/A'] },
+          { label: 'Status', values: comparisonPrograms.length > 0 ? comparisonPrograms.map(program => COMPETITION_STATUS_LABELS[program.status]) : ['N/A'] },
+          { label: 'Capacity', values: comparisonPrograms.length > 0 ? comparisonPrograms.map(competitionCapacityLabel) : ['N/A'] },
+          { label: 'Reward', values: comparisonPrograms.length > 0 ? comparisonPrograms.map(program => program.stats.prizePoolLabel ?? program.rewards[0]?.title ?? 'Rewards') : ['N/A'] },
+        ],
+      },
+    },
+  });
 }
 
 export function SocialPageContent({
@@ -448,27 +1038,29 @@ export function SocialWorldPageContent({
 
 export function CompetitionPageContent({
   loading,
-  registering,
   error,
   gameType,
   seasonId,
   lastUpdated,
   leaderboardEntries,
-  showPersonalizedStats,
   userEntry,
   nearbyAbove,
   nearbyBelow,
-  tournamentId,
-  tournamentRounds,
+  programs = [],
+  featuredProgramId = null,
+  selectedProgram = null,
+  registeringProgramId = null,
+  checkingInProgramId = null,
   pageMode = 'competition',
   gameId,
-  eventId,
-  matchId,
   onRefreshLeaderboard,
-  onLoadBracket,
-  onRegister,
   onMatchmaking,
-  layoutControls,
+  onRefreshPrograms = () => undefined,
+  onRegisterProgram = () => undefined,
+  onOpenShop = () => undefined,
+  onOpenLobby = () => undefined,
+  competitionControls,
+  competitionContent,
   leaderboardControls,
   leaderboardContent,
 }: {
@@ -485,6 +1077,13 @@ export function CompetitionPageContent({
   nearbyBelow: LeaderboardRow[];
   tournamentId: string;
   tournamentRounds: TournamentRound[];
+  programs?: CompetitionProgram[];
+  featuredProgramId?: string | null;
+  selectedProgram?: CompetitionProgram | null;
+  registeringProgramId?: string | null;
+  checkingInProgramId?: string | null;
+  registrationResult?: CompetitionRegistrationResponse | null;
+  checkInResult?: CompetitionCheckInResponse | null;
   pageMode?: CompetitionPageMode;
   gameId?: string;
   eventId?: string;
@@ -493,33 +1092,22 @@ export function CompetitionPageContent({
   onLoadBracket: (tournamentId: string) => void;
   onRegister: (tournamentId: string) => void;
   onMatchmaking: () => void;
-} & AppPageSurfaceControlProps & LeaderboardPageSurfaceControlProps) {
-  const topEntry = leaderboardEntries[0];
-  const currentTournamentId = tournamentId || 'season-main';
-  const titleByMode: Record<CompetitionPageMode, string> = {
-    competition: 'Competition',
-    events: 'Events',
-    eventDetail: 'Event Detail',
-    tournaments: 'Tournaments',
-    tournamentDetail: 'Tournament Detail',
-    leaderboard: 'Leaderboard',
-    gameLeaderboard: 'Game Leaderboard',
-    aiBenchmarkLeaderboard: 'AI Benchmark Leaderboard',
-    matches: 'Matches',
-    matchDetail: 'Match Detail',
-  };
-  const routeByMode: Record<CompetitionPageMode, string> = {
-    competition: '/competition',
-    events: '/events',
-    eventDetail: `/events/${routeScopeLabel(eventId)}`,
-    tournaments: '/tournaments',
-    tournamentDetail: `/tournaments/${currentTournamentId}`,
-    leaderboard: '/leaderboard',
-    gameLeaderboard: `/games/${routeScopeLabel(gameId)}/leaderboard`,
-    aiBenchmarkLeaderboard: '/leaderboard/ai-benchmarks',
-    matches: '/matches',
-    matchDetail: `/matches/${routeScopeLabel(matchId)}`,
-  };
+  onRefreshPrograms?: (filter?: { type?: CompetitionProgramType }) => void;
+  onSelectProgram?: (programId: string) => void;
+  onRegisterProgram?: (programId: string) => void;
+  onCheckInProgram?: (programId: string) => void;
+  onOpenProgram?: (program: CompetitionProgram) => void;
+  onOpenShop?: (program: CompetitionProgram) => void;
+  onOpenLobby?: (program: CompetitionProgram) => void;
+  onOpenLeaderboard?: (program: CompetitionProgram) => void;
+} & AppPageSurfaceControlProps & CompetitionPageSurfaceControlProps & LeaderboardPageSurfaceControlProps) {
+  const [competitionShopTabState, setCompetitionShopTabState] = useState<{ pageMode: CompetitionPageMode; tab: ShopTab }>(() => ({
+    pageMode,
+    tab: competitionShopTabForPageMode(pageMode),
+  }));
+  const competitionShopTab = competitionShopTabState.pageMode === pageMode
+    ? competitionShopTabState.tab
+    : competitionShopTabForPageMode(pageMode);
 
   if (isLeaderboardPageMode(pageMode)) {
     return (
@@ -544,81 +1132,61 @@ export function CompetitionPageContent({
     );
   }
 
-  const panels: AppPageSvgPanel[] = [
-    {
-      title: 'Leaderboard',
-      subtitle: `Season ${seasonId || '-'}`,
-      rows: [
-        { label: 'Rows', value: leaderboardEntries.length },
-        { label: 'Top player', value: topEntry?.user_id ?? '-' },
-        { label: 'Top score', value: topEntry?.score ?? '-' },
-        { label: 'Updated', value: lastUpdated || '-' },
-      ],
-      actions: [
-        { label: 'Refresh', onClick: () => onRefreshLeaderboard(gameType) },
-        { label: 'Matchmaking', onClick: onMatchmaking },
-      ],
-    },
-    {
-      title: 'Personal Rank',
-      subtitle: showPersonalizedStats ? 'Signed-in player stats' : 'Account required',
-      rows: [
-        { label: 'Rank', value: userEntry?.rank ?? '-' },
-        { label: 'Score', value: userEntry?.score ?? '-' },
-        { label: 'Wins', value: userEntry?.wins ?? 0 },
-        { label: 'Losses', value: userEntry?.losses ?? 0 },
-        { label: 'Nearby', value: nearbyAbove.length + nearbyBelow.length },
-      ],
-      actions: [noopAction(showPersonalizedStats ? 'Rank Ready' : 'Sign In')],
-    },
-    {
-      title: 'Tournament Bracket',
-      subtitle: `Tournament ${currentTournamentId}`,
-      rows: [
-        { label: 'Rounds', value: tournamentRounds.length },
-        { label: 'Matches', value: tournamentRounds.reduce((sum, round) => sum + (Array.isArray(round.matches) ? round.matches.length : 0), 0) },
-        { label: 'Game type', value: gameType },
-      ],
-      actions: [
-        { label: 'Load Bracket', onClick: () => onLoadBracket(currentTournamentId) },
-        { label: registering ? 'Registering' : 'Register', onClick: () => onRegister(currentTournamentId), disabled: registering },
-      ],
-    },
-    {
-      title: 'Route Scope',
-      subtitle: 'SEO addressable page identity',
-      rows: [
-        { label: 'Mode', value: pageMode },
-        { label: 'Route', value: routeByMode[pageMode] },
-        { label: 'Game', value: routeScopeLabel(gameId) },
-        { label: 'Event', value: routeScopeLabel(eventId) },
-        { label: 'Match', value: routeScopeLabel(matchId) },
-      ],
-    },
-  ];
+  const visiblePrograms = competitionProgramsForShopTab(programs, competitionShopTab, featuredProgramId);
+  const competitionProducts = (visiblePrograms.length > 0 ? visiblePrograms : programs)
+    .map(program => competitionProductForProgram(program, competitionShopTab));
+  const programByProductId = new Map(
+    programs.map(program => [program.entry.productId ?? program.programId, program])
+  );
+  const shopContent = buildCompetitionShopContent(programs, pageMode, competitionShopTab, featuredProgramId, selectedProgram, competitionContent);
+  const busyProgramId = registeringProgramId ?? checkingInProgramId;
+  const handleCompetitionTabChange = (tab: ShopTab) => {
+    setCompetitionShopTabState({ pageMode, tab });
+  };
+  const handleCompetitionBuy = (product: ShopProduct) => {
+    const program = programByProductId.get(product.productId);
+    if (!program) return;
+    if (competitionLobbyHandoffOpen(program)) {
+      onOpenLobby(program);
+      return;
+    }
+    if (program.entry.mode === 'free') {
+      onRegisterProgram(program.programId);
+      return;
+    }
+    onOpenShop(program);
+  };
 
   return (
-    <AppPageSvgSurface
-      title={titleByMode[pageMode]}
-      eyebrow="Competitive Play"
-      subtitle="Competition, events, tournaments, matches, leaderboards, and AI benchmark pages stay route-addressable while lobby tables remain the playable execution layer."
-      routeLabel={routeByMode[pageMode]}
-      metrics={[
-        { label: 'Entries', value: leaderboardEntries.length },
-        { label: 'Season', value: seasonId || '-' },
-        { label: 'Rounds', value: tournamentRounds.length },
-        { label: 'Mode', value: pageMode },
-        { label: 'Game', value: routeScopeLabel(gameId) },
-      ]}
-      panels={panels}
-      actions={[
-        { label: 'Refresh', onClick: () => onRefreshLeaderboard(gameType) },
-        { label: 'Bracket', onClick: () => onLoadBracket(currentTournamentId) },
-        { label: 'Queue', onClick: onMatchmaking },
-      ]}
-      loading={loading}
+    <ShopPageSvgSurface
+      activeTab={competitionShopTab}
+      products={competitionProducts}
+      loadingProducts={loading}
+      loadingId={busyProgramId}
       error={error}
-      controls={layoutControls}
+      acBalance={programs.length}
+      onTabChange={handleCompetitionTabChange}
+      onClearError={() => onRefreshPrograms()}
+      onBuy={handleCompetitionBuy}
+      controls={competitionControls}
+      content={shopContent}
+      chrome={{
+        ariaLabel: 'Competition events and tournaments page layout',
+        headerIcon: 'trophy',
+        balanceIcon: 'cards',
+        productTileMode: 'programs',
+        showHeaderIcon: false,
+        showHeaderPanel: false,
+        showHeaderBadges: false,
+        showHeaderSubtitle: false,
+        showHeaderBalance: false,
+        showTopStats: false,
+        showRightPanel: false,
+        showEarnPanel: false,
+        showMainHeaderCount: false,
+        showMainTopRightAction: false,
+        sideInfoItemKey: 'Treasury',
+      }}
     />
   );
 }

@@ -313,6 +313,47 @@ function EarnFreeSideCard({
   );
 }
 
+function SideInfoCard({
+  x,
+  y,
+  w,
+  h,
+  item,
+  cfg,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  item: ShopSideItem;
+  cfg: ShopPageSvgControls;
+}) {
+  const earn = cfg.componentTokens.leftEarnPanel;
+  const color = toneColor(item.tone, cfg);
+  const compact = w < 132 || h < 180;
+  const headerTitleSize = fitSingleLineTextSize(item.title, Math.max(48, w - earn.headerInset * 2 - 14), compact ? 9.2 : 10.4, earn.headerTitleSize, 0.58);
+  const badgeW = w - earn.buttonInsetX * 2;
+  const badgeTextSize = fitSingleLineTextSize(item.subtitle, Math.max(44, badgeW - 8), 7.6, 9.8, 0.52);
+  const imageSize = Math.max(44, Math.min(w - earn.imageInsetX * 2, h * (compact ? 0.36 : 0.42), 92));
+  const imageX = x + w / 2 - imageSize / 2;
+  const imageY = y + earn.imageTop + (compact ? 2 : 8);
+  const badgeX = x + earn.buttonInsetX;
+  const badgeY = y + h - earn.buttonBottom;
+  const textY = Math.min(badgeY - 20, imageY + imageSize + (compact ? 13 : 20));
+  return (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx={cfg.leftPanel.earnRadius} fill={cfg.colors.panelFill} stroke={color} strokeWidth="1.35" strokeOpacity="0.78" />
+      <HeaderBar x={x + earn.headerInset} y={y + earn.headerInset} w={w - earn.headerInset * 2} h={earn.headerH} cfg={cfg} stroke={color}>
+        <Txt x={x + earn.headerTitleX} y={y + earn.headerTitleY} size={headerTitleSize} weight="950" cfg={cfg}>{item.title}</Txt>
+      </HeaderBar>
+      <TransparentAssetImage x={imageX} y={imageY} w={imageSize} h={imageSize} imageUrl={item.imageUrl} cfg={cfg} glow />
+      <Txt x={x + w / 2} y={textY} size={compact ? 8.2 : 9.4} weight="850" anchor="middle" fill={color} cfg={cfg}>Registration</Txt>
+      <rect x={badgeX} y={badgeY} width={badgeW} height={earn.buttonH} rx={cfg.svgDefaults.roundedNone} fill={alphaColor(color, 0.16)} stroke={color} strokeWidth="1.15" strokeOpacity="0.78" />
+      <Txt x={x + w / 2} y={badgeY + earn.buttonH / 2 + 1} size={badgeTextSize} weight="850" anchor="middle" fill={cfg.colors.bodyText} cfg={cfg}>{item.subtitle}</Txt>
+    </g>
+  );
+}
+
 export function LeftSidePanel({
   x,
   y,
@@ -320,6 +361,8 @@ export function LeftSidePanel({
   h,
   activeTab,
   earnActive,
+  showEarnPanel = true,
+  sideInfoItemKey,
   content,
   cfg,
   onTabChange,
@@ -331,6 +374,8 @@ export function LeftSidePanel({
   h: number;
   activeTab: ShopTab;
   earnActive: boolean;
+  showEarnPanel?: boolean;
+  sideInfoItemKey?: ShopTab | null;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   onTabChange: (tab: ShopTab) => void;
@@ -338,7 +383,8 @@ export function LeftSidePanel({
 }) {
   const cardX = x + cfg.leftPanel.cardInsetX;
   const cardW = w - cfg.leftPanel.cardInsetX * 2;
-  const sideItems = content.sideItems;
+  const sideInfoItem = sideInfoItemKey ? content.sideItems.find(item => item.key === sideInfoItemKey) ?? null : null;
+  const sideItems = sideInfoItem ? content.sideItems.filter(item => item.key !== sideInfoItem.key) : content.sideItems;
   const earnY = y + cfg.leftPanel.pad + sideItems.length * cfg.leftPanel.cardH + Math.max(0, sideItems.length - 1) * cfg.leftPanel.cardGap + cfg.leftPanel.earnGap;
   const earn = cfg.componentTokens.leftEarnPanel;
   const earnH = Math.max(earn.imageMinH + earn.imageTop, y + h - earnY - cfg.leftPanel.earnBottomPad);
@@ -359,7 +405,8 @@ export function LeftSidePanel({
           onClick={() => onTabChange(item.key)}
         />
       ))}
-      <EarnFreeSideCard x={earnX} y={earnY} w={earnW} h={earnH} selected={earnActive} content={content} cfg={cfg} onClick={onEarn} />
+      {showEarnPanel ? <EarnFreeSideCard x={earnX} y={earnY} w={earnW} h={earnH} selected={earnActive} content={content} cfg={cfg} onClick={onEarn} /> : null}
+      {!showEarnPanel && sideInfoItem ? <SideInfoCard x={earnX} y={earnY} w={earnW} h={earnH} item={sideInfoItem} cfg={cfg} /> : null}
     </Panel>
   );
 }

@@ -2479,10 +2479,17 @@ function CenterModeB({ box, config, style, aspectCorrection, substituteVariables
   const taglineFontSize = mode.taglineStyle?.fontSize || fontSize * 0.6;
   
   const iconSize = Math.min(mode.iconSize, box.h * 0.55);
-  
+  const leftIcons = mode.leftIcons || (mode.icons ? [mode.icons[0], mode.icons[1]] : []);
+  const rightIcons = mode.rightIcons || (mode.icons ? [mode.icons[2], mode.icons[3]] : []);
+  const leftIconCount = leftIcons.filter(Boolean).length;
+  const rightIconCount = rightIcons.filter(Boolean).length;
+  const iconSpacing = Math.max(0, iconSize + mode.pairGap);
+  const leftIconsWidth = leftIconCount > 0 ? leftIconCount * iconSize + Math.max(0, leftIconCount - 1) * Math.max(0, mode.pairGap) : 0;
+  const rightIconsWidth = rightIconCount > 0 ? rightIconCount * iconSize + Math.max(0, rightIconCount - 1) * Math.max(0, mode.pairGap) : 0;
+
   // Calculate text width for centering
-  const textWidthEstimate = mainText.length * (fontSize * 0.55);
-  const maxTextWidth = Math.max(1, box.w - config.sidePadding * 2 - iconSize * 4 - mode.pairGap * 2 - config.contentGap * 2);
+  const textWidthEstimate = estimateTextWidth(mainText, mode.textStyle, fontSize);
+  const maxTextWidth = Math.max(1, box.w - config.sidePadding * 2 - leftIconsWidth - rightIconsWidth - config.contentGap * 2);
   const textWidth = Math.min(textWidthEstimate, maxTextWidth);
 
   const leftUnitStart = box.x + config.sidePadding;
@@ -2492,17 +2499,29 @@ function CenterModeB({ box, config, style, aspectCorrection, substituteVariables
   
   const leftPairCenter = leftUnitStart + Math.max(1, leftUnitEnd - leftUnitStart) / 2;
   const rightPairCenter = rightUnitStart + Math.max(1, rightUnitEnd - rightUnitStart) / 2;
-  const pairHalfSpread = Math.max(0, iconSize + mode.pairGap) / 2;
 
-  // Use new icon arrays or fallback to legacy 'icons' array
-  const leftIcons = mode.leftIcons || (mode.icons ? [mode.icons[0], mode.icons[1]] : []);
-  const rightIcons = mode.rightIcons || (mode.icons ? [mode.icons[2], mode.icons[3]] : []);
+  const leftIconEntries = leftIcons
+    .map((renderer, index) => ({ renderer, color: index === 0 ? '#050505' : '#ff3b45' }))
+    .filter((entry): entry is { renderer: HeaderIconType; color: string } => Boolean(entry.renderer));
+  const rightIconEntries = rightIcons
+    .map((renderer, index) => ({ renderer, color: index === 0 ? '#ff3b45' : '#050505' }))
+    .filter((entry): entry is { renderer: HeaderIconType; color: string } => Boolean(entry.renderer));
 
   return (
     <g>
       {/* Left Icons */}
-      {leftIcons[0] && <CorrectedIcon cx={leftPairCenter - pairHalfSpread} cy={mainY} size={iconSize} color="#050505" style={style} aspectCorrection={aspectCorrection} renderer={leftIcons[0]} />}
-      {leftIcons[1] && <CorrectedIcon cx={leftPairCenter + pairHalfSpread} cy={mainY} size={iconSize} color="#ff3b45" style={style} aspectCorrection={aspectCorrection} renderer={leftIcons[1]} />}
+      {leftIconEntries.map((entry, index) => (
+        <CorrectedIcon
+          key={`left-${index}`}
+          cx={leftPairCenter + (index - (leftIconEntries.length - 1) / 2) * iconSpacing}
+          cy={mainY}
+          size={iconSize}
+          color={entry.color}
+          style={style}
+          aspectCorrection={aspectCorrection}
+          renderer={entry.renderer}
+        />
+      ))}
       
       {/* Center Content: Logo or Text */}
       {mode.logo ? (
@@ -2543,8 +2562,18 @@ function CenterModeB({ box, config, style, aspectCorrection, substituteVariables
       )}
 
       {/* Right Icons */}
-      {rightIcons[0] && <CorrectedIcon cx={rightPairCenter - pairHalfSpread} cy={mainY} size={iconSize} color="#ff3b45" style={style} aspectCorrection={aspectCorrection} renderer={rightIcons[0]} />}
-      {rightIcons[1] && <CorrectedIcon cx={rightPairCenter + pairHalfSpread} cy={mainY} size={iconSize} color="#050505" style={style} aspectCorrection={aspectCorrection} renderer={rightIcons[1]} />}
+      {rightIconEntries.map((entry, index) => (
+        <CorrectedIcon
+          key={`right-${index}`}
+          cx={rightPairCenter + (index - (rightIconEntries.length - 1) / 2) * iconSpacing}
+          cy={mainY}
+          size={iconSize}
+          color={entry.color}
+          style={style}
+          aspectCorrection={aspectCorrection}
+          renderer={entry.renderer}
+        />
+      ))}
     </g>
   );
 }
@@ -3317,4 +3346,3 @@ function Control({
     </div>
   );
 }
-

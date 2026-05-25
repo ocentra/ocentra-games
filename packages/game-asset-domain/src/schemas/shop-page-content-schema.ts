@@ -122,7 +122,7 @@ const ShopActionCopySchema = schema.object({
 }).strict();
 
 const ShopPaymentProviderCopySchema = schema.object({
-  provider: schema.enum(['stripe', 'paypal', 'solana']),
+  provider: schema.enum(['stripe', 'paypal', 'razorpay', 'solana']),
   label: schema.string(),
   detail: schema.string(),
 }).strict();

@@ -32,6 +32,7 @@ import { handleAICatalogRequest } from '@/handlers/ai-catalog';
 import { handleAIOAuthRequest } from '@/handlers/ai-oauth';
 import { handleAIGenerateRequest } from '@/handlers/ai-generate';
 import { handleLeaderboardRequest } from '@/handlers/leaderboard';
+import { handleCompetitionRequest } from '@/handlers/competition';
 import { handlePlayerRequest } from '@/handlers/players';
 import { handleCreditsRequest } from '@/handlers/credits';
 import { handleBadgesRequest } from '@/handlers/badges';
@@ -212,6 +213,7 @@ const HANDLER_MAP: Record<string, RouteHandler> = {
   [CloudflareHandlerKey.AIEscrow]: withHandlerPath(handleAIEscrowRequest),
   [CloudflareHandlerKey.AIGenerate]: withHandlerPath(handleAIGenerateRequest),
   [CloudflareHandlerKey.Leaderboard]: withHandlerPath(handleLeaderboardRequest),
+  [CloudflareHandlerKey.Competition]: withHandlerPath(handleCompetitionRequest),
   [CloudflareHandlerKey.Players]: withHandlerPath(handlePlayerRequest),
   [CloudflareHandlerKey.Credits]: withHandlerPath((req, env, path) => handleCreditsRequest(req, env, path)),
   [CloudflareHandlerKey.Badges]: withHandlerPath(handleBadgesRequest),

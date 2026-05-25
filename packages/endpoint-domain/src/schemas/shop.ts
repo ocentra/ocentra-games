@@ -46,6 +46,7 @@ export const ShopProductSchema = schema.object({
   billingMode: ShopBillingModeSchema.optional(),
   active: schema.boolean().default(true),
   paymentProviders: schema.array(ShopPaymentProviderSchema).optional(),
+  competitionProgramId: schema.string().min(1).max(128).optional(),
 });
 export type ShopProduct = schema.infer<typeof ShopProductSchema>;
 

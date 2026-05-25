@@ -666,6 +666,7 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "leaderboardContent": "PartialLeaderboardPageContentData",
     "shopControls": "Record<string, unknown>",
     "shopContent": "PartialShopPageContentData",
+    "competitionPrograms": "Record<string, unknown>",
     "contentPlan": "SelectedGameContentPlan",
     "preview": "PageLayoutDocument['preview']"
   },

@@ -12,10 +12,12 @@ type MainTopProps = {
   w: number;
   h: number;
   label: string;
+  profileLabel?: string;
   cards?: ShopMainCarouselCardItem[];
   onCardAction?: (card: ShopMainCarouselCardItem) => void;
   rightActionLabel?: string;
   onRightAction?: () => void;
+  showHeaderCount?: boolean;
 };
 
 type MainTopCardProfile = {
@@ -121,9 +123,9 @@ function renderMainTopGlass({ x, y, width, height }: FeaturedShowcaseMediaSlot) 
   );
 }
 
-export function MainTop({ x, y, w, h, label, cards, onCardAction, rightActionLabel, onRightAction }: MainTopProps) {
+export function MainTop({ x, y, w, h, label, profileLabel, cards, onCardAction, rightActionLabel, onRightAction, showHeaderCount = true }: MainTopProps) {
   if (w <= 0 || h <= 0) return null;
-  const controls = createMainTopControls(w, h, label);
+  const controls = createMainTopControls(w, h, profileLabel ?? label);
 
   return (
     <foreignObject x={x} y={y} width={w} height={h}>
@@ -140,6 +142,7 @@ export function MainTop({ x, y, w, h, label, cards, onCardAction, rightActionLab
           onCardAction={onCardAction}
           showBadges={false}
           showLearnMore={false}
+          showHeaderCount={showHeaderCount}
           rightActionLabel={rightActionLabel}
           onRightAction={onRightAction}
           style={{ width: '100%' }}

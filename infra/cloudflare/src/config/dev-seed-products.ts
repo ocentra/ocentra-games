@@ -15,6 +15,7 @@ export const DEV_SEED_PRODUCTS: Product[] = [
     acAmount: 100,
     unitPriceCents: 99,
     currency: 'usd',
+    competitionProgramId: 'claim-weekly-open',
     active: true,
   },
   {
@@ -230,6 +231,7 @@ export const DEV_SEED_PRODUCTS: Product[] = [
     priceLabel: '900 AC',
     unitPriceCents: 0,
     currency: 'usd',
+    competitionProgramId: 'season-ladder-cup',
     active: true,
   },
 ];

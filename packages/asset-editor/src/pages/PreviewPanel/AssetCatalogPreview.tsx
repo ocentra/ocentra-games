@@ -82,6 +82,7 @@ import {
   normalizeShopPageContent,
   type ShopPageContentData,
 } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent'
+import type { CompetitionProgramsResponse } from '@ocentra/endpoint-domain/schemas/competition'
 import {
   AdminUsersPageContent,
   CompetitionPageContent,
@@ -187,6 +188,14 @@ import {
   type ShopPageLayoutControlsMessage,
 } from '@/utils/shopPageLayoutControlsChannel'
 import { SHOP_PAGE_LAYOUT_ASSET_PATH } from '@/utils/shopPageLayoutControlsPersistence'
+import {
+  COMPETITION_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type CompetitionPageLayoutControlsMessage,
+} from '@/utils/competitionPageLayoutControlsChannel'
+import {
+  COMPETITION_PAGE_LAYOUT_ASSET_PATH,
+  normalizeCompetitionProgramsDocument,
+} from '@/utils/competitionPageLayoutControlsPersistence'
 import {
   HEADER_PROFILE_CONTROLS_CHANNEL,
   type HeaderProfileControlsMessage,
@@ -1505,6 +1514,7 @@ type AssetCatalogPreviewProps = {
 
 type PageLayoutPreviewData = Partial<PageLayoutDocument> & {
   leaderboardControls?: Partial<LeaderboardPageSvgControls> | null
+  competitionPrograms?: Record<string, unknown> | null
 }
 type ShopPageLayoutContentSource = {
   shopContent?: Partial<ShopPageContentData> | null
@@ -1550,6 +1560,18 @@ function readShopPageLayoutContent(
   document: PageLayoutPreviewData | null | undefined
 ): Partial<ShopPageContentData> | null | undefined {
   return (document as ShopPageLayoutContentSource | null | undefined)?.shopContent
+}
+
+function readCompetitionPrograms(
+  document: PageLayoutPreviewData | null | undefined
+): CompetitionProgramsResponse {
+  return normalizeCompetitionProgramsDocument(
+    document?.competitionPrograms ?? {
+      programs: [],
+      source: 'asset',
+      generatedAt: new Date().toISOString(),
+    }
+  )
 }
 
 function createDefaultPagePreviewCameraState(): LayoutEditorCanvasCameraState {
@@ -1814,6 +1836,7 @@ function PageLayoutMainAppPreview({
   authControls,
   shopControls,
   shopContent,
+  competitionPrograms,
   lobbySampleGameId = null,
   lobbySampleGameName = null,
   lobbyGameTagline = null,
@@ -1832,6 +1855,7 @@ function PageLayoutMainAppPreview({
   authControls?: AuthPageSvgControls
   shopControls?: ShopPageSvgControls
   shopContent?: Partial<ShopPageContentData> | null
+  competitionPrograms?: CompetitionProgramsResponse
   lobbySampleGameId?: string | null
   lobbySampleGameName?: string | null
   lobbyGameTagline?: string | null
@@ -1879,6 +1903,10 @@ function PageLayoutMainAppPreview({
   const resolvedShopContent = useMemo(
     () => normalizeShopPageContent(shopContent ?? readShopPageLayoutContent(document)),
     [document, shopContent]
+  )
+  const resolvedCompetitionPrograms = useMemo(
+    () => competitionPrograms ?? readCompetitionPrograms(document),
+    [competitionPrograms, document]
   )
   const authPreviewAvatarOptions = useMemo(
     () => Object.entries(avatarImageById)
@@ -1952,12 +1980,16 @@ function PageLayoutMainAppPreview({
         nearbyBelow={previewLeaderboardEntries.slice(2, 3)}
         tournamentId="preview-bracket"
         tournamentRounds={[{ round: 1, matches: [1, 2, 3, 4] }, { round: 2, matches: [1, 2] }, { round: 3, matches: [1] }]}
+        programs={resolvedCompetitionPrograms.programs}
+        featuredProgramId={resolvedCompetitionPrograms.featuredProgramId ?? null}
         pageMode={kind === 'tournaments' ? 'tournaments' : kind === 'tournament-detail' ? 'tournamentDetail' : 'competition'}
         onRefreshLeaderboard={() => undefined}
         onLoadBracket={() => undefined}
         onRegister={() => undefined}
         onMatchmaking={() => undefined}
         layoutControls={pageControls}
+        competitionControls={resolvedShopControls}
+        competitionContent={resolvedShopContent}
       />
     ) : kind === 'leaderboard' || kind === 'game-leaderboard' || kind === 'ai-benchmark-leaderboard' ? (
       <CompetitionPageContent
@@ -2795,6 +2827,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const isAuthPageLayout = isPageLayoutMode && pageLayoutKind === 'auth'
   const isShopPageLayout = isPageLayoutMode && pageLayoutKind === 'shop'
+  const isCompetitionPageLayout = isPageLayoutMode && pageLayoutKind === 'competition'
   const shouldLoadGamesForPageLayout =
     isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'game-catalog' || pageLayoutKind === 'selected-game' || pageLayoutKind === 'lobby')
   const initialSelectedGameLayoutConfig = useMemo(
@@ -2819,6 +2852,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const initialShopPageLayoutContent = useMemo(
     () => normalizeShopPageContent(readShopPageLayoutContent(pageLayoutData)),
+    [pageLayoutData]
+  )
+  const initialCompetitionPrograms = useMemo(
+    () => readCompetitionPrograms(pageLayoutData),
     [pageLayoutData]
   )
   const initialPreviewSampleGameId =
@@ -2925,6 +2962,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useState<ShopPageSvgControls>(() => initialShopPageLayoutControls)
   const [shopPageLayoutContent, setShopPageLayoutContent] =
     useState<ShopPageContentData>(() => initialShopPageLayoutContent)
+  const [competitionPrograms, setCompetitionPrograms] =
+    useState<CompetitionProgramsResponse>(() => initialCompetitionPrograms)
   const [pageLayoutBoundsOverlay, setPageLayoutBoundsOverlay] = useState(false)
   const pageLayoutViewportFrameRef = useRef<PageLayoutViewportFrameHandle | null>(null)
   const [pageLayoutPreviewResolution, setPageLayoutPreviewResolution] = useState('fit')
@@ -2988,6 +3027,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const shopPageLayoutContentRef = useRef<ShopPageContentData>(
     initialShopPageLayoutContent
+  )
+  const competitionProgramsRef = useRef<CompetitionProgramsResponse>(
+    initialCompetitionPrograms
   )
   const headerConfigOverrideRef = useRef<SerializedUnifiedHeaderConfig | null>(null)
   const homepageContentFrameRef = useRef<HTMLDivElement | null>(null)
@@ -3127,6 +3169,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [shopPageLayoutContent])
 
   useEffect(() => {
+    competitionProgramsRef.current = competitionPrograms
+  }, [competitionPrograms])
+
+  useEffect(() => {
     selectedGameContentPlanRef.current = selectedGameContentPlan
   }, [selectedGameContentPlan])
 
@@ -3177,15 +3223,18 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [initialAuthPageLayoutControls, isAuthPageLayout])
 
   useEffect(() => {
-    if (!isShopPageLayout) {
+    if (!isShopPageLayout && !isCompetitionPageLayout) {
       return undefined
     }
     const timeoutId = window.setTimeout(() => {
       setShopPageLayoutControls(initialShopPageLayoutControls)
       setShopPageLayoutContent(initialShopPageLayoutContent)
+      if (isCompetitionPageLayout) {
+        setCompetitionPrograms(initialCompetitionPrograms)
+      }
     }, 0)
     return () => window.clearTimeout(timeoutId)
-  }, [initialShopPageLayoutContent, initialShopPageLayoutControls, isShopPageLayout])
+  }, [initialCompetitionPrograms, initialShopPageLayoutContent, initialShopPageLayoutControls, isCompetitionPageLayout, isShopPageLayout])
 
   useEffect(() => {
     selectedGamePreviewSampleGameIdRef.current = selectedGamePreviewSampleGameId
@@ -3562,6 +3611,42 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         if (event.data.content) {
           setShopPageLayoutContent(
             normalizeShopPageContent(event.data.content)
+          )
+        }
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(COMPETITION_PAGE_LAYOUT_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<CompetitionPageLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: shopPageLayoutControlsRef.current,
+          content: shopPageLayoutContentRef.current,
+          programs: competitionProgramsRef.current,
+        } satisfies CompetitionPageLayoutControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setShopPageLayoutControls(
+          normalizeShopPageSvgControls(event.data.controls)
+        )
+        if (event.data.content) {
+          setShopPageLayoutContent(
+            normalizeShopPageContent(event.data.content)
+          )
+        }
+        if (event.data.programs) {
+          setCompetitionPrograms(
+            normalizeCompetitionProgramsDocument(event.data.programs)
           )
         }
       }
@@ -4736,6 +4821,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     )
   }
 
+  const handleOpenCompetitionPageLayoutControls = () => {
+    void createPanelWindow(
+      'competition-page-layout-controls',
+      assetPath ?? COMPETITION_PAGE_LAYOUT_ASSET_PATH,
+      'Competition Layout Controls',
+      true
+    )
+  }
+
   const handleOpenPageLayoutControls = () => {
     void createPanelWindow(
       'page-layout-controls',
@@ -4929,6 +5023,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
+        {isCompetitionPageLayout && (
+          <button
+            type="button"
+            className="asset-catalog-preview__edit-featured-button"
+            onClick={handleOpenCompetitionPageLayoutControls}
+          >
+            Edit
+          </button>
+        )}
         {isLeaderboardPageLayout && (
           <button
             type="button"
@@ -4938,7 +5041,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
-        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLobbyPageLayout && !isLeaderboardPageLayout && !isAuthPageLayout && !isShopPageLayout && (
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLobbyPageLayout && !isLeaderboardPageLayout && !isAuthPageLayout && !isShopPageLayout && !isCompetitionPageLayout && (
           <button
             type="button"
             className="asset-catalog-preview__edit-featured-button"
@@ -4947,7 +5050,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
-        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLeaderboardPageLayout && !isAuthPageLayout && !isShopPageLayout && (
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLeaderboardPageLayout && !isAuthPageLayout && !isShopPageLayout && !isCompetitionPageLayout && (
           <label className="asset-catalog-preview__bounds-toggle">
             <input
               type="checkbox"
@@ -5081,6 +5184,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           authControls={authPageLayoutControls}
           shopControls={shopPageLayoutControls}
           shopContent={shopPageLayoutContent}
+          competitionPrograms={competitionPrograms}
           lobbySampleGameId={selectedGameId}
           lobbySampleGameName={selectedGame?.home.name ?? selectedGame?.entry.displayName ?? (selectedGameId ? null : 'Template')}
           lobbyGameTagline={lobbyHeroMedia?.tagline ?? null}

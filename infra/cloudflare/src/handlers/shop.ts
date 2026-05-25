@@ -93,6 +93,7 @@ export async function handleShopRequest(
         billingMode: p.billingMode,
         active: p.active,
         paymentProviders: p.paymentProviders,
+        competitionProgramId: p.competitionProgramId,
       })).filter((product): product is ShopProduct => product !== null);
 
       logInfo('Shop listed products', getStackTrace(), { count: publicProducts.length });
@@ -161,6 +162,7 @@ export async function handleShopRequest(
         billingMode: product.billingMode,
         active: product.active,
         paymentProviders: product.paymentProviders,
+        competitionProgramId: product.competitionProgramId,
       });
       if (!publicProductResult) {
         return new Response(JSON.stringify({ error: 'Product not found' }), {

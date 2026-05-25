@@ -62,6 +62,28 @@ function MarketplaceCartIcon({ x, y, size, cfg }: { x: number; y: number; size: 
   );
 }
 
+function HeaderOrbIcon({
+  x,
+  y,
+  size,
+  icon,
+  cfg,
+}: {
+  x: number;
+  y: number;
+  size: number;
+  icon: ShopIcon;
+  cfg: ShopPageSvgControls;
+}) {
+  return (
+    <g>
+      <circle cx={x + size / 2} cy={y + size / 2} r={size / 2} fill="url(#shopCartOrbGradient)" stroke={cfg.colors.edgeStroke} strokeWidth="1.4" filter="url(#shopSoftGlow)" />
+      <circle cx={x + size / 2} cy={y + size / 2} r={size * 0.36} fill={cfg.colors.cartInnerFill} stroke={cfg.colors.cartInnerStroke} strokeOpacity="0.72" strokeWidth="1.2" />
+      <MiniIcon type={icon} x={x + size * 0.26} y={y + size * 0.25} size={size * 0.48} tone="gold" cfg={cfg} />
+    </g>
+  );
+}
+
 function ArenaCreditCoinIcon({ x, y, size, cfg }: { x: number; y: number; size: number; cfg: ShopPageSvgControls }) {
   const token = cfg.iconTokens.arenaCoin;
   const scale = size / token.baseSize;
@@ -82,6 +104,12 @@ export function HeaderLayer({
   h,
   rightX,
   showMarketplace = true,
+  headerIcon = 'cart',
+  balanceIcon = 'ac',
+  showHeaderIcon = true,
+  showHeaderBadges = true,
+  showHeaderSubtitle = true,
+  showBalancePanel = true,
   acBalance,
   content,
   cfg,
@@ -93,6 +121,12 @@ export function HeaderLayer({
   h: number;
   rightX: number;
   showMarketplace?: boolean;
+  headerIcon?: 'cart' | ShopIcon;
+  balanceIcon?: 'ac' | ShopIcon;
+  showHeaderIcon?: boolean;
+  showHeaderBadges?: boolean;
+  showHeaderSubtitle?: boolean;
+  showBalancePanel?: boolean;
   acBalance: number | null;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
@@ -101,20 +135,24 @@ export function HeaderLayer({
   const token = cfg.componentTokens.headerLayer;
   const copy = content.uiCopy.header;
   const showMarketplacePanel = showMarketplace && w > 0;
-  const cartOnly = showMarketplacePanel && w < 218;
+  const showIcon = showHeaderIcon && showMarketplacePanel;
+  const cartOnly = showIcon && w < 218;
   const compact = w < 320;
   const cartSize = compact ? Math.min(cfg.header.cartSize, 46, Math.max(32, w - token.pad * 2)) : cfg.header.cartSize;
   const cartX = cartOnly ? x + w / 2 - cartSize / 2 : x + token.pad;
   const cartY = y + h / 2 - cartSize / 2;
-  const bodyX = x + token.pad + cfg.header.cartZoneW + token.bodyGap;
+  const iconZoneW = showIcon ? cfg.header.cartZoneW : 0;
+  const bodyX = x + token.pad + iconZoneW + (showIcon ? token.bodyGap : 0);
   const minTitleW = compact ? 104 : 166;
-  const badgeRoom = Math.max(0, w - token.pad * 2 - cfg.header.cartZoneW - token.bodyGap * 2 - minTitleW);
-  const visibleBadgeCount = cartOnly ? 0 : Math.max(0, Math.min(copy.badges.length, Math.floor((badgeRoom + cfg.header.badgeGap) / (cfg.header.badgeW + cfg.header.badgeGap))));
+  const badgeReserve = showIcon ? cfg.header.cartZoneW + token.bodyGap * 2 : token.bodyGap;
+  const badgeRoom = showHeaderBadges ? Math.max(0, w - token.pad * 2 - badgeReserve - minTitleW) : 0;
+  const visibleBadgeCount = cartOnly || !showHeaderBadges ? 0 : Math.max(0, Math.min(copy.badges.length, Math.floor((badgeRoom + cfg.header.badgeGap) / (cfg.header.badgeW + cfg.header.badgeGap))));
   const visibleBadges = copy.badges.slice(0, visibleBadgeCount);
   const badgeTotal = visibleBadgeCount > 0 ? cfg.header.badgeW * visibleBadgeCount + cfg.header.badgeGap * Math.max(0, visibleBadgeCount - 1) : 0;
   const badgesX = x + w - token.pad - badgeTotal;
   const showTitle = showMarketplacePanel && !cartOnly;
-  const showSubtitle = showTitle && !compact && w >= 390;
+  const showSubtitle = showHeaderSubtitle && showTitle && !compact && w >= 390;
+  const showSeparator = showTitle && (showSubtitle || visibleBadgeCount > 0);
   const balanceX = showMarketplacePanel ? x + w + cfg.header.gap : x;
   const balanceW = Math.max(token.balanceMinWidth, rightX - balanceX - cfg.header.gap);
   const titleRight = visibleBadgeCount > 0 ? badgesX - token.bodyGap : x + w - token.pad;
@@ -136,8 +174,10 @@ export function HeaderLayer({
           glowOpacity={token.panelGlowOpacity}
           cfg={cfg}
         >
-          <MarketplaceCartIcon x={cartX} y={cartY} size={cartSize} cfg={cfg} />
-          {showTitle ? <line x1={x + token.pad + cfg.header.cartZoneW} y1={y + token.dividerTopPad} x2={x + token.pad + cfg.header.cartZoneW} y2={y + h - token.dividerBottomPad} stroke={cfg.colors.line} strokeWidth={token.dividerStrokeWidth} /> : null}
+          {showIcon ? headerIcon === 'cart'
+            ? <MarketplaceCartIcon x={cartX} y={cartY} size={cartSize} cfg={cfg} />
+            : <HeaderOrbIcon x={cartX} y={cartY} size={cartSize} icon={headerIcon} cfg={cfg} /> : null}
+          {showTitle && showIcon ? <line x1={x + token.pad + cfg.header.cartZoneW} y1={y + token.dividerTopPad} x2={x + token.pad + cfg.header.cartZoneW} y2={y + h - token.dividerBottomPad} stroke={cfg.colors.line} strokeWidth={token.dividerStrokeWidth} /> : null}
           {showTitle ? <Txt x={bodyX} y={y + token.titleY} size={titleSize} weight={token.titleWeight} cfg={cfg}>{copy.title}</Txt> : null}
           {visibleBadges.map((badge, index) => (
             <HeaderBadge
@@ -153,11 +193,11 @@ export function HeaderLayer({
               cfg={cfg}
             />
           ))}
-          {showTitle ? <line x1={bodyX} y1={y + token.separatorY} x2={x + w - token.pad} y2={y + token.separatorY} stroke={cfg.colors.line} strokeWidth={token.separatorStrokeWidth} strokeOpacity={token.bodySeparatorOpacity} /> : null}
+          {showSeparator ? <line x1={bodyX} y1={y + token.separatorY} x2={x + w - token.pad} y2={y + token.separatorY} stroke={cfg.colors.line} strokeWidth={token.separatorStrokeWidth} strokeOpacity={token.bodySeparatorOpacity} /> : null}
           {showSubtitle ? <Txt x={bodyX + (w - (bodyX - x) - token.pad) / 2} y={y + token.subtitleY} fill={cfg.colors.mutedText} size={cfg.header.subtitleSize} weight={token.subtitleWeight} anchor="middle" cfg={cfg}>{copy.subtitle}</Txt> : null}
         </Panel>
       ) : null}
-      <g className="shop-page-svg-clickable" onClick={onArenaCreditsInfo} role="button" tabIndex={0}>
+      {showBalancePanel ? <g className="shop-page-svg-clickable" onClick={onArenaCreditsInfo} role="button" tabIndex={0}>
         <Panel
           x={balanceX}
           y={y}
@@ -170,14 +210,16 @@ export function HeaderLayer({
           glowOpacity={token.balancePanelGlowOpacity}
           cfg={cfg}
         >
-          <ArenaCreditCoinIcon x={balanceX + token.balanceCoinX} y={y + token.balanceCoinY} size={token.balanceCoinSize} cfg={cfg} />
+          {balanceIcon === 'ac'
+            ? <ArenaCreditCoinIcon x={balanceX + token.balanceCoinX} y={y + token.balanceCoinY} size={token.balanceCoinSize} cfg={cfg} />
+            : <HeaderOrbIcon x={balanceX + token.balanceCoinX} y={y + token.balanceCoinY} size={token.balanceCoinSize} icon={balanceIcon} cfg={cfg} />}
           <line x1={balanceX + token.balanceDividerX} y1={y + token.balanceDividerTop} x2={balanceX + token.balanceDividerX} y2={y + h - token.balanceDividerBottom} stroke={cfg.colors.line} strokeWidth={token.balanceDividerStrokeWidth} />
           <Txt x={balanceX + token.balanceTextX} y={y + token.balanceTitleY} fill={cfg.colors.balanceText} size={token.balanceTitleSize} weight={token.balanceTitleWeight} cfg={cfg}>{copy.balanceTitle}</Txt>
           <Txt x={balanceX + token.balanceTextX} y={y + token.balanceValueY} fill={cfg.colors.gold} size={token.balanceValueSize} weight={token.balanceValueWeight} cfg={cfg}>{balanceValue}</Txt>
           <Txt x={balanceX + token.balanceUnitX} y={y + token.balanceUnitY} size={token.balanceUnitSize} weight={token.balanceUnitWeight} fill={cfg.colors.balanceUnitText} cfg={cfg}>{copy.balanceUnit}</Txt>
           <Txt x={balanceX + token.balanceTextX} y={y + token.balanceSubY} fill={cfg.colors.headerBadgeSubText} size={token.balanceSubSize} cfg={cfg}>{copy.balanceSub}</Txt>
         </Panel>
-      </g>
+      </g> : null}
     </g>
   );
 }
