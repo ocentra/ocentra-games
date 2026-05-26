@@ -174,7 +174,7 @@ function resolveActiveItem(pathname: string, items: SiteNavItem[]) {
     return items.some((item) => item.label === 'Admin') ? 'Admin' : '';
   }
   if (pathname.startsWith('/player-hub')) {
-    return 'Profile';
+    return 'Player Hub';
   }
   if (
     pathname.startsWith(PublicRoutePath[PublicRouteKey.Competition])
@@ -193,7 +193,7 @@ function resolveActiveItem(pathname: string, items: SiteNavItem[]) {
     return 'Games';
   }
   if (pathname.startsWith('/settings')) {
-    return 'Profile';
+    return 'Player Hub';
   }
 
   return '';
@@ -688,7 +688,7 @@ export function PrimarySiteNavigation({ includeAdmin = false, config, extraItems
         ],
       },
       { label: 'Leaderboard', path: PublicRoutePath[PublicRouteKey.Leaderboard] },
-      { label: 'Profile', path: PublicRoutePath[PublicRouteKey.PlayerHub], matchPrefixes: [PublicRoutePath[PublicRouteKey.PlayerHub], PublicRoutePath[PublicRouteKey.Settings]] },
+      { label: 'Player Hub', path: PublicRoutePath[PublicRouteKey.PlayerHub], matchPrefixes: [PublicRoutePath[PublicRouteKey.PlayerHub], PublicRoutePath[PublicRouteKey.Settings]] },
       ...(includeAdmin ? [{ label: 'Admin', path: PublicRoutePath[PublicRouteKey.Admin] }] : []),
       ...extraItems,
     ],

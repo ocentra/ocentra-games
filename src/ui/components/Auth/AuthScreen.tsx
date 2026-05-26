@@ -226,9 +226,7 @@ export function AuthScreen({
       route.kind === 'eventDetail' ||
       route.kind === 'tournaments' ||
       route.kind === 'tournamentDetail' ||
-      route.kind === 'leaderboard' ||
-      route.kind === 'matches' ||
-      route.kind === 'matchDetail'
+      route.kind === 'leaderboard'
     ) {
       return (
         <Suspense fallback={<RouteFallback />}>
@@ -239,19 +237,20 @@ export function AuthScreen({
             pageMode={route.kind}
             eventId={route.kind === 'eventDetail' ? route.eventId : undefined}
             tournamentId={route.kind === 'tournamentDetail' ? route.tournamentId : undefined}
-            matchId={route.kind === 'matchDetail' ? route.matchId : undefined}
           />
         </Suspense>
       );
     }
 
-    if (route.kind === 'playerHub') {
+    if (route.kind === 'playerHub' || route.kind === 'matches' || route.kind === 'matchDetail') {
       return (
         <Suspense fallback={<RouteFallback />}>
           <PlayerHubScreen
             user={currentUser}
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
+            initialTab={route.kind === 'matches' || route.kind === 'matchDetail' ? 'matches' : undefined}
+            matchId={route.kind === 'matchDetail' ? route.matchId : undefined}
           />
         </Suspense>
       );

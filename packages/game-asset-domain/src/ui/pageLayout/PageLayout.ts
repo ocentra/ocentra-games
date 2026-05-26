@@ -8,6 +8,7 @@ import {
   type SelectedGameLayoutControls,
 } from '@/ui/selectedGame/SelectedGamePresentation';
 import type { PartialLeaderboardPageContentData } from '@/schemas/leaderboard-page-content-schema';
+import type { PartialPlayerHubPageContentData } from '@/schemas/player-hub-page-content-schema';
 import type { PartialShopPageContentData } from '@/schemas/shop-page-content-schema';
 
 export type PageLayoutKind =
@@ -73,6 +74,8 @@ export interface PageLayoutDocument {
   leaderboardContent?: PartialLeaderboardPageContentData;
   shopControls?: Record<string, unknown>;
   shopContent?: PartialShopPageContentData;
+  playerHubControls?: Record<string, unknown>;
+  playerHubContent?: PartialPlayerHubPageContentData;
   competitionPrograms?: Record<string, unknown>;
   contentPlan?: SelectedGameContentPlan;
   preview?: {
@@ -189,6 +192,12 @@ export class PageLayout extends Layout {
 
   @serializable({ label: 'Shop Content' })
   shopContent: PartialShopPageContentData = {};
+
+  @serializable({ label: 'Player Hub Controls' })
+  playerHubControls: Record<string, unknown> = {};
+
+  @serializable({ label: 'Player Hub Content' })
+  playerHubContent: PartialPlayerHubPageContentData = {};
 
   @serializable({ label: 'Competition Programs' })
   competitionPrograms: Record<string, unknown> = {};

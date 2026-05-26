@@ -2,6 +2,7 @@ import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { FeaturedGameItem } from '@ocentra/game-asset-domain/schemas/game-home-schema';
 import type { CSSProperties, ReactNode } from 'react';
 import type { ShopIcon, ShopTone } from './ShopPageSvgData';
+import type { ShopRightTabId } from './ShopPageSidePanels';
 
 export type FeaturedShowcaseControlTab =
   | 'overall'
@@ -236,6 +237,7 @@ export type ShopMainCarouselCardItem = {
   imageUrl?: string | undefined;
   price?: string | undefined;
   actionLabel?: string | undefined;
+  rightDetailTarget?: ShopRightTabId | undefined;
   loading?: boolean;
   disabled?: boolean;
 };

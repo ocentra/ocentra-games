@@ -2,6 +2,20 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { AppPageSvgSurface } from './AppPageSvgSurface';
 import { LeaderboardPageSvgSurface } from './Leaderboard/LeaderboardPageSvgSurface';
 import { LobbyPageSvgSurface } from './Lobby/LobbyPageSvgSurface';
+import {
+  PlayerHubPageSvgSurface,
+  type PlayerHubAiSettingsDetailRenderProps,
+  type PlayerHubCreditBalance,
+  type PlayerHubDailyRewardLike,
+  type PlayerHubLearningProgressLike,
+  type PlayerHubPerformanceReportLike,
+  type PlayerHubPlayerStatsLike,
+  type PlayerHubSettingsLike,
+} from './PlayerHub/PlayerHubPageSvgSurface';
+import type {
+  PlayerHubProfileUpdatePatch,
+  PlayerHubSettingsUpdatePatch,
+} from './PlayerHub/PlayerHubPageUpdatePatches';
 import { ShopPageSvgSurface } from './Shop/ShopPageSvgSurface';
 import { SocialWorldSurface } from './SocialWorld/SocialWorldSurface';
 import type {
@@ -21,11 +35,16 @@ import type { LeaderboardPageMode } from './Leaderboard/LeaderboardPageSvgSurfac
 import type { PartialLeaderboardPageContentData } from './Leaderboard/LeaderboardPageSvgContent';
 import type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
+import type {
+  PlayerHubPageSvgControls,
+  PlayerHubTabId,
+} from './PlayerHub/PlayerHubPageSvgSurfaceControls';
 import type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
 import {
   normalizeShopPageContent,
   type ShopPageContentData,
 } from './Shop/ShopPageSvgContent';
+import type { PlayerHubPageContentData } from './PlayerHub/PlayerHubPageSvgContent';
 import {
   shopPageEventBundleImageUrl,
   shopPageWeeklyCupImageUrl,
@@ -66,6 +85,12 @@ export type {
 } from './Leaderboard/LeaderboardPageSvgSurface';
 export type { LeaderboardPageSvgControls } from './Leaderboard/LeaderboardPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
+export type {
+  PlayerHubPageSvgControls,
+  PlayerHubTabId,
+} from './PlayerHub/PlayerHubPageSvgSurfaceControls';
+export type { PlayerHubCreditBalance } from './PlayerHub/PlayerHubPageSvgSurface';
+export type { PlayerHubAiSettingsDetailRenderProps } from './PlayerHub/PlayerHubPageSvgSurface';
 export type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
 export type CompetitionPageSvgControls = ShopPageSvgControls;
 export { SocialWorldSurface } from './SocialWorld/SocialWorldSurface';
@@ -120,7 +145,7 @@ export type TournamentRound = {
 };
 
 export type PlayerHubProfile = Record<string, unknown>;
-export type PlayerHubInventoryItem = { itemId: string; quantity: number };
+export type PlayerHubInventoryItem = { itemId: string; quantity: number; title?: string; itemType?: string };
 export type PlayerHubMarketplaceListing = { id: string; title: string };
 
 export type AdminUserRow = {
@@ -221,6 +246,12 @@ type CompetitionPageSurfaceControlProps = {
   competitionContent?: Partial<ShopPageContentData> | null;
 };
 
+type PlayerHubPageSurfaceControlProps = {
+  playerHubControls?: Partial<PlayerHubPageSvgControls> | null;
+  playerHubContent?: PlayerHubPageContentData | null;
+  renderAiSettingsDetail?: (props: PlayerHubAiSettingsDetailRenderProps) => ReactNode;
+};
+
 type ShopPageSurfaceControlProps = {
   layoutControls?: Partial<ShopPageSvgControls> | null;
   shopContent: ShopPageContentData;
@@ -229,16 +260,6 @@ type ShopPageSurfaceControlProps = {
   onVaultDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
   accountSummary?: ShopAccountSummary | null;
 };
-
-function formatValue(value: unknown): string {
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
-  if (value === null || value === undefined) return '-';
-  try {
-    return JSON.stringify(value);
-  } catch {
-    return '-';
-  }
-}
 
 function formatDate(value: string | number | Date | null | undefined): string {
   if (!value) return 'Never';
@@ -1208,11 +1229,26 @@ export function PlayerHubPageContent({
   profile,
   inventoryItems,
   marketplaceListings,
+  creditBalance,
+  dailyReward,
+  settings,
+  playerStats,
+  learningProgress,
+  performanceReport,
+  serviceErrors,
+  initialTab,
+  matchId,
   onRefresh,
   onShop,
-  onSettings,
-  onLoadUser,
-  layoutControls,
+  onPlay,
+  onLobby,
+  onCompetition,
+  onUpdateProfile,
+  onUpdateSettings,
+  onClaimDailyReward,
+  renderAiSettingsDetail,
+  playerHubControls,
+  playerHubContent,
 }: {
   loading: boolean;
   error: string | null;
@@ -1220,59 +1256,52 @@ export function PlayerHubPageContent({
   profile: PlayerHubProfile | null;
   inventoryItems: PlayerHubInventoryItem[];
   marketplaceListings: PlayerHubMarketplaceListing[];
+  creditBalance?: PlayerHubCreditBalance | null;
+  dailyReward?: PlayerHubDailyRewardLike | null;
+  settings?: PlayerHubSettingsLike | null;
+  playerStats?: PlayerHubPlayerStatsLike | null;
+  learningProgress?: PlayerHubLearningProgressLike | null;
+  performanceReport?: PlayerHubPerformanceReportLike | null;
+  serviceErrors?: string[];
+  initialTab?: PlayerHubTabId;
+  matchId?: string;
   onRefresh: () => void;
   onShop: () => void;
-  onSettings: () => void;
-  onLoadUser: (userId: string) => void;
-} & AppPageSurfaceControlProps) {
-  const profileRows = profile ? Object.entries(profile).slice(0, 5) : [];
-  const panels: AppPageSvgPanel[] = [
-    {
-      title: 'Profile',
-      subtitle: `User ${targetUserId || '-'}`,
-      rows: profileRows.length > 0
-        ? profileRows.map(([label, value]) => ({ label, value: formatValue(value) }))
-        : [{ label: 'Status', value: 'No profile loaded' }],
-      actions: [
-        { label: 'Refresh', onClick: onRefresh },
-        { label: 'Load User', onClick: () => onLoadUser(targetUserId), disabled: !targetUserId },
-      ],
-    },
-    {
-      title: 'Inventory',
-      subtitle: 'Owned items',
-      rows: inventoryItems.slice(0, 5).map(item => ({ label: item.itemId, value: `x${item.quantity}` })),
-      actions: [{ label: 'Open Shop', onClick: onShop }],
-    },
-    {
-      title: 'Marketplace',
-      subtitle: 'Available listings',
-      rows: marketplaceListings.slice(0, 5).map(listing => ({ label: listing.id, value: listing.title })),
-      actions: [{ label: 'Settings', onClick: onSettings }],
-    },
-  ];
-
+  onPlay?: () => void;
+  onLobby?: () => void;
+  onCompetition?: () => void;
+  onUpdateProfile?: (patch: PlayerHubProfileUpdatePatch) => Promise<void | string> | void | string;
+  onUpdateSettings?: (patch: PlayerHubSettingsUpdatePatch) => Promise<void | string> | void | string;
+  onClaimDailyReward?: () => Promise<void | string> | void | string;
+} & PlayerHubPageSurfaceControlProps) {
   return (
-    <AppPageSvgSurface
-      title="Player Hub"
-      eyebrow="Account"
-      subtitle="Profile, inventory, marketplace, and account context are rendered by the shared SVG surface."
-      routeLabel="/player-hub"
-      metrics={[
-        { label: 'Inventory', value: inventoryItems.length },
-        { label: 'Listings', value: marketplaceListings.length },
-        { label: 'Profile keys', value: profileRows.length },
-        { label: 'User', value: targetUserId || '-' },
-      ]}
-      panels={panels}
-      actions={[
-        { label: 'Refresh', onClick: onRefresh },
-        { label: 'Shop', onClick: onShop },
-        { label: 'Settings', onClick: onSettings },
-      ]}
+    <PlayerHubPageSvgSurface
       loading={loading}
       error={error}
-      controls={layoutControls}
+      targetUserId={targetUserId}
+      profile={profile}
+      inventoryItems={inventoryItems}
+      marketplaceListings={marketplaceListings}
+      creditBalance={creditBalance}
+      dailyReward={dailyReward}
+      settings={settings}
+      playerStats={playerStats}
+      learningProgress={learningProgress}
+      performanceReport={performanceReport}
+      serviceErrors={serviceErrors}
+      initialTab={initialTab}
+      matchId={matchId}
+        controls={playerHubControls}
+        content={playerHubContent}
+        onRefresh={onRefresh}
+      onShop={onShop}
+      onPlay={onPlay}
+      onLobby={onLobby}
+      onCompetition={onCompetition}
+      onUpdateProfile={onUpdateProfile}
+      onUpdateSettings={onUpdateSettings}
+      onClaimDailyReward={onClaimDailyReward}
+      renderAiSettingsDetail={renderAiSettingsDetail}
     />
   );
 }

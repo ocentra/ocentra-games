@@ -43,7 +43,9 @@ export type ShopRightDetailRow = {
   detail: string;
 };
 
-export type ShopRightDetailRows = Record<ShopRightTabId, ShopRightDetailRow[]>;
+export type ShopRightDetailRows =
+  Record<Exclude<ShopRightTabId, 'settings' | 'ai'>, ShopRightDetailRow[]> &
+  Partial<Record<'settings' | 'ai', ShopRightDetailRow[]>>;
 
 const DEFAULT_RIGHT_DETAILS: ShopRightDetailRows = {
   account: [

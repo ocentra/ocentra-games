@@ -95,6 +95,18 @@ import {
   normalizeLeaderboardPageSvgControls,
   type LeaderboardPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgSurfaceControls';
+import { PlayerHubPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/PlayerHub/PlayerHubPageSvgControlsPanel';
+import { PlayerHubPageContentControlsPanel } from '@ocentra/core-ui/AppPages/PlayerHub/PlayerHubPageContentControlsPanel';
+import {
+  DEFAULT_PLAYER_HUB_PAGE_SVG_CONTROLS,
+  normalizePlayerHubPageSvgControls,
+  type PlayerHubPageSvgControls,
+} from '@ocentra/core-ui/AppPages/PlayerHub/PlayerHubPageSvgSurfaceControls';
+import {
+  DEFAULT_PLAYER_HUB_PAGE_CONTENT,
+  normalizePlayerHubPageContent,
+  type PlayerHubPageContentData,
+} from '@ocentra/core-ui/AppPages/PlayerHub/PlayerHubPageSvgContent';
 import { ShopPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgControlsPanel';
 import { ShopPageContentControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageContentControlsPanel';
 import { CompetitionProgramsControlsPanel } from '@ocentra/core-ui/AppPages/Competition/CompetitionProgramsControlsPanel';
@@ -198,6 +210,14 @@ import {
   saveLeaderboardPageLayoutControlsToDisk,
 } from '@/utils/leaderboardPageLayoutControlsPersistence';
 import {
+  PLAYER_HUB_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type PlayerHubPageLayoutControlsMessage,
+} from '@/utils/playerHubPageLayoutControlsChannel';
+import {
+  loadPlayerHubPageLayoutControlsFromDisk,
+  savePlayerHubPageLayoutControlsToDisk,
+} from '@/utils/playerHubPageLayoutControlsPersistence';
+import {
   SHOP_PAGE_LAYOUT_CONTROLS_CHANNEL,
   type ShopPageLayoutControlsMessage,
 } from '@/utils/shopPageLayoutControlsChannel';
@@ -265,6 +285,7 @@ type StandalonePanel =
   | 'homepage-layout-controls'
   | 'lobby-page-layout-controls'
   | 'leaderboard-page-layout-controls'
+  | 'player-hub-page-layout-controls'
   | 'shop-page-layout-controls'
   | 'competition-page-layout-controls'
   | 'auth-page-layout-controls'
@@ -3916,6 +3937,162 @@ const StandaloneLeaderboardPageLayoutControls: React.FC<{ assetPath: string }> =
   );
 };
 
+const StandalonePlayerHubPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
+  const [controls, setControls] = useState<PlayerHubPageSvgControls>(DEFAULT_PLAYER_HUB_PAGE_SVG_CONTROLS);
+  const [content, setContent] = useState<PlayerHubPageContentData>(DEFAULT_PLAYER_HUB_PAGE_CONTENT);
+  const [activePane, setActivePane] = useState<'layout' | 'content'>('layout');
+  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState('');
+  const channelRef = useRef<BroadcastChannel | null>(null);
+  const controlsRef = useRef<PlayerHubPageSvgControls>(DEFAULT_PLAYER_HUB_PAGE_SVG_CONTROLS);
+  const contentRef = useRef<PlayerHubPageContentData>(DEFAULT_PLAYER_HUB_PAGE_CONTENT);
+
+  useEffect(() => {
+    controlsRef.current = controls;
+  }, [controls]);
+
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
+
+  const broadcast = useCallback((nextControls: PlayerHubPageSvgControls, nextContent: PlayerHubPageContentData) => {
+    channelRef.current?.postMessage({
+      type: 'update',
+      controls: nextControls,
+      content: nextContent,
+    } satisfies PlayerHubPageLayoutControlsMessage);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadPlayerHubPageLayoutControlsFromDisk(assetPath)
+      .then(result => {
+        if (cancelled) return;
+        controlsRef.current = result.controls;
+        contentRef.current = result.content;
+        setControls(result.controls);
+        setContent(result.content);
+      })
+      .catch(error => {
+        if (!cancelled) setStatus(error instanceof Error ? error.message : 'Load failed');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    const channel = new BroadcastChannel(PLAYER_HUB_PAGE_LAYOUT_CONTROLS_CHANNEL);
+    channelRef.current = channel;
+    const handler = (event: MessageEvent<PlayerHubPageLayoutControlsMessage>) => {
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        const nextControls = normalizePlayerHubPageSvgControls(event.data.controls);
+        controlsRef.current = nextControls;
+        setControls(nextControls);
+        if (event.data.content) {
+          const nextContent = normalizePlayerHubPageContent(event.data.content);
+          contentRef.current = nextContent;
+          setContent(nextContent);
+        }
+      }
+    };
+    channel.addEventListener('message', handler);
+    channel.postMessage({ type: 'request-state' } satisfies PlayerHubPageLayoutControlsMessage);
+
+    return () => {
+      cancelled = true;
+      channel.removeEventListener('message', handler);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [assetPath]);
+
+  const updateControls = useCallback<React.Dispatch<React.SetStateAction<PlayerHubPageSvgControls>>>((value) => {
+    setControls((previous: PlayerHubPageSvgControls) => {
+      const next = normalizePlayerHubPageSvgControls(
+        typeof value === 'function' ? value(previous) : value
+      );
+      controlsRef.current = next;
+      broadcast(next, contentRef.current);
+      return next;
+    });
+  }, [broadcast]);
+
+  const updateContent = useCallback<React.Dispatch<React.SetStateAction<PlayerHubPageContentData>>>((value) => {
+    setContent((previous: PlayerHubPageContentData) => {
+      const next = normalizePlayerHubPageContent(
+        typeof value === 'function' ? value(previous) : value
+      );
+      contentRef.current = next;
+      broadcast(controlsRef.current, next);
+      return next;
+    });
+  }, [broadcast]);
+
+  const handleSave = useCallback(async (nextControls: PlayerHubPageSvgControls) => {
+    const savedControls = await savePlayerHubPageLayoutControlsToDisk(nextControls, contentRef.current, assetPath);
+    controlsRef.current = savedControls;
+    setControls(savedControls);
+    broadcast(savedControls, contentRef.current);
+    const syncResult = await syncSavedLayoutAssetToR2(assetPath);
+    return syncResult.message;
+  }, [assetPath, broadcast]);
+
+  const handleContentSave = useCallback(async (nextContent: PlayerHubPageContentData) => {
+    const savedControls = await savePlayerHubPageLayoutControlsToDisk(controlsRef.current, nextContent, assetPath);
+    const normalizedContent = normalizePlayerHubPageContent(nextContent);
+    controlsRef.current = savedControls;
+    contentRef.current = normalizedContent;
+    setControls(savedControls);
+    setContent(normalizedContent);
+    broadcast(savedControls, normalizedContent);
+    const syncResult = await syncSavedLayoutAssetToR2(assetPath);
+    return syncResult.message;
+  }, [assetPath, broadcast]);
+
+  if (isLoading) {
+    return <StandalonePanelLoading label="Loading player hub layout controls" />;
+  }
+
+  return (
+    <main className="standalone-panel-page standalone-panel-page--homepage-layout">
+      <div className="standalone-panel-page__shop-authoring-shell">
+        <header className="standalone-panel-page__shop-authoring-header">
+          <div>
+            <p className="standalone-panel-page__eyebrow">Player Hub Page</p>
+            <h1>Player Hub Authoring</h1>
+            <p>Author layout controls, page copy, card text, images, side panels, and empty-state content from this page asset.</p>
+          </div>
+          <div className="standalone-panel-page__shop-authoring-tabs" role="tablist" aria-label="Player Hub authoring panes">
+            <button type="button" className={activePane === 'layout' ? 'is-active' : ''} onClick={() => setActivePane('layout')}>
+              Layout
+            </button>
+            <button type="button" className={activePane === 'content' ? 'is-active' : ''} onClick={() => setActivePane('content')}>
+              Content
+            </button>
+          </div>
+        </header>
+        <section className="standalone-panel-page__shop-authoring-body">
+          {activePane === 'layout' ? (
+            <PlayerHubPageSvgControlsPanel
+              controls={controls}
+              onControlsChange={updateControls}
+              onSave={handleSave}
+            />
+          ) : (
+            <PlayerHubPageContentControlsPanel
+              content={content}
+              onContentChange={updateContent}
+              onSave={handleContentSave}
+            />
+          )}
+        </section>
+      </div>
+      {status && (
+        <p className="standalone-panel-page__status">{status}</p>
+      )}
+    </main>
+  );
+};
+
 const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
   const [controls, setControls] = useState<ShopPageSvgControls>(DEFAULT_SHOP_PAGE_SVG_CONTROLS);
   const [content, setContent] = useState<ShopPageContentData>(DEFAULT_SHOP_PAGE_CONTENT);
@@ -4559,6 +4736,7 @@ export const StandalonePanelPage: React.FC = () => {
         panel === 'homepage-layout-controls' ||
         panel === 'lobby-page-layout-controls' ||
         panel === 'leaderboard-page-layout-controls' ||
+        panel === 'player-hub-page-layout-controls' ||
         panel === 'shop-page-layout-controls' ||
         panel === 'competition-page-layout-controls' ||
         panel === 'auth-page-layout-controls' ||
@@ -4597,6 +4775,7 @@ export const StandalonePanelPage: React.FC = () => {
     params.panel !== 'homepage-layout-controls' &&
     params.panel !== 'lobby-page-layout-controls' &&
     params.panel !== 'leaderboard-page-layout-controls' &&
+    params.panel !== 'player-hub-page-layout-controls' &&
     params.panel !== 'shop-page-layout-controls' &&
     params.panel !== 'competition-page-layout-controls' &&
     params.panel !== 'auth-page-layout-controls' &&
@@ -4656,6 +4835,10 @@ export const StandalonePanelPage: React.FC = () => {
 
   if (params.panel === 'leaderboard-page-layout-controls') {
     return <StandaloneLeaderboardPageLayoutControls assetPath={params.assetPath} />;
+  }
+
+  if (params.panel === 'player-hub-page-layout-controls') {
+    return <StandalonePlayerHubPageLayoutControls assetPath={params.assetPath} />;
   }
 
   if (params.panel === 'shop-page-layout-controls') {

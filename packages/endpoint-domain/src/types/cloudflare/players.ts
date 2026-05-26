@@ -27,6 +27,25 @@ export interface PlayerReportQuery {
 // ============================================================================
 
 /**
+ * Player profile response.
+ */
+export interface PlayerProfileResponse {
+  userId: UserId;
+  displayName?: string;
+  avatarUrl?: string;
+  photoURL?: string;
+  bio?: string;
+  level?: number;
+  totalGamesPlayed?: number;
+  totalWins?: number;
+  winRate?: number;
+  visibility?: string;
+  customTitle?: string | null;
+  profileTheme?: string;
+  [key: string]: unknown;
+}
+
+/**
  * Stats for a specific game type.
  */
 export interface GameTypeStats {

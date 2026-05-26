@@ -14,7 +14,9 @@ import {
   buildLeaderboardPath,
   buildMatchDetailPath,
   buildMatchesPath,
+  buildPlayerHubPath,
   buildRulesPath,
+  buildSettingsPath,
   buildTournamentDetailPath,
   buildTournamentsPath,
   parseAppRoute,
@@ -38,6 +40,8 @@ describe('appRoutes', () => {
     expect(buildEventDetailPath('may-2026-cup')).toBe('/events/may-2026-cup');
     expect(buildMatchesPath()).toBe('/matches');
     expect(buildMatchDetailPath('match-123')).toBe('/matches/match-123');
+    expect(buildPlayerHubPath()).toBe('/player-hub');
+    expect(buildSettingsPath()).toBe('/player-hub');
     expect(buildLeaderboardPath()).toBe('/leaderboard');
     expect(buildAiBenchmarkLeaderboardPath()).toBe('/leaderboard');
     expect(buildTournamentsPath()).toBe('/tournaments');
@@ -64,6 +68,8 @@ describe('appRoutes', () => {
     expect(parseAppRoute('/events/may-2026-cup')).toEqual({ kind: 'eventDetail', eventId: 'may-2026-cup' });
     expect(parseAppRoute('/matches')).toEqual({ kind: 'matches' });
     expect(parseAppRoute('/matches/match-123')).toEqual({ kind: 'matchDetail', matchId: 'match-123' });
+    expect(parseAppRoute('/player-hub')).toEqual({ kind: 'playerHub' });
+    expect(parseAppRoute('/settings')).toEqual({ kind: 'playerHub' });
     expect(parseAppRoute('/leaderboard')).toEqual({ kind: 'leaderboard' });
     expect(parseAppRoute('/leaderboard/ai-benchmarks')).toEqual({ kind: 'leaderboard' });
     expect(parseAppRoute('/tournaments')).toEqual({ kind: 'tournaments' });

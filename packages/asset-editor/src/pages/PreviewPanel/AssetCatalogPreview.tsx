@@ -75,6 +75,10 @@ import {
   type PartialLeaderboardPageContentData,
 } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgContent'
 import {
+  normalizePlayerHubPageSvgControls,
+  type PlayerHubPageSvgControls,
+} from '@ocentra/core-ui/AppPages/PlayerHub/PlayerHubPageSvgSurfaceControls'
+import {
   CyberAuthSurface,
   normalizeAuthPageSvgControls,
   type AuthPageSvgControls,
@@ -184,6 +188,11 @@ import {
   type LeaderboardPageLayoutControlsMessage,
 } from '@/utils/leaderboardPageLayoutControlsChannel'
 import { LEADERBOARD_PAGE_LAYOUT_ASSET_PATH } from '@/utils/leaderboardPageLayoutControlsPersistence'
+import {
+  PLAYER_HUB_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type PlayerHubPageLayoutControlsMessage,
+} from '@/utils/playerHubPageLayoutControlsChannel'
+import { PLAYER_HUB_PAGE_LAYOUT_ASSET_PATH } from '@/utils/playerHubPageLayoutControlsPersistence'
 import {
   AUTH_PAGE_LAYOUT_CONTROLS_CHANNEL,
   type AuthPageLayoutControlsMessage,
@@ -1520,6 +1529,7 @@ type AssetCatalogPreviewProps = {
 
 type PageLayoutPreviewData = Partial<PageLayoutDocument> & {
   leaderboardControls?: Partial<LeaderboardPageSvgControls> | null
+  playerHubControls?: Partial<PlayerHubPageSvgControls> | null
   competitionPrograms?: Record<string, unknown> | null
 }
 type ShopPageLayoutContentSource = {
@@ -1880,6 +1890,7 @@ function PageLayoutMainAppPreview({
   lobbyControls,
   leaderboardControls,
   leaderboardContent,
+  playerHubControls,
   authControls,
   shopControls,
   shopContent,
@@ -1900,6 +1911,7 @@ function PageLayoutMainAppPreview({
   lobbyControls?: LobbyPageSvgControls
   leaderboardControls?: LeaderboardPageSvgControls
   leaderboardContent?: PartialLeaderboardPageContentData | null
+  playerHubControls?: PlayerHubPageSvgControls
   authControls?: AuthPageSvgControls
   shopControls?: ShopPageSvgControls
   shopContent?: Partial<ShopPageContentData> | null
@@ -1947,6 +1959,10 @@ function PageLayoutMainAppPreview({
   const resolvedLeaderboardContent = useMemo(
     () => normalizeLeaderboardPreviewContent(leaderboardContent ?? document.leaderboardContent as PartialLeaderboardPageContentData | undefined),
     [document.leaderboardContent, leaderboardContent]
+  )
+  const resolvedPlayerHubControls = useMemo(
+    () => normalizePlayerHubPageSvgControls(playerHubControls ?? document.playerHubControls as Partial<PlayerHubPageSvgControls> | undefined),
+    [playerHubControls, document.playerHubControls]
   )
   const resolvedShopControls = useMemo(
     () => normalizeShopPageSvgControls(shopControls ?? document.shopControls as Partial<ShopPageSvgControls> | undefined),
@@ -2074,15 +2090,23 @@ function PageLayoutMainAppPreview({
       <PlayerHubPageContent
         loading={false}
         error={null}
-        targetUserId="preview-player"
-        profile={{ alias: 'preview-player', rank: 14, favoriteGame: 'Claim', accountType: 'full' }}
-        inventoryItems={[{ itemId: 'neon-card-back', quantity: 1 }, { itemId: 'founder-badge', quantity: 1 }]}
-        marketplaceListings={[{ id: 'classic-felt', title: 'Classic Felt Table' }, { id: 'royal-card-back', title: 'Royal Card Back' }]}
+        targetUserId=""
+        profile={null}
+        inventoryItems={[]}
+        marketplaceListings={[]}
+        creditBalance={null}
+        dailyReward={null}
+        settings={null}
+        playerStats={null}
+        learningProgress={null}
+        performanceReport={null}
+        serviceErrors={[]}
         onRefresh={() => undefined}
         onShop={() => undefined}
-        onSettings={() => undefined}
-        onLoadUser={() => undefined}
-        layoutControls={pageControls}
+        onPlay={() => undefined}
+        onLobby={() => undefined}
+        onCompetition={() => undefined}
+        playerHubControls={resolvedPlayerHubControls}
       />
     ) : kind === 'admin' ? (
       <AdminUsersPageContent
@@ -2881,6 +2905,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     pageLayoutKind === 'ai-benchmark-leaderboard'
   )
   const isAuthPageLayout = isPageLayoutMode && pageLayoutKind === 'auth'
+  const isPlayerHubPageLayout = isPageLayoutMode && pageLayoutKind === 'player-hub'
   const isShopPageLayout = isPageLayoutMode && pageLayoutKind === 'shop'
   const isCompetitionPageLayout = isPageLayoutMode && pageLayoutKind === 'competition'
   const shouldLoadGamesForPageLayout =
@@ -2903,6 +2928,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const initialAuthPageLayoutControls = useMemo(
     () => normalizeAuthPageSvgControls(pageLayoutData?.authControls as Partial<AuthPageSvgControls> | undefined),
+    [pageLayoutData]
+  )
+  const initialPlayerHubPageLayoutControls = useMemo(
+    () => normalizePlayerHubPageSvgControls(pageLayoutData?.playerHubControls as Partial<PlayerHubPageSvgControls> | undefined),
     [pageLayoutData]
   )
   const initialShopPageLayoutControls = useMemo(
@@ -3019,6 +3048,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useState<LeaderboardPageContentData>(() => initialLeaderboardPageLayoutContent)
   const [authPageLayoutControls, setAuthPageLayoutControls] =
     useState<AuthPageSvgControls>(() => initialAuthPageLayoutControls)
+  const [playerHubPageLayoutControls, setPlayerHubPageLayoutControls] =
+    useState<PlayerHubPageSvgControls>(() => initialPlayerHubPageLayoutControls)
   const [shopPageLayoutControls, setShopPageLayoutControls] =
     useState<ShopPageSvgControls>(() => initialShopPageLayoutControls)
   const [shopPageLayoutContent, setShopPageLayoutContent] =
@@ -3085,6 +3116,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const authPageLayoutControlsRef = useRef<AuthPageSvgControls>(
     initialAuthPageLayoutControls
+  )
+  const playerHubPageLayoutControlsRef = useRef<PlayerHubPageSvgControls>(
+    initialPlayerHubPageLayoutControls
   )
   const shopPageLayoutControlsRef = useRef<ShopPageSvgControls>(
     initialShopPageLayoutControls
@@ -3229,6 +3263,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [authPageLayoutControls])
 
   useEffect(() => {
+    playerHubPageLayoutControlsRef.current = playerHubPageLayoutControls
+  }, [playerHubPageLayoutControls])
+
+  useEffect(() => {
     shopPageLayoutControlsRef.current = shopPageLayoutControls
   }, [shopPageLayoutControls])
 
@@ -3290,6 +3328,16 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     }, 0)
     return () => window.clearTimeout(timeoutId)
   }, [initialAuthPageLayoutControls, isAuthPageLayout])
+
+  useEffect(() => {
+    if (!isPlayerHubPageLayout) {
+      return undefined
+    }
+    const timeoutId = window.setTimeout(() => {
+      setPlayerHubPageLayoutControls(initialPlayerHubPageLayoutControls)
+    }, 0)
+    return () => window.clearTimeout(timeoutId)
+  }, [initialPlayerHubPageLayoutControls, isPlayerHubPageLayout])
 
   useEffect(() => {
     if (!isShopPageLayout && !isCompetitionPageLayout) {
@@ -3657,6 +3705,30 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       if (event.data.type === 'state' || event.data.type === 'update') {
         setAuthPageLayoutControls(
           normalizeAuthPageSvgControls(event.data.controls)
+        )
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(PLAYER_HUB_PAGE_LAYOUT_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<PlayerHubPageLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: playerHubPageLayoutControlsRef.current,
+        } satisfies PlayerHubPageLayoutControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setPlayerHubPageLayoutControls(
+          normalizePlayerHubPageSvgControls(event.data.controls)
         )
       }
     }
@@ -4887,6 +4959,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     )
   }
 
+  const handleOpenPlayerHubPageLayoutControls = () => {
+    void createPanelWindow(
+      'player-hub-page-layout-controls',
+      assetPath ?? PLAYER_HUB_PAGE_LAYOUT_ASSET_PATH,
+      'Player Hub Layout Controls',
+      true
+    )
+  }
+
   const handleOpenShopPageLayoutControls = () => {
     void createPanelWindow(
       'shop-page-layout-controls',
@@ -5089,6 +5170,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
+        {isPlayerHubPageLayout && (
+          <button
+            type="button"
+            className="asset-catalog-preview__edit-featured-button"
+            onClick={handleOpenPlayerHubPageLayoutControls}
+          >
+            Edit
+          </button>
+        )}
         {isShopPageLayout && (
           <button
             type="button"
@@ -5116,7 +5206,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
-        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLobbyPageLayout && !isLeaderboardPageLayout && !isAuthPageLayout && !isShopPageLayout && !isCompetitionPageLayout && (
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLobbyPageLayout && !isLeaderboardPageLayout && !isAuthPageLayout && !isPlayerHubPageLayout && !isShopPageLayout && !isCompetitionPageLayout && (
           <button
             type="button"
             className="asset-catalog-preview__edit-featured-button"
@@ -5125,7 +5215,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
-        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLeaderboardPageLayout && !isAuthPageLayout && !isShopPageLayout && !isCompetitionPageLayout && (
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLeaderboardPageLayout && !isAuthPageLayout && !isPlayerHubPageLayout && !isShopPageLayout && !isCompetitionPageLayout && (
           <label className="asset-catalog-preview__bounds-toggle">
             <input
               type="checkbox"
@@ -5257,6 +5347,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           lobbyControls={lobbyPageLayoutControls}
           leaderboardControls={leaderboardPageLayoutControls}
           leaderboardContent={leaderboardPageLayoutContent}
+          playerHubControls={playerHubPageLayoutControls}
           authControls={authPageLayoutControls}
           shopControls={shopPageLayoutControls}
           shopContent={shopPageLayoutContent}

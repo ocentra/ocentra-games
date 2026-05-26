@@ -12,6 +12,7 @@ export interface AppAiService {
     temperature?: number;
   }): Promise<GenerationResult>;
   storeProviderKey(providerId: string, apiKey: string): Promise<boolean>;
+  storeCustomProviderKey(providerId: string, apiKey: string, baseUrl?: string): Promise<boolean>;
   listConfiguredProviders(): Promise<string[]>;
   testProviderConnection(providerId: string): Promise<ConnectionTestResult>;
   removeProviderKey(providerId: string): Promise<boolean>;
@@ -65,6 +66,21 @@ export function createAppAiService(adapters: AppAiServiceAdapters): AppAiService
       const response = await fetchWithAuth(workerAdapters, url, {
         method: 'POST',
         body: JSON.stringify({ providerId, apiKey }),
+      });
+      return response.ok;
+    },
+
+    async storeCustomProviderKey(providerId: string, apiKey: string, baseUrl?: string): Promise<boolean> {
+      const base = await adapters.getWorkerBaseUrl();
+      if (!base) return false;
+      const url = `${base}${ApiEndpoint.AI.KeysCustom}`;
+      const body: { providerId: string; apiKey: string; baseUrl?: string } = { providerId, apiKey };
+      if (baseUrl) {
+        body.baseUrl = baseUrl;
+      }
+      const response = await fetchWithAuth(workerAdapters, url, {
+        method: 'POST',
+        body: JSON.stringify(body),
       });
       return response.ok;
     },

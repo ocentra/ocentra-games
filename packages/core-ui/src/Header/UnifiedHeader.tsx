@@ -2087,7 +2087,7 @@ export function UnifiedHeader({
             {isGuestUser ? (
               <div className={styles.dropdownMenuSections}>
                 <div className={styles.accountLockedMessage}>
-                  Create an account to unlock tracked ELO, your real profile, settings, and security tools.
+                  Create an account to unlock tracked ELO, your Player Hub, settings, and security tools.
                 </div>
                 <div className={styles.accountLockedCard}>
                   <div className={`${styles.dropdownStats} ${styles.dropdownStatsLocked}`}>
@@ -2106,15 +2106,15 @@ export function UnifiedHeader({
                   </div>
                   <div className={`${styles.dropdownMenuSection} ${styles.dropdownMenuSectionLocked}`}>
                     <div className={styles.dropdownItemLocked}>
-                      <span className={styles.dropdownItemLabel}>View Profile</span>
+                      <span className={styles.dropdownItemLabel}>Player Hub</span>
                       <span className={styles.dropdownItemHint}>Account</span>
                     </div>
                     <div className={styles.dropdownItemLocked}>
-                      <span className={styles.dropdownItemLabel}>Settings</span>
+                      <span className={styles.dropdownItemLabel}>Account Settings</span>
                       <span className={styles.dropdownItemHint}>Account</span>
                     </div>
                     <div className={styles.dropdownItemLocked}>
-                      <span className={styles.dropdownItemLabel}>Security</span>
+                      <span className={styles.dropdownItemLabel}>Security Settings</span>
                       <span className={styles.dropdownItemHint}>Account</span>
                     </div>
                   </div>
@@ -2147,9 +2147,9 @@ export function UnifiedHeader({
                         Admin Dashboard
                       </button>
                     )}
-                    <button className={styles.dropdownItem} onClick={() => { right.onViewProfileClick?.(); setShowProfileDropdown(false); }}>View Profile</button>
-                    <button className={styles.dropdownItem} onClick={() => { right.onSettingsClick?.(); setShowProfileDropdown(false); }}>Settings</button>
-                    <button className={styles.dropdownItem} onClick={() => { right.onSecurityClick?.(); setShowProfileDropdown(false); }}>Security</button>
+                    <button className={styles.dropdownItem} onClick={() => { right.onViewProfileClick?.(); setShowProfileDropdown(false); }}>Player Hub</button>
+                    <button className={styles.dropdownItem} onClick={() => { right.onSettingsClick?.(); setShowProfileDropdown(false); }}>Account Settings</button>
+                    <button className={styles.dropdownItem} onClick={() => { right.onSecurityClick?.(); setShowProfileDropdown(false); }}>Security Settings</button>
                   </div>
 
                   <div className={styles.dropdownMenuSectionDanger}>

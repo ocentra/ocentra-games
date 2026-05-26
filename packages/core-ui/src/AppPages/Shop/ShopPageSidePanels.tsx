@@ -21,13 +21,17 @@ function rightPanelMeta(id: ShopRightTabId, content: ShopPageContentData): ShopR
   return content.rightTabs.find(tab => tab.id === id) ?? content.rightTabs[0];
 }
 
+function sideItemIdentity(item: ShopSideItem): string {
+  return item.id ?? item.key;
+}
+
 function rightPanelDetailRows(id: ShopRightTabId, acBalance: number | null, content: ShopPageContentData): Array<{ label: string; value: string; detail: string }> {
   if (id === 'wallet') {
     const details = content.rightDetails.wallet;
     const balanceValue = acBalance === null ? content.uiCopy.status.unknownValue : acBalance.toLocaleString();
     return content.rightRows.wallet.map((row, index) => ({
       label: row[0],
-      value: index === 0 ? `${balanceValue} ${row[1]}` : row[1],
+      value: index === 0 && /^[A-Z]{2,5}$/.test(row[1]) ? `${balanceValue} ${row[1]}` : row[1],
       detail: details[index]?.detail ?? '',
     }));
   }
@@ -329,6 +333,7 @@ function SideInfoCard({
   cfg: ShopPageSvgControls;
 }) {
   const earn = cfg.componentTokens.leftEarnPanel;
+  const token = cfg.componentTokens.sideNavCard;
   const color = toneColor(item.tone, cfg);
   const compact = w < 132 || h < 180;
   const headerTitleSize = fitSingleLineTextSize(item.title, Math.max(48, w - earn.headerInset * 2 - 14), compact ? 9.2 : 10.4, earn.headerTitleSize, 0.58);
@@ -340,14 +345,20 @@ function SideInfoCard({
   const badgeX = x + earn.buttonInsetX;
   const badgeY = y + h - earn.buttonBottom;
   const textY = Math.min(badgeY - 20, imageY + imageSize + (compact ? 13 : 20));
+  const statusLabel = item.key === 'Events' ? 'Registration' : 'Selected';
+  const arrowH = cfg.leftPanel.cardH - token.arrowTopInset * 2;
+  const arrowTop = y + h / 2 - arrowH / 2;
+  const arrowBottom = arrowTop + arrowH;
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} rx={cfg.leftPanel.earnRadius} fill={cfg.colors.panelFill} stroke={color} strokeWidth="1.35" strokeOpacity="0.78" />
+      <rect x={x - token.selectedPad} y={y - token.selectedPad} width={w + token.selectedPad * 2} height={h + token.selectedPad * 2} rx={token.selectedGlowRadius} fill="none" stroke={color} strokeWidth={token.selectedGlowStrokeWidth} opacity={token.selectedGlowOpacity} filter="url(#shopSoftGlow)" />
+      <path d={`M ${x + w - token.arrowEdgeInset} ${arrowTop} L ${x + w + 18} ${y + h / 2} L ${x + w - token.arrowEdgeInset} ${arrowBottom} Z`} fill={color} filter="url(#shopSoftGlow)" />
+      <rect x={x} y={y} width={w} height={h} rx={cfg.leftPanel.earnRadius} fill={alphaColor(cfg.colors.activeBlue, 0.28)} stroke={color} strokeWidth="1.6" strokeOpacity="0.9" />
       <HeaderBar x={x + earn.headerInset} y={y + earn.headerInset} w={w - earn.headerInset * 2} h={earn.headerH} cfg={cfg} stroke={color}>
         <Txt x={x + earn.headerTitleX} y={y + earn.headerTitleY} size={headerTitleSize} weight="950" cfg={cfg}>{item.title}</Txt>
       </HeaderBar>
       <TransparentAssetImage x={imageX} y={imageY} w={imageSize} h={imageSize} imageUrl={item.imageUrl} cfg={cfg} glow />
-      <Txt x={x + w / 2} y={textY} size={compact ? 8.2 : 9.4} weight="850" anchor="middle" fill={color} cfg={cfg}>Registration</Txt>
+      <Txt x={x + w / 2} y={textY} size={compact ? 8.2 : 9.4} weight="850" anchor="middle" fill={color} cfg={cfg}>{statusLabel}</Txt>
       <rect x={badgeX} y={badgeY} width={badgeW} height={earn.buttonH} rx={cfg.svgDefaults.roundedNone} fill={alphaColor(color, 0.16)} stroke={color} strokeWidth="1.15" strokeOpacity="0.78" />
       <Txt x={x + w / 2} y={badgeY + earn.buttonH / 2 + 1} size={badgeTextSize} weight="850" anchor="middle" fill={cfg.colors.bodyText} cfg={cfg}>{item.subtitle}</Txt>
     </g>
@@ -366,6 +377,7 @@ export function LeftSidePanel({
   content,
   cfg,
   onTabChange,
+  onSideItemAction,
   onEarn,
 }: {
   x: number;
@@ -379,12 +391,14 @@ export function LeftSidePanel({
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   onTabChange: (tab: ShopTab) => void;
+  onSideItemAction?: (item: ShopSideItem) => void;
   onEarn: () => void;
 }) {
   const cardX = x + cfg.leftPanel.cardInsetX;
   const cardW = w - cfg.leftPanel.cardInsetX * 2;
   const sideInfoItem = sideInfoItemKey ? content.sideItems.find(item => item.key === sideInfoItemKey) ?? null : null;
-  const sideItems = sideInfoItem ? content.sideItems.filter(item => item.key !== sideInfoItem.key) : content.sideItems;
+  const sideInfoIdentity = sideInfoItem ? sideItemIdentity(sideInfoItem) : null;
+  const sideItems = sideInfoIdentity ? content.sideItems.filter(item => sideItemIdentity(item) !== sideInfoIdentity) : content.sideItems;
   const earnY = y + cfg.leftPanel.pad + sideItems.length * cfg.leftPanel.cardH + Math.max(0, sideItems.length - 1) * cfg.leftPanel.cardGap + cfg.leftPanel.earnGap;
   const earn = cfg.componentTokens.leftEarnPanel;
   const earnH = Math.max(earn.imageMinH + earn.imageTop, y + h - earnY - cfg.leftPanel.earnBottomPad);
@@ -394,15 +408,15 @@ export function LeftSidePanel({
     <Panel x={x} y={y} w={w} h={h} r={cfg.leftPanel.panelRadius} stroke={cfg.colors.panelStroke} cfg={cfg}>
       {sideItems.map((item, index) => (
         <SideNavCard
-          key={item.key}
+          key={sideItemIdentity(item)}
           x={cardX}
           y={y + cfg.leftPanel.pad + index * (cfg.leftPanel.cardH + cfg.leftPanel.cardGap)}
           w={cardW}
           h={cfg.leftPanel.cardH}
           item={item}
-          selected={activeTab === item.key && !earnActive}
+          selected={activeTab === item.key && !earnActive && !item.rightDetailTarget}
           cfg={cfg}
-          onClick={() => onTabChange(item.key)}
+          onClick={() => onSideItemAction ? onSideItemAction(item) : onTabChange(item.key)}
         />
       ))}
       {showEarnPanel ? <EarnFreeSideCard x={earnX} y={earnY} w={earnW} h={earnH} selected={earnActive} content={content} cfg={cfg} onClick={onEarn} /> : null}

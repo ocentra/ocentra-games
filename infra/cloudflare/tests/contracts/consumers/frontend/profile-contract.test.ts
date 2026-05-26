@@ -42,6 +42,9 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           Matchers.like({
             userId: Matchers.string(userId),
             displayName: Matchers.string('Player'),
+            visibility: Matchers.string('private'),
+            customTitle: null,
+            profileTheme: Matchers.string('default'),
           })
         );
       })

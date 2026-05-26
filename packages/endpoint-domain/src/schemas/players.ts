@@ -5,6 +5,58 @@
 import { schema } from '@ocentra/schema-domain/effect-builder';
 import { UserIdSchema, GameTypeSchema, TimestampSchema } from './common';
 
+const UnsafePlayerDisplayNameValues = new Set([
+  'n/a',
+  'na',
+  'none',
+  'null',
+  'undefined',
+  'unknown',
+  'anonymous',
+  'anon',
+  'user',
+  'player',
+  'preview-player',
+  'preview player',
+  'simulated-user',
+  'simulated user',
+  'mock-user',
+  'mock user',
+  'demo-user',
+  'demo user',
+  'test-user',
+  'test user',
+  'sample-player',
+  'sample player',
+]);
+
+const OpaqueAccountIdentifierPattern = /^[A-Za-z0-9._-]{20,}$/;
+
+function normalizedDisplayName(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+export function isUnsafePlayerDisplayName(value: string, userId?: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return true;
+  const normalizedValue = normalizedDisplayName(trimmed);
+  const normalizedUserId = userId ? normalizedDisplayName(userId) : '';
+  if (UnsafePlayerDisplayNameValues.has(normalizedValue)) return true;
+  if (normalizedUserId && normalizedValue === normalizedUserId) return true;
+  if (OpaqueAccountIdentifierPattern.test(trimmed) && !/[\s@]/.test(trimmed)) return true;
+  return false;
+}
+
+export const PlayerDisplayNameSchema = schema
+  .string()
+  .trim()
+  .min(1)
+  .max(128)
+  .refine(
+    (value) => !isUnsafePlayerDisplayName(value),
+    'Display name must be a player-facing name, not an account id or placeholder',
+  );
+
 // ============================================================================
 // Query Parameters
 // ============================================================================
@@ -20,6 +72,29 @@ export const PlayerReportQuerySchema = schema.object({
 // ============================================================================
 // Response Bodies
 // ============================================================================
+
+export const PlayerProfileResponseSchema = schema.object({
+  userId: UserIdSchema,
+  displayName: PlayerDisplayNameSchema.optional(),
+  avatarUrl: schema.string().max(512).optional(),
+  photoURL: schema.string().max(512).optional(),
+  bio: schema.string().max(512).optional(),
+  level: schema.number().int().nonnegative().optional(),
+  totalGamesPlayed: schema.number().int().nonnegative().optional(),
+  totalWins: schema.number().int().nonnegative().optional(),
+  winRate: schema.number().min(0).max(100).optional(),
+  visibility: schema.string().max(32).optional(),
+  customTitle: schema.string().max(128).nullable().optional(),
+  profileTheme: schema.string().max(64).optional(),
+}).passthrough().superRefine((profile, context) => {
+  if (profile.displayName !== undefined && isUnsafePlayerDisplayName(profile.displayName, profile.userId)) {
+    context.addIssue({
+      path: ['displayName'],
+      message: 'Display name must not match account identity or placeholder data',
+    });
+  }
+});
+export type PlayerProfileResponse = schema.infer<typeof PlayerProfileResponseSchema>;
 
 export const GameTypeStatsSchema = schema.object({
   game_type: GameTypeSchema,

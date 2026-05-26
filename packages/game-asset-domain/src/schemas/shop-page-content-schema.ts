@@ -9,16 +9,18 @@ export type ShopTone = schema.infer<typeof ShopPageToneSchema>;
 export const ShopPageIconSchema = schema.enum(['coins', 'crown', 'chest', 'cards', 'trophy', 'crate', 'shield', 'link', 'lock', 'cart']);
 export type ShopIcon = schema.infer<typeof ShopPageIconSchema>;
 
-export const ShopRightTabIdSchema = schema.enum(['account', 'wallet', 'pass', 'events', 'recent']);
+export const ShopRightTabIdSchema = schema.enum(['account', 'settings', 'wallet', 'pass', 'events', 'recent', 'ai']);
 export type ShopRightTabId = schema.infer<typeof ShopRightTabIdSchema>;
 
 export const ShopSideItemSchema = schema.object({
+  id: schema.string().min(1).optional(),
   key: ShopPageTabSchema,
   title: schema.string().min(1),
   subtitle: schema.string(),
   icon: ShopPageIconSchema,
   tone: ShopPageToneSchema,
   imageUrl: schema.string(),
+  rightDetailTarget: ShopRightTabIdSchema.optional(),
 }).strict();
 export type ShopSideItem = schema.infer<typeof ShopSideItemSchema>;
 
@@ -31,6 +33,7 @@ export const ShopStaticItemSchema = schema.object({
   imageUrl: schema.string(),
   price: schema.string().optional(),
   benefits: schema.array(schema.string()).optional(),
+  rightDetailTarget: ShopRightTabIdSchema.optional(),
 }).strict();
 export type ShopStaticItem = schema.infer<typeof ShopStaticItemSchema>;
 
@@ -313,10 +316,12 @@ export const ShopPageContentDataSchema = schema.object({
   }).strict(),
   rightDetails: schema.object({
     account: schema.array(ShopRightDetailRowSchema),
+    settings: schema.array(ShopRightDetailRowSchema).optional(),
     wallet: schema.array(ShopRightDetailRowSchema),
     pass: schema.array(ShopRightDetailRowSchema),
     events: schema.array(ShopRightDetailRowSchema),
     recent: schema.array(ShopRightDetailRowSchema),
+    ai: schema.array(ShopRightDetailRowSchema).optional(),
   }).strict(),
   uiCopy: ShopUiCopySchema,
   infoDetails: schema.object({

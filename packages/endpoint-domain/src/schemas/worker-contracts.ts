@@ -11,6 +11,7 @@ import {
   EmptyObjectSchema,
 } from './common';
 import { MatchRecordSchema } from './matches';
+import { PlayerDisplayNameSchema } from './players';
 import { QueryParam } from '../constants/query';
 import {
   ConsumeGpCurrencyValues,
@@ -145,8 +146,8 @@ export const PresenceBlockPathRequestSchema = schema.object({
 }).strict();
 
 export const ProfileUpdateRequestSchema = schema.object({
-  displayName: schema.string().min(1).max(128).optional(),
-  bio: schema.string().min(1).max(512).optional(),
+  displayName: PlayerDisplayNameSchema.optional(),
+  bio: schema.string().max(512).optional(),
   visibility: schema.enum(ProfileVisibilityValues).optional(),
   showcaseBadges: schema.array(schema.string().min(1).max(64)).max(5).optional(),
   customTitle: schema.string().min(1).max(128).nullable().optional(),
