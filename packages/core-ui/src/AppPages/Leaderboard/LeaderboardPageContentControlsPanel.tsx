@@ -40,7 +40,7 @@ const panelTabs: Array<{ id: LeaderboardContentPanelTab; label: string }> = [
   { id: 'modes', label: 'Modes' },
   { id: 'tabsNav', label: 'Tabs & Nav' },
   { id: 'games', label: 'Games' },
-  { id: 'rows', label: 'Rows' },
+  { id: 'rows', label: 'Runtime Data' },
   { id: 'seasonCopy', label: 'Season & Copy' },
   { id: 'rawJson', label: 'Raw JSON' },
 ];
@@ -64,7 +64,7 @@ const iconNames: LeaderboardIconName[] = [
   'trophy',
   'users',
 ];
-const rowSources: LeaderboardModeContent['rowSource'][] = ['api', 'fallbackRows', 'aiBenchmarkRows'];
+const rowSources: LeaderboardModeContent['rowSource'][] = ['api'];
 
 const shellStyle: CSSProperties = {
   display: 'grid',
@@ -297,19 +297,6 @@ function newQuickGame(): LeaderboardQuickGame {
   };
 }
 
-function newRow(index: number): LeaderboardContentRow {
-  return {
-    user_id: `Player${Date.now()}`,
-    rank: index + 1,
-    score: 0,
-    wins: 0,
-    losses: 0,
-    bestGame: 'Claim',
-    trend: '-',
-    tone: 'cyan',
-  };
-}
-
 function newSeasonStat(): LeaderboardSeason['stats'][number] {
   return {
     label: 'NEW STAT',
@@ -525,10 +512,6 @@ export function LeaderboardPageContentControlsPanel({
     updateContent(current => ({ ...current, [rowList]: nextRows }));
   };
 
-  const updateSelectedRow = (nextRow: Partial<LeaderboardContentRow>) => {
-    updateRows(rows.map((row, index) => index === safeRowIndex ? { ...row, ...nextRow } : row));
-  };
-
   const updateSeason = (nextSeason: Partial<LeaderboardSeason>) => {
     updateContent(current => ({ ...current, season: { ...current.season, ...nextSeason } }));
   };
@@ -580,24 +563,6 @@ export function LeaderboardPageContentControlsPanel({
     const next = games.filter((_, index) => index !== safeGameIndex) as typeof games;
     updateGames(next);
     setGameIndex(clampIndex(safeGameIndex - 1, next.length));
-  };
-
-  const addRow = () => {
-    const next = [...rows, newRow(rows.length)];
-    updateRows(next);
-    setRowIndex(next.length - 1);
-  };
-
-  const copyRow = () => {
-    if (!selectedRow) return;
-    const clone = {
-      ...selectedRow,
-      user_id: `${selectedRow.user_id}-copy`,
-      rank: selectedRow.rank + 1,
-    };
-    const next = [...rows.slice(0, safeRowIndex + 1), clone, ...rows.slice(safeRowIndex + 1)];
-    updateRows(next);
-    setRowIndex(safeRowIndex + 1);
   };
 
   const removeRow = () => {
@@ -658,9 +623,9 @@ export function LeaderboardPageContentControlsPanel({
               <span>Top game showcase and bottom quick switches.</span>
             </button>
             <button type="button" style={{ ...summaryCardStyle, color: '#e0fbff', textAlign: 'left', cursor: 'pointer' }} onClick={() => setActivePanel('rows')}>
-              <span style={{ color: '#bd76ff', fontSize: '0.78rem', fontWeight: 950, textTransform: 'uppercase' }}>Rows</span>
-              <strong style={{ fontSize: '1.15rem' }}>{normalized.fallbackRows.length} player / {normalized.aiBenchmarkRows.length} AI</strong>
-              <span>Fallback tables and AI model table data.</span>
+              <span style={{ color: '#bd76ff', fontSize: '0.78rem', fontWeight: 950, textTransform: 'uppercase' }}>Runtime Data</span>
+              <strong style={{ fontSize: '1.15rem' }}>Cloudflare rows</strong>
+              <span>Production rows are API-owned; editor preview data stays separate.</span>
             </button>
           </div>
         </div>
@@ -686,7 +651,10 @@ export function LeaderboardPageContentControlsPanel({
             <TextField label="Route Label" value={selectedMode.routeLabel} onChange={value => updateMode({ routeLabel: value })} />
             <TextField label="Selected Game ID" value={selectedMode.selectedGameId ?? ''} onChange={value => updateMode({ selectedGameId: value || undefined })} />
             <SelectField label="Default Tab" value={selectedMode.defaultTab} options={tabIds} onChange={value => updateMode({ defaultTab: value })} />
-            <SelectField label="Row Source" value={selectedMode.rowSource} options={rowSources} onChange={value => updateMode({ rowSource: value })} />
+            <SelectField label="Runtime Row Source" value={selectedMode.rowSource === 'api' ? selectedMode.rowSource : 'api'} options={rowSources} onChange={value => updateMode({ rowSource: value })} />
+          </div>
+          <div style={summaryCardStyle}>
+            Leaderboard rows are loaded from Cloudflare at runtime. Layout assets can tune copy, tabs, games, season copy, and chrome, but they do not own production standings.
           </div>
         </div>
       ) : null}
@@ -865,17 +833,24 @@ export function LeaderboardPageContentControlsPanel({
       {activePanel === 'rows' ? (
         <div style={wideGridStyle}>
           <div style={cardStyle}>
+            <div style={summaryCardStyle}>
+              <strong>Runtime contract</strong>
+              <span>Production standings come from Cloudflare leaderboard APIs. The main app ignores saved fallback and AI row arrays so old layout assets cannot publish fake leaders.</span>
+              <span>Use this section only to inspect or clear legacy row fields from older assets.</span>
+            </div>
             <div style={toolbarStyle}>
               <SelectField label="Rows" value={rowList} options={[
-                { value: 'fallbackRows', label: 'Player Fallback Rows' },
-                { value: 'aiBenchmarkRows', label: 'AI Benchmark Rows' },
+                { value: 'fallbackRows', label: 'Legacy Player Rows' },
+                { value: 'aiBenchmarkRows', label: 'Legacy AI Rows' },
               ]} onChange={value => {
                 setRowList(value);
                 setRowIndex(0);
               }} />
               <span style={{ flex: 1 }} />
-              <button type="button" style={buttonStyle} onClick={addRow}>+ Row</button>
-              <button type="button" style={buttonStyle} disabled={!selectedRow} onClick={copyRow}>Copy</button>
+              <button type="button" style={dangerButtonStyle} onClick={() => {
+                updateRows([]);
+                setRowIndex(0);
+              }}>Clear Legacy Rows</button>
             </div>
             <div style={listStyle}>
               {rows.map((row, index) => (
@@ -907,18 +882,16 @@ export function LeaderboardPageContentControlsPanel({
           </div>
           <div style={cardStyle}>
             {selectedRow ? (
-              <div style={gridStyle}>
-                <TextField label="User ID" value={selectedRow.user_id} onChange={value => updateSelectedRow({ user_id: value })} />
-                <NumberField label="Rank" value={selectedRow.rank} onChange={value => updateSelectedRow({ rank: value ?? selectedRow.rank })} />
-                <NumberField label="Score" value={selectedRow.score} onChange={value => updateSelectedRow({ score: value ?? selectedRow.score })} />
-                <NumberField label="Wins" value={selectedRow.wins} onChange={value => updateSelectedRow({ wins: value })} />
-                <NumberField label="Losses" value={selectedRow.losses} onChange={value => updateSelectedRow({ losses: value })} />
-                <TextField label="Best Game" value={selectedRow.bestGame ?? ''} onChange={value => updateSelectedRow({ bestGame: value || undefined })} />
-                <TextField label="Trend" value={selectedRow.trend ?? ''} onChange={value => updateSelectedRow({ trend: value || undefined })} />
-                <SelectField label="Tone" value={selectedRow.tone ?? 'cyan'} options={tones.map(tone => ({ value: tone, label: toneLabel(tone) }))} onChange={value => updateSelectedRow({ tone: value })} />
+              <div style={summaryCardStyle}>
+                <strong>#{selectedRow.rank} {selectedRow.user_id}</strong>
+                <span>Score: {selectedRow.score.toLocaleString()}</span>
+                <span>Wins/losses: {selectedRow.wins ?? 0}/{selectedRow.losses ?? 0}</span>
+                <span>Best game: {selectedRow.bestGame ?? 'N/A'}</span>
+                <span>Trend: {selectedRow.trend ?? '-'}</span>
+                <span>Tone: {toneLabel(selectedRow.tone ?? 'cyan')}</span>
               </div>
             ) : (
-              <div style={summaryCardStyle}>Select or add a row.</div>
+              <div style={summaryCardStyle}>No legacy row selected.</div>
             )}
           </div>
         </div>

@@ -9,6 +9,7 @@ import type {
   CompetitionProgramType,
   CompetitionRegistrationResponse,
 } from '@ocentra/endpoint-domain/schemas/competition';
+import { GameTypeId } from '@ocentra/endpoint-domain/constants/game';
 
 export interface CompetitionState {
   loading: boolean;
@@ -18,6 +19,7 @@ export interface CompetitionState {
   seasonId: string;
   lastUpdated: string;
   leaderboardEntries: LeaderboardEntry[];
+  aiLeaderboardEntries: LeaderboardEntry[];
   userEntry: LeaderboardEntry | null;
   nearbyAbove: LeaderboardEntry[];
   nearbyBelow: LeaderboardEntry[];
@@ -34,7 +36,7 @@ export interface CompetitionState {
   checkInResult: CompetitionCheckInResponse | null;
 }
 
-export const CompetitionDefaultGameType = 1;
+export const CompetitionDefaultGameType = GameTypeId.Claim;
 export const CompetitionDefaultTournamentId = 'daily-open';
 
 export interface CompetitionProgramsFilter {

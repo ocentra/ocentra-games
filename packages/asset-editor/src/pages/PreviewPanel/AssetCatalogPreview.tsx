@@ -88,6 +88,7 @@ import {
   type ShopPageContentData,
 } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent'
 import type { CompetitionProgramsResponse } from '@ocentra/endpoint-domain/schemas/competition'
+import { GameTypeId } from '@ocentra/endpoint-domain/constants/game'
 import {
   AdminUsersPageContent,
   CompetitionPageContent,
@@ -1771,6 +1772,46 @@ const previewLeaderboardEntries: LeaderboardRow[] = [
   { user_id: 'near-you', rank: 14, score: 9740, wins: 41, losses: 22 },
 ]
 
+const previewAiBenchmarkEntries: LeaderboardRow[] = [
+  { user_id: 'ocentra-claim-agent', rank: 1, score: 9812, wins: 1824, losses: 192, bestGame: 'Claim', trend: '+6', tone: 'red' },
+  { user_id: 'poker-range-solver', rank: 2, score: 9034, wins: 1422, losses: 330, bestGame: 'Poker', trend: '+2', tone: 'gold' },
+  { user_id: 'baseline-random-policy', rank: 3, score: 6412, wins: 812, losses: 901, bestGame: 'Mixed', trend: '-', tone: 'muted' },
+]
+
+const previewLeaderboardContent: PartialLeaderboardPageContentData = {
+  topGames: [
+    { id: 'claim', rank: 1, name: 'Claim', matches: 'Preview rows', growth: 'Fixture data', tone: 'cyan', category: 'Trick-taking', subcategory: 'Card play', gameType: GameTypeId.Claim, routePath: '/leaderboard' },
+    { id: 'poker', rank: 2, name: 'Poker', matches: 'Preview rows', growth: 'Fixture data', tone: 'red', category: 'Poker', subcategory: 'Vying', gameType: GameTypeId.Poker, routePath: '/leaderboard' },
+    { id: 'word-search', rank: 3, name: 'Word Search', matches: 'Preview rows', growth: 'Fixture data', tone: 'gold', category: 'Word', subcategory: 'Puzzle', gameType: GameTypeId.WordSearch, routePath: '/leaderboard' },
+  ],
+  quickGames: [
+    { id: 'claim', name: 'CLAIM', detail: 'Preview leaderboard', icon: 'gamepad', tone: 'cyan', category: 'Trick-taking', subcategory: 'Card play', gameType: GameTypeId.Claim, routePath: '/leaderboard' },
+    { id: 'poker', name: 'POKER', detail: 'Preview leaderboard', icon: 'crown', tone: 'red', category: 'Poker', subcategory: 'Vying', gameType: GameTypeId.Poker, routePath: '/leaderboard' },
+    { id: 'word-search', name: 'WORD SEARCH', detail: 'Preview leaderboard', icon: 'grid', tone: 'gold', category: 'Word', subcategory: 'Puzzle', gameType: GameTypeId.WordSearch, routePath: '/leaderboard' },
+  ],
+  distributionLabels: ['DIAMOND 15.2%', 'PLATINUM 26.1%', 'GOLD 28.7%', 'SILVER 17.1%'],
+  season: {
+    label: 'PREVIEW',
+    title: 'AUTHORING FIXTURE',
+    dateRange: 'EDITOR ONLY',
+    actionLabel: 'PREVIEW EVENTS',
+    detailTitle: 'PREVIEW SEASON',
+    detailSubtitle: 'Editor-only fixture copy for layout tuning.',
+    stats: [
+      { label: 'STATUS', value: 'PREVIEW' },
+      { label: 'PRIZE POOL', value: 'N/A' },
+      { label: 'CLAIMED', value: 'N/A' },
+    ],
+  },
+}
+
+function normalizeLeaderboardPreviewContent(content: PartialLeaderboardPageContentData | undefined): LeaderboardPageContentData {
+  return normalizeLeaderboardPageContent({
+    ...previewLeaderboardContent,
+    ...content,
+  })
+}
+
 const previewAdminUsers: AdminUserRow[] = [
   { uid: 'u-001', email: 'sujan@ocentra.ca', displayName: 'sujan', isAdmin: true, lastLogin: '2026-05-02T14:30:00.000Z' },
   { uid: 'u-002', email: 'pilot@ocentra.ca', displayName: 'table pilot', isAdmin: false, lastLogin: '2026-05-01T19:12:00.000Z' },
@@ -1904,7 +1945,7 @@ function PageLayoutMainAppPreview({
     [leaderboardControls, document.leaderboardControls]
   )
   const resolvedLeaderboardContent = useMemo(
-    () => normalizeLeaderboardPageContent(leaderboardContent ?? document.leaderboardContent as PartialLeaderboardPageContentData | undefined),
+    () => normalizeLeaderboardPreviewContent(leaderboardContent ?? document.leaderboardContent as PartialLeaderboardPageContentData | undefined),
     [document.leaderboardContent, leaderboardContent]
   )
   const resolvedShopControls = useMemo(
@@ -1985,6 +2026,7 @@ function PageLayoutMainAppPreview({
         seasonId="preview-season"
         lastUpdated="just now"
         leaderboardEntries={previewLeaderboardEntries}
+        aiBenchmarkEntries={previewAiBenchmarkEntries}
         showPersonalizedStats
         userEntry={previewLeaderboardEntries[3] ?? null}
         nearbyAbove={previewLeaderboardEntries.slice(1, 2)}
@@ -2011,6 +2053,7 @@ function PageLayoutMainAppPreview({
         seasonId="preview-season"
         lastUpdated="just now"
         leaderboardEntries={previewLeaderboardEntries}
+        aiBenchmarkEntries={previewAiBenchmarkEntries}
         showPersonalizedStats
         userEntry={previewLeaderboardEntries[3] ?? null}
         nearbyAbove={previewLeaderboardEntries.slice(1, 2)}

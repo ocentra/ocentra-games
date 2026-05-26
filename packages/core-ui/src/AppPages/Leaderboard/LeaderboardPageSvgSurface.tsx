@@ -28,6 +28,7 @@ import {
   type LeaderboardPageSvgControls,
 } from './LeaderboardPageSvgSurfaceControls';
 import {
+  LEADERBOARD_GAME_ACTIVITY_UNAVAILABLE_LABEL,
   normalizeLeaderboardPageContent,
   type LeaderboardGameOption,
   type LeaderboardIconName,
@@ -68,9 +69,11 @@ type IconProps = {
 type IconComponent = (props: IconProps) => ReactElement;
 type Tone = LeaderboardTone;
 type DetailMode = 'player' | 'game' | 'season';
-type LeaderboardFocusSection = 'podium' | 'table' | 'rating' | 'live';
+type LeaderboardFocusSection = 'podium' | 'table' | 'rating' | 'live' | 'gamePopularity';
 type LeaderboardGameBrowserView = 'grid' | 'list';
 type LeaderboardGameBrowserSort = 'rank' | 'az';
+type GamePopularityPeriod = 'allTime' | 'year' | 'month' | 'week';
+type LiveMovementChannel = { label: string; scope: string; status: string; impact: string; tone: Tone };
 type LeaderboardTopCardItem =
   | { kind: 'leader'; key: string; row: DisplayRow; title: string; subtitle: string; value: string; detail: string; tone: Tone }
   | { kind: 'game'; key: string; game: TopGame | QuickGame; title: string; subtitle: string; value: string; detail: string; tone: Tone };
@@ -86,6 +89,7 @@ type TournamentAd = {
 };
 
 export type LeaderboardPageMode = 'leaderboard' | 'gameLeaderboard' | 'aiBenchmarkLeaderboard';
+type LeaderboardDataScope = 'overall' | 'game' | 'category' | 'aiOverall' | 'aiGame' | 'aiCategory' | 'tournament' | 'friends';
 
 export type LeaderboardPageRow = {
   user_id: string;
@@ -94,6 +98,10 @@ export type LeaderboardPageRow = {
   wins?: number;
   losses?: number;
   bestGame?: string;
+  game_type?: number;
+  scope?: LeaderboardDataScope;
+  category?: string;
+  subcategory?: string;
   trend?: string;
   tone?: Tone;
 };
@@ -104,6 +112,7 @@ type LeaderboardPageSvgSurfaceProps = {
   seasonId: string;
   lastUpdated: string;
   leaderboardEntries: LeaderboardPageRow[];
+  aiBenchmarkEntries?: LeaderboardPageRow[];
   userEntry: LeaderboardPageRow | null;
   nearbyAbove: LeaderboardPageRow[];
   nearbyBelow: LeaderboardPageRow[];
@@ -132,11 +141,18 @@ type DisplayRow = {
   wins: string;
   winRate: string;
   bestGame: string;
+  gameType?: number;
+  scope?: LeaderboardDataScope;
+  category?: string;
+  subcategory?: string;
   trend: string;
   tone: Tone;
+  isPlaceholder?: boolean;
 };
 
-type LeaderboardTableVariant = 'players' | 'games' | 'ai' | 'events' | 'social' | 'creators';
+type LeaderboardTableVariant = 'players' | 'games' | 'categories' | 'ai' | 'events' | 'social' | 'creators';
+type LeaderboardScopeKind = 'overview' | 'overallPlayers' | 'gameLeaders' | 'categoryLeaders' | 'aiOverall' | 'aiGame' | 'aiCategory' | 'tournamentLeaders' | 'friends';
+const EMPTY_LEADERBOARD_PAGE_ROWS: LeaderboardPageRow[] = [];
 
 type TopGame = LeaderboardGameOption;
 
@@ -170,6 +186,14 @@ type GameSubcategorySummary = {
   count: number;
   tone: Tone;
   sampleGame: QuickGame;
+};
+
+type LeaderboardOverviewScopeStat = {
+  label: string;
+  detail: string;
+  value: string;
+  tone: Tone;
+  navItem: NavItem;
 };
 
 const LEADERBOARD_RESPONSIVE_MIN_LEFT_W = 210;
@@ -207,9 +231,24 @@ const LEADERBOARD_CATEGORY_LABELS = [
   'War',
 ] as const;
 
+const GAME_POPULARITY_PERIODS: Array<{ id: GamePopularityPeriod; label: string; tone: Tone }> = [
+  { id: 'allTime', label: 'ALL TIME', tone: 'gold' },
+  { id: 'year', label: 'THIS YEAR', tone: 'cyan' },
+  { id: 'month', label: 'MONTH', tone: 'purple' },
+  { id: 'week', label: 'WEEK', tone: 'cyan' },
+];
+
+const LIVE_MOVEMENT_CHANNELS: LiveMovementChannel[] = [
+  { label: 'MATCH RESULT', scope: 'Game / Category', status: 'WAITING', impact: 'Score and rank delta', tone: 'cyan' },
+  { label: 'RANK OVERTAKE', scope: 'Overall / Friends', status: 'WAITING', impact: 'Position changed', tone: 'gold' },
+  { label: 'NEW LEADER', scope: 'Game / Tournament', status: 'WAITING', impact: 'Top spot changed', tone: 'purple' },
+  { label: 'AI BENCHMARK', scope: 'Model ladder', status: 'WAITING', impact: 'Model score delta', tone: 'red' },
+];
+
 const leaderboardTableColumnLabels: Record<LeaderboardTableVariant, [string, string, string, string, string, string, string, string, string]> = {
   players: ['RANK', 'PLAYER', 'GLOBAL RATING', 'GAMES PLAYED', 'WINS', 'WIN RATE', 'BEST GAME', 'BADGES', 'TREND'],
   games: ['RANK', 'GAME LEADER', 'GAME RATING', 'MATCHES', 'WINS', 'WIN RATE', 'GAME', 'BADGES', 'TREND'],
+  categories: ['RANK', 'PLAYER', 'CATEGORY RATING', 'MATCHES', 'WINS', 'WIN RATE', 'SCOPE', 'BADGES', 'TREND'],
   ai: ['RANK', 'MODEL', 'MODEL SCORE', 'RUNS', 'WINS', 'SUCCESS', 'BENCHMARK', 'SIGNALS', 'DELTA'],
   events: ['RANK', 'ENTRY', 'EVENT SCORE', 'MATCHES', 'WINS', 'ADVANCE', 'EVENT', 'MEDALS', 'TREND'],
   social: ['RANK', 'MEMBER', 'SOCIAL SCORE', 'GAMES', 'WINS', 'WIN RATE', 'GROUP', 'BADGES', 'TREND'],
@@ -271,44 +310,22 @@ function compactGameGrowthLabel(value: string): string {
   return compactGameStatLabel(text);
 }
 
+function hasPublishedGameActivity(game: Pick<TopGame, 'matches'>): boolean {
+  const text = game.matches.trim();
+  if (!text || text.toUpperCase() === LEADERBOARD_GAME_ACTIVITY_UNAVAILABLE_LABEL) return false;
+  return /\d/.test(text);
+}
+
 function tournamentAdsForSeason(season: LeaderboardPageContentData['season']): TournamentAd[] {
-  const prizePool = season.stats.find(stat => assetKey(stat.label).includes('prize'))?.value ?? '2.35M';
-  const endsIn = season.stats.find(stat => assetKey(stat.label).includes('ends'))?.value ?? 'LIVE NOW';
+  const status = season.stats.find(stat => assetKey(stat.label).includes('status'))?.value;
   return [
     {
-      id: 'season-track',
-      label: season.label,
-      title: season.title,
-      dateRange: season.dateRange,
-      detail: 'GLOBAL SEASON HUB',
+      id: 'season-status',
+      label: season.label || 'CURRENT',
+      title: season.title || 'NO ACTIVE SEASON',
+      dateRange: season.dateRange || status || 'SCHEDULE PENDING',
+      detail: season.detailSubtitle || status || 'Season rewards appear here when a season opens.',
       imageUrl: shopPageSeasonPassImageUrl,
-      tone: 'gold',
-    },
-    {
-      id: 'weekly-cup',
-      label: 'WEEKLY CUP',
-      title: 'LIVE BRACKETS',
-      dateRange: `ENDS ${endsIn}`,
-      detail: 'TOURNAMENT LEADERS',
-      imageUrl: shopPageWeeklyCupImageUrl,
-      tone: 'cyan',
-    },
-    {
-      id: 'arena-events',
-      label: 'ARENA EVENTS',
-      title: 'PRIZE PATHS',
-      dateRange: `${prizePool} POOL`,
-      detail: 'EVENT ROTATION',
-      imageUrl: shopPageEventBundleImageUrl,
-      tone: 'purple',
-    },
-    {
-      id: 'elite-series',
-      label: 'ELITE SERIES',
-      title: 'TOP 100 PUSH',
-      dateRange: 'WEEKEND LADDER',
-      detail: 'CHAMPION TRACK',
-      imageUrl: shopPageEliteCrownImageUrl,
       tone: 'gold',
     },
   ];
@@ -367,6 +384,13 @@ function leaderboardCanvasWidthForSurface(cfg: LeaderboardPageSvgControls, surfa
   if (surfaceSize.width <= minimumWidth) return minimumWidth;
   const ratioWidth = Math.round(cfg.canvas.height * (surfaceSize.width / surfaceSize.height));
   return Math.max(minimumWidth, Math.min(2300, ratioWidth));
+}
+
+function leaderboardMainYForMetrics(cfg: LeaderboardPageSvgControls, gap: number): number {
+  const metricBottomY = cfg.layout.topY + cfg.layout.headerH;
+  const minY = metricBottomY + Math.max(8, gap * 0.75);
+  const maxY = metricBottomY + Math.max(12, gap * 1.4);
+  return Math.round(clampValue(cfg.layout.mainY, minY, maxY));
 }
 
 function responsiveLeaderboardColumnWidths(canvasWidth: number, cfg: LeaderboardPageSvgControls, mode: LeaderboardResponsiveLayoutMode): { leftW: number; mainW: number; rightW: number } {
@@ -449,12 +473,32 @@ function colorAlpha(color: string, alphaHex: string): string {
 }
 
 function assetKey(value?: string): string {
-  return (value ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+  const input = (value ?? '').trim().toLowerCase();
+  let output = '';
+  let separatorPending = false;
+  const appendToken = (token: string) => {
+    if (separatorPending && output) output += '-';
+    output += token;
+    separatorPending = false;
+  };
+  for (let index = 0; index < input.length; index += 1) {
+    const char = input[index] ?? '';
+    const code = char.charCodeAt(0);
+    const isLetter = code >= 97 && code <= 122;
+    const isDigit = code >= 48 && code <= 57;
+    if (isLetter || isDigit) {
+      appendToken(char);
+      continue;
+    }
+    if (char === '&') {
+      if (output) separatorPending = true;
+      appendToken('and');
+      separatorPending = true;
+      continue;
+    }
+    separatorPending = output.length > 0;
+  }
+  return output;
 }
 
 function hashString(value: string): number {
@@ -634,21 +678,18 @@ function isLeaderboardGameEntry(game: Pick<LeaderboardQuickGame, 'id' | 'name' |
 }
 
 function rowSourceForPageMode(
-  content: LeaderboardPageContentData,
   pageMode: LeaderboardPageMode,
   leaderboardRows: LeaderboardPageRow[],
+  aiBenchmarkRows: LeaderboardPageRow[],
 ): LeaderboardPageRow[] {
-  const source = content.modes[pageMode]?.rowSource ?? 'api';
-  if (source === 'aiBenchmarkRows') return content.aiBenchmarkRows;
-  if (source === 'fallbackRows') return content.fallbackRows;
-  return leaderboardRows.length > 0 ? leaderboardRows : content.fallbackRows;
+  return pageMode === 'aiBenchmarkLeaderboard' ? aiBenchmarkRows : leaderboardRows;
 }
 
 function toDisplayRows(rows: LeaderboardPageRow[], pageMode: LeaderboardPageMode, selectedGameName: string, gameId?: string): DisplayRow[] {
   const bestGame = pageMode === 'gameLeaderboard' ? selectedGameName || formatRouteScope(gameId) : 'Mixed';
   return rows.map((row, index) => {
-    const wins = row.wins ?? Math.max(0, Math.round(row.score * 0.32));
-    const losses = row.losses ?? Math.max(1, Math.round(wins * 0.62));
+    const wins = row.wins ?? 0;
+    const losses = row.losses ?? 0;
     const winRate = wins + losses > 0 ? `${Math.round((wins / (wins + losses)) * 1000) / 10}%` : '-';
     const tones: Tone[] = ['purple', 'red', 'cyan', 'gold', 'purple', 'red', 'cyan'];
     return {
@@ -660,35 +701,98 @@ function toDisplayRows(rows: LeaderboardPageRow[], pageMode: LeaderboardPageMode
       wins: wins.toLocaleString(),
       winRate,
       bestGame: row.bestGame ?? bestGame,
-      trend: row.trend ?? (index % 3 === 0 ? '+2' : index % 3 === 1 ? '+1' : '-'),
+      gameType: row.game_type,
+      scope: row.scope,
+      category: row.category,
+      subcategory: row.subcategory,
+      trend: row.trend ?? '-',
       tone: row.tone ?? tones[index % tones.length],
     };
   });
 }
 
-function tableVariantForContext(activeNavLabel: string, activeTab: LeaderboardTabId): LeaderboardTableVariant {
+function leaderboardPlaceholderRows(count: number, selectedGameName: string): DisplayRow[] {
+  const tones: Tone[] = ['gold', 'muted', 'red', 'cyan', 'purple'];
+  const bestGame = selectedGameName || 'N/A';
+  return Array.from({ length: count }, (_, index) => ({
+    id: `leaderboard-empty-slot-${index + 1}`,
+    rank: index + 1,
+    player: 'N/A',
+    rating: 'N/A',
+    games: 'N/A',
+    wins: 'N/A',
+    winRate: 'N/A',
+    bestGame,
+    scope: undefined,
+    trend: 'N/A',
+    tone: tones[index % tones.length] ?? 'cyan',
+    isPlaceholder: true,
+  }));
+}
+
+function leaderboardScopeKindForNav(activeNavLabel: string, activeTab: LeaderboardTabId): LeaderboardScopeKind {
   const key = assetKey(activeNavLabel);
-  if (key.includes('ai') || activeTab === 'aiBenchmarks') return 'ai';
-  if (key.includes('friend') || key.includes('guild') || activeTab === 'friends') return 'social';
-  if (key.includes('per-game') || key.includes('per-category') || activeTab === 'perGame') return 'games';
-  if (key.includes('tournament') || key.includes('season') || key.includes('reward') || activeTab === 'tournaments') return 'events';
+  if (key.includes('overview')) return 'overview';
+  if (key.includes('ai-by-category')) return 'aiCategory';
+  if (key.includes('ai-by-game')) return 'aiGame';
+  if (key.includes('ai') || activeTab === 'aiBenchmarks') return 'aiOverall';
+  if (key.includes('category')) return 'categoryLeaders';
+  if (key.includes('game')) return 'gameLeaders';
+  if (key.includes('friend') || activeTab === 'friends') return 'friends';
+  if (key.includes('tournament') || key.includes('season') || key.includes('reward') || activeTab === 'tournaments') return 'tournamentLeaders';
+  return 'overallPlayers';
+}
+
+function tableVariantForScope(scopeKind: LeaderboardScopeKind): LeaderboardTableVariant {
+  if (scopeKind === 'gameLeaders') return 'games';
+  if (scopeKind === 'categoryLeaders') return 'categories';
+  if (scopeKind === 'aiOverall' || scopeKind === 'aiGame' || scopeKind === 'aiCategory') return 'ai';
+  if (scopeKind === 'tournamentLeaders') return 'events';
+  if (scopeKind === 'friends') return 'social';
   return 'players';
 }
 
-function tableTitleForVariant(variant: LeaderboardTableVariant, activeNavLabel: string, selectedGameName: string): string {
-  const key = assetKey(activeNavLabel);
-  if (key.includes('overview')) return 'LIVE RANKING SNAPSHOT';
-  if (variant === 'games') return `${selectedGameName.toUpperCase()} GAME LADDER`;
-  if (variant === 'ai') return 'AI MODEL STANDINGS TABLE';
-  if (variant === 'events') return key.includes('reward') ? 'SEASON REWARD TRACK TABLE' : 'TOURNAMENT LEADERS TABLE';
-  if (variant === 'social') return key.includes('guild') ? 'GUILD LADDER TABLE' : 'FRIENDS RANKING TABLE';
-  if (variant === 'creators') return 'CREATOR TABLES RANKING';
-  return 'GLOBAL PLAYER RANKING TABLE';
+function leaderboardEmptyTableCopy(scopeKind: LeaderboardScopeKind): { title: string; body: string; tone: Tone } {
+  if (scopeKind === 'gameLeaders') {
+    return { title: 'NO GAME LEADERS YET', body: 'Play ranked matches in this game to claim first.', tone: 'cyan' };
+  }
+  if (scopeKind === 'categoryLeaders') {
+    return { title: 'NO CATEGORY LEADERS YET', body: 'Play ranked matches in this category to claim first.', tone: 'cyan' };
+  }
+  if (scopeKind === 'aiOverall') {
+    return { title: 'NO AI OVERALL LEADERS YET', body: 'AI benchmark rankings appear here after model matches run.', tone: 'red' };
+  }
+  if (scopeKind === 'aiGame') {
+    return { title: 'NO AI GAME LEADERS YET', body: 'AI rankings for this game appear after benchmark matches run.', tone: 'red' };
+  }
+  if (scopeKind === 'aiCategory') {
+    return { title: 'NO AI CATEGORY LEADERS YET', body: 'AI rankings for this category appear after benchmark matches run.', tone: 'red' };
+  }
+  if (scopeKind === 'tournamentLeaders') {
+    return { title: 'NO TOURNAMENT LEADERS YET', body: 'Published tournaments will show their leaders here.', tone: 'gold' };
+  }
+  if (scopeKind === 'friends') {
+    return { title: 'NO FRIEND RANKING YET', body: 'Friends with ranked activity will appear here.', tone: 'cyan' };
+  }
+  return { title: 'NO OVERALL PLAYER LEADERS YET', body: 'Play ranked matches to enter the all-game ranking.', tone: 'cyan' };
+}
+
+function tableTitleForScope(scopeKind: LeaderboardScopeKind, selectedGameName: string, selectedScopeName: string): string {
+  if (scopeKind === 'overview') return 'LEADERBOARD SCOPE STATUS';
+  if (scopeKind === 'gameLeaders') return `${selectedGameName.toUpperCase()} GAME LADDER`;
+  if (scopeKind === 'categoryLeaders') return `${selectedScopeName.toUpperCase()} CATEGORY LADDER`;
+  if (scopeKind === 'aiOverall') return 'AI OVERALL MODEL LADDER';
+  if (scopeKind === 'aiGame') return `${selectedGameName.toUpperCase()} AI GAME LADDER`;
+  if (scopeKind === 'aiCategory') return `${selectedScopeName.toUpperCase()} AI CATEGORY LADDER`;
+  if (scopeKind === 'tournamentLeaders') return 'TOURNAMENT LEADERS TABLE';
+  if (scopeKind === 'friends') return 'FRIENDS RANKING TABLE';
+  return 'OVERALL PLAYER RANKING TABLE';
 }
 
 function tableBestLabelForVariant(row: DisplayRow, variant: LeaderboardTableVariant, activeNavLabel: string, selectedGameName: string): string {
   const key = assetKey(activeNavLabel);
   if (variant === 'games') return selectedGameName;
+  if (variant === 'categories') return row.bestGame;
   if (variant === 'ai') return row.bestGame === 'Mixed' ? 'Model suite' : row.bestGame;
   if (variant === 'events') return key.includes('reward') ? 'Reward track' : 'Tournament';
   if (variant === 'social') return key.includes('guild') ? 'Guild ladder' : 'Friends';
@@ -700,34 +804,122 @@ function tableParticipantLabel(row: DisplayRow, variant: LeaderboardTableVariant
   return row.player;
 }
 
+function overviewScopeDetail(item: NavItem): string {
+  const key = assetKey(item.label);
+  if (key.includes('ai')) return 'Model benchmark ladder';
+  if (key.includes('overall')) return 'All-game player ladder';
+  if (key.includes('game') && !key.includes('category')) return 'Selected game ladder';
+  if (key.includes('category')) return 'Category and subcategory ladder';
+  if (key.includes('tournament')) return 'Published event ladder';
+  if (key.includes('friend')) return 'Friend-circle ladder';
+  return item.detail;
+}
+
+function overviewScopeTone(item: NavItem): Tone {
+  const key = assetKey(item.label);
+  if (key.includes('tournament')) return 'gold';
+  if (key.includes('ai')) return 'red';
+  if (key.includes('category')) return 'purple';
+  if (key.includes('friend')) return 'cyan';
+  if (key.includes('game')) return 'gold';
+  return 'cyan';
+}
+
+function navRowTone(item: NavItem): Tone {
+  const key = assetKey(item.label);
+  if (key.includes('tournament')) return 'gold';
+  if (key.includes('ai-by-game')) return 'cyan';
+  if (key.includes('game') && !key.includes('category')) return 'cyan';
+  if (key.includes('category')) return 'purple';
+  if (key.includes('ai')) return 'red';
+  if (key.includes('friend')) return 'cyan';
+  return 'cyan';
+}
+
 function leaderboardScopeKey(value?: string): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-function rowsForGameScope(rows: DisplayRow[], selectedGameName: string, selectedGameId: string): DisplayRow[] {
+function rerankRows(rows: DisplayRow[]): DisplayRow[] {
+  return rows.map((row, index) => ({ ...row, rank: index + 1 }));
+}
+
+function rowsForAggregateScope(rows: DisplayRow[], scope: LeaderboardDataScope): DisplayRow[] {
+  const scopedRows = rows.filter(row => row.scope === scope);
+  if (scopedRows.length > 0) return rerankRows(scopedRows);
+  return rerankRows(rows.filter(row => !row.scope && row.bestGame !== 'Mixed'));
+}
+
+function rowsForGameScope(rows: DisplayRow[], selectedGameName: string, selectedGameId: string, selectedGame?: QuickGame | null): DisplayRow[] {
   const gameKeys = new Set([
     leaderboardScopeKey(selectedGameName),
     leaderboardScopeKey(selectedGameId),
     leaderboardScopeKey(selectedGameName.replace(/^three card/i, '3 card')),
     leaderboardScopeKey(selectedGameName.replace(/^3 card/i, 'three card')),
   ].filter(Boolean));
-  const matched = rows.filter(row => gameKeys.has(leaderboardScopeKey(row.bestGame)));
-  const source = matched.length > 0 ? matched : rows.slice(0, Math.min(10, rows.length));
-  return source.map((row, index) => ({
+  const matched = rows.filter(row => {
+    if (typeof selectedGame?.gameType === 'number' && row.gameType === selectedGame.gameType) return true;
+    return gameKeys.has(leaderboardScopeKey(row.bestGame));
+  });
+  return matched.map((row, index) => ({
     ...row,
     rank: index + 1,
     bestGame: selectedGameName || row.bestGame,
   }));
 }
 
-function rowsForCategoryScope(rows: DisplayRow[], selectedCategoryLabel: string): DisplayRow[] {
+function gameForLeaderboardRow(row: DisplayRow, games: QuickGame[]): QuickGame | null {
+  if (typeof row.gameType === 'number') {
+    const gameTypeMatch = games.find(game => game.gameType === row.gameType);
+    if (gameTypeMatch) return gameTypeMatch;
+  }
+  const rowKey = leaderboardScopeKey(row.bestGame);
+  if (!rowKey) return null;
+  return games.find(game => {
+    const gameKeys = [
+      leaderboardScopeKey(game.id),
+      leaderboardScopeKey(game.name),
+      leaderboardScopeKey(game.name.replace(/^three card/i, '3 card')),
+      leaderboardScopeKey(game.name.replace(/^3 card/i, 'three card')),
+    ];
+    return gameKeys.includes(rowKey);
+  }) ?? null;
+}
+
+function rowsForCurrentGameQuery(rows: DisplayRow[], selectedGameName: string, selectedGame: QuickGame | null | undefined, scope: LeaderboardDataScope): DisplayRow[] {
+  const scopedRows = rows.filter(row => !row.scope || row.scope === scope);
+  const matchedRows = rowsForGameScope(scopedRows, selectedGameName, selectedGame?.id ?? '', selectedGame);
+  if (matchedRows.length > 0) return matchedRows;
+  if (typeof selectedGame?.gameType !== 'number') return [];
+  return rerankRows(scopedRows.filter(row => row.scope === scope && row.gameType === selectedGame.gameType)).map(row => ({
+    ...row,
+    bestGame: selectedGameName || row.bestGame,
+  }));
+}
+
+function rowsForCategoryScope(rows: DisplayRow[], selectedCategoryLabel: string, selectedSubcategoryId: string | null, selectedSubcategoryLabel: string | null, games: QuickGame[], allowedScopes: LeaderboardDataScope[]): DisplayRow[] {
   const categoryKey = assetKey(selectedCategoryLabel);
-  const matched = rows.filter(row => assetKey(gameCategoryLabel({ id: row.bestGame, name: row.bestGame })) === categoryKey);
-  const source = matched.length > 0 ? matched : rows.slice(0, Math.min(10, rows.length));
-  return source.map((row, index) => ({
+  const matched = rows.filter(row => {
+    if (row.scope && !allowedScopes.includes(row.scope)) return false;
+    const game = gameForLeaderboardRow(row, games);
+    const rowCategoryKey = row.category
+      ? assetKey(row.category)
+      : game
+        ? assetKey(gameCategoryLabel(game))
+        : assetKey(gameCategoryLabel({ id: row.bestGame, name: row.bestGame }));
+    if (rowCategoryKey !== categoryKey) return false;
+    if (!selectedSubcategoryId) return true;
+    const rowSubcategoryKey = row.subcategory
+      ? assetKey(row.subcategory)
+      : game
+        ? assetKey(gameSubcategoryLabel(game))
+        : '';
+    return rowSubcategoryKey === selectedSubcategoryId;
+  });
+  return matched.map((row, index) => ({
     ...row,
     rank: index + 1,
-    bestGame: selectedCategoryLabel || row.bestGame,
+    bestGame: selectedSubcategoryLabel ? `${selectedCategoryLabel} / ${selectedSubcategoryLabel}` : selectedCategoryLabel || row.bestGame,
   }));
 }
 
@@ -737,9 +929,9 @@ function leaderTopCard(row: DisplayRow): LeaderboardTopCardItem {
     key: `leader:${row.id}`,
     row,
     title: row.player,
-    subtitle: `Rank ${row.rank} / ${row.bestGame}`,
+    subtitle: row.isPlaceholder ? `Rank ${row.rank} / N/A` : `Rank ${row.rank} / ${row.bestGame}`,
     value: row.rating,
-    detail: `${row.winRate} win rate`,
+    detail: row.isPlaceholder ? 'N/A' : `${row.winRate} win rate`,
     tone: row.tone,
   };
 }
@@ -1368,7 +1560,7 @@ function ArtworkSlot({
   const inset = Math.min(8, w * 0.18, h * 0.18);
   const radius = Math.min(w, h) / 2 - 1;
   const clipId = `leaderboard-art-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
-  const primaryText = compact ? 'MISS' : 'MISSING';
+  const primaryText = '';
   const primaryFontSize = compact ? Math.min(7, Math.max(4.5, w * 0.24)) : Math.min(11, Math.max(7.5, w * 0.09));
   const secondaryFontSize = Math.min(8.5, Math.max(6.5, w * 0.06));
   const fill = imageUrl ? 'rgba(3, 13, 24, 0.82)' : 'rgba(48, 12, 23, 0.72)';
@@ -1397,8 +1589,8 @@ function ArtworkSlot({
           <title>{`Missing ${label} image`}</title>
           <line x1={x + inset} y1={y + inset} x2={x + w - inset} y2={y + h - inset} stroke={color} strokeOpacity={0.55} strokeWidth={0.8} />
           <line x1={x + w - inset} y1={y + inset} x2={x + inset} y2={y + h - inset} stroke={color} strokeOpacity={0.55} strokeWidth={0.8} />
-          <text x={cx} y={compact ? cy + primaryFontSize * 0.35 : cy - 1} textAnchor="middle" fontSize={primaryFontSize} fontWeight={950} fill={color}>{primaryText}</text>
-          {compact ? null : <text x={cx} y={cy + 13} textAnchor="middle" fontSize={secondaryFontSize} fontWeight={900} fill={cfg.colors.mutedText}>{label}</text>}
+          {primaryText ? <text x={cx} y={compact ? cy + primaryFontSize * 0.35 : cy - 1} textAnchor="middle" fontSize={primaryFontSize} fontWeight={950} fill={color}>{primaryText}</text> : null}
+          {!compact && primaryText ? <text x={cx} y={cy + 13} textAnchor="middle" fontSize={secondaryFontSize} fontWeight={900} fill={cfg.colors.mutedText}>{label}</text> : null}
         </>
       )}
     </g>
@@ -1435,18 +1627,21 @@ function MetricCard({ label, value, icon: Icon, tone, x, y, w, cfg }: { label: s
   const color = toneColor(tone, cfg);
   const text = String(value);
   const cardH = cfg.layout.headerH;
-  const iconBox = Math.max(38, Math.min(46, cardH - 28));
-  const iconX = x + 19;
+  const compact = w < 182;
+  const iconBox = Math.max(34, Math.min(compact ? 38 : 40, cardH - 32));
+  const iconX = x + (compact ? 14 : 17);
   const iconY = y + (cardH - iconBox) / 2;
-  const dividerX = iconX + iconBox + 14;
-  const textX = dividerX + 18;
-  const textW = Math.max(52, x + w - textX - 18);
-  const labelSize = fitSingleLineTextSize(label, textW, 8.2, 10.2, 0.58);
-  const valueFontSize = fitSingleLineTextSize(text, textW, 14, text.length > 10 ? 18 : 23, 0.58);
-  const labelY = y + 25;
+  const dividerX = iconX + iconBox + (compact ? 10 : 13);
+  const textX = dividerX + (compact ? 13 : 16);
+  const textW = Math.max(48, x + w - textX - (compact ? 12 : 16));
+  const labelSize = fitSingleLineTextSize(label, textW, 7.4, compact ? 8.8 : 9.2, 0.58);
+  const valueFontSize = fitSingleLineTextSize(text, textW, 11.4, text.length > 8 ? 15.4 : 17.4, 0.58);
+  const labelY = y + 24;
   const splitY = y + 34;
-  const valueY = y + 58;
-  const bottomLineY = y + cardH - 16;
+  const splitW = Math.min(textW, Math.max(48, textW * 0.78));
+  const valueY = y + 55;
+  const bottomLineY = y + cardH - 18;
+  const valueUnderlineW = Math.min(textW * 0.38, Math.max(22, text.length * valueFontSize * 0.34));
   return (
     <SurfacePanel x={x} y={y} w={w} h={cardH} tone={tone} cfg={cfg}>
       <path d={cutRectPath(iconX, iconY, iconBox, iconBox, 8)} fill={colorAlpha(color, '18')} stroke={color} strokeWidth={1.05} strokeOpacity={0.72} />
@@ -1455,9 +1650,9 @@ function MetricCard({ label, value, icon: Icon, tone, x, y, w, cfg }: { label: s
       <line x1={dividerX} y1={y + 16} x2={dividerX} y2={y + cardH - 16} stroke={color} strokeWidth={1.05} opacity={0.68} />
       <line x1={dividerX + 5} y1={y + 16} x2={dividerX + 5} y2={y + cardH - 16} stroke="#ffffff" strokeWidth={0.7} opacity={0.08} />
       <text x={textX} y={labelY} fontSize={labelSize} fontWeight={850} fill={cfg.colors.mutedText}>{label}</text>
-      <line x1={textX} y1={splitY} x2={textX + textW} y2={splitY} stroke={color} strokeWidth={0.85} opacity={0.35} />
+      <line x1={textX} y1={splitY} x2={textX + splitW} y2={splitY} stroke={color} strokeWidth={0.85} opacity={0.35} />
       <text x={textX} y={valueY} fontSize={valueFontSize} fontWeight={950} fill={tone === 'gold' ? '#ffde78' : '#effaff'}>{text}</text>
-      <line x1={textX} y1={bottomLineY} x2={textX + Math.min(textW, Math.max(42, text.length * valueFontSize * 0.48))} y2={bottomLineY} stroke={color} strokeWidth={1.1} opacity={0.22} />
+      <line x1={textX} y1={bottomLineY} x2={textX + valueUnderlineW} y2={bottomLineY} stroke={color} strokeWidth={1.1} opacity={0.22} />
     </SurfacePanel>
   );
 }
@@ -1469,7 +1664,8 @@ function NavRow({ item, active, x, w, y, rowH, iconSize, onSelect, cfg }: { item
   const rowX = x + (compact ? 10 : 14);
   const rowW = w - (compact ? 20 : 28);
   const lit = active || hovered;
-  const accent = active ? cfg.colors.cyan : cfg.colors.cyan;
+  const rowTone = navRowTone(item);
+  const accent = toneColor(rowTone, cfg);
   const navIconSize = compact ? Math.min(36, Math.max(30, rowW * 0.28)) : iconSize;
   const navIconX = compact ? x + (w - navIconSize) / 2 : x + 17;
   const navIconY = compact ? y + 7 : y + (rowH - navIconSize) / 2;
@@ -1522,7 +1718,7 @@ function NavRow({ item, active, x, w, y, rowH, iconSize, onSelect, cfg }: { item
         strokeWidth={lit ? 1.6 : 0}
       />
       {lit ? <path d={cutRectPath(rowX + 3, y + 3, rowW - 6, rowH - 6, 6)} fill="none" stroke={accent} strokeWidth={1} opacity={active ? 0.68 : 0.5} /> : null}
-      <ArtworkSlot x={navIconX} y={navIconY} w={navIconSize} h={navIconSize} label={item.label} imageUrl={item.imageUrl} tone={item.tabId === 'tournaments' ? 'gold' : item.tabId === 'aiBenchmarks' ? 'purple' : item.tabId === 'friends' ? 'cyan' : 'cyan'} compact shape="rect" imageFit="slice" cfg={cfg} />
+      <ArtworkSlot x={navIconX} y={navIconY} w={navIconSize} h={navIconSize} label={item.label} imageUrl={item.imageUrl} tone={rowTone} compact shape="rect" imageFit="slice" cfg={cfg} />
       {compact ? (
         <>
           <text x={compactCenterX} y={y + rowH - 21} textAnchor="middle" fontSize={compactLabelSize} fontWeight={940} fill={color} stroke="#03121f" strokeWidth={0.6} strokeOpacity={0.78} paintOrder="stroke">{truncateTextForWidth(item.label, compactTextW, compactLabelSize, 0.58)}</text>
@@ -1566,27 +1762,32 @@ function TournamentAdCarouselPanel({
 }) {
   const color = toneColor(ad.tone, cfg);
   const centerX = x + w / 2;
-  const safeH = Math.max(170, h);
+  const safeH = Math.max(142, h);
   const textW = w - 36;
   const labelSize = fitSingleLineTextSize(ad.label, textW, 11, 14, 0.58);
   const titleSize = fitSingleLineTextSize(ad.title, textW, 14, 16, 0.58);
   const dateSize = fitSingleLineTextSize(ad.dateRange, textW, 8.5, 10.2, 0.58);
   const detailSize = fitSingleLineTextSize(ad.detail, textW, 8.2, 10.2, 0.58);
   const dotY = y + safeH - 19;
-  const detailY = dotY - 24;
-  const artSize = clampValue(safeH * 0.31, 56, 82);
-  const artY = Math.max(y + 88, detailY - artSize - 9);
+  const detailY = pageCount > 1 ? dotY - 24 : y + safeH - 28;
+  const artSize = clampValue(safeH * 0.29, 48, 74);
+  const artY = Math.max(y + 86, Math.min(detailY - artSize - 8, y + safeH - artSize - 46));
   const artX = centerX - artSize / 2;
+  const showArtwork = artY + artSize + 8 < detailY;
   return (
     <SurfacePanel x={x} y={y} w={w} h={safeH} tone={ad.tone} frame="deckSide" selected={selected} onClick={onSelect} ariaLabel={`Open ${ad.label}`} cfg={cfg}>
       <text x={centerX} y={y + 32} textAnchor="middle" fontSize={labelSize} fontWeight={900} fill={cfg.colors.bodyText}>{truncateTextForWidth(ad.label, textW, labelSize, 0.58)}</text>
       <text x={centerX} y={y + 56} textAnchor="middle" fontSize={titleSize} fontWeight={900} fill={cfg.colors.bodyText}>{truncateTextForWidth(ad.title, textW, titleSize, 0.58)}</text>
       <text x={centerX} y={y + 80} textAnchor="middle" fontSize={dateSize} fontWeight={740} fill={cfg.colors.mutedText}>{truncateTextForWidth(ad.dateRange, textW, dateSize, 0.58)}</text>
-      <path d={cutRectPath(artX - 14, artY - 9, artSize + 28, artSize + 18, 12)} fill={colorAlpha(color, '10')} stroke={color} strokeWidth={0.9} strokeOpacity={0.5} filter="url(#leaderboardGlow)" />
-      <ArtworkSlot x={artX} y={artY} w={artSize} h={artSize} label={ad.label} imageUrl={ad.imageUrl} tone={ad.tone} shape="hex" cfg={cfg} />
+      {showArtwork ? (
+        <>
+          <path d={cutRectPath(artX - 14, artY - 9, artSize + 28, artSize + 18, 12)} fill={colorAlpha(color, '10')} stroke={color} strokeWidth={0.9} strokeOpacity={0.5} filter="url(#leaderboardGlow)" />
+          <ArtworkSlot x={artX} y={artY} w={artSize} h={artSize} label={ad.label} imageUrl={ad.imageUrl} tone={ad.tone} shape="hex" cfg={cfg} />
+        </>
+      ) : null}
       <text x={centerX} y={detailY} textAnchor="middle" fontSize={detailSize} fontWeight={820} fill={color}>{truncateTextForWidth(ad.detail, textW, detailSize, 0.58)}</text>
       <line x1={x + 38} y1={detailY + 10} x2={x + w - 38} y2={detailY + 10} stroke={color} strokeWidth={0.8} opacity={0.28} />
-      <LeaderboardFrameDots x={centerX} y={dotY} page={page} pageCount={pageCount} onPageChange={onPageChange} cfg={cfg} />
+      {pageCount > 1 ? <LeaderboardFrameDots x={centerX} y={dotY} page={page} pageCount={pageCount} onPageChange={onPageChange} cfg={cfg} /> : null}
     </SurfacePanel>
   );
 }
@@ -1597,10 +1798,13 @@ function NavPanel({ activeNavLabel, navItems, season, onNavItemSelect, onSeasonS
   const rowH = compact ? 72 : 48;
   const rowStep = compact ? 80 : navItems.length > 8 ? 51 : 56;
   const iconSize = compact ? 36 : 48;
-  const rightLiveFeedH = Math.max(168, bottomY - cfg.layout.mainY - 206 - 228 - gap * 3);
-  const navH = compact ? Math.max(500, bottomY - topY) : Math.max(500, bottomY - topY - gap - rightLiveFeedH);
+  const sideBottomY = bottomY - Math.max(12, gap * 1.25);
+  const auxMinH = 154;
+  const availableSideH = Math.max(360, sideBottomY - topY);
+  const navContentH = topY + (compact ? 24 : 28) + (navItems.length - 1) * rowStep + rowH - topY + 18;
+  const navH = compact ? availableSideH : Math.max(navContentH, availableSideH - gap - auxMinH);
   const seasonY = topY + navH + gap;
-  const seasonH = Math.max(170, bottomY - gap - seasonY);
+  const seasonH = Math.max(0, sideBottomY - seasonY);
   const rowTop = topY + (compact ? 24 : 28);
   const tournamentAds = useMemo(() => tournamentAdsForSeason(season), [season]);
   const [tournamentAdPage, setTournamentAdPage] = useState(0);
@@ -1618,7 +1822,7 @@ function NavPanel({ activeNavLabel, navItems, season, onNavItemSelect, onSeasonS
       <SurfacePanel x={outerPad} y={topY} w={leftW} h={navH} tone="cyan" frame="deckSide" cfg={cfg}>
         {navItems.map((item, index) => <NavRow key={item.label} item={item} active={item.label === activeNavLabel} x={outerPad} w={leftW} y={rowTop + index * rowStep} rowH={rowH} iconSize={iconSize} onSelect={() => onNavItemSelect(item)} cfg={cfg} />)}
       </SurfacePanel>
-      {!compact && tournamentAd ? (
+      {!compact && tournamentAd && seasonH >= 120 ? (
         <TournamentAdCarouselPanel
           x={outerPad}
           y={seasonY}
@@ -1668,14 +1872,14 @@ function LeaderboardTable({
     ? [
         { label: labels[0], x: p.rank, width: 34 },
         { label: labels[1], x: p.participant, width: Math.max(82, p.score - p.participant - 12) },
-        { label: labels[2].replace(/^GLOBAL\s+|^MODEL\s+|^EVENT\s+|^SOCIAL\s+/, ''), x: p.score, width: Math.max(52, p.trend - p.score - 12) },
+        { label: labels[2].replace(/^GLOBAL\s+|^MODEL\s+|^EVENT\s+|^SOCIAL\s+|^CATEGORY\s+/, ''), x: p.score, width: Math.max(52, p.trend - p.score - 12) },
         { label: labels[8], x: p.trend, width: 36 },
       ]
     : compact
     ? [
         { label: labels[0], x: p.rank, width: 40 },
         { label: labels[1], x: p.participant, width: Math.max(54, p.score - p.participant - 10) },
-        { label: labels[2].replace(/^GLOBAL\s+|^MODEL\s+|^EVENT\s+|^SOCIAL\s+/, ''), x: p.score, width: Math.max(52, p.best - p.score - 12) },
+        { label: labels[2].replace(/^GLOBAL\s+|^MODEL\s+|^EVENT\s+|^SOCIAL\s+|^CATEGORY\s+/, ''), x: p.score, width: Math.max(52, p.best - p.score - 12) },
         { label: labels[6], x: p.best, width: Math.max(48, p.trend - p.best - 12) },
         { label: labels[8], x: p.trend, width: 40 },
       ]
@@ -1780,7 +1984,8 @@ function TableRow({
   const color = toneColor(row.tone, cfg);
   const isUp = row.trend.startsWith('+');
   const isDown = row.trend.startsWith('-');
-  const lit = selected || hovered;
+  const interactive = !row.isPlaceholder;
+  const lit = interactive && (selected || hovered);
   const p = tableColumnPositions(x, w);
   const participant = tableParticipantLabel(row, variant);
   const bestLabel = tableBestLabelForVariant(row, variant, activeNavLabel, selectedGameName);
@@ -1794,27 +1999,34 @@ function TableRow({
   const bestSize = fitSingleLineTextSize(bestLabel, compact ? compactBestW : bestW, 8.2, compact ? 10.6 : 12, 0.58);
   return (
     <g
-      className="leaderboard-page-svg-clickable"
+      className={interactive ? 'leaderboard-page-svg-clickable' : undefined}
       onClick={(event) => {
         event.stopPropagation();
+        if (!interactive) return;
         onSelect();
       }}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => interactive && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onKeyDown={(event) => {
+        if (!interactive) return;
         if (event.key !== 'Enter' && event.key !== ' ') return;
         event.preventDefault();
         event.stopPropagation();
         onSelect();
       }}
-      role="button"
-      tabIndex={0}
-      aria-label={`Select ${row.player}`}
+      role={interactive ? 'button' : 'presentation'}
+      tabIndex={interactive ? 0 : -1}
+      aria-label={interactive ? `Select ${row.player}` : `Awaiting leaderboard row ${row.rank}`}
+      aria-disabled={interactive ? undefined : true}
     >
       {hovered && !selected ? <rect x={x - 3} y={y - 3} width={w + 6} height={cfg.chrome.rowHeight + 6} rx={6} fill="none" stroke={color} strokeWidth={1.3} opacity={0.25} filter="url(#leaderboardGlow)" /> : null}
-      <rect x={x} y={y} width={w} height={cfg.chrome.rowHeight} rx={4} fill={selected ? 'rgba(38, 49, 132, 0.8)' : hovered ? `${color}18` : row.rank % 2 === 0 ? '#071a2b' : '#051422'} stroke={lit ? color : '#123f62'} strokeWidth={lit ? 1.2 : 0.7} />
+      <rect x={x} y={y} width={w} height={cfg.chrome.rowHeight} rx={4} fill={selected && interactive ? 'rgba(38, 49, 132, 0.8)' : hovered && interactive ? `${color}18` : row.rank % 2 === 0 ? '#071a2b' : '#051422'} stroke={lit ? color : '#123f62'} strokeWidth={lit ? 1.2 : 0.7} strokeDasharray={row.isPlaceholder ? '5 4' : undefined} strokeOpacity={row.isPlaceholder ? 0.58 : undefined} />
       <text x={p.rankCenter} y={y + 23} textAnchor="middle" fontSize={13} fontWeight={760} fill={cfg.colors.bodyText}>{row.rank}</text>
-      <PlayerAvatarSlot cx={p.avatarCenter + avatarR} cy={y + cfg.chrome.rowHeight / 2} r={avatarR} player={row.player} tone={row.tone} cfg={cfg} />
+      {row.isPlaceholder ? (
+        <ArtworkSlot x={p.avatarCenter} y={y + cfg.chrome.rowHeight / 2 - avatarR} w={avatarR * 2} h={avatarR * 2} label="PLAYER" imageUrl={null} tone={row.tone} compact={avatarR < 20} shape="circle" cfg={cfg} />
+      ) : (
+        <PlayerAvatarSlot cx={p.avatarCenter + avatarR} cy={y + cfg.chrome.rowHeight / 2} r={avatarR} player={row.player} tone={row.tone} cfg={cfg} />
+      )}
       <text x={p.participant} y={y + 23} fontSize={participantSize} fontWeight={700} fill={cfg.colors.bodyText}>{participant}</text>
       <text x={p.score} y={y + 23} fontSize={13} fontWeight={760} fill={cfg.colors.bodyText}>{row.rating}</text>
       {compact ? null : (
@@ -1831,7 +2043,9 @@ function TableRow({
           <text x={p.bestText} y={y + 23} fontSize={bestSize} fontWeight={690} fill={cfg.colors.bodyText}>{bestLabel}</text>
         </>
       )}
-      {compact ? null : <BadgeSet x={p.badges + 18} y={y + 17} tone={row.tone} cfg={cfg} />}
+      {compact ? null : row.isPlaceholder ? (
+        <text x={p.badges + 18} y={y + 23} fontSize={12} fontWeight={760} fill={cfg.colors.mutedText}>N/A</text>
+      ) : <BadgeSet x={p.badges + 18} y={y + 17} tone={row.tone} cfg={cfg} />}
       <text x={p.trendCenter} y={y + 23} textAnchor="middle" fontSize={13} fontWeight={800} fill={isUp ? '#57ff9a' : isDown ? '#ff4c60' : '#e8f4ff'}>{row.trend}</text>
     </g>
   );
@@ -2023,7 +2237,7 @@ function LeaderboardSidePanelFrame({ x, y, w, h, tone, active, cfg }: { x: numbe
   );
 }
 
-function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHoverChange, gameHoverAnchor = 'center', cfg }: { item: LeaderboardTopCardItem; x: number; y: number; w: number; h: number; selected: boolean; onSelect: () => void; onHoverChange?: (item: LeaderboardTopCardItem | null) => void; gameHoverAnchor?: 'center' | 'up'; cfg: LeaderboardPageSvgControls }) {
+function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHoverChange, gameHoverAnchor = 'center', forceCompactGame = false, cfg }: { item: LeaderboardTopCardItem; x: number; y: number; w: number; h: number; selected: boolean; onSelect: () => void; onHoverChange?: (item: LeaderboardTopCardItem | null) => void; gameHoverAnchor?: 'center' | 'up'; forceCompactGame?: boolean; cfg: LeaderboardPageSvgControls }) {
   const [hovered, setHovered] = useState(false);
   const rawAvatarClipId = useId();
   const rawGameClipId = useId();
@@ -2031,6 +2245,8 @@ function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHo
   const gameClipId = `leader-game-card-${rawGameClipId.replace(/:/g, '')}`;
   const color = toneColor(item.tone, cfg);
   const active = selected || hovered;
+  const unavailableLeader = item.kind === 'leader' && item.row.isPlaceholder === true;
+  const interactive = !unavailableLeader;
   const leaderFrameHref = useMemo(() => {
     if (item.kind !== 'leader') return '';
     const frameConfig = createGoldenFrameVariantConfig({
@@ -2051,7 +2267,7 @@ function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHo
       frameConfig.innerFrame.bottomTabWidth = 410;
       frameConfig.centerCircle.radius = 222;
       frameConfig.centerCircle.cy = 300;
-      frameConfig.centerCrown.cy = -34;
+      frameConfig.centerCrown.cy = 58;
       frameConfig.sideHexBadge.radius = 112;
       frameConfig.sideHexBadge.cy = 420;
       frameConfig.hexCrown.cy = 278;
@@ -2061,18 +2277,19 @@ function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHo
       frameConfig.rightStats.valueSize = 68;
       frameConfig.rightStats.x = 1216;
     }
-    frameConfig.centerCircle.profileImageUrl = playerAvatarImageUrl(item.row.player);
+    frameConfig.centerCircle.profileImageUrl = item.row.isPlaceholder ? '' : playerAvatarImageUrl(item.row.player);
     return createGoldenFrameSvgDataUri(frameConfig);
   }, [h, item, w]);
-  const compactGameCard = item.kind === 'game' && !hovered;
-  const gameW = item.kind === 'game' ? hovered ? Math.min(w + 28, w * 1.08) : w : w;
+  const expandGameCard = item.kind === 'game' && hovered && !forceCompactGame;
+  const compactGameCard = item.kind === 'game' && !expandGameCard;
+  const gameW = item.kind === 'game' ? expandGameCard ? Math.min(w + 28, w * 1.08) : w : w;
   const gameH = item.kind === 'game'
-    ? hovered
+    ? expandGameCard
       ? clampValue(h * 1.82, 86, 112)
       : clampValue(h * 0.62, 38, 44)
     : h;
   const gameX = x + (w - gameW) / 2;
-  const gameY = item.kind === 'game' && hovered && gameHoverAnchor === 'up'
+  const gameY = item.kind === 'game' && expandGameCard && gameHoverAnchor === 'up'
     ? y + h - gameH - 4
     : y + (h - gameH) / 2;
   const gamePad = Math.max(10, Math.min(14, gameW * 0.045));
@@ -2127,7 +2344,7 @@ function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHo
   const leaderDrawAvatarSize = leaderAvatarSize * leaderHoverScale;
   const leaderDrawAvatarX = scaleFromCenter(leaderAvatarX, leaderScaleCx);
   const leaderDrawAvatarY = scaleFromCenter(leaderAvatarY, leaderScaleCy);
-  const leaderAvatarUrl = item.kind === 'leader' ? playerAvatarImageUrl(item.row.player) : '';
+  const leaderAvatarUrl = item.kind === 'leader' && !item.row.isPlaceholder ? playerAvatarImageUrl(item.row.player) : '';
   const leaderHoverStrokeWidth = hovered ? 2.4 : selected ? 1.35 : 1.5;
   const leaderHoverOuterOpacity = hovered ? 0.72 : selected ? 0.34 : 0.38;
   const leaderHoverInnerOpacity = hovered ? 0.82 : selected ? 0.48 : 0.52;
@@ -2146,16 +2363,19 @@ function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHo
   };
   return (
     <g
-      className="leaderboard-page-svg-clickable"
-      role="button"
-      tabIndex={0}
+      className={interactive ? 'leaderboard-page-svg-clickable' : undefined}
+      role={interactive ? 'button' : 'presentation'}
+      tabIndex={interactive ? 0 : -1}
       aria-label={item.kind === 'game' ? `Show ${item.title} leaders` : `Show ${item.title} leaderboard row`}
-      aria-pressed={selected}
+      aria-pressed={interactive ? selected : undefined}
+      aria-disabled={interactive ? undefined : true}
       onClick={(event) => {
         event.stopPropagation();
+        if (!interactive) return;
         onSelect();
       }}
       onKeyDown={(event) => {
+        if (!interactive) return;
         if (event.key !== 'Enter' && event.key !== ' ') return;
         event.preventDefault();
         event.stopPropagation();
@@ -2197,7 +2417,7 @@ function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHo
               <circle cx={leaderDrawAvatarCx} cy={leaderDrawAvatarCy} r={leaderDrawAvatarR} />
             </clipPath>
           </defs>
-          <image href={leaderAvatarUrl} xlinkHref={leaderAvatarUrl} x={leaderDrawAvatarX} y={leaderDrawAvatarY} width={leaderDrawAvatarSize} height={leaderDrawAvatarSize} preserveAspectRatio="xMidYMid slice" clipPath={`url(#${avatarClipId})`} pointerEvents="none" />
+          {leaderAvatarUrl ? <image href={leaderAvatarUrl} xlinkHref={leaderAvatarUrl} x={leaderDrawAvatarX} y={leaderDrawAvatarY} width={leaderDrawAvatarSize} height={leaderDrawAvatarSize} preserveAspectRatio="xMidYMid slice" clipPath={`url(#${avatarClipId})`} pointerEvents="none" /> : null}
         </>
       ) : (
         <>
@@ -2244,7 +2464,7 @@ function LeaderboardTopCarouselCard({ item, x, y, w, h, selected, onSelect, onHo
   );
 }
 
-function LeaderboardTopCarousel({ x, y, w, h, items, page, selectedKey, onSelect, onHoverChange, minCardW = LEADERBOARD_TOP_CARD_MIN_W, cfg }: { x: number; y: number; w: number; h: number; items: LeaderboardTopCardItem[]; page: number; selectedKey: string; onSelect: (item: LeaderboardTopCardItem) => void; onHoverChange?: (item: LeaderboardTopCardItem | null) => void; minCardW?: number; cfg: LeaderboardPageSvgControls }) {
+function LeaderboardTopCarousel({ x, y, w, h, items, page, selectedKey, onSelect, onHoverChange, minCardW = LEADERBOARD_TOP_CARD_MIN_W, emptyOverlay = null, cfg }: { x: number; y: number; w: number; h: number; items: LeaderboardTopCardItem[]; page: number; selectedKey: string; onSelect: (item: LeaderboardTopCardItem) => void; onHoverChange?: (item: LeaderboardTopCardItem | null) => void; minCardW?: number; emptyOverlay?: { title: string; body: string; tone: Tone } | null; cfg: LeaderboardPageSvgControls }) {
   const allLeaderItems = items.length > 0 && items.every(item => item.kind === 'leader');
   const gap = allLeaderItems ? 10 : 16;
   const visibleCount = Math.max(1, Math.min(items.length || 1, Math.floor((w + gap) / (minCardW + gap))));
@@ -2276,8 +2496,18 @@ function LeaderboardTopCarousel({ x, y, w, h, items, page, selectedKey, onSelect
         );
       })}
       {items.length === 0 ? (
-        <path d={cutRectPath(x, y, w, h, 8)} fill="rgba(6, 20, 34, 0.7)" stroke={cfg.colors.cyan} strokeWidth={0.8} strokeOpacity={0.5} />
+        <LeaderboardEmptyPanel
+          x={x}
+          y={y}
+          w={w}
+          h={h}
+          title="NO FEATURED LEADERS YET"
+          body="Claim a featured spot."
+          tone="cyan"
+          cfg={cfg}
+        />
       ) : null}
+      {emptyOverlay ? <LeaderboardEmptyOverlay x={x} y={y} w={w} h={h} {...emptyOverlay} cfg={cfg} /> : null}
     </g>
   );
 }
@@ -2328,7 +2558,192 @@ function LeaderboardGameList({ x, y, w, h, items, page, visibleCount, selectedKe
         );
       })}
       {items.length === 0 ? (
-        <path d={cutRectPath(x, y, w, h, 8)} fill="rgba(6, 20, 34, 0.7)" stroke={cfg.colors.cyan} strokeWidth={0.8} strokeOpacity={0.5} />
+        <LeaderboardEmptyPanel
+          x={x}
+          y={y}
+          w={w}
+          h={h}
+          title="NO GAMES IN THIS SCOPE"
+          body="Game leaderboard shortcuts appear when the catalog exposes ranked games for this scope."
+          tone="cyan"
+          cfg={cfg}
+        />
+      ) : null}
+    </g>
+  );
+}
+
+function LeaderboardEmptyPanel({ x, y, w, h, title, body, tone, cfg }: { x: number; y: number; w: number; h: number; title: string; body: string; tone: Tone; cfg: LeaderboardPageSvgControls }) {
+  const color = toneColor(tone, cfg);
+  const titleSize = fitSingleLineTextSize(title, Math.max(80, w - 42), 11, 15, 0.58);
+  const bodySize = fitSingleLineTextSize(body, Math.max(80, w - 54), 8.8, 11.2, 0.54);
+  const centerY = y + h / 2;
+  return (
+    <g>
+      <path d={cutRectPath(x, y, w, h, 8)} fill="rgba(6, 20, 34, 0.7)" stroke={color} strokeWidth={0.8} strokeOpacity={0.5} />
+      <path d={cutRectPath(x + 8, y + 8, Math.max(1, w - 16), Math.max(1, h - 16), 6)} fill={colorAlpha(color, '0d')} stroke={color} strokeWidth={0.65} strokeOpacity={0.32} />
+      <text x={x + w / 2} y={centerY - 7} textAnchor="middle" fontSize={titleSize} fontWeight={950} fill={cfg.colors.bodyText}>{title}</text>
+      <text x={x + w / 2} y={centerY + 16} textAnchor="middle" fontSize={bodySize} fontWeight={760} fill={cfg.colors.mutedText}>{truncateTextForWidth(body, Math.max(80, w - 54), bodySize, 0.54)}</text>
+    </g>
+  );
+}
+
+function LeaderboardEmptyOverlay({ x, y, w, h, title, body, tone, cfg }: { x: number; y: number; w: number; h: number; title: string; body: string; tone: Tone; cfg: LeaderboardPageSvgControls }) {
+  const color = toneColor(tone, cfg);
+  const overlayW = Math.min(Math.max(260, w * 0.54), Math.max(1, w - 28));
+  const overlayH = Math.min(Math.max(70, h * 0.28), Math.max(1, h - 18));
+  const overlayX = x + (w - overlayW) / 2;
+  const overlayY = y + (h - overlayH) / 2;
+  const titleSize = fitSingleLineTextSize(title, Math.max(80, overlayW - 42), 10.5, 14.4, 0.58);
+  const bodySize = fitSingleLineTextSize(body, Math.max(80, overlayW - 50), 8.4, 10.8, 0.54);
+  return (
+    <g pointerEvents="none">
+      <path d={cutRectPath(overlayX, overlayY, overlayW, overlayH, 9)} fill="rgba(5, 17, 30, 0.86)" stroke={color} strokeWidth={1.05} strokeOpacity={0.72} filter="url(#leaderboardGlow)" />
+      <path d={cutRectPath(overlayX + 7, overlayY + 7, overlayW - 14, overlayH - 14, 7)} fill={colorAlpha(color, '0c')} stroke={color} strokeWidth={0.7} strokeOpacity={0.42} />
+      <text x={overlayX + overlayW / 2} y={overlayY + overlayH / 2 - 7} textAnchor="middle" fontSize={titleSize} fontWeight={950} fill={cfg.colors.bodyText}>{title}</text>
+      <text x={overlayX + overlayW / 2} y={overlayY + overlayH / 2 + 16} textAnchor="middle" fontSize={bodySize} fontWeight={760} fill={cfg.colors.mutedText}>{truncateTextForWidth(body, Math.max(80, overlayW - 50), bodySize, 0.54)}</text>
+    </g>
+  );
+}
+
+function GamePopularityPeriodNav({ x, y, w, h, activePeriod, onPeriodChange, cfg }: { x: number; y: number; w: number; h: number; activePeriod: GamePopularityPeriod; onPeriodChange: (period: GamePopularityPeriod) => void; cfg: LeaderboardPageSvgControls }) {
+  const gap = 6;
+  const itemW = Math.max(46, (w - gap * (GAME_POPULARITY_PERIODS.length - 1)) / GAME_POPULARITY_PERIODS.length);
+  return (
+    <g aria-label="Game activity period selector">
+      {GAME_POPULARITY_PERIODS.map((period, index) => (
+        <LeaderboardHeaderAction
+          key={period.id}
+          x={x + index * (itemW + gap)}
+          y={y}
+          w={itemW}
+          h={h}
+          tone={period.tone}
+          active={activePeriod === period.id}
+          label={period.label}
+          onClick={() => onPeriodChange(period.id)}
+          ariaLabel={`Show ${period.label.toLowerCase()} game activity`}
+          cfg={cfg}
+        />
+      ))}
+    </g>
+  );
+}
+
+function GamePopularityBoard({
+  games,
+  selectedGameId,
+  periodLabel: _periodLabel,
+  x,
+  y,
+  w,
+  h,
+  onGameSelect,
+  cfg,
+}: {
+  games: TopGame[];
+  selectedGameId: string;
+  periodLabel: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  onGameSelect: (gameId: string) => void;
+  cfg: LeaderboardPageSvgControls;
+}) {
+  const activityGames = games.filter(hasPublishedGameActivity);
+  const hasActivity = activityGames.length > 0;
+  const displayGames = hasActivity
+    ? activityGames
+    : games.slice(0, 8).map(game => ({ ...game, matches: 'N/A', growth: 'N/A' }));
+  if (displayGames.length === 0) {
+    return (
+      <LeaderboardEmptyPanel
+        x={x}
+        y={y + 4}
+        w={w}
+        h={Math.max(92, h - 8)}
+        title="NO GAMES AVAILABLE YET"
+        body="Games appear here when available."
+        tone="cyan"
+        cfg={cfg}
+      />
+    );
+  }
+
+  const compact = w < 620;
+  const micro = w < 430;
+  const headerH = 31;
+  const gap = 7;
+  const rowH = clampValue((h - headerH - gap * 2) / Math.min(displayGames.length, 8), 32, 44);
+  const rowCapacity = Math.max(1, Math.floor((h - headerH - gap) / rowH));
+  const visibleGames = displayGames.slice(0, rowCapacity);
+  const color = toneColor('cyan', cfg);
+  const rankX = x + 18;
+  const gameX = x + (micro ? 42 : 62);
+  const activityX = x + w * (micro ? 0.58 : compact ? 0.52 : 0.47);
+  const categoryX = x + w * 0.68;
+  const trendX = x + w - 22;
+  const gameW = Math.max(72, activityX - gameX - 18);
+  const categoryW = Math.max(74, trendX - categoryX - 18);
+  return (
+    <g>
+      <path d={cutRectPath(x, y, w, headerH, 7)} fill="rgba(5, 20, 35, 0.74)" stroke={color} strokeWidth={0.8} strokeOpacity={0.58} />
+      <text x={rankX} y={y + 20} fontSize={9.5} fontWeight={950} fill={cfg.colors.mutedText}>RANK</text>
+      <text x={gameX} y={y + 20} fontSize={9.5} fontWeight={950} fill={cfg.colors.mutedText}>GAME</text>
+      <text x={activityX} y={y + 20} fontSize={9.5} fontWeight={950} fill={cfg.colors.mutedText}>MATCHES</text>
+      {!compact ? <text x={categoryX} y={y + 20} fontSize={9.5} fontWeight={950} fill={cfg.colors.mutedText}>CATEGORY</text> : null}
+      {!micro ? <text x={trendX} y={y + 20} textAnchor="end" fontSize={9.5} fontWeight={950} fill={cfg.colors.mutedText}>TREND</text> : null}
+      {visibleGames.map((game, index) => {
+        const rowY = y + headerH + gap + index * rowH;
+        const selected = normalizeSelectionId(game.id) === normalizeSelectionId(selectedGameId);
+        const gameColor = toneColor(game.tone, cfg);
+        const gameNameSize = fitSingleLineTextSize(game.name, gameW, 9.5, 12.5, 0.58);
+        const matchesLabel = compactGameStatLabel(game.matches);
+        const trendLabel = compactGameGrowthLabel(game.growth);
+        const categoryLabel = game.category ?? gameSubcategoryLabel(game);
+        return (
+          <g
+            key={`${game.id}:${index}`}
+            className="leaderboard-page-svg-clickable"
+            role="button"
+            tabIndex={0}
+            aria-label={`Select ${game.name} game activity row`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onGameSelect(game.id);
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter' && event.key !== ' ') return;
+              event.preventDefault();
+              event.stopPropagation();
+              onGameSelect(game.id);
+            }}
+          >
+            <path d={cutRectPath(x, rowY, w, rowH - 2, 7)} fill={selected ? colorAlpha(gameColor, '24') : 'rgba(5, 17, 30, 0.62)'} stroke={selected ? '#ffe187' : gameColor} strokeWidth={selected ? 1.2 : 0.72} strokeOpacity={selected ? 0.82 : 0.46} />
+            <IconBadge x={x + 7} y={rowY + 4} icon={Trophy} tone={game.tone} size={Math.min(26, rowH - 8)} rank={hasActivity ? game.rank : undefined} cfg={cfg} />
+            {!micro ? <GameArtBadge x={x + 37} y={rowY + 6} size={Math.min(22, rowH - 10)} gameId={game.id} tone={game.tone} cfg={cfg} /> : null}
+            <text x={gameX} y={rowY + rowH / 2 + 4} fontSize={gameNameSize} fontWeight={840} fill={cfg.colors.bodyText}>{truncateTextForWidth(game.name, gameW, gameNameSize, 0.58)}</text>
+            <text x={activityX} y={rowY + rowH / 2 + 4} fontSize={11.4} fontWeight={950} fill={cfg.colors.bodyText}>{matchesLabel}</text>
+            {!compact ? <text x={categoryX} y={rowY + rowH / 2 + 4} fontSize={10.2} fontWeight={820} fill={gameColor}>{truncateTextForWidth(categoryLabel, categoryW, 10.2, 0.55)}</text> : null}
+            {!micro ? <text x={trendX} y={rowY + rowH / 2 + 4} textAnchor="end" fontSize={10.4} fontWeight={900} fill="#42ff83">{trendLabel}</text> : null}
+          </g>
+        );
+      })}
+      {activityGames.length > visibleGames.length ? (
+        <text x={x + w - 12} y={y + h - 8} textAnchor="end" fontSize={9.4} fontWeight={860} fill={cfg.colors.mutedText}>SHOWING {visibleGames.length}/{activityGames.length}</text>
+      ) : null}
+      {!hasActivity ? (
+        <LeaderboardEmptyOverlay
+          x={x}
+          y={y + headerH + gap}
+          w={w}
+          h={Math.max(72, h - headerH - gap - 4)}
+          title="NO GAME ACTIVITY YET"
+          body="Play ranked matches to rank games."
+          tone="cyan"
+          cfg={cfg}
+        />
       ) : null}
     </g>
   );
@@ -2354,7 +2769,7 @@ function GameCategoryCard({ category, x, y, w, h, selected, onSelect, cfg }: { c
       className="leaderboard-page-svg-clickable"
       role="button"
       tabIndex={0}
-      aria-label={`Show ${category.label} games`}
+      aria-label={`Show ${category.label} category`}
       aria-pressed={selected}
       transform={hovered ? `translate(${cx} ${cy}) scale(1.018) translate(${-cx} ${-cy})` : undefined}
       onClick={(event) => {
@@ -2381,7 +2796,7 @@ function GameCategoryCard({ category, x, y, w, h, selected, onSelect, cfg }: { c
   );
 }
 
-function GameCategoryGrid({ x, y, w, h, categories, selectedCategoryId, page, pageCount, handleLeftX, handleRightX, onPageChange, onSelect, cfg }: { x: number; y: number; w: number; h: number; categories: GameCategorySummary[]; selectedCategoryId: string; page: number; pageCount: number; handleLeftX?: number; handleRightX?: number; onPageChange: (page: number) => void; onSelect: (category: GameCategorySummary) => void; cfg: LeaderboardPageSvgControls }) {
+function GameCategoryGrid({ x, y, w, h, categories, selectedCategoryId, page, pageCount, rows = 1, handleLeftX, handleRightX, onPageChange, onSelect, cfg }: { x: number; y: number; w: number; h: number; categories: GameCategorySummary[]; selectedCategoryId: string; page: number; pageCount: number; rows?: number; handleLeftX?: number; handleRightX?: number; onPageChange: (page: number) => void; onSelect: (category: GameCategorySummary) => void; cfg: LeaderboardPageSvgControls }) {
   if (categories.length === 0) return null;
   const gap = 10;
   const handleW = LEADERBOARD_SIDE_HANDLE_W;
@@ -2389,21 +2804,27 @@ function GameCategoryGrid({ x, y, w, h, categories, selectedCategoryId, page, pa
   const handleY = y + (h - handleH) / 2;
   const trackX = x;
   const trackW = Math.max(1, w);
-  const cardW = (trackW - gap * Math.max(0, categories.length - 1)) / categories.length;
+  const safeRows = Math.max(1, rows);
+  const columns = Math.max(1, Math.ceil(categories.length / safeRows));
+  const cardW = (trackW - gap * Math.max(0, columns - 1)) / columns;
+  const cardH = (h - gap * Math.max(0, safeRows - 1)) / safeRows;
   return (
     <g>
       <LeaderboardFrameSideHandle x={handleLeftX ?? x} y={handleY} side="left" height={handleH} width={handleW} disabled={pageCount <= 1} onClick={() => onPageChange(wrapIndex(page - 1, pageCount))} cfg={cfg} />
       <LeaderboardFrameSideHandle x={handleRightX ?? x + w - handleW} y={handleY} side="right" height={handleH} width={handleW} disabled={pageCount <= 1} onClick={() => onPageChange(wrapIndex(page + 1, pageCount))} cfg={cfg} />
       {categories.map((category, index) => {
-        const cardX = trackX + index * (cardW + gap);
+        const row = Math.floor(index / columns);
+        const column = index % columns;
+        const cardX = trackX + column * (cardW + gap);
+        const cardY = y + row * (cardH + gap);
         return (
           <GameCategoryCard
             key={category.id}
             category={category}
             x={cardX}
-            y={y}
+            y={cardY}
             w={cardW}
-            h={h}
+            h={cardH}
             selected={category.id === selectedCategoryId}
             onSelect={() => onSelect(category)}
             cfg={cfg}
@@ -2414,14 +2835,14 @@ function GameCategoryGrid({ x, y, w, h, categories, selectedCategoryId, page, pa
   );
 }
 
-function GameSubcategoryGrid({ x, y, w, h, category, selectedSubcategoryId, onSelect, cfg }: { x: number; y: number; w: number; h: number; category: GameCategorySummary; selectedSubcategoryId: string | null; onSelect: (subcategory: GameSubcategorySummary) => void; cfg: LeaderboardPageSvgControls }) {
+function GameSubcategoryGrid({ x, y, w, h, category, selectedSubcategoryId, singleRow = false, onSelect, cfg }: { x: number; y: number; w: number; h: number; category: GameCategorySummary; selectedSubcategoryId: string | null; singleRow?: boolean; onSelect: (subcategory: GameSubcategorySummary) => void; cfg: LeaderboardPageSvgControls }) {
   const subcategories = category.subcategories;
   if (subcategories.length === 0) return null;
   const categoryColor = toneColor(category.tone, cfg);
   return (
     <foreignObject x={x} y={y} width={w} height={h}>
       <div
-        className="leaderboard-subcategory-grid"
+        className={`leaderboard-subcategory-grid${singleRow ? ' leaderboard-subcategory-grid--single-row' : ''}`}
         style={{
           '--leaderboard-subcategory-accent': categoryColor,
           '--leaderboard-subcategory-text': cfg.colors.bodyText,
@@ -2458,6 +2879,200 @@ function GameSubcategoryGrid({ x, y, w, h, category, selectedSubcategoryId, onSe
           </button>
         );
       })}
+      </div>
+    </foreignObject>
+  );
+}
+
+function OverviewScopeGrid({ x, y, w, h, items, activeNavLabel, onSelect, cfg }: { x: number; y: number; w: number; h: number; items: NavItem[]; activeNavLabel: string; onSelect: (item: NavItem) => void; cfg: LeaderboardPageSvgControls }) {
+  if (items.length === 0) return null;
+  const gap = 8;
+  const columns = w >= 820 ? 4 : w >= 560 ? 3 : 2;
+  const rows = Math.max(1, Math.ceil(items.length / columns));
+  const cardW = (w - gap * (columns - 1)) / columns;
+  const cardH = (h - gap * (rows - 1)) / rows;
+  return (
+    <g>
+      {items.map((item, index) => {
+        const column = index % columns;
+        const row = Math.floor(index / columns);
+        const cardX = x + column * (cardW + gap);
+        const cardY = y + row * (cardH + gap);
+        const selected = item.label === activeNavLabel;
+        const tone = overviewScopeTone(item);
+        const color = toneColor(tone, cfg);
+        const imageSize = Math.min(34, Math.max(22, cardH - 18));
+        const imageX = cardX + 10;
+        const imageY = cardY + (cardH - imageSize) / 2;
+        const textX = imageX + imageSize + 13;
+        const textW = Math.max(44, cardW - imageSize - 72);
+        const titleSize = fitSingleLineTextSize(item.label, textW, 8.8, 12.2, 0.58);
+        const detailText = overviewScopeDetail(item);
+        const detailSize = fitSingleLineTextSize(detailText, textW, 7.1, 8.8, 0.55);
+        return (
+          <g
+            key={item.label}
+            className="leaderboard-page-svg-clickable"
+            role="button"
+            tabIndex={0}
+            aria-label={`Open ${item.label}`}
+            aria-pressed={selected}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect(item);
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter' && event.key !== ' ') return;
+              event.preventDefault();
+              event.stopPropagation();
+              onSelect(item);
+            }}
+          >
+            <rect x={cardX - 2} y={cardY - 2} width={cardW + 4} height={cardH + 4} fill="transparent" pointerEvents="all" />
+            <path d={cutRectPath(cardX, cardY, cardW, cardH, 8)} fill={selected ? colorAlpha(color, '28') : 'rgba(4, 16, 28, 0.78)'} stroke={selected ? '#ffe187' : color} strokeWidth={selected ? 1.5 : 0.85} strokeOpacity={selected ? 0.92 : 0.62} filter={selected ? 'url(#leaderboardGoldGlow)' : undefined} pointerEvents="none" />
+            <ArtworkSlot x={imageX} y={imageY} w={imageSize} h={imageSize} label={`${item.label} artwork`} imageUrl={item.imageUrl} tone={tone} compact shape="rect" imageFit="slice" cfg={cfg} />
+            <line x1={imageX + imageSize + 7} y1={cardY + 8} x2={imageX + imageSize + 7} y2={cardY + cardH - 8} stroke={color} strokeWidth={0.8} opacity={selected ? 0.64 : 0.42} />
+            <text x={textX} y={cardY + cardH * 0.44} fontSize={titleSize} fontWeight={950} fill={cfg.colors.bodyText}>{truncateTextForWidth(item.label, textW, titleSize, 0.58)}</text>
+            <text x={textX} y={cardY + cardH * 0.68} fontSize={detailSize} fontWeight={760} fill={cfg.colors.mutedText}>{truncateTextForWidth(detailText, textW, detailSize, 0.55)}</text>
+            <path d={cutRectPath(cardX + cardW - 43, cardY + (cardH - 22) / 2, 32, 22, 5)} fill={colorAlpha(color, selected ? '30' : '16')} stroke={color} strokeWidth={0.72} strokeOpacity={0.66} pointerEvents="none" />
+            <text x={cardX + cardW - 27} y={cardY + cardH / 2 + 3.6} textAnchor="middle" fontSize={9} fontWeight={950} fill={color}>{index + 1}</text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+function OverviewReadoutBoard({ x, y, w, h, stats, activeNavLabel, onSelect, cfg }: { x: number; y: number; w: number; h: number; stats: LeaderboardOverviewScopeStat[]; activeNavLabel: string; onSelect: (item: NavItem) => void; cfg: LeaderboardPageSvgControls }) {
+  if (stats.length === 0) return null;
+  const gap = 8;
+  const columns = w >= 780 ? 3 : w >= 260 ? 2 : 1;
+  const rows = Math.max(1, Math.ceil(stats.length / columns));
+  const cardW = (w - gap * (columns - 1)) / columns;
+  const cardH = Math.min(74, Math.max(48, (h - gap * (rows - 1)) / rows));
+  return (
+    <g>
+      {stats.map((stat, index) => {
+        const column = index % columns;
+        const row = Math.floor(index / columns);
+        const cardX = x + column * (cardW + gap);
+        const cardY = y + row * (cardH + gap);
+        const color = toneColor(stat.tone, cfg);
+        const selected = stat.label === activeNavLabel;
+        const valueRailW = cardW < 170 ? 48 : 67;
+        const labelW = Math.max(44, cardW - valueRailW - 16);
+        const labelSize = fitSingleLineTextSize(stat.label, labelW, 8.2, 11.2, 0.58);
+        const detailSize = fitSingleLineTextSize(stat.detail, labelW, 7.1, 8.8, 0.55);
+        const valueX = cardX + cardW - valueRailW / 2;
+        const dividerX = cardX + cardW - valueRailW;
+        return (
+          <g
+            key={stat.label}
+            className="leaderboard-page-svg-clickable"
+            role="button"
+            tabIndex={0}
+            aria-label={`Open ${stat.label}`}
+            aria-pressed={selected}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect(stat.navItem);
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter' && event.key !== ' ') return;
+              event.preventDefault();
+              event.stopPropagation();
+              onSelect(stat.navItem);
+            }}
+          >
+            <rect x={cardX - 2} y={cardY - 2} width={cardW + 4} height={cardH + 4} fill="transparent" pointerEvents="all" />
+            <path d={cutRectPath(cardX, cardY, cardW, cardH, 7)} fill={selected ? colorAlpha(color, '24') : 'rgba(5, 18, 31, 0.72)'} stroke={selected ? '#ffe187' : color} strokeWidth={selected ? 1.35 : 0.8} strokeOpacity={selected ? 0.9 : 0.56} pointerEvents="none" />
+            <text x={cardX + 12} y={cardY + cardH * 0.38} fontSize={labelSize} fontWeight={930} fill={cfg.colors.bodyText}>{truncateTextForWidth(stat.label, labelW, labelSize, 0.58)}</text>
+            <text x={cardX + 12} y={cardY + cardH * 0.68} fontSize={detailSize} fontWeight={760} fill={cfg.colors.mutedText}>{truncateTextForWidth(stat.detail, labelW, detailSize, 0.55)}</text>
+            <line x1={dividerX} y1={cardY + 11} x2={dividerX} y2={cardY + cardH - 11} stroke={color} strokeWidth={0.82} opacity={0.44} />
+            <text x={valueX} y={cardY + cardH / 2 + 4} textAnchor="middle" fontSize={fitSingleLineTextSize(stat.value, valueRailW - 14, 10, 16, 0.58)} fontWeight={960} fill={color}>{stat.value}</text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+function ExpandedGameBrowserPanel({ x, y, w, h, games, selectedGameId, categoryLabel, subcategoryLabel, view, onSelect, cfg }: { x: number; y: number; w: number; h: number; games: QuickGame[]; selectedGameId: string; categoryLabel: string; subcategoryLabel: string | null; view: LeaderboardGameBrowserView; onSelect: (game: QuickGame) => void; cfg: LeaderboardPageSvgControls }) {
+  const [previewGameId, setPreviewGameId] = useState<string | null>(null);
+  const selectedKey = normalizeSelectionId(selectedGameId);
+  const previewKey = normalizeSelectionId(previewGameId ?? '');
+  const selectedGame = games.find(game => normalizeSelectionId(game.id) === selectedKey) ?? null;
+  const previewGame = games.find(game => normalizeSelectionId(game.id) === previewKey) ?? selectedGame ?? games[0] ?? null;
+  const previewColor = toneColor(previewGame?.tone ?? 'cyan', cfg);
+  const previewImageUrl = previewGame ? (leaderboardGameImageUrl(previewGame.id) ?? leaderboardExplorerGameImageUrl(previewGame)) : defaultAvatarImageUrl;
+  const panelStyle = {
+    '--leaderboard-expanded-game-accent': previewColor,
+    '--leaderboard-expanded-game-text': cfg.colors.bodyText,
+    '--leaderboard-expanded-game-muted': cfg.colors.mutedText,
+  } as CSSProperties;
+  const scopeLabel = subcategoryLabel ? `${categoryLabel} / ${subcategoryLabel}` : categoryLabel;
+  return (
+    <foreignObject x={x} y={y} width={w} height={h}>
+      <div
+        className={`leaderboard-expanded-game-browser leaderboard-expanded-game-browser--${view}`}
+        style={panelStyle}
+        onClick={event => event.stopPropagation()}
+        onWheel={event => event.stopPropagation()}
+      >
+        <div className="leaderboard-expanded-game-browser__preview">
+          {previewGame ? (
+            <>
+              <span className="leaderboard-expanded-game-browser__preview-art">
+                <img src={previewImageUrl} alt="" />
+              </span>
+              <span className="leaderboard-expanded-game-browser__preview-copy">
+                <span className="leaderboard-expanded-game-browser__eyebrow">{scopeLabel}</span>
+                <span className="leaderboard-expanded-game-browser__title">{previewGame.name}</span>
+                <span className="leaderboard-expanded-game-browser__detail">{previewGame.detail || gameSubcategoryLabel(previewGame)}</span>
+              </span>
+              <span className="leaderboard-expanded-game-browser__count">{games.length} games</span>
+            </>
+          ) : (
+            <span className="leaderboard-expanded-game-browser__empty">No games in this category yet.</span>
+          )}
+        </div>
+        <div className="leaderboard-expanded-game-browser__items">
+          {games.map((game) => {
+            const selected = normalizeSelectionId(game.id) === selectedKey;
+            const color = toneColor(game.tone, cfg);
+            const style = {
+              '--leaderboard-expanded-game-color': color,
+              '--leaderboard-expanded-game-fill': selected ? colorAlpha(color, '30') : 'rgba(5, 18, 31, 0.9)',
+              '--leaderboard-expanded-game-border': selected ? '#ffe187' : color,
+            } as CSSProperties;
+            const gameImageUrl = leaderboardGameImageUrl(game.id) ?? leaderboardExplorerGameImageUrl(game);
+            return (
+              <button
+                key={game.id}
+                type="button"
+                className={`leaderboard-expanded-game-browser__item${selected ? ' leaderboard-expanded-game-browser__item--selected' : ''}`}
+                style={style}
+                aria-label={`Select ${game.name} game leaderboard`}
+                aria-pressed={selected}
+                onMouseEnter={() => setPreviewGameId(game.id)}
+                onFocus={() => setPreviewGameId(game.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onSelect(game);
+                }}
+              >
+                <span className="leaderboard-expanded-game-browser__item-art">
+                  <img src={gameImageUrl} alt="" />
+                </span>
+                <span className="leaderboard-expanded-game-browser__item-copy">
+                  <span className="leaderboard-expanded-game-browser__item-title">{game.name}</span>
+                  <span className="leaderboard-expanded-game-browser__item-detail">{game.detail || gameSubcategoryLabel(game)}</span>
+                </span>
+                <span className="leaderboard-expanded-game-browser__item-meta">{game.gameType ?? gameCategoryLabel(game)}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </foreignObject>
   );
@@ -2559,6 +3174,7 @@ function MainBoard({
   activeTab,
   rows,
   tabs,
+  navItems,
   tabDetails,
   topGames,
   quickGames,
@@ -2575,6 +3191,7 @@ function MainBoard({
   detailMode,
   focusedSection,
   onTabChange,
+  onNavItemSelect,
   onPlayerSelect,
   onPageChange,
   onRowsPerPageChange,
@@ -2597,6 +3214,7 @@ function MainBoard({
   activeTab: LeaderboardTabId;
   rows: DisplayRow[];
   tabs: LeaderboardPageContentData['tabs'];
+  navItems: NavItem[];
   tabDetails: LeaderboardPageContentData['tabDetails'];
   topGames: TopGame[];
   quickGames: QuickGame[];
@@ -2606,13 +3224,14 @@ function MainBoard({
   totalPlayersValue: string;
   selectedGameId: string;
   selectedPlayerId: string;
-  selectedPlayer: DisplayRow;
+  selectedPlayer: DisplayRow | null;
   selectedGameName: string;
   page: number;
   rowsPerPage: number;
   detailMode: DetailMode | null;
   focusedSection: LeaderboardFocusSection;
   onTabChange: (tab: LeaderboardTabId) => void;
+  onNavItemSelect: (item: NavItem) => void;
   onPlayerSelect: (playerId: string) => void;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: () => void;
@@ -2642,11 +3261,12 @@ function MainBoard({
     : activeNavKey.includes('global') || activeNavKey.includes('overall')
       ? rankingTitle
       : activeNavLabel || rankingTitle;
-  const tableVariant = tableVariantForContext(activeNavLabel, activeTab);
-  const baseTableTitle = tableTitleForVariant(tableVariant, activeNavLabel, selectedGameName);
+  const scopeKind = leaderboardScopeKindForNav(activeNavLabel, activeTab);
+  const tableVariant = tableVariantForScope(scopeKind);
+  const overviewMode = scopeKind === 'overview';
+  const categoryLeaderMode = scopeKind === 'categoryLeaders';
   const isOverviewContext = activeNavKey.includes('overview');
   const sortedRows = useMemo(() => [...rows].sort((a, b) => a.rank - b.rank), [rows]);
-  const gameScopedRows = useMemo(() => rowsForGameScope(sortedRows, selectedGameName, selectedGameId), [selectedGameId, selectedGameName, sortedRows]);
   const gameCategories = useMemo(() => buildGameCategorySummaries(quickGames), [quickGames]);
   const selectedQuickGame = useMemo(() => quickGames.find(game => normalizeSelectionId(game.id) === normalizeSelectionId(selectedGameId)) ?? quickGames[0], [quickGames, selectedGameId]);
   const [selectedCategoryIdOverride, setSelectedCategoryIdOverride] = useState<string | null>(null);
@@ -2655,24 +3275,23 @@ function MainBoard({
   const [gameBrowserSearch, setGameBrowserSearch] = useState('');
   const [gameBrowserView, setGameBrowserView] = useState<LeaderboardGameBrowserView>('grid');
   const [gameBrowserSort, setGameBrowserSort] = useState<LeaderboardGameBrowserSort>('rank');
+  const [gamePopularityPeriod, setGamePopularityPeriod] = useState<GamePopularityPeriod>('allTime');
   const [hoveredTopGameKey, setHoveredTopGameKey] = useState<string | null>(null);
   const selectedGameCategoryId = selectedCategoryIdOverride ?? (selectedQuickGame ? assetKey(gameCategoryLabel(selectedQuickGame)) : gameCategories[0]?.id ?? '');
   const selectedCategory = gameCategories.find(category => category.id === selectedGameCategoryId) ?? gameCategories[0] ?? null;
   const selectedCategoryLabel = selectedCategory?.label ?? (selectedQuickGame ? gameCategoryLabel(selectedQuickGame) : 'Card Games');
   const selectedSubcategoryId = selectedCategory?.subcategories.some(subcategory => subcategory.id === selectedSubcategoryIdOverride) ? selectedSubcategoryIdOverride : null;
-  const perCategoryMode = activeNavKey.includes('category');
-  const aiBrowserMode = tableVariant === 'ai' && (activeNavKey.includes('game') || activeNavKey.includes('category'));
-  const categoryBrowserMode = perCategoryMode || activeNavKey.includes('ai-by-category');
-  const gameBrowserMode = tableVariant === 'games' || aiBrowserMode;
+  const selectedSubcategoryLabel = selectedCategory?.subcategories.find(subcategory => subcategory.id === selectedSubcategoryId)?.label ?? null;
+  const aiGameBrowserMode = scopeKind === 'aiGame';
+  const aiCategoryBrowserMode = scopeKind === 'aiCategory';
+  const categoryBrowserMode = categoryLeaderMode || aiCategoryBrowserMode;
+  const gameBrowserMode = scopeKind === 'gameLeaders' || aiGameBrowserMode;
+  const selectorBrowserMode = gameBrowserMode || categoryBrowserMode;
+  const gamePopularityMode = focusedSection === 'gamePopularity';
   const expandedGameCategory = gameBrowserMode && selectedCategory && expandedCategoryId === selectedCategory.id ? selectedCategory : null;
-  const selectedTableScopeName = categoryBrowserMode ? selectedCategoryLabel : selectedGameName;
-  const tableTitle = activeNavKey.includes('ai-by-game')
-    ? `${selectedGameName.toUpperCase()} AI BENCHMARKS`
-    : activeNavKey.includes('ai-by-category')
-      ? `${selectedCategoryLabel.toUpperCase()} AI BENCHMARKS`
-      : perCategoryMode
-        ? `${selectedCategoryLabel.toUpperCase()} CATEGORY LADDER`
-        : baseTableTitle;
+  const gameCategoryExpanded = Boolean(expandedGameCategory);
+  const selectedTableScopeName = categoryBrowserMode ? selectedSubcategoryLabel ? `${selectedCategoryLabel} / ${selectedSubcategoryLabel}` : selectedCategoryLabel : selectedGameName;
+  const tableTitle = tableTitleForScope(scopeKind, selectedGameName, selectedTableScopeName);
   const filteredCategoryGames = quickGames.filter(game => assetKey(gameCategoryLabel(game)) === selectedGameCategoryId);
   const filteredSubcategoryGames = selectedSubcategoryId
     ? filteredCategoryGames.filter(game => assetKey(gameSubcategoryLabel(game)) === selectedSubcategoryId)
@@ -2687,13 +3306,78 @@ function MainBoard({
   ));
   const gameBrowserPool = gameBrowserMode ? sortedCategoryGames : quickGames;
   const topGamesById = new Map(topGames.map(game => [normalizeSelectionId(game.id), game]));
+  const gameScopedRows = rowsForCurrentGameQuery(sortedRows, selectedGameName, selectedQuickGame, 'game');
+  const aiGameScopedRows = rowsForCurrentGameQuery(sortedRows, selectedGameName, selectedQuickGame, 'aiGame');
+  const categoryScopedRows = rowsForCategoryScope(sortedRows, selectedCategoryLabel, selectedSubcategoryId, selectedSubcategoryLabel, quickGames, ['category']);
+  const aiCategoryScopedRows = rowsForCategoryScope(sortedRows, selectedCategoryLabel, selectedSubcategoryId, selectedSubcategoryLabel, quickGames, ['aiCategory']);
+  const overallRows = rowsForAggregateScope(sortedRows, 'overall');
+  const aiOverallRows = rowsForAggregateScope(sortedRows, 'aiOverall');
+  const tournamentRows = rowsForAggregateScope(sortedRows, 'tournament');
+  const friendRows = rowsForAggregateScope(sortedRows, 'friends');
+  const overviewNavItems = navItems.filter(item => leaderboardScopeKindForNav(item.label, item.tabId) !== 'overview');
+  const tableRows = scopeKind === 'gameLeaders'
+    ? gameScopedRows
+    : scopeKind === 'categoryLeaders'
+      ? categoryScopedRows
+      : scopeKind === 'aiGame'
+        ? aiGameScopedRows
+        : scopeKind === 'aiCategory'
+          ? aiCategoryScopedRows
+          : scopeKind === 'aiOverall'
+            ? aiOverallRows
+            : scopeKind === 'tournamentLeaders'
+              ? tournamentRows
+              : scopeKind === 'friends'
+                ? friendRows
+                : isOverviewContext
+                  ? [
+                      ...overallRows.filter(row => row.id === selectedPlayerId && row.rank <= 3),
+                      ...overallRows.filter(row => row.rank > 3),
+                    ]
+                  : overallRows;
+  const overviewScopeStats: LeaderboardOverviewScopeStat[] = overviewNavItems.map(item => {
+    const itemScope = leaderboardScopeKindForNav(item.label, item.tabId);
+    const rowCount = itemScope === 'gameLeaders'
+      ? gameScopedRows.length
+      : itemScope === 'categoryLeaders'
+        ? categoryScopedRows.length
+        : itemScope === 'aiGame'
+          ? aiGameScopedRows.length
+          : itemScope === 'aiCategory'
+            ? aiCategoryScopedRows.length
+            : itemScope === 'aiOverall'
+              ? aiOverallRows.length
+              : itemScope === 'tournamentLeaders'
+                ? tournamentRows.length
+                : itemScope === 'friends'
+                  ? friendRows.length
+                  : overallRows.length;
+    return {
+      label: item.label,
+      detail: rowCount > 0 ? `${rowCount} ranked rows` : overviewScopeDetail(item),
+      value: rowCount > 0 ? String(rowCount) : 'N/A',
+      tone: overviewScopeTone(item),
+      navItem: item,
+    };
+  });
+  const tableHasRows = tableRows.length > 0;
+  const hasRankedRows = tableHasRows;
   const topItems: LeaderboardTopCardItem[] = gameBrowserMode
     ? gameBrowserPool.map((game, index) => gameTopCard(game, topGamesById.get(normalizeSelectionId(game.id)), index))
-    : sortedRows.slice(0, isOverviewContext ? 3 : 10).map(leaderTopCard);
+    : (hasRankedRows ? tableRows.slice(0, isOverviewContext ? 3 : 10) : leaderboardPlaceholderRows(isOverviewContext ? 3 : 5, selectedTableScopeName)).map(leaderTopCard);
+  const topEmptyOverlay = !selectorBrowserMode && !hasRankedRows
+    ? {
+        title: 'NO FEATURED LEADERS YET',
+        body: 'Claim a featured spot.',
+        tone: 'cyan' as const,
+      }
+    : null;
   const selectedTopKey = gameBrowserMode ? `game:${normalizeSelectionId(selectedGameId)}` : `leader:${selectedPlayerId}`;
   const setFocusedSection = onFocusSectionChange;
   const tableExpanded = focusedSection !== 'podium';
+  const liveActivityMode = focusedSection === 'live';
   const focusedSummaryMode = focusedSection === 'rating' || focusedSection === 'live' ? focusedSection : null;
+  const activeGamePopularityPeriod = GAME_POPULARITY_PERIODS.find(period => period.id === gamePopularityPeriod) ?? GAME_POPULARITY_PERIODS[0];
   const headerW = rightX + rightW - mainX;
   const displayMetrics = mainW < 430
     ? metrics.filter((_, index) => index < 2)
@@ -2708,8 +3392,13 @@ function MainBoard({
   const expandedTopPanelH = Math.max(276, Math.min(mainH - 210, clampValue(mainH * 0.46, 276, 334)));
   const hoverTopPanelH = Math.max(242, Math.min(mainH - 210, clampValue(mainH * 0.4, 242, 292)));
   const compactTopPanelH = Math.max(178, Math.min(mainH - 250, clampValue(mainH * 0.29, 178, 214)));
+  const categorySelectorPanelH = Math.max(184, Math.min(mainH - 232, clampValue(mainH * 0.34, 184, 248)));
   const topPanelH = tableExpanded
     ? 0
+    : categoryBrowserMode
+      ? categorySelectorPanelH
+    : gameCategoryExpanded
+      ? mainH
     : gameBrowserMode
       ? hoveredTopGameKey
         ? Math.max(hoverTopPanelH, expandedGameCategory ? expandedTopPanelH : 0)
@@ -2717,9 +3406,9 @@ function MainBoard({
           ? expandedTopPanelH
           : compactTopPanelH
       : clampValue(mainH * 0.39, 260, 294);
-  const bottomPanelY = tableExpanded ? mainY : mainY + topPanelH + sectionGap;
-  const bottomPanelH = tableExpanded ? mainH : mainH - topPanelH - sectionGap;
-  const showGameLeaderStrip = gameBrowserMode && !tableExpanded && !hoveredTopGameKey;
+  const bottomPanelY = tableExpanded ? mainY : gameCategoryExpanded ? mainY + mainH : mainY + topPanelH + sectionGap;
+  const bottomPanelH = tableExpanded ? mainH : gameCategoryExpanded ? 0 : mainH - topPanelH - sectionGap;
+  const showGameLeaderStrip = (gameBrowserMode || categoryBrowserMode) && !tableExpanded && !gameCategoryExpanded && !hoveredTopGameKey;
   const gameLeaderStripH = showGameLeaderStrip ? clampValue(bottomPanelH * 0.38, 128, 154) : 0;
   const selectorHandleGutter = LEADERBOARD_SIDE_HANDLE_W;
   const selectorX = mainX + selectorHandleGutter;
@@ -2727,7 +3416,9 @@ function MainBoard({
   const rowHandleReserve = (LEADERBOARD_SIDE_HANDLE_W + 8) * 2;
   const selectorInnerW = Math.max(1, selectorW - 36);
   const categoryTrackW = Math.max(1, selectorInnerW - rowHandleReserve);
-  const categoryVisibleCount = Math.max(1, Math.min(gameCategories.length || 1, Math.floor((categoryTrackW + 8) / 178), 6));
+  const categoryGridRows = categoryBrowserMode && topPanelH >= 214 ? 2 : 1;
+  const categoryGridColumns = Math.max(1, Math.min(6, Math.floor((categoryTrackW + 8) / 178)));
+  const categoryVisibleCount = Math.max(1, Math.min(gameCategories.length || 1, categoryGridColumns * categoryGridRows));
   const [categoryPage, setCategoryPage] = useState(0);
   const categoryPageCount = Math.max(1, Math.ceil(gameCategories.length / categoryVisibleCount));
   const safeCategoryPage = wrapIndex(categoryPage, categoryPageCount);
@@ -2740,7 +3431,11 @@ function MainBoard({
     ? uiCopy.distributionTitle
     : focusedSection === 'live'
       ? uiCopy.feedTitle
-      : tableTitle;
+      : gamePopularityMode
+        ? uiCopy.topGamesTitle
+        : overviewMode
+          ? 'LEADERBOARD SCOPE STATUS'
+          : tableTitle;
   const tableTopInset = showGameLeaderStrip ? 10 : 0;
   const tableY = showGameLeaderStrip
     ? tableFrame.body.y + tableTopInset + gameLeaderStripH + 8
@@ -2751,25 +3446,14 @@ function MainBoard({
   const rowStep = cfg.chrome.rowHeight + cfg.chrome.rowGap;
   const visibleRowCapacity = Math.max(1, Math.floor((tableFrame.body.y + tableFrame.body.h - tableY - 42) / rowStep));
   const effectiveRowsPerPage = Math.max(1, Math.min(rowsPerPage, visibleRowCapacity));
-  const categoryScopedRows = rowsForCategoryScope(sortedRows, selectedCategoryLabel);
-  const aiGameScopedRows = rowsForGameScope(sortedRows, selectedGameName, selectedGameId);
-  const tableRows = tableVariant === 'games'
-    ? categoryBrowserMode ? categoryScopedRows : gameScopedRows
-    : tableVariant === 'ai' && activeNavKey.includes('ai-by-category')
-      ? categoryScopedRows
-      : tableVariant === 'ai' && activeNavKey.includes('ai-by-game')
-        ? aiGameScopedRows
-        : isOverviewContext
-          ? [
-              ...sortedRows.filter(row => row.id === selectedPlayerId && row.rank <= 3),
-              ...sortedRows.filter(row => row.rank > 3),
-            ]
-          : sortedRows;
   const maxPage = Math.max(1, Math.ceil(tableRows.length / effectiveRowsPerPage));
   const safePage = clampValue(page, 1, maxPage);
-  const pagedRows = tableRows.slice((safePage - 1) * effectiveRowsPerPage, safePage * effectiveRowsPerPage);
-  const gameLeaderRows = showGameLeaderStrip ? tableRows.slice(0, 3) : [];
+  const tableEmptyCopy = leaderboardEmptyTableCopy(scopeKind);
+  const displayPlaceholderRows = tableHasRows ? [] : leaderboardPlaceholderRows(Math.min(5, effectiveRowsPerPage), selectedTableScopeName);
+  const pagedRows = tableHasRows ? tableRows.slice((safePage - 1) * effectiveRowsPerPage, safePage * effectiveRowsPerPage) : displayPlaceholderRows;
+  const gameLeaderRows = showGameLeaderStrip ? (tableHasRows ? tableRows.slice(0, 3) : leaderboardPlaceholderRows(3, selectedTableScopeName)) : [];
   const handleTableWheel = (event: WheelEvent<SVGGElement>) => {
+    if (gamePopularityMode || liveActivityMode) return;
     const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
     if (Math.abs(delta) < 8) return;
     event.preventDefault();
@@ -2789,50 +3473,63 @@ function MainBoard({
   const topCardVisibleCount = Math.max(1, Math.min(topItems.length || 1, Math.floor((topCarouselAvailableW + topCardGap) / (topCardMinW + topCardGap))));
   const podiumPageCount = Math.max(1, Math.ceil(topItems.length / topCardVisibleCount));
   const safePodiumPage = wrapIndex(podiumPage, podiumPageCount);
+  const topSectionCount = overviewMode
+    ? overviewNavItems.length
+    : categoryBrowserMode
+    ? visibleGameCategories.length
+    : gameCategoryExpanded ? sortedCategoryGames.length : Math.min(topCardVisibleCount, topItems.length);
+  const topSectionTitle = overviewMode
+    ? 'LEADERBOARD SCOPE HUB'
+    : scopeKind === 'aiCategory'
+    ? 'AI CATEGORY LEADERS'
+    : categoryBrowserMode
+      ? 'CATEGORY LEADERS'
+      : gameCategoryExpanded ? `${selectedCategoryLabel.toUpperCase()} GAMES` : focusedSectionTitle;
   const shiftPodiumPage = (delta: number) => setPodiumPage(value => wrapIndex(value + delta, podiumPageCount));
-  const framePage = safePodiumPage;
-  const framePageCount = podiumPageCount;
+  const framePage = categoryBrowserMode ? safeCategoryPage : safePodiumPage;
+  const framePageCount = categoryBrowserMode ? categoryPageCount : podiumPageCount;
   const shiftFramePage = (delta: number) => {
+    if (categoryBrowserMode) {
+      setCategoryPage(value => wrapIndex(value + delta, categoryPageCount));
+      return;
+    }
     shiftPodiumPage(delta);
   };
   const routeGameCategoryToBottom = (category: GameCategorySummary) => {
     setFocusedSection('podium');
     setSelectedCategoryIdOverride(category.id);
     setSelectedSubcategoryIdOverride(null);
-    setExpandedCategoryId(value => value === category.id ? null : category.id);
+    setExpandedCategoryId(value => categoryBrowserMode ? null : value === category.id ? null : category.id);
     setPodiumPage(0);
-    const nextRows = category.count > 0
-      ? rowsForGameScope(sortedRows, category.sampleGame.name, category.sampleGame.id)
-      : rowsForCategoryScope(sortedRows, category.label);
-    if (nextRows[0]) onPlayerSelect(nextRows[0].id);
-    if (category.count > 0) onGameSelect(category.sampleGame.id);
+    setGameBrowserSearch('');
     onPageChange(1);
   };
   const routeGameSubcategoryToBottom = (subcategory: GameSubcategorySummary) => {
     setFocusedSection('podium');
-    setSelectedSubcategoryIdOverride(subcategory.id);
-    setExpandedCategoryId(null);
+    setSelectedSubcategoryIdOverride(value => value === subcategory.id ? null : subcategory.id);
+    setExpandedCategoryId(categoryBrowserMode ? null : expandedGameCategory?.id ?? selectedCategory?.id ?? null);
     setPodiumPage(0);
-    const nextRows = rowsForGameScope(sortedRows, subcategory.sampleGame.name, subcategory.sampleGame.id);
+    onPageChange(1);
+  };
+  const selectBrowserGame = (game: TopGame | QuickGame) => {
+    setFocusedSection('podium');
+    const nextCategoryId = assetKey(gameCategoryLabel(game));
+    setSelectedCategoryIdOverride(nextCategoryId);
+    setSelectedSubcategoryIdOverride(assetKey(gameSubcategoryLabel(game)));
+    setExpandedCategoryId(null);
+    const nextCategoryIndex = gameCategories.findIndex(category => category.id === nextCategoryId);
+    if (nextCategoryIndex >= 0) {
+      setCategoryPage(Math.floor(nextCategoryIndex / categoryVisibleCount));
+    }
+    const nextRows = rowsForGameScope(sortedRows, game.name, game.id);
     if (nextRows[0]) onPlayerSelect(nextRows[0].id);
-    onGameSelect(subcategory.sampleGame.id);
+    onGameSelect(game.id);
     onPageChange(1);
   };
   const routeTopItemToBottom = (item: LeaderboardTopCardItem) => {
     setFocusedSection('podium');
     if (item.kind === 'game') {
-      const nextCategoryId = assetKey(gameCategoryLabel(item.game));
-      setSelectedCategoryIdOverride(nextCategoryId);
-      setSelectedSubcategoryIdOverride(assetKey(gameSubcategoryLabel(item.game)));
-      setExpandedCategoryId(null);
-      const nextCategoryIndex = gameCategories.findIndex(category => category.id === nextCategoryId);
-      if (nextCategoryIndex >= 0) {
-        setCategoryPage(Math.floor(nextCategoryIndex / categoryVisibleCount));
-      }
-      const nextRows = rowsForGameScope(sortedRows, item.game.name, item.game.id);
-      if (nextRows[0]) onPlayerSelect(nextRows[0].id);
-      onGameSelect(item.game.id);
-      onPageChange(1);
+      selectBrowserGame(item.game);
       return;
     }
     onPlayerSelect(item.row.id);
@@ -2852,7 +3549,20 @@ function MainBoard({
   const tableHeaderButtonY = bottomPanelY + 13;
   const showSelectorHeaderActions = selectorW >= 660;
   const showGameBrowserToolbar = selectorW >= 720;
-  const tableHeaderAction = tableExpanded
+  const gamePopularityPeriodNavW = Math.max(206, Math.min(360, mainW - 292));
+  const tableHeaderAction = gamePopularityMode
+    ? (
+      <GamePopularityPeriodNav
+        x={mainX + mainW - gamePopularityPeriodNavW - 20}
+        y={tableHeaderButtonY + 2}
+        w={gamePopularityPeriodNavW}
+        h={25}
+        activePeriod={gamePopularityPeriod}
+        onPeriodChange={setGamePopularityPeriod}
+        cfg={cfg}
+      />
+    )
+    : tableExpanded
     ? <LeaderboardHeaderAction x={mainX + mainW - 118} y={tableHeaderButtonY + 2} w={98} h={25} tone="gold" active label="PODIUM" onClick={() => setFocusedSection('podium')} ariaLabel="Show podium section" cfg={cfg} />
     : null;
   return (
@@ -2865,16 +3575,16 @@ function MainBoard({
         y={mainY}
         w={selectorW}
         h={topPanelH}
-        title={focusedSectionTitle}
+        title={topSectionTitle}
         subtitle={`${detail.eyebrow} / ${detail.primary}`}
-        count="1"
+        count={String(topSectionCount)}
         tone="cyan"
-        headerH={gameBrowserMode ? 48 : 40}
-        footerH={gameBrowserMode ? 22 : 30}
-        innerStrokeOpacity={gameBrowserMode ? 0.24 : undefined}
-        bodyStrokeOpacity={gameBrowserMode ? 0 : undefined}
-        bodyFill={gameBrowserMode ? 'transparent' : undefined}
-        footerLineOpacity={gameBrowserMode ? 0 : undefined}
+        headerH={selectorBrowserMode ? 48 : 40}
+        footerH={selectorBrowserMode ? 22 : 30}
+        innerStrokeOpacity={selectorBrowserMode ? 0.24 : undefined}
+        bodyStrokeOpacity={selectorBrowserMode ? 0 : undefined}
+        bodyFill={selectorBrowserMode ? 'transparent' : undefined}
+        footerLineOpacity={selectorBrowserMode ? 0 : undefined}
         headerRight={gameBrowserMode && showGameBrowserToolbar ? (
           <LeaderboardGameBrowserToolbar
             x={selectorX + selectorW - 514}
@@ -2896,14 +3606,14 @@ function MainBoard({
             }}
             cfg={cfg}
           />
-        ) : !gameBrowserMode && showSelectorHeaderActions ? (
+        ) : !selectorBrowserMode && showSelectorHeaderActions ? (
           <>
             <LeaderboardHeaderAction x={selectorX + selectorW - 302} y={headerButtonY + 2} w={76} h={25} tone="cyan" label={uiCopy.refreshLabel} onClick={onRefresh} ariaLabel="Refresh leaderboard" cfg={cfg} />
             <LeaderboardHeaderAction x={selectorX + selectorW - 216} y={headerButtonY + 2} w={68} h={25} tone="gold" label={uiCopy.queueLabel} onClick={onMatchmaking} ariaLabel="Open matchmaking" cfg={cfg} />
             <LeaderboardHeaderAction x={selectorX + selectorW - 138} y={headerButtonY + 2} w={118} h={25} tone="purple" label={season.label} onClick={() => onDetailOpen('season')} ariaLabel="Open season detail" cfg={cfg} />
           </>
         ) : null}
-        showSideHandles={!gameBrowserMode}
+        showSideHandles={!selectorBrowserMode && !gameCategoryExpanded && !overviewMode}
         sideDisabled={framePageCount <= 1}
         onPrevious={() => shiftFramePage(-1)}
         onNext={() => shiftFramePage(1)}
@@ -2911,27 +3621,25 @@ function MainBoard({
         onSelect={() => setFocusedSection('podium')}
         ariaLabel="Focus leaderboard selector"
         footer={footerRect => (
-          <>
-            <LeaderboardFrameDots x={footerRect.x + footerRect.w / 2} y={footerRect.y + (gameBrowserMode ? 14 : 18)} page={framePage} pageCount={framePageCount} onPageChange={setPodiumPage} cfg={cfg} />
-            <text x={footerRect.x + footerRect.w - 22} y={footerRect.y + (gameBrowserMode ? 18 : 23)} textAnchor="end" fontSize={gameBrowserMode ? 9.5 : 10} fontWeight={900} fill={cfg.colors.mutedText}>{gameBrowserMode ? 'GAMES' : isOverviewContext ? 'TOP 3' : 'TOP 10'} {framePage + 1}/{framePageCount}</text>
-          </>
+          framePageCount > 1 ? <LeaderboardFrameDots x={footerRect.x + footerRect.w / 2} y={footerRect.y + (selectorBrowserMode ? 14 : 18)} page={framePage} pageCount={framePageCount} onPageChange={categoryBrowserMode ? setCategoryPage : setPodiumPage} cfg={cfg} /> : null
         )}
         cfg={cfg}
       >
         {body => {
           const contentX = body.x + 2;
-          const contentY = body.y + (gameBrowserMode ? 2 : -2);
+          const contentY = body.y + (selectorBrowserMode ? 2 : -2);
           const contentW = body.w - 4;
-          const contentH = body.h + (gameBrowserMode ? -2 : 4);
+          const contentH = body.h + (selectorBrowserMode ? -2 : 4);
           const expandedCategory = expandedGameCategory;
-          const categoryH = gameBrowserMode ? clampValue(contentH * (expandedCategory ? 0.17 : 0.28), expandedCategory ? 34 : 28, expandedCategory ? 42 : 34) : 0;
-          const subcategoryH = expandedCategory ? clampValue(contentH * 0.32, 82, 110) : 0;
-          const categoryGap = gameBrowserMode ? 4 : 0;
-          const subcategoryGap = expandedCategory ? 4 : 0;
+          const showSubcategorySelector = Boolean(selectedCategory && (categoryBrowserMode || expandedCategory));
+          const categoryH = selectorBrowserMode ? clampValue(contentH * (categoryBrowserMode ? 0.56 : expandedCategory ? 0.1 : 0.28), categoryBrowserMode ? 60 : expandedCategory ? 38 : 28, categoryBrowserMode ? 112 : expandedCategory ? 46 : 34) : 0;
+          const subcategoryH = showSubcategorySelector ? categoryBrowserMode ? Math.max(36, contentH - categoryH - 10) : clampValue(contentH * 0.2, 88, 128) : 0;
+          const categoryGap = selectorBrowserMode ? 4 : 0;
+          const subcategoryGap = showSubcategorySelector ? 8 : 0;
           const subcategoryY = contentY + categoryH + categoryGap;
           const carouselY = subcategoryY + subcategoryH + subcategoryGap;
           const carouselH = expandedCategory
-            ? Math.max(64, contentH - categoryH - categoryGap - subcategoryH - subcategoryGap)
+            ? Math.max(140, contentH - categoryH - categoryGap - subcategoryH - subcategoryGap)
             : Math.max(48, contentH - categoryH - categoryGap);
           const rowHandleW = LEADERBOARD_SIDE_HANDLE_W;
           const rowHandleLeftX = selectorX - rowHandleW + LEADERBOARD_SIDE_HANDLE_OVERLAP;
@@ -2943,7 +3651,18 @@ function MainBoard({
           return (
             <g onWheel={handlePodiumWheel}>
               <rect x={contentX - 4} y={contentY - 4} width={contentW + 8} height={contentH + 8} fill="transparent" />
-              {gameBrowserMode ? (
+              {overviewMode ? (
+                <OverviewScopeGrid
+                  x={contentX}
+                  y={contentY}
+                  w={contentW}
+                  h={contentH}
+                  items={overviewNavItems}
+                  activeNavLabel={activeNavLabel}
+                  onSelect={onNavItemSelect}
+                  cfg={cfg}
+                />
+              ) : selectorBrowserMode ? (
                 <GameCategoryGrid
                   x={contentX}
                   y={contentY}
@@ -2953,6 +3672,7 @@ function MainBoard({
                   selectedCategoryId={selectedGameCategoryId}
                   page={safeCategoryPage}
                   pageCount={categoryPageCount}
+                  rows={categoryGridRows}
                   handleLeftX={rowHandleLeftX}
                   handleRightX={rowHandleRightX}
                   onPageChange={setCategoryPage}
@@ -2960,25 +3680,40 @@ function MainBoard({
                   cfg={cfg}
                 />
               ) : null}
-              {expandedCategory ? (
+              {showSubcategorySelector && selectedCategory ? (
                 <GameSubcategoryGrid
                   x={carouselTrackX}
                   y={subcategoryY}
                   w={carouselTrackW}
                   h={subcategoryH}
-                  category={expandedCategory}
+                  category={selectedCategory}
                   selectedSubcategoryId={selectedSubcategoryId}
+                  singleRow={false}
                   onSelect={routeGameSubcategoryToBottom}
                   cfg={cfg}
                 />
               ) : null}
-              {gameBrowserMode ? (
+              {gameBrowserMode && !expandedCategory ? (
                 <>
                   <LeaderboardFrameSideHandle x={rowHandleLeftX} y={carouselHandleY} side="left" height={carouselHandleH} width={rowHandleW} disabled={podiumPageCount <= 1} onClick={() => shiftPodiumPage(-1)} cfg={cfg} />
                   <LeaderboardFrameSideHandle x={rowHandleRightX} y={carouselHandleY} side="right" height={carouselHandleH} width={rowHandleW} disabled={podiumPageCount <= 1} onClick={() => shiftPodiumPage(1)} cfg={cfg} />
                 </>
               ) : null}
-              {gameBrowserMode && gameBrowserView === 'list' ? (
+              {overviewMode || categoryBrowserMode ? null : expandedCategory ? (
+                <ExpandedGameBrowserPanel
+                  x={carouselTrackX}
+                  y={carouselY}
+                  w={carouselTrackW}
+                  h={carouselH}
+                  games={sortedCategoryGames}
+                  selectedGameId={selectedGameId}
+                  categoryLabel={expandedCategory.label}
+                  subcategoryLabel={expandedCategory.subcategories.find(subcategory => subcategory.id === selectedSubcategoryId)?.label ?? null}
+                  view={gameBrowserView}
+                  onSelect={selectBrowserGame}
+                  cfg={cfg}
+                />
+              ) : gameBrowserMode && gameBrowserView === 'list' ? (
                 <LeaderboardGameList
                   x={carouselTrackX}
                   y={carouselY}
@@ -3003,6 +3738,7 @@ function MainBoard({
                   onSelect={routeTopItemToBottom}
                   onHoverChange={item => setHoveredTopGameKey(item?.kind === 'game' ? item.key : null)}
                   minCardW={topCardMinW}
+                  emptyOverlay={topEmptyOverlay}
                   cfg={cfg}
                 />
               )}
@@ -3010,30 +3746,75 @@ function MainBoard({
           );
         }}
       </LeaderboardSectionFrame> : null}
-      <LeaderboardSectionFrame
+      {!gameCategoryExpanded ? <LeaderboardSectionFrame
         x={mainX}
         y={bottomPanelY}
         w={mainW}
         h={bottomPanelH}
         title={tableFocusTitle}
-        count="2"
+        count={String(overviewMode ? overviewScopeStats.length : gamePopularityMode ? topGames.filter(hasPublishedGameActivity).length : liveActivityMode ? 0 : pagedRows.length)}
         tone="cyan"
         headerRight={tableHeaderAction}
         footerH={30}
         bodyStrokeOpacity={0}
         bodyFill="transparent"
         selected={tableExpanded}
-        onSelect={() => setFocusedSection('table')}
+        onSelect={() => setFocusedSection(gamePopularityMode ? 'gamePopularity' : 'table')}
         onWheel={handleTableWheel}
-        ariaLabel={tableExpanded ? 'Expanded leaderboard ranking table' : 'Expand leaderboard ranking table'}
+        ariaLabel={overviewMode ? 'Leaderboard scope status' : gamePopularityMode ? 'Game activity leaderboard by period' : liveActivityMode ? 'Recent leaderboard movement' : tableExpanded ? 'Expanded leaderboard ranking table' : 'Expand leaderboard ranking table'}
         footer={footerRect => (
-          <Pagination x={mainX} y={footerRect.y + 3} w={mainW} page={safePage} maxPage={maxPage} rowsPerPage={rowsPerPage} pageLabel={uiCopy.pageLabel} showLabel={uiCopy.showLabel} onPageChange={onPageChange} onRowsPerPageChange={onRowsPerPageChange} cfg={cfg} />
+          overviewMode ? (
+            <text x={footerRect.x + footerRect.w - 18} y={footerRect.y + 20} textAnchor="end" fontSize={10} fontWeight={900} fill={cfg.colors.mutedText}>RANKED SCOPES</text>
+          ) : gamePopularityMode ? (
+            <text x={footerRect.x + footerRect.w - 18} y={footerRect.y + 20} textAnchor="end" fontSize={10} fontWeight={900} fill={cfg.colors.mutedText}>PERIOD {activeGamePopularityPeriod.label}</text>
+          ) : liveActivityMode ? (
+            <text x={footerRect.x + footerRect.w - 18} y={footerRect.y + 20} textAnchor="end" fontSize={10} fontWeight={900} fill={cfg.colors.mutedText}>REAL-TIME EVENT WINDOW</text>
+          ) : maxPage > 1 ? (
+            <Pagination x={mainX} y={footerRect.y + 3} w={mainW} page={safePage} maxPage={maxPage} rowsPerPage={rowsPerPage} pageLabel={uiCopy.pageLabel} showLabel={uiCopy.showLabel} onPageChange={onPageChange} onRowsPerPageChange={onRowsPerPageChange} cfg={cfg} />
+          ) : (
+            null
+          )
         )}
         cfg={cfg}
       >
         {body => (
           <g>
             <rect x={body.x + 4} y={body.y + 4} width={body.w - 8} height={body.h - 8} fill="transparent" pointerEvents="all" />
+            {overviewMode ? (
+              <OverviewReadoutBoard
+                x={tableX}
+                y={tableFrame.body.y + 10}
+                w={tableW}
+                h={Math.max(128, tableFrame.body.h - 20)}
+                stats={overviewScopeStats}
+                activeNavLabel={activeNavLabel}
+                onSelect={onNavItemSelect}
+                cfg={cfg}
+              />
+            ) : gamePopularityMode ? (
+              <GamePopularityBoard
+                games={topGames}
+                selectedGameId={selectedGameId}
+                periodLabel={activeGamePopularityPeriod.label}
+                x={tableX}
+                y={tableY}
+                w={tableW}
+                h={Math.max(92, tableFrame.body.y + tableFrame.body.h - tableY - 16)}
+                onGameSelect={onGameSelect}
+                cfg={cfg}
+              />
+            ) : liveActivityMode ? (
+              <LiveMovementBoard
+                x={tableX}
+                y={tableFrame.body.y + 10}
+                w={tableW}
+                h={Math.max(128, tableFrame.body.h - 20)}
+                selectedPlayer={selectedPlayer}
+                selectedGameName={selectedGameName}
+                cfg={cfg}
+              />
+            ) : (
+              <>
             {showGameLeaderStrip ? (
               <GameLeaderStrip
                 rows={gameLeaderRows}
@@ -3079,22 +3860,36 @@ function MainBoard({
                 onPlayerSelect={handleTablePlayerSelect}
                 cfg={cfg}
               />
+              {!tableHasRows ? (
+                <LeaderboardEmptyOverlay
+                  x={tableX}
+                  y={tableY + 40}
+                  w={tableW}
+                  h={Math.max(82, Math.min(142, tableFrame.body.y + tableFrame.body.h - tableY - 54))}
+                  title={tableEmptyCopy.title}
+                  body={tableEmptyCopy.body}
+                  tone={tableEmptyCopy.tone}
+                  cfg={cfg}
+                />
+              ) : null}
             </g>
             <LeaderboardTableScrollRail x={tableX + tableW + 7} y={tableY + 42} h={Math.max(36, tableFrame.body.y + tableFrame.body.h - tableY - 58)} page={safePage} maxPage={maxPage} cfg={cfg} />
+              </>
+            )}
           </g>
-        )}
-      </LeaderboardSectionFrame>
+        )} 
+      </LeaderboardSectionFrame> : null}
       {detailMode ? <DetailOverlay x={mainX + 18} y={mainY + 50} w={mainW - 36} h={mainH - 100} mode={detailMode} activeTab={activeTab} detail={detail} season={season} topGames={topGames} uiCopy={uiCopy} selectedPlayer={selectedPlayer} selectedGameName={selectedGameName} onTabChange={onTabChange} onClose={onDetailClose} cfg={cfg} /> : null}
     </g>
   );
 }
 
-function MainBoardFocusSummary({ mode, x, y, w, h, distributionLabels, totalPlayersValue, selectedPlayer, selectedGameName, detail, cfg }: { mode: 'rating' | 'live'; x: number; y: number; w: number; h: number; distributionLabels: string[]; totalPlayersValue: string; selectedPlayer: DisplayRow; selectedGameName: string; detail: TabDetail; cfg: LeaderboardPageSvgControls }) {
+function MainBoardFocusSummary({ mode, x, y, w, h, distributionLabels, totalPlayersValue, selectedPlayer, selectedGameName, detail, cfg }: { mode: 'rating' | 'live'; x: number; y: number; w: number; h: number; distributionLabels: string[]; totalPlayersValue: string; selectedPlayer: DisplayRow | null; selectedGameName: string; detail: TabDetail; cfg: LeaderboardPageSvgControls }) {
   const color = mode === 'rating' ? cfg.colors.cyan : cfg.colors.gold;
-  const title = mode === 'rating' ? 'GLOBAL RATING SPREAD' : 'LIVE MOVEMENT';
+  const title = mode === 'rating' ? 'GLOBAL RATING SPREAD' : 'RECENT RANK MOVEMENT';
   const summary = mode === 'rating'
     ? `${totalPlayersValue} ranked players across current season tiers`
-    : `${selectedPlayer.player} / ${selectedGameName}`;
+    : selectedPlayer ? `${selectedPlayer.player} / ${selectedGameName}` : 'Completed matches, overtakes, new leaders, and benchmark deltas';
   const titleSize = fitSingleLineTextSize(title, Math.max(80, w - 28), 10.4, 13.6, 0.58);
   const summarySize = fitSingleLineTextSize(summary, Math.max(80, w - 32), 8.2, 10.4, 0.55);
   const showChart = mode === 'rating' && w >= 430;
@@ -3124,7 +3919,10 @@ function RatingFocusSummary({ x, y, w, h, stats, totalPlayersValue, showChart, c
   const rowH = Math.max(17, Math.min(22, (h - 4) / Math.ceil(Math.max(1, stats.length) / cols)));
   return (
     <g>
-      {showChart ? <DistributionChart x={x + 58} y={y + h / 2 + 2} totalLabel="PLAYERS" totalValue={totalPlayersValue} cfg={cfg} /> : null}
+      {showChart && stats.length > 0 ? <DistributionChart x={x + 58} y={y + h / 2 + 2} totalLabel="PLAYERS" totalValue={totalPlayersValue} size={54} cfg={cfg} /> : null}
+      {stats.length === 0 ? (
+        <text x={statsX + statsW / 2} y={y + h / 2 + 4} textAnchor="middle" fontSize={10.2} fontWeight={820} fill={cfg.colors.mutedText}>Ranked matches open this chart.</text>
+      ) : null}
       {stats.map((stat, index) => {
         const col = index % cols;
         const row = Math.floor(index / cols);
@@ -3145,53 +3943,89 @@ function RatingFocusSummary({ x, y, w, h, stats, totalPlayersValue, showChart, c
   );
 }
 
-function LiveFocusSummary({ x, y, w, h, selectedPlayer, selectedGameName, detail, cfg }: { x: number; y: number; w: number; h: number; selectedPlayer: DisplayRow; selectedGameName: string; detail: TabDetail; cfg: LeaderboardPageSvgControls }) {
-  const events = [
-    { title: `${selectedPlayer.player} hit ${selectedPlayer.rating}`, detail: 'Live rating movement', tone: selectedPlayer.tone },
-    { title: `${selectedGameName} updated ${detail.primary.toLowerCase()}`, detail: detail.secondary, tone: 'cyan' as const },
-    { title: `${detail.eyebrow} scope active`, detail: 'Ranking table stays in current scope', tone: 'gold' as const },
-  ];
-  const visible = events.slice(0, h < 64 ? 2 : 3);
-  const rowH = Math.max(18, Math.min(26, h / visible.length));
+function LiveFocusSummary({ x, y, w, h, selectedPlayer, selectedGameName: _selectedGameName, detail: _detail, cfg }: { x: number; y: number; w: number; h: number; selectedPlayer: DisplayRow | null; selectedGameName: string; detail: TabDetail; cfg: LeaderboardPageSvgControls }) {
+  return (
+    <LeaderboardEmptyPanel
+      x={x + 8}
+      y={y + 8}
+      w={w - 16}
+      h={Math.max(72, h - 16)}
+      title="NO RANK MOVEMENT YET"
+      body={selectedPlayer ? `${selectedPlayer.player} movement appears after ranked results.` : 'Rank changes appear after official results.'}
+      tone={selectedPlayer?.tone ?? 'cyan'}
+      cfg={cfg}
+    />
+  );
+}
+
+function LiveMovementBoard({ x, y, w, h, selectedPlayer, selectedGameName, cfg }: { x: number; y: number; w: number; h: number; selectedPlayer: DisplayRow | null; selectedGameName: string; cfg: LeaderboardPageSvgControls }) {
+  const headerH = 34;
+  const rowGap = 6;
+  const rowH = Math.max(30, Math.min(42, (h - headerH - rowGap * (LIVE_MOVEMENT_CHANNELS.length - 1) - 72) / LIVE_MOVEMENT_CHANNELS.length));
+  const rowW = Math.max(1, w - 16);
+  const rowX = x + 8;
+  const titleSize = fitSingleLineTextSize('REAL-TIME MOVEMENT CHANNELS', Math.max(80, rowW - 16), 10, 12.5, 0.56);
+  const watchedLabel = selectedPlayer ? `${selectedPlayer.player} / ${selectedGameName}` : `All scopes / ${selectedGameName || 'leaderboard'}`;
   return (
     <g>
-      {visible.map((event, index) => {
-        const color = toneColor(event.tone, cfg);
-        const rowY = y + index * rowH;
-        const titleSize = fitSingleLineTextSize(event.title, w - 64, 8.2, 10.4, 0.58);
-        const detailSize = fitSingleLineTextSize(event.detail, w - 64, 7.2, 8.8, 0.58);
+      <path d={cutRectPath(x, y, w, h, 8)} fill="rgba(5, 17, 30, 0.48)" stroke={cfg.colors.cyan} strokeWidth={0.85} strokeOpacity={0.42} />
+      <text x={x + 18} y={y + 22} fontSize={titleSize} fontWeight={950} fill={cfg.colors.bodyText}>REAL-TIME MOVEMENT CHANNELS</text>
+      <text x={x + w - 18} y={y + 22} textAnchor="end" fontSize={9.4} fontWeight={850} fill={cfg.colors.mutedText}>{truncateTextForWidth(watchedLabel, Math.max(90, w * 0.36), 9.4, 0.54)}</text>
+      {LIVE_MOVEMENT_CHANNELS.map((item, index) => {
+        const color = toneColor(item.tone, cfg);
+        const rowY = y + headerH + index * (rowH + rowGap);
+        const compact = rowW < 560;
+        const labelW = compact ? rowW * 0.42 : rowW * 0.25;
+        const scopeW = compact ? rowW * 0.34 : rowW * 0.25;
+        const statusW = compact ? rowW * 0.24 : rowW * 0.18;
+        const impactW = rowW - labelW - scopeW - statusW - 28;
+        const labelSize = fitSingleLineTextSize(item.label, labelW - 22, 8.4, 11.2, 0.56);
+        const scopeSize = fitSingleLineTextSize(item.scope, scopeW - 18, 7.8, 10.4, 0.54);
+        const statusSize = fitSingleLineTextSize(item.status, statusW - 14, 7.8, 10.4, 0.54);
+        const impactSize = fitSingleLineTextSize(item.impact, impactW - 12, 7.6, 10.2, 0.54);
         return (
-          <g key={`${event.title}-${index}`}>
-            <path d={cutRectPath(x, rowY + 1, w, rowH - 3, 5)} fill={colorAlpha(color, '10')} stroke={color} strokeWidth={0.7} strokeOpacity={0.38} />
-            <circle cx={x + 15} cy={rowY + rowH / 2} r={5.5} fill={colorAlpha(color, '22')} stroke={color} strokeWidth={0.8} />
-            <text x={x + 30} y={rowY + rowH / 2 - 1} fontSize={titleSize} fontWeight={930} fill={cfg.colors.bodyText}>{truncateTextForWidth(event.title, w - 64, titleSize, 0.58)}</text>
-            <text x={x + 30} y={rowY + rowH / 2 + 10} fontSize={detailSize} fontWeight={760} fill={cfg.colors.mutedText}>{truncateTextForWidth(event.detail, w - 64, detailSize, 0.58)}</text>
-            <text x={x + w - 12} y={rowY + rowH / 2 + 4} textAnchor="end" fontSize={8.6} fontWeight={900} fill={color}>LIVE</text>
+          <g key={item.label}>
+            <path d={cutRectPath(rowX, rowY, rowW, rowH, 7)} fill={colorAlpha(color, '12')} stroke={color} strokeWidth={0.8} strokeOpacity={0.46} />
+            <rect x={rowX + 10} y={rowY + rowH / 2 - 5} width={10} height={10} rx={2} fill={color} opacity={0.9} />
+            <text x={rowX + 28} y={rowY + rowH / 2 + 4} fontSize={labelSize} fontWeight={950} fill={cfg.colors.bodyText}>{item.label}</text>
+            <text x={rowX + labelW} y={rowY + rowH / 2 + 4} fontSize={scopeSize} fontWeight={850} fill="#b9d2e7">{truncateTextForWidth(item.scope, scopeW - 18, scopeSize, 0.54)}</text>
+            <text x={rowX + labelW + scopeW} y={rowY + rowH / 2 + 4} fontSize={statusSize} fontWeight={950} fill={color}>{item.status}</text>
+            {!compact ? <text x={rowX + labelW + scopeW + statusW} y={rowY + rowH / 2 + 4} fontSize={impactSize} fontWeight={820} fill={cfg.colors.mutedText}>{truncateTextForWidth(item.impact, impactW, impactSize, 0.54)}</text> : null}
           </g>
         );
       })}
+      <LeaderboardEmptyOverlay
+        x={x + 8}
+        y={y + h - 68}
+        w={rowW}
+        h={58}
+        title="NO RANK MOVEMENT YET"
+        body="Completed official results will append here in order."
+        tone="cyan"
+        cfg={cfg}
+      />
     </g>
   );
 }
 
-function DetailOverlay({ x, y, w, h, mode, activeTab, detail, season, topGames, uiCopy, selectedPlayer, selectedGameName, onTabChange, onClose, cfg }: { x: number; y: number; w: number; h: number; mode: DetailMode; activeTab: LeaderboardTabId; detail: TabDetail; season: LeaderboardPageContentData['season']; topGames: TopGame[]; uiCopy: LeaderboardPageContentData['uiCopy']; selectedPlayer: DisplayRow; selectedGameName: string; onTabChange: (tab: LeaderboardTabId) => void; onClose: () => void; cfg: LeaderboardPageSvgControls }) {
-  const tone: Tone = mode === 'season' ? 'gold' : mode === 'game' ? 'purple' : selectedPlayer.tone;
+function DetailOverlay({ x, y, w, h, mode, activeTab, detail, season, topGames, uiCopy, selectedPlayer, selectedGameName, onTabChange, onClose, cfg }: { x: number; y: number; w: number; h: number; mode: DetailMode; activeTab: LeaderboardTabId; detail: TabDetail; season: LeaderboardPageContentData['season']; topGames: TopGame[]; uiCopy: LeaderboardPageContentData['uiCopy']; selectedPlayer: DisplayRow | null; selectedGameName: string; onTabChange: (tab: LeaderboardTabId) => void; onClose: () => void; cfg: LeaderboardPageSvgControls }) {
+  const tone: Tone = mode === 'season' ? 'gold' : mode === 'game' ? 'purple' : selectedPlayer?.tone ?? 'cyan';
   const color = toneColor(tone, cfg);
   const selectedGame = topGames.find(game => game.name === selectedGameName || game.id === selectedGameName);
-  const title = mode === 'season' ? season.detailTitle : mode === 'game' ? `${selectedGameName.toUpperCase()} DRILLDOWN` : `${selectedPlayer.player.toUpperCase()} PROFILE`;
-  const subtitle = mode === 'season' ? season.detailSubtitle : mode === 'game' ? `Per-game ranking from ${detail.eyebrow}` : `${detail.eyebrow} / ${selectedGameName}`;
+  const title = mode === 'season' ? season.detailTitle : mode === 'game' ? `${selectedGameName.toUpperCase()} DRILLDOWN` : selectedPlayer ? `${selectedPlayer.player.toUpperCase()} PROFILE` : 'NO PLAYER SELECTED';
+  const subtitle = mode === 'season' ? season.detailSubtitle : mode === 'game' ? `Per-game ranking from ${detail.eyebrow}` : selectedPlayer ? `${detail.eyebrow} / ${selectedGameName}` : 'Player details appear after rows are available.';
   const stats = mode === 'season'
     ? season.stats.map(stat => [stat.label, stat.value] as [string, string])
     : mode === 'game'
-      ? [['MATCHES', selectedGame?.matches ?? 'N/A'], ['GROWTH', selectedGame?.growth ?? 'N/A'], ['LEADERS', '100']]
-      : [['RATING', selectedPlayer.rating], ['WIN RATE', selectedPlayer.winRate], ['TREND', selectedPlayer.trend]];
+      ? [['MATCHES', selectedGame?.matches ?? 'N/A'], ['GROWTH', selectedGame?.growth ?? 'N/A'], ['LEADERS', 'N/A']]
+      : [['RATING', selectedPlayer?.rating ?? 'N/A'], ['WIN RATE', selectedPlayer?.winRate ?? 'N/A'], ['TREND', selectedPlayer?.trend ?? 'N/A']];
   const primaryTab: LeaderboardTabId = mode === 'season' ? 'tournaments' : mode === 'game' ? 'perGame' : activeTab;
   const primaryLabel = mode === 'season' ? 'OPEN EVENTS' : mode === 'game' ? 'OPEN GAME' : 'KEEP SELECTED';
   const artworkImageUrl = mode === 'season'
     ? shopPageSeasonPassImageUrl
     : mode === 'game'
       ? leaderboardGameImageUrl(selectedGame?.id ?? selectedGameName)
-      : playerAvatarImageUrl(selectedPlayer.player);
+      : selectedPlayer ? playerAvatarImageUrl(selectedPlayer.player) : bannerGlobalLeaderboardImageUrl;
   return (
     <g role="dialog" aria-label={title}>
       <path d={cutRectPath(x - 8, y - 8, w + 16, h + 16, 18)} fill="rgba(1, 5, 12, 0.72)" stroke={color} strokeWidth={1.2} opacity={0.98} />
@@ -3220,15 +4054,15 @@ function DetailOverlay({ x, y, w, h, mode, activeTab, detail, season, topGames, 
   );
 }
 
-function TopGameRow({ game, x, y, w, selected, onSelect, cfg }: { game: TopGame; x: number; y: number; w: number; selected: boolean; onSelect: () => void; cfg: LeaderboardPageSvgControls }) {
+function TopGameRow({ game, x, y, w, selected, unavailable = false, onSelect, cfg }: { game: TopGame; x: number; y: number; w: number; selected: boolean; unavailable?: boolean; onSelect: () => void; cfg: LeaderboardPageSvgControls }) {
   const [hovered, setHovered] = useState(false);
   const rawClipId = useId();
   const clipId = `leaderboard-top-game-row-${rawClipId.replace(/:/g, '')}`;
   const lit = selected || hovered;
   const color = toneColor(game.tone, cfg);
   const rowH = 24;
-  const matchesLabel = compactGameStatLabel(game.matches);
-  const growthLabel = compactGameGrowthLabel(game.growth);
+  const matchesLabel = unavailable ? 'N/A' : compactGameStatLabel(game.matches);
+  const growthLabel = unavailable ? 'N/A' : compactGameGrowthLabel(game.growth);
   const gameNameW = Math.max(48, w - 164);
   const gameNameSize = fitSingleLineTextSize(game.name, gameNameW, 8.5, 12, 0.58);
   const matchesSize = fitSingleLineTextSize(matchesLabel, 42, 8.4, 10.8, 0.56);
@@ -3250,7 +4084,7 @@ function TopGameRow({ game, x, y, w, selected, onSelect, cfg }: { game: TopGame;
       }}
       role="button"
       tabIndex={0}
-      aria-label={`Show ${game.name} game ladder`}
+      aria-label={`Select ${game.name} game`}
     >
       <defs>
         <clipPath id={clipId}>
@@ -3260,34 +4094,44 @@ function TopGameRow({ game, x, y, w, selected, onSelect, cfg }: { game: TopGame;
       <path d={cutRectPath(x, y, w, rowH, 6)} fill={lit ? (selected ? 'rgba(123, 92, 255, 0.22)' : `${color}18`) : 'rgba(6, 18, 31, 0.62)'} stroke={lit ? color : '#123f62'} strokeWidth={lit ? 1.15 : 0.65} />
       {hovered && !selected ? <path d={cutRectPath(x - 2, y - 2, w + 4, rowH + 4, 8)} fill="none" stroke={color} strokeWidth={1.5} opacity={0.26} filter="url(#leaderboardGlow)" /> : null}
       <g clipPath={`url(#${clipId})`}>
-        <IconBadge x={x + 6} y={y + 1} icon={Trophy} tone={game.tone} size={22} rank={game.rank} cfg={cfg} />
+        <IconBadge x={x + 6} y={y + 1} icon={Trophy} tone={game.tone} size={22} rank={unavailable ? undefined : game.rank} cfg={cfg} />
         <GameArtBadge x={x + 34} y={y + 2} size={20} gameId={game.id} tone={game.tone} cfg={cfg} />
         <text x={x + 59} y={y + 16} fontSize={gameNameSize} fontWeight={720} fill={cfg.colors.bodyText}>{truncateTextForWidth(game.name, gameNameW, gameNameSize, 0.58)}</text>
         <text x={x + w - 78} y={y + 16} textAnchor="end" fontSize={matchesSize} fontWeight={700} fill={cfg.colors.bodyText}>{matchesLabel}</text>
-        <text x={x + w - 25} y={y + 16} textAnchor="end" fontSize={growthSize} fontWeight={760} fill="#42ff83">{growthLabel}</text>
+        <text x={x + w - 25} y={y + 16} textAnchor="end" fontSize={growthSize} fontWeight={760} fill={unavailable ? cfg.colors.mutedText : '#42ff83'}>{growthLabel}</text>
       </g>
       {lit ? <ChevronRight x={x + w - 18} y={y + 5} width={13} height={13} color={color} /> : null}
     </g>
   );
 }
 
-function SelectionSummary({ x, y, w, label, player, selectedGame, detail, onOpen, cfg }: { x: number; y: number; w: number; label: string; player: DisplayRow; selectedGame: string; detail: TabDetail; onOpen: () => void; cfg: LeaderboardPageSvgControls }) {
+function SelectionSummary({ x, y, w, label, player, selectedGame, detail, onOpen, cfg }: { x: number; y: number; w: number; label: string; player: DisplayRow | null; selectedGame: string; detail: TabDetail; onOpen: () => void; cfg: LeaderboardPageSvgControls }) {
   const [hovered, setHovered] = useState(false);
-  const color = toneColor(player.tone, cfg);
+  const color = toneColor(player?.tone ?? detail.tone, cfg);
+  const canOpen = Boolean(player);
+  const titleW = Math.max(64, w - 104);
+  const detailW = Math.max(64, w - 58);
+  const playerLabel = player?.player ?? 'No ranked player yet';
+  const ratingLabel = player?.rating ?? '-';
+  const detailLabel = `${detail.eyebrow} / ${selectedGame}`;
+  const playerSize = fitSingleLineTextSize(playerLabel, titleW, 10.2, 12, 0.58);
+  const ratingSize = fitSingleLineTextSize(ratingLabel, 38, 9.2, 12, 0.58);
+  const detailSize = fitSingleLineTextSize(detailLabel, detailW, 7.8, 9.5, 0.56);
   return (
     <g
-      className="leaderboard-page-svg-clickable"
+      className={canOpen ? 'leaderboard-page-svg-clickable' : undefined}
       role="button"
-      tabIndex={0}
-      aria-label={`Open ${player.player} player profile`}
+      tabIndex={canOpen ? 0 : -1}
+      aria-label={player ? `Open ${player.player} player profile` : 'No player profile available'}
+      aria-disabled={canOpen ? undefined : true}
       onClick={(event) => {
         event.stopPropagation();
-        onOpen();
+        if (canOpen) onOpen();
       }}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => canOpen && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onKeyDown={(event) => {
-        if (event.key !== 'Enter' && event.key !== ' ') return;
+        if (!canOpen || (event.key !== 'Enter' && event.key !== ' ')) return;
         event.preventDefault();
         event.stopPropagation();
         onOpen();
@@ -3295,28 +4139,28 @@ function SelectionSummary({ x, y, w, label, player, selectedGame, detail, onOpen
     >
       {hovered ? <rect x={x - 4} y={y - 4} width={w + 8} height={66} rx={7} fill="none" stroke={color} strokeWidth={1.5} opacity={0.28} filter="url(#leaderboardGlow)" /> : null}
       <rect x={x} y={y} width={w} height={58} rx={5} fill={hovered ? `${color}18` : 'rgba(7, 22, 37, 0.9)'} stroke={color} strokeWidth={hovered ? 1.2 : 0.8} strokeOpacity={0.72} />
-      <PlayerAvatarSlot cx={x + 21} cy={y + 19} r={13} player={player.player} tone={player.tone} cfg={cfg} />
+      {player ? <PlayerAvatarSlot cx={x + 21} cy={y + 19} r={13} player={player.player} tone={player.tone} cfg={cfg} /> : <GameArtBadge x={x + 8} y={y + 6} size={26} gameId="leaderboard" tone={detail.tone} cfg={cfg} />}
       <text x={x + 44} y={y + 15} fontSize={9.5} fontWeight={900} fill="#8ddff2">{label}</text>
-      <text x={x + 44} y={y + 31} fontSize={12} fontWeight={950} fill={cfg.colors.bodyText}>{player.player}</text>
-      <text x={x + w - 14} y={y + 31} textAnchor="end" fontSize={12} fontWeight={950} fill={color}>{player.rating}</text>
-      <text x={x + 44} y={y + 48} fontSize={9.5} fontWeight={800} fill={cfg.colors.mutedText}>{detail.eyebrow} / {selectedGame}</text>
-      <ChevronRight x={x + w - 28} y={y + 40} width={13} height={13} color={toneColor(detail.tone, cfg)} />
+      <text x={x + 44} y={y + 31} fontSize={playerSize} fontWeight={950} fill={cfg.colors.bodyText}>{truncateTextForWidth(playerLabel, titleW, playerSize, 0.58)}</text>
+      <text x={x + w - 14} y={y + 31} textAnchor="end" fontSize={ratingSize} fontWeight={950} fill={color}>{truncateTextForWidth(ratingLabel, 38, ratingSize, 0.58)}</text>
+      <text x={x + 44} y={y + 48} fontSize={detailSize} fontWeight={800} fill={cfg.colors.mutedText}>{truncateTextForWidth(detailLabel, detailW, detailSize, 0.56)}</text>
+      {canOpen ? <ChevronRight x={x + w - 28} y={y + 40} width={13} height={13} color={toneColor(detail.tone, cfg)} /> : null}
     </g>
   );
 }
 
-function RightRailCard({ x, y, w, h, tone, title, subtitle, onClick, ariaLabel, cfg, children }: { x: number; y: number; w: number; h: number; tone: Tone; title: string; subtitle: string; onClick: () => void; ariaLabel: string; cfg: LeaderboardPageSvgControls; children: (bounds: { x: number; y: number; w: number; h: number; color: string }) => ReactNode }) {
+function RightRailCard({ x, y, w, h, tone, title, onClick, ariaLabel, cfg, children }: { x: number; y: number; w: number; h: number; tone: Tone; title: string; onClick: () => void; ariaLabel: string; cfg: LeaderboardPageSvgControls; children: (bounds: { x: number; y: number; w: number; h: number; color: string }) => ReactNode }) {
   const [hovered, setHovered] = useState(false);
   const color = toneColor(tone, cfg);
-  const headerX = x + 14;
-  const headerY = y + 12;
-  const headerW = w - 28;
-  const headerH = 39;
+  const headerX = x + 18;
+  const headerY = y + 16;
+  const headerW = w - 36;
+  const dividerY = y + 43;
   const bodyX = x + 14;
-  const bodyY = y + 59;
+  const bodyY = y + 51;
   const bodyW = w - 28;
-  const bodyH = h - 73;
-  const titleSize = fitSingleLineTextSize(title, headerW - 18, 11.5, 15, 0.58);
+  const bodyH = h - 65;
+  const titleSize = fitSingleLineTextSize(title, headerW, 11.5, 15, 0.58);
   const arrowTop = y + h / 2 - 42;
   const arrowBottom = y + h / 2 + 42;
   const arrowMid = y + h / 2;
@@ -3353,9 +4197,9 @@ function RightRailCard({ x, y, w, h, tone, title, subtitle, onClick, ariaLabel, 
         </>
       ) : null}
       <LeaderboardSidePanelFrame x={x} y={y} w={w} h={h} tone={tone} active={hovered} cfg={cfg} />
-      <path d={cutRectPath(headerX, headerY, headerW, headerH, 8)} fill={hovered ? colorAlpha(color, '3f') : colorAlpha(color, '18')} stroke={color} strokeWidth={hovered ? 1.25 : 0.9} strokeOpacity={hovered ? 0.9 : 0.78} />
-      <text x={headerX + 13} y={headerY + 17} fontSize={titleSize} fontWeight={950} fill={cfg.colors.bodyText}>{title}</text>
-      <text x={headerX + 13} y={headerY + 32} fontSize={8.8} fontWeight={850} fill={cfg.colors.mutedText}>{subtitle}</text>
+      <text x={headerX} y={headerY + 17} fontSize={titleSize} fontWeight={950} fill={cfg.colors.bodyText}>{title}</text>
+      <line x1={headerX} y1={dividerY} x2={x + w - 18} y2={dividerY} stroke={color} strokeWidth={hovered ? 1.25 : 0.8} strokeOpacity={hovered ? 0.86 : 0.48} />
+      <line x1={headerX} y1={dividerY + 3} x2={x + w - 42} y2={dividerY + 3} stroke={color} strokeWidth={0.7} strokeOpacity={hovered ? 0.36 : 0.2} />
       <path d={cutRectPath(bodyX, bodyY, bodyW, bodyH, 8)} fill={hovered ? colorAlpha(color, '18') : 'rgba(4, 15, 27, 0.68)'} stroke={color} strokeWidth={hovered ? 1.15 : 0.7} strokeOpacity={hovered ? 0.82 : 0.42} />
       {hovered ? (
         <g pointerEvents="none">
@@ -3369,7 +4213,7 @@ function RightRailCard({ x, y, w, h, tone, title, subtitle, onClick, ariaLabel, 
   );
 }
 
-function DistributionChart({ x, y, totalLabel, totalValue, cfg }: { x: number; y: number; totalLabel: string; totalValue: string; cfg: LeaderboardPageSvgControls }) {
+function DistributionChart({ x, y, totalLabel, totalValue, size = 62, cfg }: { x: number; y: number; totalLabel: string; totalValue: string; size?: number; cfg: LeaderboardPageSvgControls }) {
   const segments = [
     { start: -140, end: -74, color: cfg.colors.red },
     { start: -72, end: -26, color: cfg.colors.purple },
@@ -3377,12 +4221,19 @@ function DistributionChart({ x, y, totalLabel, totalValue, cfg }: { x: number; y
     { start: 44, end: 126, color: '#4ed77c' },
     { start: 128, end: 218, color: cfg.colors.gold },
   ];
+  const outerR = size;
+  const innerR = Math.max(22, size * 0.64);
+  const centerR = Math.max(22, size * 0.6);
+  const labelSize = fitSingleLineTextSize(totalLabel, centerR * 1.62, 6.6, clampValue(size * 0.145, 7.2, 9), 0.56);
+  const valueSize = clampValue(size * 0.34, 15, 21);
+  const labelText = truncateTextForWidth(totalLabel, centerR * 1.62, labelSize, 0.56);
+  const valueText = truncateTextForWidth(totalValue, centerR * 1.45, valueSize, 0.56);
   return (
     <g>
-      {segments.map(segment => <DonutSegment key={`${segment.start}-${segment.end}`} cx={x} cy={y} rOuter={62} rInner={40} start={segment.start} end={segment.end} color={segment.color} />)}
-      <circle cx={x} cy={y} r={37} fill="#061626" stroke={cfg.colors.cyan} strokeWidth={0.9} />
-      <text x={x} y={y - 8} textAnchor="middle" fontSize={9} fontWeight={900} fill="#a9bed5">{totalLabel}</text>
-      <text x={x} y={y + 18} textAnchor="middle" fontSize={21} fontWeight={950} fill={cfg.colors.bodyText}>{totalValue}</text>
+      {segments.map(segment => <DonutSegment key={`${segment.start}-${segment.end}`} cx={x} cy={y} rOuter={outerR} rInner={innerR} start={segment.start} end={segment.end} color={segment.color} />)}
+      <circle cx={x} cy={y} r={centerR} fill="#061626" stroke={cfg.colors.cyan} strokeWidth={0.9} />
+      <text x={x} y={y - valueSize * 0.42} textAnchor="middle" fontSize={labelSize} fontWeight={900} fill="#a9bed5">{labelText}</text>
+      <text x={x} y={y + valueSize * 0.7} textAnchor="middle" fontSize={valueSize} fontWeight={950} fill={cfg.colors.bodyText}>{valueText}</text>
     </g>
   );
 }
@@ -3408,18 +4259,28 @@ function DonutSegment({ cx, cy, rOuter, rInner, start, end, color }: { cx: numbe
   return <path d={d} fill={color} opacity={0.88} stroke="#07121f" strokeWidth={1} />;
 }
 
-function RightRail({ activeTab, tabDetails, topGames, quickGames, distributionLabels, uiCopy, selectedPlayer, selectedGameId, totalPlayersValue, onTabChange, onGameSelect, onFocusMainSection, onPlayerDetailOpen, cfg, rightX, rightW, mainY, mainH }: { activeTab: LeaderboardTabId; tabDetails: LeaderboardPageContentData['tabDetails']; topGames: TopGame[]; quickGames: QuickGame[]; distributionLabels: string[]; season: LeaderboardPageContentData['season']; uiCopy: LeaderboardPageContentData['uiCopy']; selectedPlayer: DisplayRow; selectedGameId: string; totalPlayersValue: string; onTabChange: (tab: LeaderboardTabId) => void; onGameSelect: (gameId: string) => void; onFocusMainSection: (section: LeaderboardFocusSection) => void; onPlayerDetailOpen: () => void; cfg: LeaderboardPageSvgControls; rightX: number; rightW: number; mainY: number; mainH: number }) {
+function RightRail({ activeTab, tabDetails, topGames, quickGames, distributionLabels, uiCopy, selectedPlayer, selectedGameId, totalPlayersValue, onTabChange, onGameSelect, onFocusMainSection, onPlayerDetailOpen, cfg, rightX, rightW, mainY, mainH }: { activeTab: LeaderboardTabId; tabDetails: LeaderboardPageContentData['tabDetails']; topGames: TopGame[]; quickGames: QuickGame[]; distributionLabels: string[]; season: LeaderboardPageContentData['season']; uiCopy: LeaderboardPageContentData['uiCopy']; selectedPlayer: DisplayRow | null; selectedGameId: string; totalPlayersValue: string; onTabChange: (tab: LeaderboardTabId) => void; onGameSelect: (gameId: string) => void; onFocusMainSection: (section: LeaderboardFocusSection) => void; onPlayerDetailOpen: () => void; cfg: LeaderboardPageSvgControls; rightX: number; rightW: number; mainY: number; mainH: number }) {
   const selectedGame = topGames.find(game => game.id === selectedGameId) ?? quickGames.find(game => game.id === selectedGameId);
   const detail = tabDetails[activeTab];
-  const topH = 206;
-  const distributionH = 228;
+  const railBottomY = mainY + mainH;
+  const railGap = cfg.layout.gap;
+  const railAvailableH = Math.max(1, railBottomY - mainY);
+  const equalPanelH = Math.max(1, (railAvailableH - railGap * 2) / 3);
+  const topH = equalPanelH;
+  const distributionH = equalPanelH;
   const distributionY = mainY + topH + cfg.layout.gap;
   const feedY = distributionY + distributionH + cfg.layout.gap;
-  const feedH = Math.max(168, mainY + mainH - feedY);
+  const feedH = equalPanelH;
   const distributionStats = distributionStatsFromLabels(distributionLabels);
+  const hasDistribution = distributionStats.length > 0 && totalPlayersValue !== '0';
+  const gameActivityRows = topGames.filter(hasPublishedGameActivity);
+  const hasGameActivity = gameActivityRows.length > 0;
+  const displayGameActivityRows = hasGameActivity
+    ? gameActivityRows
+    : topGames.slice(0, 5).map(game => ({ ...game, matches: 'N/A', growth: 'N/A' }));
+  const emptyDistributionSize = Math.min(52, Math.max(40, Math.min(rightW * 0.18, distributionH * 0.22)));
   const openGames = () => {
-    onTabChange('perGame');
-    onFocusMainSection('podium');
+    onFocusMainSection('gamePopularity');
   };
   const openDistribution = () => {
     onTabChange('overall');
@@ -3430,18 +4291,27 @@ function RightRail({ activeTab, tabDetails, topGames, quickGames, distributionLa
   };
   return (
     <g>
-      <RightRailCard x={rightX} y={mainY} w={rightW} h={topH} tone="cyan" title={uiCopy.topGamesTitle} subtitle={`${detail.eyebrow} / ${selectedGame?.name ?? selectedGameId}`} onClick={openGames} ariaLabel="Show game leaderboards in main board" cfg={cfg}>
+      <RightRailCard x={rightX} y={mainY} w={rightW} h={topH} tone="cyan" title={uiCopy.topGamesTitle} onClick={openGames} ariaLabel="Show most played games in main board" cfg={cfg}>
         {bounds => (
           <g>
-            {topGames.slice(0, 5).map((game, index) => <TopGameRow key={`${game.id}:${index}`} game={game} x={bounds.x + 8} y={bounds.y + 8 + index * 25} w={bounds.w - 16} selected={game.id === selectedGameId} onSelect={() => onGameSelect(game.id)} cfg={cfg} />)}
+            {displayGameActivityRows.slice(0, 5).map((game, index) => <TopGameRow key={`${game.id}:${index}`} game={game} x={bounds.x + 8} y={bounds.y + 8 + index * 25} w={bounds.w - 16} selected={game.id === selectedGameId} unavailable={!hasGameActivity} onSelect={() => { onGameSelect(game.id); onFocusMainSection('gamePopularity'); }} cfg={cfg} />)}
+            {!hasGameActivity ? (
+              <LeaderboardEmptyOverlay x={bounds.x + 8} y={bounds.y + 8} w={bounds.w - 16} h={Math.max(72, bounds.h - 16)} title="NO GAME ACTIVITY YET" body="Play ranked matches to rank games." tone="cyan" cfg={cfg} />
+            ) : null}
           </g>
         )}
       </RightRailCard>
-      <RightRailCard x={rightX} y={distributionY} w={rightW} h={distributionH} tone="cyan" title={uiCopy.distributionTitle} subtitle={`${uiCopy.distributionCenterLabel} / ${totalPlayersValue}`} onClick={openDistribution} ariaLabel="Show overall ranking table" cfg={cfg}>
+      <RightRailCard x={rightX} y={distributionY} w={rightW} h={distributionH} tone="cyan" title={uiCopy.distributionTitle} onClick={openDistribution} ariaLabel="Show overall ranking table" cfg={cfg}>
         {bounds => (
           <g>
-            <DistributionChart x={bounds.x + 78} y={bounds.y + 84} totalLabel={uiCopy.distributionCenterLabel} totalValue={totalPlayersValue} cfg={cfg} />
-            {distributionStats.map((stat, index) => {
+            <DistributionChart x={hasDistribution ? bounds.x + 78 : bounds.x + bounds.w / 2} y={hasDistribution ? bounds.y + 84 : bounds.y + bounds.h / 2 - 4} totalLabel={uiCopy.distributionCenterLabel} totalValue={hasDistribution ? totalPlayersValue : '0'} size={hasDistribution ? 62 : emptyDistributionSize} cfg={cfg} />
+            {!hasDistribution ? (
+              <g pointerEvents="none">
+                <text x={bounds.x + bounds.w / 2} y={bounds.y + bounds.h - 40} textAnchor="middle" fontSize={10.5} fontWeight={950} fill={cfg.colors.bodyText}>NO RATING SPREAD YET</text>
+                <text x={bounds.x + bounds.w / 2} y={bounds.y + bounds.h - 22} textAnchor="middle" fontSize={8.6} fontWeight={760} fill={cfg.colors.mutedText}>Ranked matches open this chart.</text>
+              </g>
+            ) : null}
+            {hasDistribution ? distributionStats.map((stat, index) => {
               const statColor = toneColor(stat.tone, cfg);
               const statY = bounds.y + 30 + index * 25;
               return (
@@ -3452,28 +4322,14 @@ function RightRail({ activeTab, tabDetails, topGames, quickGames, distributionLa
                   <text x={bounds.x + bounds.w - 18} y={statY + 3} textAnchor="end" fontSize={9.4} fontWeight={950} fill={cfg.colors.bodyText}>{stat.value}</text>
                 </g>
               );
-            })}
+            }) : null}
           </g>
         )}
       </RightRailCard>
-      <RightRailCard x={rightX} y={feedY} w={rightW} h={feedH} tone="cyan" title={uiCopy.feedTitle} subtitle={`${selectedGame?.name ?? 'Leaderboard'} / ${detail.primary}`} onClick={openLiveFeed} ariaLabel="Show live leaderboard table" cfg={cfg}>
+      <RightRailCard x={rightX} y={feedY} w={rightW} h={feedH} tone="cyan" title={uiCopy.feedTitle} onClick={openLiveFeed} ariaLabel="Show recent rank movement" cfg={cfg}>
         {bounds => (
           <g>
-            {[`${selectedPlayer.player} hit ${selectedPlayer.rating} rating`, `${selectedGame?.name ?? 'Leaderboard'} updated ${detail.primary.toLowerCase()}`].map((line, index) => {
-              const eventY = bounds.y + 12 + index * 40;
-              return (
-                <g key={line}>
-                  <path d={cutRectPath(bounds.x + 8, eventY, bounds.w - 16, 32, 6)} fill={index === 0 ? 'rgba(64, 255, 139, 0.08)' : 'rgba(65, 210, 255, 0.08)'} stroke={index === 0 ? '#40ff8b' : cfg.colors.cyan} strokeWidth={0.7} strokeOpacity={0.44} />
-                  {index === 0 ? (
-                    <PlayerAvatarSlot cx={bounds.x + 27} cy={eventY + 16} r={10} player={selectedPlayer.player} tone={selectedPlayer.tone} cfg={cfg} />
-                  ) : (
-                    <GameArtBadge x={bounds.x + 17} y={eventY + 6} size={20} gameId={selectedGame?.id ?? selectedGame?.name} tone={detail.tone} cfg={cfg} />
-                  )}
-                  <text x={bounds.x + 48} y={eventY + 14} fontSize={10.2} fontWeight={900} fill={cfg.colors.bodyText}>{line}</text>
-                  <text x={bounds.x + 48} y={eventY + 27} fontSize={8.8} fontWeight={760} fill={cfg.colors.mutedText}>{index === 0 ? 'Live rating movement' : 'Leaderboard scope changed'}</text>
-                </g>
-              );
-            })}
+            <LeaderboardEmptyOverlay x={bounds.x + 8} y={bounds.y + 8} w={bounds.w - 16} h={Math.max(52, bounds.h - 82)} title="NO RANK MOVEMENT YET" body="Rank changes appear after official results." tone="cyan" cfg={cfg} />
             <SelectionSummary x={bounds.x + 8} y={bounds.y + bounds.h - 66} w={bounds.w - 16} label={uiCopy.selectedPlayerLabel} player={selectedPlayer} selectedGame={selectedGame?.name ?? selectedGameId} detail={detail} onOpen={onPlayerDetailOpen} cfg={cfg} />
           </g>
         )}
@@ -3610,6 +4466,7 @@ function QuickAccessRail({ quickGames, selectedGameId, onGameSelect, cfg, x, y, 
               selected={item.key.startsWith(`${selectedKey}:`)}
               onSelect={() => onGameSelect(game.id)}
               gameHoverAnchor="up"
+              forceCompactGame
               cfg={cfg}
             />
           );
@@ -3686,6 +4543,7 @@ export function LeaderboardPageSvgSurface({
   seasonId,
   lastUpdated,
   leaderboardEntries,
+  aiBenchmarkEntries = [],
   userEntry,
   nearbyAbove,
   nearbyBelow,
@@ -3699,7 +4557,17 @@ export function LeaderboardPageSvgSurface({
 }: LeaderboardPageSvgSurfaceProps) {
   const mainRef = useRef<HTMLElement | null>(null);
   const baseCfg = useMemo(() => normalizeLeaderboardPageSvgControls(controls), [controls]);
-  const pageContent = useMemo(() => normalizeLeaderboardPageContent(content), [content]);
+  const pageContent = useMemo(() => {
+    const normalized = normalizeLeaderboardPageContent(content);
+    return {
+      ...normalized,
+      uiCopy: {
+        ...normalized.uiCopy,
+        topGamesTitle: normalized.uiCopy.topGamesTitle === 'TOP GAMES THIS SEASON' ? 'MOST PLAYED GAMES' : normalized.uiCopy.topGamesTitle,
+        feedTitle: normalized.uiCopy.feedTitle === 'LIVE LEADERBOARD FEED' ? 'RECENT RANK MOVEMENT' : normalized.uiCopy.feedTitle,
+      },
+    };
+  }, [content]);
   const tabs = pageContent.tabs;
   const tabDetails = pageContent.tabDetails;
   const navItems = useMemo<NavItem[]>(() => pageContent.navItems.map(item => ({
@@ -3743,6 +4611,7 @@ export function LeaderboardPageSvgSurface({
       gap: layoutSpec.gap,
       leftW: columns.leftW,
       rightW: columns.rightW,
+      mainY: leaderboardMainYForMetrics(baseCfg, layoutSpec.gap),
     },
   }), [baseCfg, canvasWidth, columns.leftW, columns.rightW, layoutSpec.gap, layoutSpec.outerPad]);
   const pageModeTab = initialTabForPageMode(pageMode, pageContent);
@@ -3751,10 +4620,14 @@ export function LeaderboardPageSvgSurface({
   const [selectedGameId, setSelectedGameId] = useState(initialGameIdForPageMode(pageMode, pageContent, gameId));
   const selectedGame = findSelectedGame(pageContent, selectedGameId);
   const selectedGameName = selectedGame?.name ?? formatRouteScope(gameId);
-  const baseSourceRows = useMemo(() => rowSourceForPageMode(pageContent, pageMode, leaderboardEntries), [leaderboardEntries, pageContent, pageMode]);
-  const sourceRows = activeTab === 'aiBenchmarks' ? pageContent.aiBenchmarkRows : baseSourceRows;
+  const baseSourceRows = useMemo(() => rowSourceForPageMode(pageMode, leaderboardEntries, aiBenchmarkEntries), [aiBenchmarkEntries, leaderboardEntries, pageMode]);
+  const sourceRows = activeTab === 'aiBenchmarks'
+    ? aiBenchmarkEntries
+    : activeTab === 'perGame'
+      ? baseSourceRows
+      : EMPTY_LEADERBOARD_PAGE_ROWS;
   const rows = useMemo(() => toDisplayRows(sourceRows, pageMode, selectedGameName, gameId), [gameId, pageMode, selectedGameName, sourceRows]);
-  const userDisplayRow = useMemo(() => userEntry && pageMode !== 'aiBenchmarkLeaderboard' ? toDisplayRows([userEntry], pageMode, selectedGameName, gameId)[0] : null, [gameId, pageMode, selectedGameName, userEntry]);
+  const userDisplayRow = useMemo(() => userEntry && activeTab === 'perGame' ? toDisplayRows([userEntry], pageMode, selectedGameName, gameId)[0] : null, [activeTab, gameId, pageMode, selectedGameName, userEntry]);
   const [selectedPlayerId, setSelectedPlayerId] = useState(userDisplayRow?.id ?? rows[0]?.id ?? '');
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -3780,15 +4653,16 @@ export function LeaderboardPageSvgSurface({
     return () => observer.disconnect();
   }, []);
 
-  const selectedPlayer = rows.find(row => row.id === selectedPlayerId) ?? (activeTab === 'aiBenchmarks' ? null : userDisplayRow) ?? rows[0] ?? toDisplayRows(pageContent.fallbackRows, pageMode, selectedGameName, gameId)[0];
+  const selectedPlayer = rows.find(row => row.id === selectedPlayerId) ?? (activeTab === 'aiBenchmarks' ? null : userDisplayRow) ?? rows[0] ?? null;
   const leftX = cfg.layout.outerPad;
   const mainX = leftX + cfg.layout.leftW + cfg.layout.gap;
   const rightX = cfg.canvas.width - cfg.layout.outerPad - cfg.layout.rightW;
   const mainW = rightX - mainX - cfg.layout.gap;
   const mainH = cfg.layout.bottomY - cfg.layout.gap - cfg.layout.mainY;
+  const bottomRailW = cfg.canvas.width - cfg.layout.outerPad - mainX;
   const playerCount = rows.length;
   const playerCountLabel = playerCount >= 1000 ? `${Math.round(playerCount / 100) / 10}K` : playerCount.toLocaleString();
-  const winTotal = sourceRows.reduce((sum, row) => sum + (row.wins ?? 0), 0) || pageContent.fallbackRows.reduce((sum, row) => sum + (row.wins ?? 0), 0);
+  const winTotal = sourceRows.reduce((sum, row) => sum + (row.wins ?? 0), 0);
   const nearCount = nearbyAbove.length + nearbyBelow.length;
   const isAiMode = activeTab === 'aiBenchmarks';
   const metrics = [
@@ -3840,7 +4714,7 @@ export function LeaderboardPageSvgSurface({
     setDetailMode(null);
     setFocusedSection('podium');
     setPage(1);
-    if (pageMode === 'gameLeaderboard' && typeof game?.gameType === 'number') {
+    if (typeof game?.gameType === 'number' && game.gameType !== gameType) {
       onRefreshLeaderboard(game.gameType);
     }
   };
@@ -3869,12 +4743,13 @@ export function LeaderboardPageSvgSurface({
       >
         <Defs />
         <NavPanel activeNavLabel={activeNavLabel} navItems={navItems} season={pageContent.season} onNavItemSelect={selectNavItem} onSeasonSelect={selectSeasonRewards} cfg={cfg} />
-        {cfg.layout.rightW > 0 ? <RightRail activeTab={activeTab} tabDetails={tabDetails} topGames={topGames} quickGames={quickGames} distributionLabels={pageContent.distributionLabels} season={pageContent.season} uiCopy={pageContent.uiCopy} selectedPlayer={selectedPlayer} selectedGameId={selectedGameId} totalPlayersValue={playerCountLabel} onTabChange={changeTab} onGameSelect={selectGame} onFocusMainSection={focusMainSection} onPlayerDetailOpen={() => setDetailMode('player')} cfg={cfg} rightX={rightX} rightW={cfg.layout.rightW} mainY={cfg.layout.mainY} mainH={mainH} /> : null}
+        {cfg.layout.rightW > 0 ? <RightRail activeTab={activeTab} tabDetails={tabDetails} topGames={topGames} quickGames={quickGames} distributionLabels={pageContent.distributionLabels} season={pageContent.season} uiCopy={pageContent.uiCopy} selectedPlayer={selectedPlayer} selectedGameId={selectedGameId} totalPlayersValue={playerCountLabel} onTabChange={changeTab} onGameSelect={selectGame} onFocusMainSection={focusMainSection} onPlayerDetailOpen={() => selectedPlayer && setDetailMode('player')} cfg={cfg} rightX={rightX} rightW={cfg.layout.rightW} mainY={cfg.layout.mainY} mainH={mainH} /> : null}
         <MainBoard
           activeNavLabel={activeNavLabel}
           activeTab={activeTab}
           rows={rows}
           tabs={tabs}
+          navItems={navItems}
           tabDetails={tabDetails}
           topGames={topGames}
           quickGames={quickGames}
@@ -3883,7 +4758,7 @@ export function LeaderboardPageSvgSurface({
           distributionLabels={pageContent.distributionLabels}
           totalPlayersValue={playerCountLabel}
           selectedGameId={selectedGameId}
-          selectedPlayerId={selectedPlayer.id}
+          selectedPlayerId={selectedPlayer?.id ?? ''}
           selectedPlayer={selectedPlayer}
           selectedGameName={selectedGameName}
           page={page}
@@ -3891,6 +4766,7 @@ export function LeaderboardPageSvgSurface({
           detailMode={detailMode}
           focusedSection={focusedSection}
           onTabChange={changeTab}
+          onNavItemSelect={selectNavItem}
           onPlayerSelect={selectPlayer}
           onPageChange={setPage}
           onRowsPerPageChange={cycleRowsPerPage}
@@ -3910,7 +4786,7 @@ export function LeaderboardPageSvgSurface({
           rightW={cfg.layout.rightW}
         />
         <QuickAccessHubCard x={cfg.layout.outerPad} y={cfg.layout.bottomY} w={cfg.layout.leftW} h={cfg.layout.bottomH} onOpen={selectQuickAccessHub} cfg={cfg} />
-        <QuickAccessRail x={mainX} y={cfg.layout.bottomY} w={rightX + cfg.layout.rightW - mainX} h={cfg.layout.bottomH} quickGames={quickGames} selectedGameId={selectedGameId} onGameSelect={selectGame} cfg={cfg} />
+        <QuickAccessRail x={mainX} y={cfg.layout.bottomY} w={bottomRailW} h={cfg.layout.bottomH} quickGames={quickGames} selectedGameId={selectedGameId} onGameSelect={selectGame} cfg={cfg} />
         {loading || error ? (
           <g role={loading ? 'status' : 'alert'}>
             <rect x={mainX + 28} y={cfg.layout.mainY + 120} width={mainW - 56} height={82} rx={6} fill="rgba(3, 7, 18, 0.82)" stroke={error ? cfg.colors.red : cfg.colors.cyan} strokeWidth={1.2} />

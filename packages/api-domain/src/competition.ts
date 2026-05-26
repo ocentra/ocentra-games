@@ -13,6 +13,19 @@ import type {
 } from '@ocentra/endpoint-domain/schemas/competition';
 import { requestJson } from './httpClient';
 
+export const LeaderboardDataScope = {
+  Overall: 'overall',
+  Game: 'game',
+  Category: 'category',
+  AiOverall: 'aiOverall',
+  AiGame: 'aiGame',
+  AiCategory: 'aiCategory',
+  Tournament: 'tournament',
+  Friends: 'friends',
+} as const;
+
+export type LeaderboardDataScope = typeof LeaderboardDataScope[keyof typeof LeaderboardDataScope];
+
 export interface LeaderboardEntry {
   user_id: string;
   rank: number;
@@ -21,6 +34,12 @@ export interface LeaderboardEntry {
   wins: number;
   losses: number;
   games_played: number;
+  game_type?: number;
+  scope?: LeaderboardDataScope;
+  bestGame?: string;
+  category?: string;
+  subcategory?: string;
+  trend?: string;
 }
 
 export interface LeaderboardResponse {
@@ -52,6 +71,10 @@ export interface CompetitionProgramsOptions {
   gameId?: string;
 }
 
+export interface LeaderboardOptions {
+  aiOnly?: boolean;
+}
+
 function appendQuery(
   endpoint: string,
   query: Record<string, string | number | boolean | null | undefined>
@@ -64,8 +87,10 @@ function appendQuery(
   return raw.length === 0 ? endpoint : `${endpoint}?${raw}`;
 }
 
-export async function getLeaderboard(gameType: number): Promise<LeaderboardResponse> {
-  return requestJson<LeaderboardResponse>(ApiEndpoint.Leaderboard.ByGameType(gameType));
+export async function getLeaderboard(gameType: number, options: LeaderboardOptions = {}): Promise<LeaderboardResponse> {
+  return requestJson<LeaderboardResponse>(appendQuery(ApiEndpoint.Leaderboard.ByGameType(gameType), {
+    [QueryParam.AiOnly]: options.aiOnly ? true : undefined,
+  }));
 }
 
 export async function getLeaderboardUser(gameType: number, userId: string): Promise<LeaderboardEntry> {
