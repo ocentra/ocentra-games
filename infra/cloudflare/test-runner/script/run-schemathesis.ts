@@ -244,6 +244,8 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     `@schemathesis.hook("before_generate_case").apply_to(method="POST", path=${pythonStringLiteral(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`))})`,
     'def generate_dispute_evidence_case(ctx, strategy):',
     '    operation = ctx.operation',
+    `    if str(getattr(operation, "method", "")).upper() != "POST" or str(getattr(operation, "path", "")) != ${pythonStringLiteral(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`))}:`,
+    '        return strategy',
     `    return st.just(Case(operation, "POST", ${pythonStringLiteral(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`))}, path_parameters={"disputeId": ${pythonStringLiteral(OpenApiExampleValue.DisputeId)}}, body=${JSON.stringify(OpenApiExampleValue.DisputeEvidenceRequest)}, media_type=${pythonStringLiteral(HttpContentType.MultipartFormData)}, multipart_content_types={${pythonStringLiteral(FormField.Evidence)}: ${pythonStringLiteral(HttpContentType.TextPlain)}}))`,
     '',
   ].join('\n');
@@ -310,6 +312,8 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
       `@schemathesis.hook("before_generate_case").apply_to(method=${pythonStringLiteral(method)}, path=${pythonStringLiteral(routePath)})`,
       `def ${functionName}(ctx, strategy):`,
       '    operation = ctx.operation',
+      `    if str(getattr(operation, "method", "")).upper() != ${pythonStringLiteral(method)} or str(getattr(operation, "path", "")) != ${pythonStringLiteral(routePath)}:`,
+      '        return strategy',
       `    return st.just(Case(operation, ${pythonStringLiteral(method)}, ${pythonStringLiteral(routePath)}${pathParameters}${body}))`,
       '',
     ].join('\n');
