@@ -4,7 +4,6 @@ import {
   PublicRouteSegment,
   buildPublicCategoryPath,
   buildPublicEventDetailPath,
-  buildPublicGameLeaderboardPath,
   buildPublicGameLobbyPath,
   buildPublicGameMatchmakingPath,
   buildPublicGamePath,
@@ -45,9 +44,7 @@ export type AppRouteState =
   | { kind: 'tournaments' }
   | { kind: 'tournamentDetail'; tournamentId: string }
   | { kind: 'leaderboard' }
-  | { kind: 'gameLeaderboard'; gameId: string }
   | { kind: 'rules'; gameId: string }
-  | { kind: 'aiBenchmarkLeaderboard' }
   | { kind: 'matches' }
   | { kind: 'matchDetail'; matchId: string }
   | { kind: 'playerHub' }
@@ -94,7 +91,6 @@ function notFoundRoute(segments: string[]): AppRouteState {
 function getGameContextFromRoute(state: AppRouteState): string | undefined {
   if (
     state.kind === 'game' ||
-    state.kind === 'gameLeaderboard' ||
     state.kind === 'matchmaking' ||
     state.kind === 'lobby'
   ) {
@@ -180,7 +176,7 @@ export function buildLeaderboardPath(): string {
 }
 
 export function buildAiBenchmarkLeaderboardPath(): string {
-  return PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard];
+  return buildLeaderboardPath();
 }
 
 export function buildGamePath(gameId: string): string {
@@ -196,7 +192,8 @@ export function buildGameLobbyPath(gameId: string): string {
 }
 
 export function buildGameLeaderboardPath(gameId: string): string {
-  return buildPublicGameLeaderboardPath(gameId);
+  void gameId;
+  return buildLeaderboardPath();
 }
 
 export function buildGamePlayPath(gameId: string): string {
@@ -234,7 +231,7 @@ export function parseAppRoute(pathname: string): AppRouteState {
       return fourth ? notFoundRoute(segments) : { kind: 'lobby', gameId: second };
     }
     if (third === AppScreenToken.Leaderboard) {
-      return fourth ? notFoundRoute(segments) : { kind: 'gameLeaderboard', gameId: second };
+      return fourth ? notFoundRoute(segments) : { kind: 'leaderboard' };
     }
     if (third === PublicRouteSegment.Play) {
       return fourth ? notFoundRoute(segments) : { kind: 'game', gameId: second };
@@ -289,9 +286,7 @@ export function parseAppRoute(pathname: string): AppRouteState {
     if (!second) {
       return { kind: 'leaderboard' };
     }
-    return second === PublicRouteSegment.AiBenchmarks && !third
-      ? { kind: 'aiBenchmarkLeaderboard' }
-      : notFoundRoute(segments);
+    return second === PublicRouteSegment.AiBenchmarks && !third ? { kind: 'leaderboard' } : notFoundRoute(segments);
   }
   if (first === AppScreenToken.Matches) {
     if (!second) {

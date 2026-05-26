@@ -143,6 +143,8 @@ export function PlatformAwareRoutes() {
       {isRouteEnabled(RouteFeature.PlatformInspector, platform, isDev) && (
         <Route path={ROUTE_FEATURES[RouteFeature.PlatformInspector].path} element={<PlatformInspectorRoute />} />
       )}
+      <Route path={PublicRoutePath[PublicRouteKey.GameLeaderboard]} element={<Navigate to={PublicRoutePath[PublicRouteKey.Leaderboard]} replace />} />
+      <Route path={PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard]} element={<Navigate to={PublicRoutePath[PublicRouteKey.Leaderboard]} replace />} />
       <Route path={RoutePath.CatchAll} element={<App />} />
     </Routes>
   );

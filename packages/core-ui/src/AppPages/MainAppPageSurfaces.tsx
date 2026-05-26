@@ -105,6 +105,13 @@ export type LeaderboardRow = {
   score: number;
   wins?: number;
   losses?: number;
+  bestGame?: string;
+  game_type?: number;
+  scope?: 'overall' | 'game' | 'category' | 'aiOverall' | 'aiGame' | 'aiCategory' | 'tournament' | 'friends';
+  category?: string;
+  subcategory?: string;
+  trend?: string;
+  tone?: 'cyan' | 'gold' | 'purple' | 'red' | 'muted';
 };
 
 export type TournamentRound = {
@@ -1043,6 +1050,7 @@ export function CompetitionPageContent({
   seasonId,
   lastUpdated,
   leaderboardEntries,
+  aiBenchmarkEntries = [],
   userEntry,
   nearbyAbove,
   nearbyBelow,
@@ -1071,6 +1079,7 @@ export function CompetitionPageContent({
   seasonId: string;
   lastUpdated: string;
   leaderboardEntries: LeaderboardRow[];
+  aiBenchmarkEntries?: LeaderboardRow[];
   showPersonalizedStats: boolean;
   userEntry: LeaderboardRow | null;
   nearbyAbove: LeaderboardRow[];
@@ -1118,6 +1127,7 @@ export function CompetitionPageContent({
         seasonId={seasonId}
         lastUpdated={lastUpdated}
         leaderboardEntries={leaderboardEntries}
+        aiBenchmarkEntries={aiBenchmarkEntries}
         userEntry={userEntry}
         nearbyAbove={nearbyAbove}
         nearbyBelow={nearbyBelow}

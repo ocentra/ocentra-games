@@ -131,14 +131,14 @@ export const PublicRouteDefinitions = [
   { key: PublicRouteKey.Tournaments, path: PublicRoutePath[PublicRouteKey.Tournaments], privacy: PublicRoutePrivacy.Indexable },
   { key: PublicRouteKey.TournamentDetail, path: PublicRoutePath[PublicRouteKey.TournamentDetail], privacy: PublicRoutePrivacy.Indexable },
   { key: PublicRouteKey.Leaderboard, path: PublicRoutePath[PublicRouteKey.Leaderboard], privacy: PublicRoutePrivacy.Indexable },
-  { key: PublicRouteKey.GameLeaderboard, path: PublicRoutePath[PublicRouteKey.GameLeaderboard], privacy: PublicRoutePrivacy.Indexable },
+  { key: PublicRouteKey.GameLeaderboard, path: PublicRoutePath[PublicRouteKey.GameLeaderboard], privacy: PublicRoutePrivacy.Alias },
   { key: PublicRouteKey.Lobby, path: PublicRoutePath[PublicRouteKey.Lobby], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.GameLobby, path: PublicRoutePath[PublicRouteKey.GameLobby], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.Matches, path: PublicRoutePath[PublicRouteKey.Matches], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.MatchDetail, path: PublicRoutePath[PublicRouteKey.MatchDetail], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.Matchmaking, path: PublicRoutePath[PublicRouteKey.Matchmaking], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.GameMatchmaking, path: PublicRoutePath[PublicRouteKey.GameMatchmaking], privacy: PublicRoutePrivacy.Private },
-  { key: PublicRouteKey.AiBenchmarkLeaderboard, path: PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard], privacy: PublicRoutePrivacy.Indexable },
+  { key: PublicRouteKey.AiBenchmarkLeaderboard, path: PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard], privacy: PublicRoutePrivacy.Alias },
   { key: PublicRouteKey.Admin, path: PublicRoutePath[PublicRouteKey.Admin], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.AdminUsers, path: PublicRoutePath[PublicRouteKey.AdminUsers], privacy: PublicRoutePrivacy.Private },
   { key: PublicRouteKey.AdminTools, path: PublicRoutePath[PublicRouteKey.AdminTools], privacy: PublicRoutePrivacy.Alias },
@@ -167,7 +167,8 @@ export function buildPublicGamePlayPath(gameId: string): string {
 }
 
 export function buildPublicGameLeaderboardPath(gameId: string): string {
-  return `${buildPublicGamePath(gameId)}/${PublicRouteSegment.Leaderboard}`;
+  void gameId;
+  return PublicRoutePath[PublicRouteKey.Leaderboard];
 }
 
 export function buildPublicGameLobbyPath(gameId: string): string {

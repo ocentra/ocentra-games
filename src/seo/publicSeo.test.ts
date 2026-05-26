@@ -52,6 +52,17 @@ describe('public SEO metadata', () => {
     expect(metadata.robots).toBe('noindex,follow');
   });
 
+  it('canonicalizes retired leaderboard aliases to the single leaderboard page', () => {
+    const aiMetadata = resolveSeoMetadata('/leaderboard/ai-benchmarks', siteOrigin);
+    const gameMetadata = resolveSeoMetadata('/games/claim/leaderboard', siteOrigin);
+    expect(aiMetadata.routeKey).toBe('leaderboard');
+    expect(gameMetadata.routeKey).toBe('leaderboard');
+    expect(aiMetadata.canonicalPath).toBe('/leaderboard');
+    expect(gameMetadata.canonicalPath).toBe('/leaderboard');
+    expect(aiMetadata.robots).toBe('noindex,follow');
+    expect(gameMetadata.robots).toBe('noindex,follow');
+  });
+
   it('does not collapse unknown nested public routes into valid metadata', () => {
     const paths = [
       '/games/card-games/leaderboard',
@@ -107,7 +118,8 @@ describe('public SEO metadata', () => {
     expect(paths).toContain('/categories/trick-taking-card-games');
     expect(paths).toContain('/games/claim');
     expect(paths).toContain('/rules/claim');
-    expect(paths).toContain('/games/claim/leaderboard');
+    expect(paths).not.toContain('/leaderboard/ai-benchmarks');
+    expect(paths).not.toContain('/games/claim/leaderboard');
     expect(paths).not.toContain('/CardGamesExplorer');
     expect(paths).not.toContain('/settings');
     expect(paths).not.toContain('/matches');

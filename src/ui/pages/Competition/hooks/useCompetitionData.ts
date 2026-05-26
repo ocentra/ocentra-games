@@ -7,6 +7,7 @@ import {
   getCompetitionProgram,
   getTournamentBracket,
   listCompetitionPrograms,
+  LeaderboardDataScope,
   registerCompetitionProgram,
   registerTournament,
   type LeaderboardEntry,
@@ -48,6 +49,14 @@ function isUnsupportedLeaderboardGameTypeError(message: string): boolean {
   return message.toLowerCase().includes('invalid game type');
 }
 
+function leaderboardEntriesForGameScope(entries: LeaderboardEntry[], gameType: number, scope: LeaderboardEntry['scope']): LeaderboardEntry[] {
+  return entries.map(entry => ({
+    ...entry,
+    game_type: gameType,
+    scope,
+  }));
+}
+
 export function useCompetitionData(userId: string | null, options: CompetitionDataOptions = {}): CompetitionData {
   const loadDefaultTournament = options.loadDefaultTournament ?? true;
   const loadPrograms = options.loadPrograms ?? true;
@@ -63,10 +72,11 @@ export function useCompetitionData(userId: string | null, options: CompetitionDa
   const [programsError, setProgramsError] = useState<string | null>(null);
   const [registeringProgramId, setRegisteringProgramId] = useState<string | null>(null);
   const [checkingInProgramId, setCheckingInProgramId] = useState<string | null>(null);
-  const [gameType, setGameType] = useState(CompetitionDefaultGameType);
+  const [gameType, setGameType] = useState<number>(CompetitionDefaultGameType);
   const [seasonId, setSeasonId] = useState('');
   const [lastUpdated, setLastUpdated] = useState('');
   const [leaderboardEntries, setLeaderboardEntries] = useState<LeaderboardEntry[]>([]);
+  const [aiLeaderboardEntries, setAiLeaderboardEntries] = useState<LeaderboardEntry[]>([]);
   const [userEntry, setUserEntry] = useState<LeaderboardEntry | null>(null);
   const [nearbyAbove, setNearbyAbove] = useState<LeaderboardEntry[]>([]);
   const [nearbyBelow, setNearbyBelow] = useState<LeaderboardEntry[]>([]);
@@ -88,7 +98,13 @@ export function useCompetitionData(userId: string | null, options: CompetitionDa
       setGameType(selectedGameType);
       setSeasonId(leaderboard.season_id ?? '');
       setLastUpdated(leaderboard.last_updated ?? '');
-      setLeaderboardEntries(leaderboard.entries ?? []);
+      setLeaderboardEntries(leaderboardEntriesForGameScope(leaderboard.entries ?? [], selectedGameType, LeaderboardDataScope.Game));
+      try {
+        const aiLeaderboard = await getLeaderboard(selectedGameType, { aiOnly: true });
+        setAiLeaderboardEntries(leaderboardEntriesForGameScope(aiLeaderboard.entries ?? [], selectedGameType, LeaderboardDataScope.AiGame));
+      } catch {
+        setAiLeaderboardEntries([]);
+      }
 
       if (userId) {
         try {
@@ -96,9 +112,9 @@ export function useCompetitionData(userId: string | null, options: CompetitionDa
             getLeaderboardUser(selectedGameType, userId),
             getLeaderboardNearby(selectedGameType, userId),
           ]);
-          setUserEntry(entry);
-          setNearbyAbove(nearby.above ?? []);
-          setNearbyBelow(nearby.below ?? []);
+          setUserEntry(leaderboardEntriesForGameScope([entry], selectedGameType, LeaderboardDataScope.Game)[0] ?? null);
+          setNearbyAbove(leaderboardEntriesForGameScope(nearby.above ?? [], selectedGameType, LeaderboardDataScope.Game));
+          setNearbyBelow(leaderboardEntriesForGameScope(nearby.below ?? [], selectedGameType, LeaderboardDataScope.Game));
         } catch {
           setUserEntry(null);
           setNearbyAbove([]);
@@ -114,6 +130,7 @@ export function useCompetitionData(userId: string | null, options: CompetitionDa
       if (isUnsupportedLeaderboardGameTypeError(message)) {
         setGameType(selectedGameType);
         setLeaderboardEntries([]);
+        setAiLeaderboardEntries([]);
         setUserEntry(null);
         setNearbyAbove([]);
         setNearbyBelow([]);
@@ -276,6 +293,7 @@ export function useCompetitionData(userId: string | null, options: CompetitionDa
     seasonId,
     lastUpdated,
     leaderboardEntries,
+    aiLeaderboardEntries,
     userEntry,
     nearbyAbove,
     nearbyBelow,

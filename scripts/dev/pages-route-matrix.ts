@@ -5,7 +5,6 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import {
   PublicRouteKey,
   PublicRoutePath,
-  buildPublicGameLeaderboardPath,
   buildPublicGameLobbyPath,
   buildPublicGameMatchmakingPath,
   buildPublicGamePath,
@@ -100,8 +99,6 @@ const ROUTE_MATRIX: RouteProbe[] = [
   { name: 'tournaments', path: PublicRoutePath[PublicRouteKey.Tournaments] },
   { name: 'tournament detail', path: buildPublicTournamentDetailPath(TOURNAMENT_ID) },
   { name: 'leaderboard', path: PublicRoutePath[PublicRouteKey.Leaderboard] },
-  { name: 'ai benchmark leaderboard', path: PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard] },
-  { name: 'game leaderboard claim', path: buildPublicGameLeaderboardPath(CLAIM_GAME_ID) },
   { name: 'lobby', path: PublicRoutePath[PublicRouteKey.Lobby] },
   { name: 'game lobby claim', path: buildPublicGameLobbyPath(CLAIM_GAME_ID) },
   { name: 'matchmaking', path: PublicRoutePath[PublicRouteKey.Matchmaking] },

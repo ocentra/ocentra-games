@@ -12,6 +12,8 @@ import type { CompetitionPageSvgControls } from '@ocentra/core-ui/AppPages/MainA
 import type { ShopPageContentData } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
 import { shopPageWeeklyCupImageUrl } from '@ocentra/app-assets/shop-page';
 import {
+  DEFAULT_LEADERBOARD_PAGE_CONTENT,
+  LEADERBOARD_GAME_ACTIVITY_UNAVAILABLE_LABEL,
   resolveLeaderboardPageGameType,
   type LeaderboardGameOption,
   type LeaderboardIconName,
@@ -29,11 +31,17 @@ import {
   buildPublicGameLobbyPath,
   buildPublicTournamentDetailPath,
 } from '@ocentra/endpoint-domain/constants/public-routes';
+import { GameTypeId } from '@ocentra/endpoint-domain/constants/game';
+import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
+import type { GameCatalogEntry } from '@ocentra/game-asset-domain/schemas/game-catalog-entry-schema';
 import { APP_VERSION } from '@/constants/version';
 import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
+import { getGameCatalogEntries } from '@/adapters/assets/GameCatalogService';
+import { loadRemoteCatalogIndex } from '@/adapters/assets/GameCatalogRuntimeSource';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 import { useCompetitionData } from '@/ui/pages/Competition/hooks/useCompetitionData';
-import { loadGamesDataSnapshot } from '@/ui/pages/dev/CardGamesExplorer/adapters/gamesDataSnapshot';
+import { catalogEntryKeys, authoredCatalogKeys } from '@/ui/pages/dev/CardGamesExplorer/adapters/catalogIdentity';
+import { enrich } from '@/ui/pages/dev/CardGamesExplorer/helpers';
 import type { Game } from '@/ui/pages/dev/CardGamesExplorer/types';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
@@ -75,13 +83,33 @@ type ResourceEntryRef = {
 
 type LooseRecord = Record<string, unknown>;
 
+type CatalogIndexEntry = {
+  slug: string;
+  name: string;
+  quality?: string;
+  completeness?: Record<string, boolean>;
+  description?: string;
+  origin?: string;
+  players?: string;
+  deck?: string;
+  difficulty?: string;
+  duration?: string;
+  category?: string;
+  subcategory?: string | null;
+  playerMode?: string | null;
+  alsoKnownAs?: string[];
+  source?: string;
+};
+
+type CatalogIndexDocument = {
+  games?: CatalogIndexEntry[];
+};
+
 const KNOWN_LEADERBOARD_GAME_TYPES: Record<string, number> = {
-  'three-card-brag': 1,
-  spades: 3,
-  poker: 4,
-  rummy: 5,
-  blackjack: 6,
-  'teen-patti': 7,
+  claim: GameTypeId.Claim,
+  poker: GameTypeId.Poker,
+  'word-search': GameTypeId.WordSearch,
+  wordsearch: GameTypeId.WordSearch,
 };
 
 const LEADERBOARD_PAGE_LAYOUT_ASSET_PATH_BY_MODE: Record<LeaderboardPageMode, string> = {
@@ -176,24 +204,112 @@ function catalogGameIcon(game: Game): LeaderboardIconName {
   return 'gamepad';
 }
 
+function catalogGameSubcategoryLabel(game: Game): string {
+  return game.subcategory?.trim() || game.player_mode?.trim() || 'Game catalog';
+}
+
 function catalogGameValue(game: Game): string {
-  const players = game.players?.trim();
-  if (players) return players;
-  const deck = game.deck?.trim();
-  if (deck) return deck;
-  return game.source === 'asset' ? 'Playable' : 'Catalog';
+  void game;
+  return LEADERBOARD_GAME_ACTIVITY_UNAVAILABLE_LABEL;
 }
 
 function catalogGameDetail(game: Game): string {
-  return game.duration?.trim() || game.difficulty?.trim() || game.quality?.trim() || (game.source === 'asset' ? 'Available' : 'Catalog');
+  return catalogGameSubcategoryLabel(game);
 }
 
 function catalogGameRoute(game: Game): string {
-  return `/games/${catalogGameId(game)}/leaderboard`;
+  void game;
+  return '/leaderboard';
 }
 
 function catalogGameType(game: Game): number | undefined {
   return KNOWN_LEADERBOARD_GAME_TYPES[catalogGameId(game)];
+}
+
+function isPublishedCatalogEntry(entry: GameCatalogEntry): boolean {
+  return entry.enabled !== false &&
+    entry.releaseStatus !== GameModeStatus.ComingSoon &&
+    entry.releaseStatus !== GameModeStatus.Deprecated;
+}
+
+function gameFromCatalogEntry(entry: GameCatalogEntry): Game | null {
+  if (!isPublishedCatalogEntry(entry)) return null;
+  const slug = entry.gameId ? String(entry.gameId) : entry.displayName || entry.path;
+  if (!slug || !entry.displayName) return null;
+  return enrich({
+    slug,
+    guid: entry.guid,
+    file: entry.path,
+    name: entry.displayName,
+    quality: entry.quality || 'placeholder',
+    completeness: entry.completeness || {},
+    description: entry.description || '',
+    origin: '',
+    players: entry.playersDisplay || '',
+    deck: entry.deck || '',
+    difficulty: entry.difficulty || '',
+    duration: entry.duration || '',
+    alsoKnownAs: [],
+    category: entry.category || undefined,
+    subcategory: entry.subcategory ?? null,
+    player_mode: entry.playerMode ?? null,
+    file_exists: true,
+    link_valid: entry.releaseStatus || 'asset',
+    source: 'asset',
+  });
+}
+
+function gameFromCatalogIndexEntry(entry: CatalogIndexEntry): Game | null {
+  if (!entry.slug || !entry.name) return null;
+  return enrich({
+    slug: entry.slug,
+    guid: undefined,
+    file: `catalog/games/${entry.slug}.json`,
+    name: entry.name,
+    quality: entry.quality || 'placeholder',
+    completeness: entry.completeness || {},
+    description: entry.description || '',
+    origin: entry.origin || '',
+    players: entry.players || '',
+    deck: entry.deck || '',
+    difficulty: entry.difficulty || '',
+    duration: entry.duration || '',
+    alsoKnownAs: entry.alsoKnownAs || [],
+    category: entry.category || undefined,
+    subcategory: entry.subcategory ?? null,
+    player_mode: entry.playerMode ?? null,
+    file_exists: true,
+    link_valid: 'catalog',
+    source: 'catalog',
+  });
+}
+
+async function loadLeaderboardCatalogGames(): Promise<Game[]> {
+  const [assetEntries, catalogIndexRaw] = await Promise.all([
+    getGameCatalogEntries(),
+    loadRemoteCatalogIndex(),
+  ]);
+  const games: Game[] = [];
+  const madeGameKeys = new Set<string>();
+
+  for (const entry of assetEntries) {
+    const game = gameFromCatalogEntry(entry);
+    if (!game) continue;
+    authoredCatalogKeys(game).forEach((key) => madeGameKeys.add(key));
+    games.push(game);
+  }
+
+  const catalogIndex = asRecord(catalogIndexRaw) as CatalogIndexDocument;
+  const catalogGames = Array.isArray(catalogIndex.games) ? catalogIndex.games : [];
+  for (const entry of catalogGames) {
+    if (catalogEntryKeys(entry).some((key) => madeGameKeys.has(key))) {
+      continue;
+    }
+    const game = gameFromCatalogIndexEntry(entry);
+    if (game) games.push(game);
+  }
+
+  return games;
 }
 
 function sortCatalogGamesForLeaderboard(games: Game[]): Game[] {
@@ -208,7 +324,10 @@ function sortCatalogGamesForLeaderboard(games: Game[]): Game[] {
 
   return Array.from(uniqueGames.values())
     .filter(game => game.name.trim().length > 0 && catalogGameId(game).length > 0)
-    .sort((a, b) => a.normalizedName.localeCompare(b.normalizedName));
+    .sort((a, b) => {
+      const assetRank = Number(b.source === 'asset') - Number(a.source === 'asset');
+      return assetRank || a.normalizedName.localeCompare(b.normalizedName);
+    });
 }
 
 function buildCatalogLeaderboardContent(
@@ -246,6 +365,29 @@ function buildCatalogLeaderboardContent(
     ...content,
     topGames,
     quickGames,
+    fallbackRows: [],
+    aiBenchmarkRows: [],
+    distributionLabels: [],
+    season: DEFAULT_LEADERBOARD_PAGE_CONTENT.season,
+    uiCopy: {
+      ...(content?.uiCopy ?? DEFAULT_LEADERBOARD_PAGE_CONTENT.uiCopy),
+      topGamesTitle: DEFAULT_LEADERBOARD_PAGE_CONTENT.uiCopy.topGamesTitle,
+      distributionCenterLabel: DEFAULT_LEADERBOARD_PAGE_CONTENT.uiCopy.distributionCenterLabel,
+    },
+    modes: {
+      leaderboard: {
+        ...(content?.modes?.leaderboard ?? DEFAULT_LEADERBOARD_PAGE_CONTENT.modes.leaderboard),
+        rowSource: 'api',
+      },
+      gameLeaderboard: {
+        ...(content?.modes?.gameLeaderboard ?? DEFAULT_LEADERBOARD_PAGE_CONTENT.modes.gameLeaderboard),
+        rowSource: 'api',
+      },
+      aiBenchmarkLeaderboard: {
+        ...(content?.modes?.aiBenchmarkLeaderboard ?? DEFAULT_LEADERBOARD_PAGE_CONTENT.modes.aiBenchmarkLeaderboard),
+        rowSource: 'api',
+      },
+    },
   };
 }
 
@@ -378,6 +520,7 @@ export function CompetitionPage({
     seasonId,
     lastUpdated,
     leaderboardEntries,
+    aiLeaderboardEntries,
     userEntry,
     nearbyAbove,
     nearbyBelow,
@@ -399,7 +542,7 @@ export function CompetitionPage({
     registerProgram,
     checkInProgram,
   } = useCompetitionData(accountUserId, {
-    loadDefaultTournament: isLeaderboardMode,
+    loadDefaultTournament: false,
     loadPrograms: !isLeaderboardMode,
     selectedProgramId,
     programFilter: {
@@ -428,7 +571,7 @@ export function CompetitionPage({
     }
     void Promise.allSettled([
       loadLeaderboardPageLayoutData(pageMode),
-      loadGamesDataSnapshot(),
+      loadLeaderboardCatalogGames(),
     ])
       .then(([layoutResult, catalogResult]) => {
         if (!cancelled) {
@@ -436,7 +579,7 @@ export function CompetitionPage({
             controls?: Partial<LeaderboardPageSvgControls>;
             content?: PartialLeaderboardPageContentData;
           } = layoutResult.status === 'fulfilled' ? layoutResult.value : {};
-          const catalogGames = catalogResult.status === 'fulfilled' ? catalogResult.value.games : [];
+          const catalogGames = catalogResult.status === 'fulfilled' ? catalogResult.value : [];
           setLeaderboardControls(layoutData.controls);
           setLeaderboardContent(buildCatalogLeaderboardContent(layoutData.content, catalogGames));
           setRequestedLeaderboardGameType(null);
@@ -545,6 +688,7 @@ export function CompetitionPage({
         seasonId={seasonId}
         lastUpdated={lastUpdated}
         leaderboardEntries={leaderboardEntries}
+        aiBenchmarkEntries={aiLeaderboardEntries}
         showPersonalizedStats={hasAccount}
         userEntry={userEntry}
         nearbyAbove={nearbyAbove}

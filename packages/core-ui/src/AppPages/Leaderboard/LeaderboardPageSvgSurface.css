@@ -1,7 +1,7 @@
 .leaderboard-page-svg-main {
   width: 100%;
-  height: 100%;
-  min-height: 0;
+  height: max(100%, clamp(42rem, 43.95vw, 56.25rem));
+  min-height: clamp(42rem, 43.95vw, 56.25rem);
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -21,8 +21,8 @@
 
 @media (max-width: 48rem) {
   .leaderboard-page-svg-main {
-    height: 100%;
-    min-height: 0;
+    height: max(100%, 42rem);
+    min-height: 42rem;
   }
 
   .leaderboard-page-svg-surface {
@@ -72,6 +72,14 @@
   padding: 0.06rem 0.28rem 0.1rem;
   scrollbar-width: thin;
   scrollbar-color: var(--leaderboard-subcategory-accent) rgba(5, 19, 32, 0.72);
+}
+
+.leaderboard-subcategory-grid--single-row {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(10.75rem, 1fr);
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .leaderboard-subcategory-grid::-webkit-scrollbar {
@@ -152,4 +160,200 @@
   font-size: 0.62rem;
   font-weight: 700;
   line-height: 1;
+}
+
+.leaderboard-expanded-game-browser {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: minmax(4.6rem, auto) minmax(0, 1fr);
+  gap: 0.6rem;
+  color: var(--leaderboard-expanded-game-text);
+  font-family: Inter, system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.leaderboard-expanded-game-browser__preview {
+  min-height: 4.6rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--leaderboard-expanded-game-accent) 72%, transparent);
+  clip-path: polygon(0.8rem 0, 100% 0, 100% calc(100% - 0.8rem), calc(100% - 0.8rem) 100%, 0 100%, 0 0.8rem);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--leaderboard-expanded-game-accent) 20%, rgba(4, 16, 28, 0.92)), rgba(4, 16, 28, 0.84));
+  padding: 0.54rem 0.72rem;
+  box-shadow: inset 0 0 1.6rem rgba(65, 210, 255, 0.08), 0 0 1.1rem color-mix(in srgb, var(--leaderboard-expanded-game-accent) 28%, transparent);
+}
+
+.leaderboard-expanded-game-browser__preview-art,
+.leaderboard-expanded-game-browser__item-art {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--leaderboard-expanded-game-color, var(--leaderboard-expanded-game-accent)) 74%, transparent);
+  clip-path: polygon(0.34rem 0, 100% 0, 100% calc(100% - 0.34rem), calc(100% - 0.34rem) 100%, 0 100%, 0 0.34rem);
+  background: rgba(3, 12, 24, 0.74);
+}
+
+.leaderboard-expanded-game-browser__preview-art {
+  width: 3.3rem;
+  height: 3.3rem;
+}
+
+.leaderboard-expanded-game-browser__preview-art img,
+.leaderboard-expanded-game-browser__item-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.leaderboard-expanded-game-browser__preview-copy,
+.leaderboard-expanded-game-browser__item-copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.16rem;
+}
+
+.leaderboard-expanded-game-browser__eyebrow,
+.leaderboard-expanded-game-browser__detail,
+.leaderboard-expanded-game-browser__item-detail {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--leaderboard-expanded-game-muted);
+}
+
+.leaderboard-expanded-game-browser__eyebrow {
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.leaderboard-expanded-game-browser__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.leaderboard-expanded-game-browser__detail {
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+.leaderboard-expanded-game-browser__count,
+.leaderboard-expanded-game-browser__item-meta {
+  border: 1px solid color-mix(in srgb, var(--leaderboard-expanded-game-accent) 66%, transparent);
+  color: var(--leaderboard-expanded-game-accent);
+  background: color-mix(in srgb, var(--leaderboard-expanded-game-accent) 13%, rgba(3, 12, 24, 0.8));
+  padding: 0.26rem 0.54rem;
+  font-size: 0.68rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.leaderboard-expanded-game-browser__items {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  grid-auto-rows: minmax(4.2rem, auto);
+  align-content: start;
+  gap: 0.58rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.05rem 0.36rem 0.2rem 0.05rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--leaderboard-expanded-game-accent) rgba(5, 19, 32, 0.72);
+}
+
+.leaderboard-expanded-game-browser--list .leaderboard-expanded-game-browser__items {
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(3.5rem, auto);
+}
+
+.leaderboard-expanded-game-browser__items::-webkit-scrollbar {
+  width: 0.34rem;
+}
+
+.leaderboard-expanded-game-browser__items::-webkit-scrollbar-track {
+  background: rgba(5, 19, 32, 0.72);
+  border: 1px solid rgba(78, 231, 255, 0.24);
+}
+
+.leaderboard-expanded-game-browser__items::-webkit-scrollbar-thumb {
+  background: var(--leaderboard-expanded-game-accent);
+  border-radius: 999px;
+  box-shadow: 0 0 0.65rem rgba(78, 231, 255, 0.35);
+}
+
+.leaderboard-expanded-game-browser__item {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 2.45rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.62rem;
+  min-height: 4.2rem;
+  border: 1px solid var(--leaderboard-expanded-game-border);
+  clip-path: polygon(0.56rem 0, 100% 0, 100% calc(100% - 0.56rem), calc(100% - 0.56rem) 100%, 0 100%, 0 0.56rem);
+  background: var(--leaderboard-expanded-game-fill);
+  color: var(--leaderboard-expanded-game-text);
+  padding: 0.52rem 0.66rem;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.leaderboard-expanded-game-browser--list .leaderboard-expanded-game-browser__item {
+  min-height: 3.5rem;
+}
+
+.leaderboard-expanded-game-browser__item:hover,
+.leaderboard-expanded-game-browser__item:focus-visible {
+  transform: translateY(-1px) scale(1.008);
+  background: color-mix(in srgb, var(--leaderboard-expanded-game-color) 20%, rgba(5, 19, 32, 0.92));
+  box-shadow: 0 0 0.92rem color-mix(in srgb, var(--leaderboard-expanded-game-color) 42%, transparent);
+  outline: none;
+}
+
+.leaderboard-expanded-game-browser__item--selected {
+  box-shadow: 0 0 0.82rem rgba(255, 225, 135, 0.34);
+}
+
+.leaderboard-expanded-game-browser__item-art {
+  width: 2.45rem;
+  height: 2.45rem;
+}
+
+.leaderboard-expanded-game-browser__item-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.leaderboard-expanded-game-browser__item-detail {
+  font-size: 0.68rem;
+  font-weight: 760;
+}
+
+.leaderboard-expanded-game-browser__item-meta {
+  border-color: color-mix(in srgb, var(--leaderboard-expanded-game-color) 66%, transparent);
+  color: var(--leaderboard-expanded-game-color);
+  background: color-mix(in srgb, var(--leaderboard-expanded-game-color) 13%, rgba(3, 12, 24, 0.8));
+}
+
+.leaderboard-expanded-game-browser__empty {
+  color: var(--leaderboard-expanded-game-muted);
+  font-size: 0.86rem;
+  font-weight: 800;
 }

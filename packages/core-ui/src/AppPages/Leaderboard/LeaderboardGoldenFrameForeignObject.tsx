@@ -1050,7 +1050,6 @@ function GoldenFrameForeignObjectArtSvgFrame({
       <SimpleHexCrown crown={cfg.hexCrown} />
       <HexBadge badge={cfg.sideHexBadge} />
       <RightStats stats={cfg.rightStats} />
-      <text x="768" y="787" textAnchor="middle" fontSize="32" fontWeight="850" fill="#ffffff" stroke="#090300" strokeWidth="0.85" paintOrder="stroke fill" pointerEvents="none">Match : 1000    Win : 89%</text>
     </svg>
 }
 

@@ -70,6 +70,11 @@ import {
   type LeaderboardPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgSurfaceControls'
 import {
+  normalizeLeaderboardPageContent,
+  type LeaderboardPageContentData,
+  type PartialLeaderboardPageContentData,
+} from '@ocentra/core-ui/AppPages/Leaderboard/LeaderboardPageSvgContent'
+import {
   CyberAuthSurface,
   normalizeAuthPageSvgControls,
   type AuthPageSvgControls,
@@ -83,6 +88,7 @@ import {
   type ShopPageContentData,
 } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent'
 import type { CompetitionProgramsResponse } from '@ocentra/endpoint-domain/schemas/competition'
+import { GameTypeId } from '@ocentra/endpoint-domain/constants/game'
 import {
   AdminUsersPageContent,
   CompetitionPageContent,
@@ -1766,6 +1772,46 @@ const previewLeaderboardEntries: LeaderboardRow[] = [
   { user_id: 'near-you', rank: 14, score: 9740, wins: 41, losses: 22 },
 ]
 
+const previewAiBenchmarkEntries: LeaderboardRow[] = [
+  { user_id: 'ocentra-claim-agent', rank: 1, score: 9812, wins: 1824, losses: 192, bestGame: 'Claim', trend: '+6', tone: 'red' },
+  { user_id: 'poker-range-solver', rank: 2, score: 9034, wins: 1422, losses: 330, bestGame: 'Poker', trend: '+2', tone: 'gold' },
+  { user_id: 'baseline-random-policy', rank: 3, score: 6412, wins: 812, losses: 901, bestGame: 'Mixed', trend: '-', tone: 'muted' },
+]
+
+const previewLeaderboardContent: PartialLeaderboardPageContentData = {
+  topGames: [
+    { id: 'claim', rank: 1, name: 'Claim', matches: 'Preview rows', growth: 'Fixture data', tone: 'cyan', category: 'Trick-taking', subcategory: 'Card play', gameType: GameTypeId.Claim, routePath: '/leaderboard' },
+    { id: 'poker', rank: 2, name: 'Poker', matches: 'Preview rows', growth: 'Fixture data', tone: 'red', category: 'Poker', subcategory: 'Vying', gameType: GameTypeId.Poker, routePath: '/leaderboard' },
+    { id: 'word-search', rank: 3, name: 'Word Search', matches: 'Preview rows', growth: 'Fixture data', tone: 'gold', category: 'Word', subcategory: 'Puzzle', gameType: GameTypeId.WordSearch, routePath: '/leaderboard' },
+  ],
+  quickGames: [
+    { id: 'claim', name: 'CLAIM', detail: 'Preview leaderboard', icon: 'gamepad', tone: 'cyan', category: 'Trick-taking', subcategory: 'Card play', gameType: GameTypeId.Claim, routePath: '/leaderboard' },
+    { id: 'poker', name: 'POKER', detail: 'Preview leaderboard', icon: 'crown', tone: 'red', category: 'Poker', subcategory: 'Vying', gameType: GameTypeId.Poker, routePath: '/leaderboard' },
+    { id: 'word-search', name: 'WORD SEARCH', detail: 'Preview leaderboard', icon: 'grid', tone: 'gold', category: 'Word', subcategory: 'Puzzle', gameType: GameTypeId.WordSearch, routePath: '/leaderboard' },
+  ],
+  distributionLabels: ['DIAMOND 15.2%', 'PLATINUM 26.1%', 'GOLD 28.7%', 'SILVER 17.1%'],
+  season: {
+    label: 'PREVIEW',
+    title: 'AUTHORING FIXTURE',
+    dateRange: 'EDITOR ONLY',
+    actionLabel: 'PREVIEW EVENTS',
+    detailTitle: 'PREVIEW SEASON',
+    detailSubtitle: 'Editor-only fixture copy for layout tuning.',
+    stats: [
+      { label: 'STATUS', value: 'PREVIEW' },
+      { label: 'PRIZE POOL', value: 'N/A' },
+      { label: 'CLAIMED', value: 'N/A' },
+    ],
+  },
+}
+
+function normalizeLeaderboardPreviewContent(content: PartialLeaderboardPageContentData | undefined): LeaderboardPageContentData {
+  return normalizeLeaderboardPageContent({
+    ...previewLeaderboardContent,
+    ...content,
+  })
+}
+
 const previewAdminUsers: AdminUserRow[] = [
   { uid: 'u-001', email: 'sujan@ocentra.ca', displayName: 'sujan', isAdmin: true, lastLogin: '2026-05-02T14:30:00.000Z' },
   { uid: 'u-002', email: 'pilot@ocentra.ca', displayName: 'table pilot', isAdmin: false, lastLogin: '2026-05-01T19:12:00.000Z' },
@@ -1833,6 +1879,7 @@ function PageLayoutMainAppPreview({
   selectedGameContent = null,
   lobbyControls,
   leaderboardControls,
+  leaderboardContent,
   authControls,
   shopControls,
   shopContent,
@@ -1852,6 +1899,7 @@ function PageLayoutMainAppPreview({
   selectedGameContent?: React.ReactNode
   lobbyControls?: LobbyPageSvgControls
   leaderboardControls?: LeaderboardPageSvgControls
+  leaderboardContent?: PartialLeaderboardPageContentData | null
   authControls?: AuthPageSvgControls
   shopControls?: ShopPageSvgControls
   shopContent?: Partial<ShopPageContentData> | null
@@ -1895,6 +1943,10 @@ function PageLayoutMainAppPreview({
   const resolvedLeaderboardControls = useMemo(
     () => normalizeLeaderboardPageSvgControls(leaderboardControls ?? document.leaderboardControls as Partial<LeaderboardPageSvgControls> | undefined),
     [leaderboardControls, document.leaderboardControls]
+  )
+  const resolvedLeaderboardContent = useMemo(
+    () => normalizeLeaderboardPreviewContent(leaderboardContent ?? document.leaderboardContent as PartialLeaderboardPageContentData | undefined),
+    [document.leaderboardContent, leaderboardContent]
   )
   const resolvedShopControls = useMemo(
     () => normalizeShopPageSvgControls(shopControls ?? document.shopControls as Partial<ShopPageSvgControls> | undefined),
@@ -1974,6 +2026,7 @@ function PageLayoutMainAppPreview({
         seasonId="preview-season"
         lastUpdated="just now"
         leaderboardEntries={previewLeaderboardEntries}
+        aiBenchmarkEntries={previewAiBenchmarkEntries}
         showPersonalizedStats
         userEntry={previewLeaderboardEntries[3] ?? null}
         nearbyAbove={previewLeaderboardEntries.slice(1, 2)}
@@ -2000,6 +2053,7 @@ function PageLayoutMainAppPreview({
         seasonId="preview-season"
         lastUpdated="just now"
         leaderboardEntries={previewLeaderboardEntries}
+        aiBenchmarkEntries={previewAiBenchmarkEntries}
         showPersonalizedStats
         userEntry={previewLeaderboardEntries[3] ?? null}
         nearbyAbove={previewLeaderboardEntries.slice(1, 2)}
@@ -2014,6 +2068,7 @@ function PageLayoutMainAppPreview({
         onMatchmaking={() => undefined}
         layoutControls={pageControls}
         leaderboardControls={resolvedLeaderboardControls}
+        leaderboardContent={resolvedLeaderboardContent}
       />
     ) : kind === 'profile' || kind === 'player-hub' ? (
       <PlayerHubPageContent
@@ -2842,6 +2897,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     () => normalizeLeaderboardPageSvgControls(pageLayoutData?.leaderboardControls as Partial<LeaderboardPageSvgControls> | undefined),
     [pageLayoutData]
   )
+  const initialLeaderboardPageLayoutContent = useMemo(
+    () => normalizeLeaderboardPageContent(pageLayoutData?.leaderboardContent as PartialLeaderboardPageContentData | undefined),
+    [pageLayoutData]
+  )
   const initialAuthPageLayoutControls = useMemo(
     () => normalizeAuthPageSvgControls(pageLayoutData?.authControls as Partial<AuthPageSvgControls> | undefined),
     [pageLayoutData]
@@ -2956,6 +3015,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useState<LobbyPageSvgControls>(() => initialLobbyPageLayoutControls)
   const [leaderboardPageLayoutControls, setLeaderboardPageLayoutControls] =
     useState<LeaderboardPageSvgControls>(() => initialLeaderboardPageLayoutControls)
+  const [leaderboardPageLayoutContent, setLeaderboardPageLayoutContent] =
+    useState<LeaderboardPageContentData>(() => initialLeaderboardPageLayoutContent)
   const [authPageLayoutControls, setAuthPageLayoutControls] =
     useState<AuthPageSvgControls>(() => initialAuthPageLayoutControls)
   const [shopPageLayoutControls, setShopPageLayoutControls] =
@@ -3018,6 +3079,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const leaderboardPageLayoutControlsRef = useRef<LeaderboardPageSvgControls>(
     initialLeaderboardPageLayoutControls
+  )
+  const leaderboardPageLayoutContentRef = useRef<LeaderboardPageContentData>(
+    initialLeaderboardPageLayoutContent
   )
   const authPageLayoutControlsRef = useRef<AuthPageSvgControls>(
     initialAuthPageLayoutControls
@@ -3157,6 +3221,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [leaderboardPageLayoutControls])
 
   useEffect(() => {
+    leaderboardPageLayoutContentRef.current = leaderboardPageLayoutContent
+  }, [leaderboardPageLayoutContent])
+
+  useEffect(() => {
     authPageLayoutControlsRef.current = authPageLayoutControls
   }, [authPageLayoutControls])
 
@@ -3208,9 +3276,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     }
     const timeoutId = window.setTimeout(() => {
       setLeaderboardPageLayoutControls(initialLeaderboardPageLayoutControls)
+      setLeaderboardPageLayoutContent(initialLeaderboardPageLayoutContent)
     }, 0)
     return () => window.clearTimeout(timeoutId)
-  }, [initialLeaderboardPageLayoutControls, isLeaderboardPageLayout])
+  }, [initialLeaderboardPageLayoutContent, initialLeaderboardPageLayoutControls, isLeaderboardPageLayout])
 
   useEffect(() => {
     if (!isAuthPageLayout) {
@@ -3551,6 +3620,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         channel.postMessage({
           type: 'state',
           controls: leaderboardPageLayoutControlsRef.current,
+          content: leaderboardPageLayoutContentRef.current,
         } satisfies LeaderboardPageLayoutControlsMessage)
         return
       }
@@ -3559,6 +3629,11 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         setLeaderboardPageLayoutControls(
           normalizeLeaderboardPageSvgControls(event.data.controls)
         )
+        if (event.data.content) {
+          setLeaderboardPageLayoutContent(
+            normalizeLeaderboardPageContent(event.data.content)
+          )
+        }
       }
     }
     channel.addEventListener('message', handler)
@@ -4798,7 +4873,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     void createPanelWindow(
       'leaderboard-page-layout-controls',
       assetPath ?? LEADERBOARD_PAGE_LAYOUT_ASSET_PATH,
-      'Leaderboard Layout Controls',
+      'Leaderboard Authoring Controls',
       true
     )
   }
@@ -5181,6 +5256,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           selectedGameContent={selectedGamePagePreviewContent}
           lobbyControls={lobbyPageLayoutControls}
           leaderboardControls={leaderboardPageLayoutControls}
+          leaderboardContent={leaderboardPageLayoutContent}
           authControls={authPageLayoutControls}
           shopControls={shopPageLayoutControls}
           shopContent={shopPageLayoutContent}

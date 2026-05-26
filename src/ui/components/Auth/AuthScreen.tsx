@@ -227,8 +227,6 @@ export function AuthScreen({
       route.kind === 'tournaments' ||
       route.kind === 'tournamentDetail' ||
       route.kind === 'leaderboard' ||
-      route.kind === 'gameLeaderboard' ||
-      route.kind === 'aiBenchmarkLeaderboard' ||
       route.kind === 'matches' ||
       route.kind === 'matchDetail'
     ) {
@@ -239,7 +237,6 @@ export function AuthScreen({
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
             pageMode={route.kind}
-            gameId={route.kind === 'gameLeaderboard' ? route.gameId : undefined}
             eventId={route.kind === 'eventDetail' ? route.eventId : undefined}
             tournamentId={route.kind === 'tournamentDetail' ? route.tournamentId : undefined}
             matchId={route.kind === 'matchDetail' ? route.matchId : undefined}

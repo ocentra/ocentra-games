@@ -37,6 +37,7 @@ export const QueryParam = {
   Visibility: 'visibility',
   StakeType: 'stakeType',
   AllowAI: 'allowAI',
+  AiOnly: 'ai_only',
   RoomCode: 'roomCode',
   AdminDebug: 'adminDebug',
 } as const;

@@ -341,7 +341,7 @@ function renderAuthoredGameBodyFallback(metadata: RouteSeoMetadata, game: SeoGam
     '<ul>',
     `<li><a href="/games/card-games">Browse the full card games catalog</a></li>`,
     `<li><a href="${escapeHtml(rulesPath)}">${escapeHtml(game.name)} rules</a></li>`,
-    `<li><a href="${escapeHtml(`${metadata.canonicalPath}/leaderboard`)}">${escapeHtml(game.name)} leaderboard</a></li>`,
+    `<li><a href="/leaderboard">Leaderboard hub</a></li>`,
     '</ul>',
     '</article>',
     '</main>',
@@ -396,7 +396,7 @@ function renderAuthoredRulesBodyFallback(metadata: RouteSeoMetadata, game: SeoGa
     '<h2>Related Links</h2>',
     '<ul>',
     `<li><a href="/games/card-games">Browse the full card games catalog</a></li>`,
-    `<li><a href="${escapeHtml(`${gamePath}/leaderboard`)}">${escapeHtml(game.name)} leaderboard</a></li>`,
+    `<li><a href="/leaderboard">Leaderboard hub</a></li>`,
     '</ul>',
     '</article>',
     '</main>',
@@ -440,11 +440,6 @@ function renderStaticIndexableBodyFallback(metadata: RouteSeoMetadata): string {
       href: '/leaderboard',
       label: 'Leaderboard',
       description: 'View Ocentra competitive score tracks across supported games and leaderboard formats.',
-    },
-    {
-      href: '/leaderboard/ai-benchmarks',
-      label: 'AI Benchmark Leaderboard',
-      description: 'Compare AI-versus-AI benchmark surfaces for Ocentra game simulations.',
     },
   ];
 
@@ -545,7 +540,6 @@ function renderSeoBodyFallback(metadata: RouteSeoMetadata): string {
     || metadata.routeKey === PublicRouteKey.Events
     || metadata.routeKey === PublicRouteKey.Tournaments
     || metadata.routeKey === PublicRouteKey.Leaderboard
-    || metadata.routeKey === PublicRouteKey.AiBenchmarkLeaderboard
   ) {
     return renderStaticIndexableBodyFallback(metadata);
   }
