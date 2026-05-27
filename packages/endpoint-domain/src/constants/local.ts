@@ -69,11 +69,12 @@ export const LocalEditorConfig = {
 } as const;
 
 export const LocalWorktreeConfig = {
-  MainWebPortBase: 3100,
-  WorkerPortBase: 8800,
-  EditorWebPortBase: 5200,
-  PortRangeSize: 1000,
+  MainWebPortBase: 3001,
+  WorkerPortBase: 8788,
+  EditorWebPortBase: 5175,
+  PortRangeSize: 500,
   PortModeEnv: 'OCENTRA_DEV_PORT_MODE',
+  WorktreeIndexEnv: 'OCENTRA_WORKTREE_INDEX',
 } as const;
 
 export function createLocalHttpBaseUrl(host: string, port: number): string {

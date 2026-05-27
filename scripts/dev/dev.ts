@@ -6,7 +6,7 @@
  * Ensures clean start of Vite development server:
  * 1. Single instance enforcement via lock file
  * 2. Auto-kill stale processes on the configured dev port
- * 3. Smart port allocation from the configured dev port
+ * 3. Strict allocation of the configured checkout port
  * 4. Starts Vite server on allocated port
  */
 
@@ -20,7 +20,7 @@ import path from 'path';
 import { createHash } from 'node:crypto';
 import Database from 'better-sqlite3';
 import { ViteLogger, getStackTrace } from '../../vite/utils/viteLogger';
-import { LocalWebConfig, LocalWorktreeConfig, createLocalHttpBaseUrl } from '@ocentra/endpoint-domain/constants/local';
+import { LocalWebConfig, createLocalHttpBaseUrl } from '@ocentra/endpoint-domain/constants/local';
 import { parsePortNumber, readPortArg, resolveMainWebPort } from './dev-port-config';
 
 const VERBOSE_DEV_SCRIPT = process.env.VITE_VERBOSE_DEV_SCRIPT === 'true';
@@ -59,8 +59,6 @@ function resolveExplicitPort(): number | undefined {
 
 const EXPLICIT_PORT = resolveExplicitPort();
 const PREFERRED_PORT: number = EXPLICIT_PORT ?? resolveMainWebPort();
-const RANGE_START: number = PREFERRED_PORT;
-const RANGE_END = EXPLICIT_PORT ?? PREFERRED_PORT + Math.min(LocalWorktreeConfig.PortRangeSize - 1, 100);
 const PROCESS_NAMES = ['node', 'vite']; // Process names we consider "ours"
 const LOCK_FILE = path.join(process.cwd(), '.vite-dev.lock');
 const REGISTRY_CACHE_FILE = path.join(process.cwd(), '.dev-registry-hash');
@@ -432,22 +430,8 @@ async function allocatePort(): Promise<number> {
     }
   }
   
-  console.log(`   🔍 Scanning for free port in range ${RANGE_START}-${RANGE_END}...`);
-  
-  for (let port = RANGE_START; port <= RANGE_END; port++) {
-    if (port === PREFERRED_PORT) continue;
-    
-    if (await isPortAvailable(port)) {
-      console.log(`   ✅ Found free port: ${port}`);
-      createLockFile(port);
-      process.env.VITE_PORT = port.toString();
-      process.env.PORT = port.toString();
-      return port;
-    }
-  }
-  
-  console.error(`\n❌ ERROR: No available ports in range ${RANGE_START}-${RANGE_END}`);
-  console.error(`   All ports are busy! Please check your system and try again.\n`);
+  console.error(`\n❌ ERROR: Configured dev port ${PREFERRED_PORT} is not available.`);
+  console.error('   This checkout has a reserved dev port. Stop the conflicting process or use an explicit --port override.\n');
   process.exit(1);
 }
 

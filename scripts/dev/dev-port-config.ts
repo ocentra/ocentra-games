@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,8 +31,9 @@ export type DevPortDefaults = {
 };
 
 type WorktreeDevPortConfig = {
-  version: 1;
+  version: 2;
   root: string;
+  worktreeIndex: number;
   mainWebPort: number;
   workerPort: number;
   editorWebPort: number;
@@ -41,6 +42,7 @@ type WorktreeDevPortConfig = {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const WORKTREE_PORT_CONFIG_PATH = path.join(ROOT, '.temp', 'dev-ports.json');
+const WORKTREE_PORT_CONFIG_VERSION = 2;
 
 export function parsePortNumber(raw: string | undefined, label: string, fallback?: number): number {
   const value = raw?.trim();
@@ -87,6 +89,42 @@ function isLinkedGitWorktree(): boolean {
   return isFile(path.join(ROOT, '.git'));
 }
 
+function isLinkedGitWorktreeRoot(candidate: string): boolean {
+  return isFile(path.join(candidate, '.git'));
+}
+
+function normalizeFsPath(candidate: string): string {
+  let resolved = path.resolve(candidate);
+  try {
+    resolved = realpathSync.native(resolved);
+  } catch {
+    resolved = path.normalize(resolved);
+  }
+  const normalized = path.normalize(resolved);
+  return process.platform === 'win32' ? normalized.toLowerCase() : normalized;
+}
+
+function parseGitWorktreeRoots(output: string): string[] {
+  return output
+    .split(/\r?\n/)
+    .filter((line) => line.startsWith('worktree '))
+    .map((line) => line.slice('worktree '.length).trim())
+    .filter(Boolean);
+}
+
+function readGitWorktreeRoots(): string[] {
+  try {
+    const output = execFileSync('git', ['worktree', 'list', '--porcelain'], {
+      cwd: ROOT,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return parseGitWorktreeRoots(output);
+  } catch {
+    return [];
+  }
+}
+
 function resolveDevPortMode(env: EnvMap = process.env): DevPortMode {
   const mode = env[LocalWorktreeConfig.PortModeEnv]?.trim().toLowerCase();
   if (mode === 'primary' || mode === 'main') {
@@ -105,8 +143,9 @@ function readWorktreePortConfig(): WorktreeDevPortConfig | undefined {
   try {
     const value = JSON.parse(readFileSync(WORKTREE_PORT_CONFIG_PATH, 'utf8')) as Partial<WorktreeDevPortConfig>;
     if (
-      value.version === 1 &&
+      value.version === WORKTREE_PORT_CONFIG_VERSION &&
       value.root === ROOT &&
+      typeof value.worktreeIndex === 'number' &&
       typeof value.mainWebPort === 'number' &&
       typeof value.workerPort === 'number' &&
       typeof value.editorWebPort === 'number' &&
@@ -120,28 +159,67 @@ function readWorktreePortConfig(): WorktreeDevPortConfig | undefined {
   return undefined;
 }
 
-function stablePort(base: number, salt: string): number {
-  const digest = createHash('sha256').update(ROOT).update('\0').update(salt).digest();
-  return base + (digest.readUInt32BE(0) % LocalWorktreeConfig.PortRangeSize);
+function readConfiguredWorktreeIndex(env: EnvMap): number | undefined {
+  const raw = env[LocalWorktreeConfig.WorktreeIndexEnv];
+  if (!raw?.trim()) {
+    return undefined;
+  }
+  const parsed = parsePortNumber(raw, LocalWorktreeConfig.WorktreeIndexEnv);
+  if (parsed < 1 || parsed > LocalWorktreeConfig.PortRangeSize) {
+    throw new Error(`Invalid ${LocalWorktreeConfig.WorktreeIndexEnv} value: ${raw}`);
+  }
+  return parsed;
 }
 
-function createWorktreePortConfig(): WorktreeDevPortConfig {
+function resolveWorktreeIndex(env: EnvMap): number {
+  const configured = readConfiguredWorktreeIndex(env);
+  if (configured !== undefined) {
+    return configured;
+  }
+
+  const currentRoot = normalizeFsPath(ROOT);
+  const seen = new Set<string>();
+  const linkedRoots = readGitWorktreeRoots()
+    .filter(isLinkedGitWorktreeRoot)
+    .map((root) => normalizeFsPath(root))
+    .filter((root) => {
+      if (seen.has(root)) return false;
+      seen.add(root);
+      return true;
+    });
+  const index = linkedRoots.indexOf(currentRoot);
+  return index >= 0 ? index + 1 : 1;
+}
+
+function portForWorktree(base: number, worktreeIndex: number): number {
+  const port = base + worktreeIndex - 1;
+  if (port > 65535) {
+    throw new Error(`Resolved worktree port is out of range: ${port}`);
+  }
+  return port;
+}
+
+function createWorktreePortConfig(env: EnvMap): WorktreeDevPortConfig {
+  const worktreeIndex = resolveWorktreeIndex(env);
   return {
-    version: 1,
+    version: WORKTREE_PORT_CONFIG_VERSION,
     root: ROOT,
-    mainWebPort: stablePort(LocalWorktreeConfig.MainWebPortBase, 'main-web'),
-    workerPort: stablePort(LocalWorktreeConfig.WorkerPortBase, 'worker'),
-    editorWebPort: stablePort(LocalWorktreeConfig.EditorWebPortBase, 'editor-web'),
+    worktreeIndex,
+    mainWebPort: portForWorktree(LocalWorktreeConfig.MainWebPortBase, worktreeIndex),
+    workerPort: portForWorktree(LocalWorktreeConfig.WorkerPortBase, worktreeIndex),
+    editorWebPort: portForWorktree(LocalWorktreeConfig.EditorWebPortBase, worktreeIndex),
     generatedAt: new Date().toISOString(),
   };
 }
 
-function getWorktreePortConfig(): WorktreeDevPortConfig {
-  const cached = readWorktreePortConfig();
-  if (cached) {
-    return cached;
+function getWorktreePortConfig(env: EnvMap): WorktreeDevPortConfig {
+  if (readConfiguredWorktreeIndex(env) === undefined) {
+    const cached = readWorktreePortConfig();
+    if (cached) {
+      return cached;
+    }
   }
-  const generated = createWorktreePortConfig();
+  const generated = createWorktreePortConfig(env);
   mkdirSync(path.dirname(WORKTREE_PORT_CONFIG_PATH), { recursive: true });
   writeFileSync(WORKTREE_PORT_CONFIG_PATH, `${JSON.stringify(generated, null, 2)}\n`);
   return generated;
@@ -158,7 +236,7 @@ export function resolveDevPortDefaults(env: EnvMap = process.env): DevPortDefaul
       editorWebPort: LocalEditorConfig.Port,
     };
   }
-  const config = getWorktreePortConfig();
+  const config = getWorktreePortConfig(env);
   return {
     mode,
     root: ROOT,
