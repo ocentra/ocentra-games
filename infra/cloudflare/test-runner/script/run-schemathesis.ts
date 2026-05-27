@@ -47,6 +47,7 @@ const schemathesisExamplesSummaryTxtPath = path.join(testRunnerReportsDir, 'sche
 const workerPort = 8787;
 const workerBaseUrl = `http://localhost:${workerPort}`;
 const workerHealthUrl = `${workerBaseUrl}${ApiEndpoint.Health}`;
+const maxSchemathesisWorkers = 4;
 
 ensureDir(testRunnerReportJsonDir);
 ensureDir(testRunnerLogsDir);
@@ -920,7 +921,15 @@ function getDefaultSchemathesisWorkers(): string {
   if (!Number.isFinite(cpuCount) || cpuCount <= 1) {
     return '1';
   }
-  return String(Math.min(cpuCount, 4));
+  return String(Math.min(cpuCount, maxSchemathesisWorkers));
+}
+
+function getSchemathesisWorkers(value: string | undefined): string {
+  const requested = Number.parseInt(value ?? '', 10);
+  if (!Number.isFinite(requested) || requested <= 0) {
+    return getDefaultSchemathesisWorkers();
+  }
+  return String(Math.min(requested, maxSchemathesisWorkers));
 }
 
 function createRuntimeArtifactsDir(): string {
@@ -2785,7 +2794,7 @@ async function main(): Promise<void> {
   const schemathesisAuthToken = process.env.SCHEMATHESIS_AUTH_TOKEN?.trim() || `${TestTokenPrefix.Test}schemathesis:admin`;
   const schemathesisTimeoutMs = Number(process.env.SCHEMATHESIS_TIMEOUT_MS ?? '1200000');
   const schemathesisRequestTimeoutSeconds = process.env.SCHEMATHESIS_REQUEST_TIMEOUT_SECONDS?.trim() || '30';
-  const schemathesisWorkers = process.env.SCHEMATHESIS_WORKERS?.trim() || getDefaultSchemathesisWorkers();
+  const schemathesisWorkers = getSchemathesisWorkers(process.env.SCHEMATHESIS_WORKERS?.trim());
   const schemathesisMaxExamples = process.env.SCHEMATHESIS_MAX_EXAMPLES?.trim() || (process.env.CI ? '50' : '50');
   const timeoutMs = Number.isFinite(schemathesisTimeoutMs) && schemathesisTimeoutMs > 0 ? schemathesisTimeoutMs : 1200000;
   const includeMethod = process.env.TARGET_METHOD?.trim() || undefined;
@@ -2806,7 +2815,7 @@ async function main(): Promise<void> {
     writeJson(schemathesisResultsJsonPath, result);
   };
 
-  console.log(`  Schemathesis workers: ${schemathesisWorkers} (default: all logical CPUs)`);
+  console.log(`  Schemathesis workers: ${schemathesisWorkers} (max: ${maxSchemathesisWorkers})`);
   await seedExampleState(baseUrl, schemathesisAuthToken, runtimeFixtures);
   fs.writeFileSync(schemaPath, applyRuntimeOpenApiFixtures(generateOpenApiJson(), runtimeFixtures), 'utf-8');
 
