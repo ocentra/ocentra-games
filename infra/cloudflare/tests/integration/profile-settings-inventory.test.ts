@@ -74,9 +74,15 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     await response.text().catch(() => undefined);
   });
 
-  it(testName('Profile POST update: returns 200 and persists displayName'), async () => {
+  it(testName('Profile POST update: returns 200 and persists editable profile fields'), async () => {
     const updateUrl = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Profile.ById(TestConfig.TestUserId)}/update`;
-    const payload = { displayName: 'TestDisplay' };
+    const payload = {
+      displayName: 'TestDisplay',
+      bio: '',
+      visibility: 'friends',
+      customTitle: null,
+      profileTheme: 'gold',
+    };
     const updateRes = await worker.fetch(updateUrl, {
       method: HttpMethod.Post,
       headers: {
@@ -86,6 +92,18 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       body: JSON.stringify(payload),
     });
     expect(updateRes.status).toBe(HttpStatus.Ok);
+    const updateData = (await updateRes.json()) as {
+      displayName?: string;
+      bio?: string;
+      visibility?: string;
+      customTitle?: string | null;
+      profileTheme?: string;
+    };
+    expect(updateData.displayName).toBe('TestDisplay');
+    expect(updateData.bio).toBe('');
+    expect(updateData.visibility).toBe('friends');
+    expect(updateData.customTitle).toBeNull();
+    expect(updateData.profileTheme).toBe('gold');
     const getUrl = buildApiUrl(ApiEndpoint.Profile.ById(TestConfig.TestUserId), {
       baseUrl: TestConfig.TestApiUrlPlaceholder,
     });
@@ -94,8 +112,18 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       headers: getValidRequestHeaders(TestConfig.TestUserId),
     });
     expect(getRes.status).toBe(HttpStatus.Ok);
-    const data = (await getRes.json()) as { displayName?: string };
+    const data = (await getRes.json()) as {
+      displayName?: string;
+      bio?: string;
+      visibility?: string;
+      customTitle?: string | null;
+      profileTheme?: string;
+    };
     expect(data.displayName).toBe('TestDisplay');
+    expect(data.bio).toBe('');
+    expect(data.visibility).toBe('friends');
+    expect(data.customTitle).toBeNull();
+    expect(data.profileTheme).toBe('gold');
   });
 
   it(testName('Profile POST add-badge: rejects client-authoritative profile badge mutation'), async () => {

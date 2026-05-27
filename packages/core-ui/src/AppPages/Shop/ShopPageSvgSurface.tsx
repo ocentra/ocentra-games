@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type WheelEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode, type WheelEvent } from 'react';
 import { createPortal } from 'react-dom';
 import {
   isShopProductPurchasable,
@@ -101,6 +101,7 @@ export type ShopPageSvgSurfaceProps = {
   accountSummary?: ShopAccountSummary | null;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
+  renderRightDetail?: (props: ShopRightDetailRenderProps) => ReactNode | null;
   chrome?: Partial<ShopPageSvgSurfaceChrome>;
 };
 
@@ -111,6 +112,7 @@ export type ShopPageSvgSurfaceChrome = {
   headerIcon: 'cart' | ShopIcon;
   balanceIcon: 'ac' | ShopIcon;
   productTileMode: ShopPageSvgSurfaceMode;
+  programsTopCardAction?: 'bottom-detail' | 'right-detail';
   showHeaderIcon: boolean;
   showHeaderPanel: boolean;
   showHeaderBadges: boolean;
@@ -123,6 +125,20 @@ export type ShopPageSvgSurfaceChrome = {
   showMainHeaderCount: boolean;
   showMainTopRightAction: boolean;
   sideInfoItemKey?: ShopTab | null;
+};
+
+export type ShopRightDetailRenderProps = {
+  active: ShopRightTabId;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  content: ShopPageContentData;
+  cfg: ShopPageSvgControls;
+  acBalance: number | null;
+  accountSummary?: ShopAccountSummary | null;
+  onClose: () => void;
+  onElite: () => void;
 };
 
 type Metrics = {
@@ -170,6 +186,7 @@ const DEFAULT_SURFACE_CHROME: ShopPageSvgSurfaceChrome = {
   headerIcon: 'cart',
   balanceIcon: 'ac',
   productTileMode: 'shop',
+  programsTopCardAction: 'bottom-detail',
   showHeaderIcon: true,
   showHeaderPanel: true,
   showHeaderBadges: true,
@@ -709,6 +726,7 @@ function tileToMainCarouselCard(item: TileItem, index: number, loadingId: string
     imageUrl: item.imageUrl,
     price: item.price,
     actionLabel: tileActionLabel(item, content, tab),
+    rightDetailTarget: item.rightDetailTarget,
     loading: item.product ? loadingId === item.product.productId : false,
     disabled: false,
   };
@@ -736,6 +754,7 @@ function staticItemToImageMainCarouselCard(item: TileItem, index: number, prefix
     imageUrl: item.imageUrl,
     price: item.price,
     actionLabel: content.uiCopy.actions.view,
+    rightDetailTarget: item.rightDetailTarget,
   };
 }
 
@@ -2206,6 +2225,7 @@ function MainBody({
   rightPanelDetail,
   accountSummary,
   productTileMode,
+  programsTopCardAction = 'bottom-detail',
   showMainHeaderCount,
   showMainTopRightAction,
   sectionBottomY,
@@ -2214,6 +2234,7 @@ function MainBody({
   onClearBottomPreview,
   onClearRightPanelDetail,
   onInfoHandled,
+  onProgramRightDetail,
   onBuy,
   onElite,
   vaultDecks,
@@ -2221,6 +2242,7 @@ function MainBody({
   onVaultDeckInspect,
   dailyRewardStatus,
   onDailyRewardSpin,
+  renderRightDetail,
 }: {
   x: number;
   y: number;
@@ -2236,6 +2258,7 @@ function MainBody({
   rightPanelDetail: ShopRightTabId | null;
   accountSummary?: ShopAccountSummary | null;
   productTileMode: ShopPageSvgSurfaceMode;
+  programsTopCardAction?: 'bottom-detail' | 'right-detail';
   showMainHeaderCount: boolean;
   showMainTopRightAction: boolean;
   sectionBottomY?: number;
@@ -2244,6 +2267,7 @@ function MainBody({
   onClearBottomPreview: () => void;
   onClearRightPanelDetail: () => void;
   onInfoHandled: () => void;
+  onProgramRightDetail: (target: ShopRightTabId) => void;
   onBuy: (product: ShopProduct) => void;
   onElite: () => void;
   vaultDecks?: ShopVaultDeckPreviewItem[];
@@ -2251,6 +2275,7 @@ function MainBody({
   onVaultDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
+  renderRightDetail?: (props: ShopRightDetailRenderProps) => ReactNode | null;
 }) {
   const [selectedTileDetail, setSelectedTileDetail] = useState<TileItem | null>(null);
   const [bottomTileDetail, setBottomTileDetail] = useState<TileItem | null>(null);
@@ -2402,7 +2427,29 @@ function MainBody({
       setActiveInfoDetail(null);
       onInfoHandled();
     };
+    const openProgramRightDetail = (card: ShopMainCarouselCardItem) => {
+      const intent = `${card.title} ${card.subtitle ?? ''} ${card.actionLabel ?? ''}`.toLowerCase();
+      const target: ShopRightTabId = card.rightDetailTarget ?? (activeTab === 'Elite'
+        ? 'pass'
+        : activeTab === 'Events'
+          ? 'events'
+          : activeTab === 'Play Access'
+            ? 'recent'
+            : activeTab === 'Vault' || intent.includes('balance') || intent.includes('ownership')
+              ? 'wallet'
+              : 'account');
+      setBottomTileDetail(null);
+      setSelectedTileDetail(null);
+      setExpandedVaultGroupKey(null);
+      setSelectedVaultDeckKey(null);
+      onInfoHandled();
+      onProgramRightDetail(target);
+    };
     const handleTopCardAction = (card: ShopMainCarouselCardItem) => {
+      if (productTileMode === 'programs' && programsTopCardAction === 'right-detail') {
+        openProgramRightDetail(card);
+        return;
+      }
       if (activeTab === 'Vault') {
         const groupIndex = topVaultGroups.findIndex(item => `vault:${item.key}` === card.key);
         const group = groupIndex >= 0 ? topVaultGroups[groupIndex] : undefined;
@@ -2452,6 +2499,22 @@ function MainBody({
     }
 
     if (rightPanelDetail) {
+      const customDetail = renderRightDetail?.({
+        active: rightPanelDetail,
+        x: bottomFrameBounds.x,
+        y,
+        w: bottomFrameBounds.w,
+        h: resolvedSectionBottomY - y,
+        content,
+        cfg,
+        acBalance,
+        accountSummary,
+        onClose: onClearRightPanelDetail,
+        onElite,
+      });
+      if (customDetail) {
+        return <>{customDetail}</>;
+      }
       return (
         <RightPanelDetailLayer
           x={bottomFrameBounds.x}
@@ -2912,6 +2975,7 @@ export function ShopPageSvgSurface({
   accountSummary,
   dailyRewardStatus,
   onDailyRewardSpin,
+  renderRightDetail,
   chrome: chromeOverride,
 }: ShopPageSvgSurfaceProps) {
   const cfg = useMemo(() => normalizeShopPageSvgControls(controls), [controls]);
@@ -3083,6 +3147,13 @@ export function ShopPageSvgSurface({
     setRightPreviewTarget('pass');
     setRightDetailTarget('pass');
   };
+  const openProgramRightDetail = (target: ShopRightTabId) => {
+    setSpecialView(null);
+    setInfoRequest(null);
+    setBottomPreviewTarget(null);
+    setRightPreviewTarget(target);
+    setRightDetailTarget(target);
+  };
   const previewLocalIndex = wrapPreviewIndex(previewStart, previewRowCount);
   const previewCycleIndex = previewRowCount > 0 ? Math.floor(previewStart / previewRowCount) : 0;
   const previewTrackX = previewCycleIndex * previewTrackLayout.cycleWidth + (previewTrackLayout.offsets[previewLocalIndex] ?? 0);
@@ -3148,7 +3219,13 @@ export function ShopPageSvgSurface({
           <clipPath id="shopPreviewTrackClip"><rect x={cfg.layout.outerPad - 6} y={bottomPreviewY - 6} width={previewViewportW + 12} height={cfg.layout.bottomPreviewH + 12} /></clipPath>
         </defs>
         <rect width={canvasWidth} height={cfg.canvas.height} fill={cfg.svgDefaults.canvasFill} />
-        <LeftSidePanel x={metrics.leftX} y={metrics.leftY} w={metrics.leftW} h={leftPanelH} activeTab={activeTab} earnActive={specialView === 'earnRewards' || bottomPreviewTarget === 'Earn Free AC'} showEarnPanel={chrome.showEarnPanel} sideInfoItemKey={chrome.sideInfoItemKey} content={shopContent} cfg={cfg} onTabChange={selectTab} onEarn={() => {
+        <LeftSidePanel x={metrics.leftX} y={metrics.leftY} w={metrics.leftW} h={leftPanelH} activeTab={activeTab} earnActive={specialView === 'earnRewards' || bottomPreviewTarget === 'Earn Free AC'} showEarnPanel={chrome.showEarnPanel} sideInfoItemKey={chrome.sideInfoItemKey} content={shopContent} cfg={cfg} onTabChange={selectTab} onSideItemAction={(item) => {
+          if (item.rightDetailTarget) {
+            openProgramRightDetail(item.rightDetailTarget);
+            return;
+          }
+          selectTab(item.key);
+        }} onEarn={() => {
           setBottomPreviewTarget(null);
           setRightDetailTarget(null);
           setSpecialView('earnRewards');
@@ -3194,6 +3271,7 @@ export function ShopPageSvgSurface({
           rightPanelDetail={rightDetailTarget}
           accountSummary={accountSummary}
           productTileMode={chrome.productTileMode}
+          programsTopCardAction={chrome.programsTopCardAction}
           showMainHeaderCount={chrome.showMainHeaderCount}
           showMainTopRightAction={chrome.showMainTopRightAction}
           sectionBottomY={mainSectionBottomY}
@@ -3202,6 +3280,7 @@ export function ShopPageSvgSurface({
           onClearBottomPreview={() => setBottomPreviewTarget(null)}
           onClearRightPanelDetail={() => setRightDetailTarget(null)}
           onInfoHandled={() => setInfoRequest(null)}
+          onProgramRightDetail={openProgramRightDetail}
           onBuy={onBuy}
           onElite={() => selectTab('Elite')}
           vaultDecks={vaultDecks}
@@ -3209,6 +3288,7 @@ export function ShopPageSvgSurface({
           onVaultDeckInspect={onVaultDeckInspect}
           dailyRewardStatus={dailyRewardStatus}
           onDailyRewardSpin={onDailyRewardSpin}
+          renderRightDetail={renderRightDetail}
         />
         {chrome.showRightPanel ? <RightSidePanel x={metrics.rightX} y={mainBodyY} w={metrics.rightW} h={rightPanelH} content={shopContent} cfg={cfg} acBalance={acBalance} accountSummary={accountSummary} active={rightPreviewTarget} onActiveChange={selectRightPreview} onPreviewOpen={openRightPreviewDetail} /> : null}
         <BottomPanel

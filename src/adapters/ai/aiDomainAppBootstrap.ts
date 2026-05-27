@@ -289,6 +289,17 @@ function initializeModelServices(): void {
   modelServicesInitialized = true;
 }
 
+export function ensureAiDomainModelServices(): void {
+  if (!isStorageReady()) {
+    throw new Error(
+      'AI domain cannot initialize before storage. Ensure StorageBootstrap completes before setupAiDomain or getProviderManager.'
+    );
+  }
+
+  initializeModelLoadingSettingsAdapter();
+  initializeModelServices();
+}
+
 function createLazyInferenceAdapter(getInferenceSettings: GetInferenceSettings): InferenceRuntimeAdapter {
   let real: InferenceRuntimeAdapter | null = null;
 
@@ -387,14 +398,7 @@ function buildAppProviderAdapters(): AppProviderAdapters {
 export function setupAiDomain(): void {
   if (teardownAiDomain) return;
 
-  if (!isStorageReady()) {
-    throw new Error(
-      'AI domain cannot initialize before storage. Ensure StorageBootstrap completes before setupAiDomain or getProviderManager.'
-    );
-  }
-
-  initializeModelLoadingSettingsAdapter();
-  initializeModelServices();
+  ensureAiDomainModelServices();
   const appAdapters = buildAppProviderAdapters();
   const adapters: SetupAiDomainAdapters = {
     ...appAdapters,
@@ -427,6 +431,7 @@ export function getProviderManager(): AppProviderManager {
 
 export function getAiService(): AppAiService {
   if (!aiService) {
+    ensureAiDomainModelServices();
     const adapters = buildAppProviderAdapters();
     aiService = createAppAiService({
       getWorkerBaseUrl: adapters.getWorkerBaseUrl,

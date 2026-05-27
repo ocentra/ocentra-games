@@ -4,6 +4,7 @@ import { getCorsHeaders } from '@/utils/cors';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType, CacheControl } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { OpenApiParameterName } from '@ocentra/endpoint-domain/constants/openapi';
 import { extractAndValidateMatchIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -90,7 +91,7 @@ export async function handleSignedUrlRequest(
 
     const requestUrl = new URL(request.url);
     for (const key of requestUrl.searchParams.keys()) {
-      if (key !== 'expires') {
+      if (key !== OpenApiParameterName.Expires) {
         return new Response(JSON.stringify({
           error: ErrorMessage.BadRequest,
           message: `Unexpected query parameter: ${key}`,
@@ -104,11 +105,11 @@ export async function handleSignedUrlRequest(
         });
       }
     }
-    const expiresValues = requestUrl.searchParams.getAll('expires');
+    const expiresValues = requestUrl.searchParams.getAll(OpenApiParameterName.Expires);
     if (expiresValues.length > 1) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
-        message: 'Unexpected query parameter: expires',
+        message: `Unexpected query parameter: ${OpenApiParameterName.Expires}`,
       }), {
         status: HttpStatus.BadRequest,
         headers: {
@@ -140,9 +141,22 @@ export async function handleSignedUrlRequest(
     }
     const matchId = result.matchId;
 
-    const rawExpiration = expiresValues[0] ?? requestUrl.searchParams.get('expires');
+    const rawExpiration = expiresValues[0] ?? requestUrl.searchParams.get(OpenApiParameterName.Expires);
+    if (rawExpiration !== null && !/^[1-9]\d*$/.test(rawExpiration)) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: `${OpenApiParameterName.Expires} must be a positive integer`,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          [HttpHeader.CacheControl]: CacheControl.PrivateShortTerm,
+          ...getCorsHeaders(env)
+        }
+      });
+    }
     const parsedExpiration = rawExpiration ? Number.parseInt(rawExpiration, 10) : 3600;
-    const expirationSeconds = Number.isFinite(parsedExpiration) && parsedExpiration > 0 ? parsedExpiration : 3600;
+    const expirationSeconds = Number.isFinite(parsedExpiration) ? parsedExpiration : 3600;
     const maxExpiration = 86400;
 
     const cryptoImpl: SignedUrlCrypto = {

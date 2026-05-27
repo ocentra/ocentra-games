@@ -34,7 +34,7 @@
         "type": "custom",
         "enabled": true,
         "order": 30,
-        "title": "Settings",
+        "title": "Account Controls",
         "sourceAssetPath": "Resources/Pages/PlayerHubPageLayout.asset#settings-link"
       }
     ],
@@ -54,7 +54,8 @@
         {
           "id": "settings-link",
           "type": "custom",
-          "order": 30
+          "order": 30,
+          "title": "Account Controls"
         }
       ]
     },
@@ -65,6 +66,1222 @@
       "stageScale": 1,
       "heroOffsetY": 0,
       "showGuides": false
+    },
+    "playerHubControls": {
+      "header": {
+        "title": "Player Hub",
+        "subtitle": "Your private player profile, settings, progress, matches, inventory, rewards, and account controls.",
+        "statusLabel": "Account hub",
+        "showSubtitle": false
+      },
+      "tabs": [
+        {
+          "id": "overview",
+          "label": "Overview",
+          "enabled": true
+        },
+        {
+          "id": "matches",
+          "label": "Matches",
+          "enabled": true
+        },
+        {
+          "id": "learning",
+          "label": "Learning",
+          "enabled": true
+        },
+        {
+          "id": "ai",
+          "label": "AI Setup",
+          "enabled": true
+        },
+        {
+          "id": "competition",
+          "label": "Competition",
+          "enabled": true
+        },
+        {
+          "id": "inventory",
+          "label": "Inventory",
+          "enabled": true
+        },
+        {
+          "id": "rewards",
+          "label": "Rewards",
+          "enabled": true
+        },
+        {
+          "id": "account",
+          "label": "Account",
+          "enabled": true
+        }
+      ],
+      "quickActions": [
+        {
+          "id": "play",
+          "label": "Play",
+          "enabled": true
+        },
+        {
+          "id": "lobby",
+          "label": "Matches",
+          "enabled": true
+        },
+        {
+          "id": "shop",
+          "label": "Shop",
+          "enabled": true
+        },
+        {
+          "id": "settings",
+          "label": "Account",
+          "enabled": true
+        }
+      ],
+      "defaultTab": "overview",
+      "emptyStates": {
+        "overview": {
+          "title": "Your player activity will build here",
+          "body": "Profile, preferences, balances, matches, lessons, inventory, rewards, and competition ownership fill from real account data.",
+          "actionLabel": "View Details"
+        },
+        "matches": {
+          "title": "No completed matches yet",
+          "body": "Finished matches and private table records will appear here after real match history is connected.",
+          "actionLabel": "View History"
+        },
+        "learning": {
+          "title": "Learning paths are not active yet",
+          "body": "Lessons, AI review, mistake tracking, and recommended drills will appear here when learning programs are enabled.",
+          "actionLabel": "Browse Games"
+        },
+        "competition": {
+          "title": "No event tickets or tournament passes yet",
+          "body": "Official event entries, check-in windows, tournament passes, and past competition records will appear here.",
+          "actionLabel": "Open Competition"
+        },
+        "inventory": {
+          "title": "No owned items yet",
+          "body": "Decks, cosmetics, badges, tickets, and passes you own will appear here after they are earned or granted.",
+          "actionLabel": "Open Shop"
+        },
+        "rewards": {
+          "title": "No reward history yet",
+          "body": "Daily rewards, badges, achievements, and competition prizes will appear here when they are earned.",
+          "actionLabel": "Open Shop"
+        },
+        "account": {
+          "title": "Account controls live here",
+          "body": "Profile preferences, notification settings, wallet status, AI settings, API settings, local runtime choices, and privacy controls belong inside Player Hub.",
+          "actionLabel": "Manage Account"
+        },
+        "ai": {
+          "title": "AI setup is ready to configure",
+          "body": "Cloud keys, local endpoints, browser models, and inference defaults are managed from Player Hub.",
+          "actionLabel": "Open AI Setup"
+        }
+      },
+      "labels": {
+        "sidePanelTitle": "Player",
+        "statsTitle": "Account Snapshot",
+        "nextActionTitle": "Next Action",
+        "mainKicker": "Private Hub",
+        "accountStatusLabel": "Signed-in player"
+      }
+    },
+    "playerHubContent": {
+      "headerMetrics": [
+        {
+          "key": "gp",
+          "label": "GP",
+          "fallbackValue": "N/A"
+        },
+        {
+          "key": "ac",
+          "label": "AC",
+          "fallbackValue": "N/A"
+        },
+        {
+          "key": "ownedItems",
+          "label": "Owned",
+          "fallbackValue": "N/A"
+        },
+        {
+          "key": "gamesPlayed",
+          "label": "Played",
+          "fallbackValue": "N/A"
+        }
+      ],
+      "navigation": [
+        {
+          "id": "overview",
+          "title": "Overview",
+          "subtitle": "Profile and account snapshot",
+          "icon": "crown",
+          "tone": "cyan",
+          "imageUrl": "/packages/app-assets/src/images/ShopPage/Profileframe.png"
+        },
+        {
+          "id": "matches",
+          "title": "Matches",
+          "subtitle": "History and room handoff",
+          "icon": "cards",
+          "tone": "cyan",
+          "imageUrl": "/packages/app-assets/src/images/ShopPage/PlayersAccess.png"
+        },
+        {
+          "id": "learning",
+          "title": "Learning",
+          "subtitle": "Lessons and AI review",
+          "icon": "shield",
+          "tone": "violet",
+          "imageUrl": "/packages/app-assets/src/images/LobbyPlaceholders/AI_Coach.png"
+        },
+        {
+          "id": "ai",
+          "title": "AI Setup",
+          "subtitle": "Models and runtime",
+          "icon": "shield",
+          "tone": "green",
+          "imageUrl": "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png"
+        },
+        {
+          "id": "competition",
+          "title": "Competition",
+          "subtitle": "Tickets and passes",
+          "icon": "trophy",
+          "tone": "gold",
+          "imageUrl": "/packages/app-assets/src/images/ShopPage/QualifierEntry.png"
+        },
+        {
+          "id": "inventory",
+          "title": "Inventory",
+          "subtitle": "Owned account items",
+          "icon": "chest",
+          "tone": "orange",
+          "imageUrl": "/packages/app-assets/src/images/ShopPage/Vault.png"
+        },
+        {
+          "id": "rewards",
+          "title": "Rewards",
+          "subtitle": "Daily and earned grants",
+          "icon": "coins",
+          "tone": "green",
+          "imageUrl": "/packages/app-assets/src/images/ShopPage/EarnFreeAC.png"
+        },
+        {
+          "id": "account",
+          "title": "Account",
+          "subtitle": "Profile and preferences",
+          "icon": "lock",
+          "tone": "cyan",
+          "imageUrl": "/packages/app-assets/src/images/ShopPage/Avatars.png"
+        }
+      ],
+      "sections": {
+        "overview": {
+          "title": "PLAYER OVERVIEW",
+          "subtitle": "Profile, settings, balances, account status, rewards, and ownership.",
+          "footerTitle": "Hub areas:",
+          "footerItems": [
+            "Profile",
+            "Settings",
+            "AI",
+            "API",
+            "Balances",
+            "Ownership"
+          ],
+          "summaryCards": [
+            {
+              "id": "profile-identity",
+              "title": "Profile & Identity",
+              "subtitle": "Display name, avatar, account status, privacy, and profile-safe values are managed inside Player Hub.",
+              "tone": "cyan",
+              "icon": "lock",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/Profileframe.png",
+              "targetDetail": "account",
+              "badge": "Profile",
+              "cta": "Details",
+              "bullets": [
+                "Profile data stays private.",
+                "Unsafe account IDs are not shown as names.",
+                "No profile copy is generated by the UI."
+              ]
+            },
+            {
+              "id": "settings-privacy",
+              "title": "Settings & Privacy",
+              "subtitle": "Notification preferences, theme, security state, API settings, local AI settings, and privacy controls belong here.",
+              "tone": "gold",
+              "icon": "shield",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/TableThemes.png",
+              "targetDetail": "settings",
+              "badge": "Account",
+              "cta": "Manage",
+              "bullets": [
+                "One account hub.",
+                "No separate settings-page handoff.",
+                "Editor-authored copy and controls."
+              ]
+            },
+            {
+              "id": "ai-runtime-setup",
+              "title": "AI Runtime Setup",
+              "subtitle": "Cloud API keys, local server endpoints, browser models, inference settings, and per-device AI runtime choices are managed here.",
+              "tone": "green",
+              "icon": "shield",
+              "imageUrl": "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png",
+              "targetDetail": "ai",
+              "badge": "AI",
+              "cta": "Configure",
+              "bullets": [
+                "Cloud keys use account worker storage.",
+                "Local server endpoints stay device-local.",
+                "Browser models use the AI model catalog."
+              ]
+            },
+            {
+              "id": "balances-ownership",
+              "title": "Balances & Ownership",
+              "subtitle": "GP, AC, owned items, rewards, tickets, passes, and account history appear only when real services return them.",
+              "tone": "violet",
+              "icon": "coins",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/Treasury.png",
+              "targetDetail": "balances",
+              "badge": "Owned",
+              "cta": "Review",
+              "bullets": [
+                "Real account inventory only.",
+                "Checkout remains outside Player Hub.",
+                "Competition passes stay account-owned."
+              ]
+            }
+          ],
+          "detailCards": []
+        },
+        "matches": {
+          "title": "MATCHES",
+          "subtitle": "Finished games appear here after match history is connected.",
+          "footerTitle": "Match surfaces:",
+          "footerItems": [
+            "Completed games",
+            "Private rooms",
+            "Public rooms",
+            "Room handoff"
+          ],
+          "summaryCards": [
+            {
+              "id": "no-completed-matches-yet",
+              "title": "No completed matches yet",
+              "subtitle": "Finished public or private room records will appear here after real match history is connected.",
+              "tone": "cyan",
+              "icon": "cards",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/PrivateTable.png",
+              "targetDetail": "recent",
+              "badge": "No records",
+              "cta": "History",
+              "bullets": [
+                "Match history uses completed games.",
+                "No fake match rows are shown.",
+                "Room creation stays outside this page."
+              ]
+            },
+            {
+              "id": "room-handoff",
+              "title": "Room Handoff",
+              "subtitle": "Player Hub summarizes your account match activity. Live public room discovery belongs to the game lobby.",
+              "tone": "green",
+              "icon": "link",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/PublicTable.png",
+              "targetDetail": "recent",
+              "badge": "Handoff",
+              "cta": "Play",
+              "bullets": [
+                "Game-specific handoff.",
+                "Room status is not duplicated here.",
+                "Completed matches return here."
+              ]
+            }
+          ],
+          "detailCards": []
+        },
+        "learning": {
+          "title": "LEARNING",
+          "subtitle": "Lessons and AI review appear only when enabled for the signed-in player.",
+          "footerTitle": "Learning modules:",
+          "footerItems": [
+            "Lessons",
+            "AI review",
+            "Mistake tracking",
+            "Drills",
+            "Skill trends"
+          ],
+          "summaryCards": [
+            {
+              "id": "learning-paths-are-not-active-yet",
+              "title": "Learning paths are not active yet",
+              "subtitle": "Lessons, AI review, mistake tracking, and recommended drills will appear after learning programs are enabled.",
+              "tone": "violet",
+              "icon": "shield",
+              "imageUrl": "/packages/app-assets/src/images/LobbyPlaceholders/AI_Coach.png",
+              "targetDetail": "learning",
+              "badge": "Planned",
+              "cta": "View",
+              "bullets": [
+                "Lesson ownership will be account-based.",
+                "AI review will use completed games.",
+                "Skill tracking will remain private."
+              ]
+            },
+            {
+              "id": "ai-skill-review",
+              "title": "AI Skill Review",
+              "subtitle": "No skill score is fabricated. Recommendations appear only after the learning service returns real account data.",
+              "tone": "cyan",
+              "icon": "shield",
+              "imageUrl": "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png",
+              "targetDetail": "learning",
+              "badge": "Pending",
+              "cta": "Later",
+              "bullets": [
+                "No mock score.",
+                "No invented recommendations.",
+                "No generated lesson progress."
+              ]
+            }
+          ],
+          "detailCards": []
+        },
+        "competition": {
+          "title": "COMPETITION",
+          "subtitle": "Owned tickets, passes, and official competition records.",
+          "footerTitle": "Competition state:",
+          "footerItems": [
+            "Tickets",
+            "Passes",
+            "Check-in",
+            "Past events",
+            "Tournament records"
+          ],
+          "summaryCards": [
+            {
+              "id": "no-event-tickets-or-tournament-passes-yet",
+              "title": "No event tickets or tournament passes yet",
+              "subtitle": "Official entries, check-in windows, tournament passes, and past competition records appear after real ownership exists.",
+              "tone": "gold",
+              "icon": "trophy",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/QualifierEntry.png",
+              "targetDetail": "competition",
+              "badge": "No passes",
+              "cta": "Competition",
+              "bullets": [
+                "Competition page owns official schedules.",
+                "Shop can sell tickets and passes.",
+                "Player Hub shows owned entries only."
+              ]
+            },
+            {
+              "id": "official-programs",
+              "title": "Official Programs",
+              "subtitle": "Open events and tournaments are published on Competition. Player Hub summarizes your owned participation.",
+              "tone": "orange",
+              "icon": "crown",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/ChamPionPass.png",
+              "targetDetail": "competition",
+              "badge": "Schedule",
+              "cta": "Open",
+              "bullets": [
+                "Fixed-date programs.",
+                "Ticket/pass ownership.",
+                "Check-in handoff when available."
+              ]
+            }
+          ],
+          "detailCards": []
+        },
+        "inventory": {
+          "title": "INVENTORY",
+          "subtitle": "Owned items and rewards from real account entitlements.",
+          "footerTitle": "Inventory states:",
+          "footerItems": [
+            "Owned",
+            "Equipped",
+            "Tickets",
+            "Passes",
+            "Cosmetics"
+          ],
+          "summaryCards": [
+            {
+              "id": "no-owned-items-yet",
+              "title": "No owned items yet",
+              "subtitle": "Decks, cosmetics, badges, tickets, and passes appear here after they are earned, granted, or purchased.",
+              "tone": "orange",
+              "icon": "chest",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/Vault.png",
+              "targetDetail": "balances",
+              "badge": "Empty",
+              "cta": "Open Shop",
+              "bullets": [
+                "Inventory uses entitlement data.",
+                "No placeholder items.",
+                "Images and card copy are authored in this asset."
+              ]
+            }
+          ],
+          "detailCards": []
+        },
+        "rewards": {
+          "title": "REWARD HISTORY",
+          "subtitle": "Daily rewards, badges, achievements, and competition prizes appear here when they are earned.",
+          "footerTitle": "Reward state:",
+          "footerItems": [
+            "Daily rewards",
+            "Badges",
+            "Achievements",
+            "Competition prizes"
+          ],
+          "summaryCards": [
+            {
+              "id": "no-reward-history-yet",
+              "title": "No reward history yet",
+              "subtitle": "Daily rewards, badges, achievements, and competition prizes appear here when real grants exist.",
+              "tone": "green",
+              "icon": "coins",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/EarnFreeAC.png",
+              "targetDetail": "recent",
+              "badge": "Rewards",
+              "cta": "View Rewards",
+              "bullets": [
+                "Reward state comes from account services.",
+                "No fake claims.",
+                "Earned prizes stay tied to the player."
+              ]
+            }
+          ],
+          "detailCards": []
+        },
+        "account": {
+          "title": "ACCOUNT SETTINGS",
+          "subtitle": "Profile, privacy, notifications, AI settings, API settings, and local runtime controls.",
+          "footerTitle": "Account areas:",
+          "footerItems": [
+            "Identity",
+            "Privacy",
+            "Notifications",
+            "AI",
+            "API",
+            "Local AI"
+          ],
+          "summaryCards": [
+            {
+              "id": "profile-identity",
+              "title": "Profile & Identity",
+              "subtitle": "Display name, avatar, account status, privacy, and profile-safe values are managed inside Player Hub.",
+              "tone": "cyan",
+              "icon": "lock",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/Profileframe.png",
+              "targetDetail": "account",
+              "badge": "Profile",
+              "cta": "Details",
+              "bullets": [
+                "Profile data stays private.",
+                "Unsafe account IDs are not shown as names.",
+                "No profile copy is generated by the UI."
+              ]
+            },
+            {
+              "id": "settings-privacy",
+              "title": "Settings & Privacy",
+              "subtitle": "Notification preferences, theme, security state, API settings, local AI settings, and privacy controls belong here.",
+              "tone": "gold",
+              "icon": "shield",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/TableThemes.png",
+              "targetDetail": "settings",
+              "badge": "Account",
+              "cta": "Manage",
+              "bullets": [
+                "One account hub.",
+                "No separate settings-page handoff.",
+                "Editor-authored copy and controls."
+              ]
+            },
+            {
+              "id": "ai-runtime-setup",
+              "title": "AI Runtime Setup",
+              "subtitle": "Cloud API keys, local server endpoints, browser models, inference settings, and per-device AI runtime choices are managed here.",
+              "tone": "green",
+              "icon": "shield",
+              "imageUrl": "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png",
+              "targetDetail": "ai",
+              "badge": "AI",
+              "cta": "Configure",
+              "bullets": [
+                "Cloud keys use account worker storage.",
+                "Local server endpoints stay device-local.",
+                "Browser models use the AI model catalog."
+              ]
+            }
+          ],
+          "detailCards": []
+        },
+        "ai": {
+          "title": "AI SETUP",
+          "subtitle": "Provider keys, local servers, browser models, and inference settings for the signed-in player.",
+          "footerTitle": "AI settings:",
+          "footerItems": [
+            "Cloud keys",
+            "Local endpoints",
+            "Browser models",
+            "Inference",
+            "Device runtime"
+          ],
+          "summaryCards": [
+            {
+              "id": "ai-setup-controls",
+              "title": "AI Setup",
+              "subtitle": "Configure cloud provider keys, local AI servers, browser models, and inference defaults from Player Hub.",
+              "tone": "green",
+              "icon": "shield",
+              "imageUrl": "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png",
+              "targetDetail": "ai",
+              "badge": "Configure",
+              "cta": "Setup",
+              "bullets": [
+                "Cloud keys save through the account worker.",
+                "Local endpoints remain device-local.",
+                "Browser models use the AI model catalog."
+              ]
+            },
+            {
+              "id": "ai-runtime-sources",
+              "title": "Runtime Sources",
+              "subtitle": "Ollama, LM Studio, vLLM, LocalAI, KoboldCpp, native app, and browser-local model choices belong here.",
+              "tone": "cyan",
+              "icon": "link",
+              "imageUrl": "/packages/app-assets/src/images/LobbyPlaceholders/AI_Coach.png",
+              "targetDetail": "ai",
+              "badge": "Models",
+              "cta": "Manage",
+              "bullets": [
+                "No keys are generated by UI copy.",
+                "Provider state comes from saved contracts.",
+                "Inference settings stay explicit."
+              ]
+            }
+          ],
+          "detailCards": []
+        }
+      },
+      "inventoryGroups": [
+        {
+          "key": "owned",
+          "title": "Owned Items",
+          "subtitle": "Inventory from the player account.",
+          "tone": "orange",
+          "icon": "chest",
+          "badge": "Owned",
+          "heroImageUrl": "/packages/app-assets/src/images/ShopPage/Vault.png",
+          "items": [
+            {
+              "id": "no-owned-items-yet",
+              "title": "No owned items yet",
+              "subtitle": "Decks, cosmetics, badges, tickets, and passes appear here after they are earned, granted, or purchased.",
+              "tone": "orange",
+              "icon": "chest",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/Vault.png",
+              "targetDetail": "balances",
+              "badge": "Empty",
+              "cta": "Open Shop",
+              "bullets": [
+                "Inventory uses entitlement data.",
+                "No placeholder items.",
+                "Images and card copy are authored in this asset."
+              ]
+            }
+          ]
+        },
+        {
+          "key": "rewards",
+          "title": "Reward History",
+          "subtitle": "Rewards appear after real grants exist.",
+          "tone": "green",
+          "icon": "coins",
+          "badge": "Rewards",
+          "heroImageUrl": "/packages/app-assets/src/images/ShopPage/EarnFreeAC.png",
+          "items": [
+            {
+              "id": "no-reward-history-yet",
+              "title": "No reward history yet",
+              "subtitle": "Daily rewards, badges, achievements, and competition prizes appear here when real grants exist.",
+              "tone": "green",
+              "icon": "coins",
+              "imageUrl": "/packages/app-assets/src/images/ShopPage/EarnFreeAC.png",
+              "targetDetail": "recent",
+              "badge": "Rewards",
+              "cta": "View",
+              "bullets": [
+                "Reward state comes from account services.",
+                "No fake claims.",
+                "Earned prizes stay tied to the player."
+              ]
+            }
+          ]
+        }
+      ],
+      "previews": [
+        {
+          "title": "PLAYER OVERVIEW",
+          "sectionId": "overview",
+          "subtitle": "Profile, settings, AI, balances, and account status",
+          "items": [
+            "Profile & Identity",
+            "Settings & Privacy",
+            "AI Runtime Setup",
+            "Balances & Ownership"
+          ],
+          "accent": "#54e2ff",
+          "imageUrls": [
+            "/packages/app-assets/src/images/ShopPage/Profileframe.png",
+            "/packages/app-assets/src/images/ShopPage/TableThemes.png",
+            "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png",
+            "/packages/app-assets/src/images/ShopPage/Treasury.png"
+          ]
+        },
+        {
+          "title": "MATCH HISTORY",
+          "sectionId": "matches",
+          "subtitle": "Real completed games appear here",
+          "items": [
+            "No completed matches yet",
+            "Room Handoff"
+          ],
+          "accent": "#20e39d",
+          "imageUrls": [
+            "/packages/app-assets/src/images/ShopPage/PrivateTable.png",
+            "/packages/app-assets/src/images/ShopPage/PublicTable.png"
+          ]
+        },
+        {
+          "title": "LEARNING",
+          "sectionId": "learning",
+          "subtitle": "Lessons and AI review when enabled",
+          "items": [
+            "Learning paths are not active yet",
+            "AI Skill Review"
+          ],
+          "accent": "#bd76ff",
+          "imageUrls": [
+            "/packages/app-assets/src/images/LobbyPlaceholders/AI_Coach.png",
+            "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png"
+          ]
+        },
+        {
+          "title": "AI SETUP",
+          "sectionId": "ai",
+          "subtitle": "Cloud, local, browser, and inference settings",
+          "items": [
+            "AI Setup",
+            "Runtime Sources"
+          ],
+          "accent": "#20e39d",
+          "imageUrls": [
+            "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png",
+            "/packages/app-assets/src/images/LobbyPlaceholders/AI_Coach.png"
+          ]
+        },
+        {
+          "title": "COMPETITION",
+          "sectionId": "competition",
+          "subtitle": "Tickets, passes, and official records",
+          "items": [
+            "No event tickets or tournament passes yet",
+            "Official Programs"
+          ],
+          "accent": "#ffd36a",
+          "imageUrls": [
+            "/packages/app-assets/src/images/ShopPage/QualifierEntry.png",
+            "/packages/app-assets/src/images/ShopPage/ChamPionPass.png"
+          ]
+        },
+        {
+          "title": "INVENTORY",
+          "sectionId": "inventory",
+          "subtitle": "Owned items and rewards",
+          "items": [
+            "No owned items yet"
+          ],
+          "accent": "#de4fe8",
+          "imageUrls": [
+            "/packages/app-assets/src/images/ShopPage/Vault.png"
+          ]
+        },
+        {
+          "title": "REWARD HISTORY",
+          "sectionId": "rewards",
+          "subtitle": "Daily rewards, badges, achievements, and competition prizes",
+          "items": [
+            "No reward history yet"
+          ],
+          "accent": "#20e39d",
+          "imageUrls": [
+            "/packages/app-assets/src/images/ShopPage/EarnFreeAC.png"
+          ]
+        },
+        {
+          "title": "ACCOUNT",
+          "sectionId": "account",
+          "subtitle": "Profile, settings, and AI controls",
+          "items": [
+            "Profile & Identity",
+            "Settings & Privacy",
+            "AI Runtime Setup"
+          ],
+          "accent": "#54e2ff",
+          "imageUrls": [
+            "/packages/app-assets/src/images/ShopPage/Profileframe.png",
+            "/packages/app-assets/src/images/ShopPage/TableThemes.png",
+            "/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png"
+          ]
+        }
+      ],
+      "rewardActions": [
+        {
+          "key": "player-hub-rewards",
+          "group": "Rewards",
+          "title": "No reward history yet",
+          "reward": "N/A",
+          "cadence": "Account",
+          "tone": "green",
+          "icon": "coins",
+          "action": "View Rewards",
+          "imageUrl": "/packages/app-assets/src/images/ShopPage/EarnFreeAC.png",
+          "description": "Daily rewards, badges, achievements, and competition prizes appear here when real grants exist.",
+          "details": [
+            "Reward state comes from account services.",
+            "No fake claims.",
+            "Earned prizes stay tied to the player."
+          ]
+        }
+      ],
+      "rightTabs": [
+        {
+          "id": "account",
+          "title": "PROFILE",
+          "accent": "#54e2ff"
+        },
+        {
+          "id": "settings",
+          "title": "SETTINGS",
+          "accent": "#ffd36a"
+        },
+        {
+          "id": "ai",
+          "title": "AI SETUP",
+          "accent": "#20e39d"
+        },
+        {
+          "id": "balances",
+          "title": "BALANCES",
+          "accent": "#ffd36a"
+        },
+        {
+          "id": "recent",
+          "title": "RECENT",
+          "accent": "#20e39d"
+        }
+      ],
+      "rightRows": {
+        "balances": [
+          [
+            "GP",
+            "N/A"
+          ],
+          [
+            "AC",
+            "N/A"
+          ],
+          [
+            "Owned items",
+            "N/A"
+          ],
+          [
+            "Shop listings",
+            "N/A"
+          ],
+          [
+            "Status",
+            "N/A"
+          ]
+        ],
+        "competition": [
+          [
+            "Tickets / passes",
+            "N/A",
+            "Open Competition"
+          ],
+          [
+            "Check-in",
+            "N/A",
+            "View"
+          ],
+          [
+            "Programs",
+            "N/A",
+            "Open"
+          ]
+        ],
+        "recent": [
+          [
+            "Matches",
+            "N/A"
+          ],
+          [
+            "Rewards",
+            "N/A"
+          ],
+          [
+            "Services",
+            "N/A"
+          ]
+        ]
+      },
+      "rightDetails": {
+        "account": [
+          {
+            "label": "Profile",
+            "value": "N/A",
+            "detail": "Signed-in profile name appears when it is safe to display."
+          },
+          {
+            "label": "Account ID",
+            "value": "N/A",
+            "detail": "Private account identifier."
+          },
+          {
+            "label": "Display name",
+            "value": "N/A",
+            "detail": "Editable player-facing name belongs in Player Hub account controls."
+          },
+          {
+            "label": "Theme",
+            "value": "N/A",
+            "detail": "Loaded from Player Hub account settings."
+          },
+          {
+            "label": "Notifications",
+            "value": "N/A",
+            "detail": "Notification preferences are managed in this hub."
+          },
+          {
+            "label": "AI setup",
+            "value": "N/A",
+            "detail": "Cloud API keys, local endpoints, browser models, and inference settings are managed in AI Setup."
+          },
+          {
+            "label": "Privacy",
+            "value": "N/A",
+            "detail": "Private player data stays owner-only unless a future public profile is explicitly built."
+          }
+        ],
+        "balances": [
+          {
+            "label": "Game Points",
+            "value": "N/A",
+            "detail": "GP balance from account data."
+          },
+          {
+            "label": "Arena Credits",
+            "value": "N/A",
+            "detail": "Spendable AC balance for Shop and entries."
+          },
+          {
+            "label": "Owned items",
+            "value": "N/A",
+            "detail": "Real inventory item count."
+          },
+          {
+            "label": "Shop listings",
+            "value": "N/A",
+            "detail": "Shop remains the browsing and checkout surface."
+          },
+          {
+            "label": "Status",
+            "value": "N/A",
+            "detail": "Account status appears only when profile services return it."
+          }
+        ],
+        "learning": [
+          {
+            "label": "Learning",
+            "value": "N/A",
+            "detail": "Learning progress appears after the service is enabled."
+          },
+          {
+            "label": "AI review",
+            "value": "N/A",
+            "detail": "Review uses completed game data."
+          }
+        ],
+        "competition": [
+          {
+            "label": "Tickets / passes",
+            "value": "N/A",
+            "detail": "Competition ownership appears after checkout or grant."
+          },
+          {
+            "label": "Tournament passes",
+            "value": "N/A",
+            "detail": "Passes appear only after real ownership."
+          }
+        ],
+        "recent": [
+          {
+            "label": "Matches",
+            "value": "N/A",
+            "detail": "Completed matches appear after history is connected."
+          },
+          {
+            "label": "Rewards",
+            "value": "N/A",
+            "detail": "Reward state appears after account services return it."
+          },
+          {
+            "label": "Services",
+            "value": "N/A",
+            "detail": "Warnings appear only when an account service fails."
+          }
+        ],
+        "settings": [
+          {
+            "label": "Theme",
+            "value": "N/A",
+            "detail": "Editable account theme preference."
+          },
+          {
+            "label": "Notifications",
+            "value": "N/A",
+            "detail": "Editable notification preference."
+          },
+          {
+            "label": "Sound",
+            "value": "N/A",
+            "detail": "Editable sound preference."
+          },
+          {
+            "label": "Language",
+            "value": "N/A",
+            "detail": "Editable language code."
+          },
+          {
+            "label": "Region",
+            "value": "N/A",
+            "detail": "Editable preferred server region."
+          }
+        ],
+        "ai": [
+          {
+            "label": "Cloud API keys",
+            "value": "N/A",
+            "detail": "Encrypted provider keys are saved through the account worker when authenticated."
+          },
+          {
+            "label": "Local servers",
+            "value": "N/A",
+            "detail": "Ollama, LM Studio, vLLM, LocalAI, KoboldCpp, and native endpoint settings are saved per device."
+          },
+          {
+            "label": "Browser models",
+            "value": "N/A",
+            "detail": "HuggingFace browser-local models can be added, refreshed, and selected from the AI model catalog."
+          },
+          {
+            "label": "Inference",
+            "value": "N/A",
+            "detail": "Generation parameters are saved for the selected browser model and quantization."
+          }
+        ]
+      },
+      "uiCopy": {
+        "header": {
+          "title": "Player Hub",
+          "subtitle": "Private account hub for profile, settings, matches, learning, inventory, rewards, and competition ownership.",
+          "badges": [
+            {
+              "title": "Private",
+              "sub": "Account",
+              "icon": "lock",
+              "tone": "green"
+            },
+            {
+              "title": "Profile",
+              "sub": "Linked",
+              "icon": "link",
+              "tone": "cyan"
+            },
+            {
+              "title": "Progress",
+              "sub": "Tracked",
+              "icon": "shield",
+              "tone": "violet"
+            }
+          ],
+          "balanceTitle": "Arena Credits",
+          "balanceUnit": "AC",
+          "balanceSub": "Player balance"
+        },
+        "rightPanel": {
+          "balancesTitle": "BALANCES",
+          "learningTitle": "LEARNING",
+          "competitionTitle": "COMPETITION",
+          "recentTitle": "RECENT",
+          "accountTitle": "ACCOUNT",
+          "learningName": "Learning pending",
+          "manageLearning": "Learning",
+          "viewAccount": "Account",
+          "profileName": "N/A",
+          "profileLevel": "N/A",
+          "emailUnavailable": "N/A",
+          "guestProfile": "N/A",
+          "initialsUnavailable": "?",
+          "ratingUnavailable": "N/A",
+          "gamesUnavailable": "N/A",
+          "winRateUnavailable": "N/A",
+          "levelPrefix": "",
+          "gamesSuffix": "games",
+          "winRateSuffix": "win",
+          "moreLabel": "More",
+          "openLearning": "Open Learning"
+        },
+        "actions": {
+          "comingSoon": "Pending",
+          "open": "Open",
+          "view": "View",
+          "details": "Details",
+          "working": "Working",
+          "backToHub": "Back To Hub",
+          "backToPrefix": "Back To",
+          "openGroup": "Open",
+          "claim": "Claim"
+        },
+        "status": {
+          "loadingHub": "Loading player hub...",
+          "retry": "Retry",
+          "unknownValue": "N/A"
+        },
+        "detailView": {
+          "accountTitle": "PLAYER ACCOUNT",
+          "accountSubtitle": "Profile, settings, privacy, AI, API, local AI, balances, and ownership are managed from Player Hub.",
+          "accountCta": "Back To Hub",
+          "accountBullets": [
+            "Player Hub is the account surface.",
+            "Profile and settings should not split across duplicate pages.",
+            "No fake account fields are generated by the UI."
+          ],
+          "learningTitle": "PLAYER LEARNING",
+          "learningSubtitle": "Lessons and AI review appear only when enabled for the signed-in player.",
+          "learningCta": "Back To Learning",
+          "learningTiers": [
+            {
+              "key": "lessons",
+              "title": "Lessons",
+              "value": "N/A",
+              "tone": "cyan"
+            },
+            {
+              "key": "review",
+              "title": "AI Review",
+              "value": "N/A",
+              "tone": "violet"
+            },
+            {
+              "key": "drills",
+              "title": "Drills",
+              "value": "N/A",
+              "tone": "gold"
+            }
+          ],
+          "learningRows": [
+            {
+              "label": "Status",
+              "values": [
+                "N/A",
+                "N/A",
+                "N/A"
+              ]
+            },
+            {
+              "label": "Source",
+              "values": [
+                "Lessons",
+                "Completed games",
+                "Skill model"
+              ]
+            }
+          ]
+        },
+        "itemPreview": {
+          "title": "Item Preview",
+          "backToInventory": "Back To Inventory",
+          "itemType": "Digital item",
+          "itemOptionsSuffix": "options",
+          "noItemData": "No item preview available.",
+          "missingImage": "Missing image",
+          "priceUnavailable": "N/A",
+          "previousImage": "Previous",
+          "nextImage": "Next",
+          "closeDetail": "Close",
+          "expand": "Expand"
+        },
+        "rewards": {
+          "title": "REWARD HISTORY",
+          "subtitle": "Daily rewards, badges, achievements, and competition prizes appear here when they are earned.",
+          "backLabel": "Back To Hub",
+          "closeLabel": "Close",
+          "detailLabel": "Details",
+          "helper": "Reward requirements appear here.",
+          "fields": [
+            "Reward",
+            "Status",
+            "Source"
+          ],
+          "chips": [
+            "Account",
+            "Reward",
+            "Private"
+          ],
+          "status": "N/A",
+          "open": "Open",
+          "copy": "Copy",
+          "start": "Start",
+          "check": "Check"
+        },
+        "footer": [
+          {
+            "title": "Player Hub",
+            "sub": "Profile, settings, and account data",
+            "icon": "lock",
+            "tone": "green"
+          },
+          {
+            "title": "Match History",
+            "sub": "Completed games return here",
+            "icon": "cards",
+            "tone": "cyan"
+          },
+          {
+            "title": "Shop Handoff",
+            "sub": "Checkout stays in Shop",
+            "icon": "link",
+            "tone": "green"
+          },
+          {
+            "title": "Competition",
+            "sub": "Tickets and passes when owned",
+            "icon": "trophy",
+            "tone": "gold"
+          }
+        ]
+      }
     }
   }
 }

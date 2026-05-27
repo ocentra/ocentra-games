@@ -67,22 +67,12 @@ export class ProfileDO implements DurableObject {
 
       if (request.method === HttpMethod.Get && pathname.endsWith(`/${ProfileDOSegment.Get}`)) {
         const profile = await this.getProfile();
-        const publicView = {
-          displayName: profile.displayName,
-          avatarUrl: profile.avatarKey ? this.avatarUrlFromKey(profile.avatarKey) : '',
-          bio: profile.bio,
-        };
-        return this.json(publicView);
+        return this.json(this.profileResponse(profile));
       }
       if (request.method === HttpMethod.Post && pathname.endsWith(`/${ProfileDOSegment.Update}`)) {
-        const body = (await request.json().catch(() => ({}))) as Partial<Pick<UserProfile, 'displayName' | 'bio'>>;
+        const body = (await request.json().catch(() => ({}))) as Partial<Pick<UserProfile, 'displayName' | 'bio' | 'visibility' | 'showcaseBadges' | 'customTitle' | 'profileTheme'>>;
         const updated = await this.updateProfile(body);
-        return this.json({
-          updated: true,
-          displayName: updated.displayName,
-          avatarUrl: updated.avatarKey ? this.avatarUrlFromKey(updated.avatarKey) : '',
-          bio: updated.bio,
-        });
+        return this.json({ updated: true, ...this.profileResponse(updated) });
       }
       if (request.method === HttpMethod.Post && pathname.endsWith(`/${ProfileDOSegment.Avatar}`)) {
         const body = (await request.json().catch(() => ({}))) as { key?: string };
@@ -112,6 +102,17 @@ export class ProfileDO implements DurableObject {
   private avatarUrlFromKey(avatarKey: string): string {
     if (!avatarKey) return '';
     return `/assets/${BucketPath.Avatars}${avatarKey}`;
+  }
+
+  private profileResponse(profile: UserProfile) {
+    return {
+      displayName: profile.displayName,
+      avatarUrl: profile.avatarKey ? this.avatarUrlFromKey(profile.avatarKey) : '',
+      bio: profile.bio,
+      visibility: profile.visibility,
+      customTitle: profile.customTitle ?? null,
+      profileTheme: profile.profileTheme,
+    };
   }
 
   private async getProfile(): Promise<UserProfile> {

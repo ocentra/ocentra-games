@@ -90,6 +90,7 @@ describe('public SEO metadata', () => {
   });
 
   it('marks private and dev routes noindex', () => {
+    expect(resolveSeoMetadata('/player-hub', siteOrigin).robots).toBe('noindex,nofollow');
     expect(resolveSeoMetadata('/settings', siteOrigin).robots).toBe('noindex,nofollow');
     expect(resolveSeoMetadata('/games/claim/play', siteOrigin).robots).toBe('noindex,nofollow');
     expect(resolveSeoMetadata('/games/cardgame/template', siteOrigin).robots).toBe('noindex,nofollow');
@@ -121,6 +122,7 @@ describe('public SEO metadata', () => {
     expect(paths).not.toContain('/leaderboard/ai-benchmarks');
     expect(paths).not.toContain('/games/claim/leaderboard');
     expect(paths).not.toContain('/CardGamesExplorer');
+    expect(paths).not.toContain('/player-hub');
     expect(paths).not.toContain('/settings');
     expect(paths).not.toContain('/matches');
     expect(paths).not.toContain('/matches/match-123');

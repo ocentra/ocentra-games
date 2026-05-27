@@ -16,7 +16,7 @@ export async function validateSchemaBody<T>(
       || request.method === HttpMethod.Delete
       ? await (async () => {
         const text = await request.clone().text();
-        if (text.trim() === '') return {};
+        if (text.length === 0) return {};
         try {
           return JSON.parse(text) as unknown;
         } catch {

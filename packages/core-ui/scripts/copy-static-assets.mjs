@@ -26,6 +26,7 @@ const fileCopies = [
   ['src/AppPages/AppPageSvgSurface.css', 'dist/AppPages/'],
   ['src/AppPages/SocialWorld/SocialWorldSurface.css', 'dist/AppPages/SocialWorld/'],
   ['src/AppPages/Leaderboard/LeaderboardPageSvgSurface.css', 'dist/AppPages/Leaderboard/'],
+  ['src/AppPages/PlayerHub/PlayerHubPageSvgSurface.css', 'dist/AppPages/PlayerHub/'],
   ['src/AppPages/Shop/ShopPageSvgSurface.css', 'dist/AppPages/Shop/'],
   ['src/GamesExplorer/GameCard.css', 'dist/GamesExplorer/'],
   ['src/GamesExplorer/GameListRow.css', 'dist/GamesExplorer/'],
