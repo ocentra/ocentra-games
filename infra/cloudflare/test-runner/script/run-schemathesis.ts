@@ -17,11 +17,14 @@ import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-
 import {
   LobbyModeValues,
   LobbyStakeTypeValues,
+  PresenceStatusValues,
+  ProfileVisibilityValues,
   RoomTypeValues,
+  SecurityPenaltyTypeValues,
   SettingsThemeValues,
   TournamentResultField,
 } from '@ocentra/endpoint-domain/constants/worker-contract-values';
-import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
+import { QueryParam, QueryValue } from '@ocentra/endpoint-domain/constants/query';
 import { generateOpenApiJson, openApiExplicitExampleRoutes } from '@/utils/openapi';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -273,10 +276,12 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
   const tournamentBasePath = ApiEndpoint.Tournament.ById(`{${OpenApiParameterName.TournamentId}}`);
   const tournamentBracketPath = `${tournamentBasePath}/${TournamentDOSegment.Bracket}`;
   const tournamentStartPath = `${tournamentBasePath}/${TournamentDOSegment.Start}`;
+  const tournamentResultPath = `${tournamentBasePath}/${TournamentDOSegment.Result}`;
   const tournamentDistributePrizesPath = `${tournamentBasePath}/${TournamentDOSegment.DistributePrizes}`;
   const matchPath = ApiEndpoint.Matches.ById(`{${OpenApiParameterName.MatchId}}`);
   const archiveMatchPath = ApiEndpoint.Archive.ByMatchId(`{${OpenApiParameterName.MatchId}}`);
   const anonymizeMatchPath = ApiEndpoint.Matches.Anonymize(`{${OpenApiParameterName.MatchId}}`);
+  const roomJoinPath = ApiEndpoint.Rooms.Join(`{${OpenApiParameterName.RoomId}}`);
   const roomSpectatePath = ApiEndpoint.Rooms.Spectate(`{${OpenApiParameterName.RoomId}}`);
   const replayPath = ApiEndpoint.Replay.ByMatchId(`{${OpenApiParameterName.MatchId}}`);
   const replayVerifyPath = ApiEndpoint.Replay.Verify(`{${OpenApiParameterName.MatchId}}`);
@@ -284,8 +289,12 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
   const disputePath = ApiEndpoint.Disputes.ById(`{${OpenApiParameterName.DisputeId}}`);
   const creditsConsumePath = ApiEndpoint.Credits.Consume(`{${OpenApiParameterName.UserId}}`);
   const creditsConsumeGpPath = ApiEndpoint.Credits.ConsumeGP(`{${OpenApiParameterName.UserId}}`);
+  const creditsEarnPath = ApiEndpoint.Credits.Earn(`{${OpenApiParameterName.UserId}}`);
+  const badgeClaimPath = ApiEndpoint.Badges.Claim(`{${OpenApiParameterName.UserId}}`);
   const friendsPath = ApiEndpoint.Friends.ById(`{${OpenApiParameterName.FriendId}}`);
   const settingsUpdatePath = ApiEndpoint.Settings.Update(`{${OpenApiParameterName.UserId}}`);
+  const presencePath = ApiEndpoint.Presence.ById(`{${OpenApiParameterName.UserId}}`);
+  const profileUpdatePath = ApiEndpoint.Profile.Update(`{${OpenApiParameterName.UserId}}`);
   const matchRecordExample = {
     match_id: fixtures.archiveMatchId,
     matchId: fixtures.archiveMatchId,
@@ -427,6 +436,15 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     },
     body: {},
   });
+  const tournamentResultCaseStrategy = createPinnedCaseStrategy('generate_tournament_result_case', 'POST', tournamentResultPath, {
+    pathParameters: {
+      tournamentId: fixtures.startTournamentId,
+    },
+    body: {
+      [TournamentResultField.MatchId]: fixtures.tournamentResultMatchId,
+      [TournamentResultField.WinnerId]: fixtures.tournamentResultWinnerId,
+    },
+  });
   const tournamentDistributePrizesCaseStrategy = createPinnedCaseStrategy(
     'generate_tournament_distribute_prizes_case',
     'POST',
@@ -467,6 +485,101 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
       amount: 1,
       currency: Currency.GP,
       description: 'Schemathesis GP consume',
+    },
+  });
+  const creditsEarnCaseStrategy = createPinnedCaseStrategy('generate_credits_earn_case', 'POST', creditsEarnPath, {
+    pathParameters: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+    },
+    headers: {
+      [HttpHeader.IdempotencyKey]: 'schemathesis-gp-earn',
+    },
+    body: {
+      gp_amount: 1,
+      description: 'Schemathesis GP earn',
+      game_type: 0,
+      metadata: {},
+    },
+  });
+  const badgeClaimCaseStrategy = createPinnedCaseStrategy('generate_badge_claim_case', 'POST', badgeClaimPath, {
+    pathParameters: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+    },
+    body: OpenApiExampleValue.BadgeClaimRequest,
+  });
+  const feedFanoutCaseStrategy = createPinnedCaseStrategy('generate_feed_fanout_case', 'POST', ApiEndpoint.Feed.Fanout, {
+    body: OpenApiExampleValue.FeedFanoutRequest,
+  });
+  const securityPenaltyIssueCaseStrategy = createPinnedCaseStrategy(
+    'generate_security_penalty_issue_case',
+    'POST',
+    ApiEndpoint.Security.PenaltyIssue,
+    {
+      body: {
+        userId: fixtures.userId || OpenApiExampleValue.UserId,
+        type: SecurityPenaltyTypeValues[0],
+        reason: 'Schemathesis penalty',
+        issuedBy: fixtures.userId || OpenApiExampleValue.UserId,
+        durationMinutes: 15,
+      },
+    }
+  );
+  const adminCreditsPlanCaseStrategy = createPinnedCaseStrategy(
+    'generate_admin_credits_plan_case',
+    'POST',
+    ApiEndpoint.Admin.CreditsPlan,
+    {
+      body: {
+        userId: fixtures.userId || OpenApiExampleValue.UserId,
+        tier: 'free',
+      },
+    }
+  );
+  const testClearAllCaseStrategy = createPinnedCaseStrategy('generate_test_clear_all_case', 'DELETE', ApiEndpoint.Test.ClearAll, {
+    query: {
+      [QueryParam.Confirm]: QueryValue.False,
+    },
+  });
+  const disputeCreateCaseStrategy = createPinnedCaseStrategy('generate_dispute_create_case', 'POST', ApiEndpoint.Disputes.Base, {
+    body: {
+      ...OpenApiExampleValue.DisputeCreateRequest,
+      match_id: fixtures.archiveMatchId,
+      reported_player_id: fixtures.userId || OpenApiExampleValue.UserId,
+      dispute_id: OpenApiExampleValue.DisputeId,
+    },
+  });
+  const notificationPushCaseStrategy = createPinnedCaseStrategy(
+    'generate_notification_push_case',
+    'POST',
+    ApiEndpoint.Notification.Push,
+    {
+      body: {
+        type: 'system',
+        title: 'Schemathesis notification',
+        body: 'Notification payload validation',
+      },
+    }
+  );
+  const presenceUpdateCaseStrategy = createPinnedCaseStrategy('generate_presence_update_case', 'POST', presencePath, {
+    pathParameters: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+    },
+    body: {
+      status: PresenceStatusValues[0],
+      statusMessage: 'Schemathesis online',
+    },
+  });
+  const profileUpdateCaseStrategy = createPinnedCaseStrategy('generate_profile_update_case', 'POST', profileUpdatePath, {
+    pathParameters: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+    },
+    body: {
+      displayName: 'Schemathesis User',
+      bio: 'Profile update validation',
+      visibility: ProfileVisibilityValues[0],
+      showcaseBadges: [OpenApiExampleValue.BadgeClaimRequest.badge_id],
+      customTitle: null,
+      profileTheme: 'default',
     },
   });
   const matchPostCaseStrategy = createPinnedCaseStrategy('generate_match_post_case', 'POST', matchPath, {
@@ -563,6 +676,15 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
       matchId: fixtures.archiveMatchId,
     },
   });
+  const roomJoinCaseStrategy = createPinnedCaseStrategy('generate_room_join_case', 'POST', roomJoinPath, {
+    pathParameters: {
+      roomId: fixtures.roomId,
+    },
+    body: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+      displayName: 'Schemathesis User',
+    },
+  });
   const roomSpectateCaseStrategy = createPinnedCaseStrategy('generate_room_spectate_case', 'POST', roomSpectatePath, {
     pathParameters: {
       roomId: fixtures.roomId,
@@ -612,10 +734,21 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     roomQuickJoinCaseStrategy,
     tournamentBracketCaseStrategy,
     tournamentStartCaseStrategy,
+    tournamentResultCaseStrategy,
     tournamentDistributePrizesCaseStrategy,
     antiCheatAnalyzeCaseStrategy,
     creditsConsumeCaseStrategy,
     creditsConsumeGpCaseStrategy,
+    creditsEarnCaseStrategy,
+    badgeClaimCaseStrategy,
+    feedFanoutCaseStrategy,
+    securityPenaltyIssueCaseStrategy,
+    adminCreditsPlanCaseStrategy,
+    testClearAllCaseStrategy,
+    disputeCreateCaseStrategy,
+    notificationPushCaseStrategy,
+    presenceUpdateCaseStrategy,
+    profileUpdateCaseStrategy,
     matchPostCaseStrategy,
     matchPutCaseStrategy,
     syncFromSolanaCaseStrategy,
@@ -631,6 +764,7 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     friendDeleteCaseStrategy,
     archiveCaseStrategy,
     anonymizeCaseStrategy,
+    roomJoinCaseStrategy,
     roomSpectateCaseStrategy,
     matchmakingCaseStrategy,
     disputeEvidenceCaseStrategy,
@@ -786,7 +920,7 @@ function getDefaultSchemathesisWorkers(): string {
   if (!Number.isFinite(cpuCount) || cpuCount <= 1) {
     return '1';
   }
-  return String(cpuCount);
+  return String(Math.min(cpuCount, 4));
 }
 
 function createRuntimeArtifactsDir(): string {

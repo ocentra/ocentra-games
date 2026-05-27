@@ -467,7 +467,7 @@ const expiresQueryParameter = createQueryParameter(
   OpenApiParameterName.Expires,
   OpenApiParameterDescription.ExpirationTimeSeconds,
   false,
-  { type: OpenApiSchemaType.Integer, default: 3600, example: 3600 }
+  { type: OpenApiSchemaType.Integer, minimum: 1, default: 3600, example: 3600 }
 )
 const seasonIdQueryParameter = createQueryParameter(
   OpenApiParameterName.SeasonId,
