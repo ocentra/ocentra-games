@@ -5,8 +5,8 @@
  * 
  * Ensures clean start of Vite development server:
  * 1. Single instance enforcement via lock file
- * 2. Auto-kill stale processes on port 3000
- * 3. Smart port allocation (prefers 3000, falls back if needed)
+ * 2. Auto-kill stale processes on the configured dev port
+ * 3. Smart port allocation from the configured dev port
  * 4. Starts Vite server on allocated port
  */
 
@@ -20,7 +20,8 @@ import path from 'path';
 import { createHash } from 'node:crypto';
 import Database from 'better-sqlite3';
 import { ViteLogger, getStackTrace } from '../../vite/utils/viteLogger';
-import { LocalWebConfig, createLocalHttpBaseUrl } from '@ocentra/endpoint-domain/constants/local';
+import { LocalWebConfig, LocalWorktreeConfig, createLocalHttpBaseUrl } from '@ocentra/endpoint-domain/constants/local';
+import { parsePortNumber, readPortArg, resolveMainWebPort } from './dev-port-config';
 
 const VERBOSE_DEV_SCRIPT = process.env.VITE_VERBOSE_DEV_SCRIPT === 'true';
 const log = ViteLogger.instance;
@@ -49,19 +50,17 @@ interface LockData {
 // ============================================================================
 
 function resolveExplicitPort(): number | undefined {
-  const raw = process.env.OCENTRA_WEB_PORT || process.env.VITE_PORT;
+  const argvPort = readPortArg(process.argv.slice(2), ['--port', '--use']);
+  if (argvPort !== undefined) return argvPort;
+  const raw = process.env.OCENTRA_WEB_PORT || process.env.VITE_PORT || process.env.PORT;
   if (!raw) return undefined;
-  const parsed = parseInt(raw, 10);
-  if (!Number.isFinite(parsed) || parsed < 1 || parsed > 65535) {
-    throw new Error(`Invalid frontend port override: ${raw}`);
-  }
-  return parsed;
+  return parsePortNumber(raw, 'frontend port override');
 }
 
 const EXPLICIT_PORT = resolveExplicitPort();
-const PREFERRED_PORT: number = EXPLICIT_PORT ?? LocalWebConfig.Port;
-const RANGE_START: number = EXPLICIT_PORT ?? LocalWebConfig.Port;
-const RANGE_END = EXPLICIT_PORT ?? 3100;
+const PREFERRED_PORT: number = EXPLICIT_PORT ?? resolveMainWebPort();
+const RANGE_START: number = PREFERRED_PORT;
+const RANGE_END = EXPLICIT_PORT ?? PREFERRED_PORT + Math.min(LocalWorktreeConfig.PortRangeSize - 1, 100);
 const PROCESS_NAMES = ['node', 'vite']; // Process names we consider "ours"
 const LOCK_FILE = path.join(process.cwd(), '.vite-dev.lock');
 const REGISTRY_CACHE_FILE = path.join(process.cwd(), '.dev-registry-hash');
@@ -398,7 +397,7 @@ async function ensurePortFree(port: number, maxRetries: number = 5): Promise<boo
 }
 
 /**
- * Find an available port, preferring 3000
+ * Find an available port, preferring the configured default
  */
 async function allocatePort(): Promise<number> {
   console.log(`\n🔍 Port Manager\n`);
@@ -413,10 +412,10 @@ async function allocatePort(): Promise<number> {
   console.log(`🔧 Forcing port ${PREFERRED_PORT} cleanup...`);
   await killAllPortOccupants(PREFERRED_PORT);
   
-  // Try to ensure port 3000 is free
-  const port3000Free = await ensurePortFree(PREFERRED_PORT);
+  // Try to ensure the preferred port is free
+  const preferredPortFree = await ensurePortFree(PREFERRED_PORT);
   
-  if (port3000Free) {
+  if (preferredPortFree) {
     console.log(`   ✅ Port ${PREFERRED_PORT} available`);
     createLockFile(PREFERRED_PORT);
     process.env.VITE_PORT = PREFERRED_PORT.toString();
@@ -424,7 +423,7 @@ async function allocatePort(): Promise<number> {
     return PREFERRED_PORT;
   }
   
-  // Port 3000 is used by something else
+  // Preferred port is used by something else
   const occupants = await getPortOccupants(PREFERRED_PORT);
   if (occupants.length > 0) {
     const externalProcess = occupants.find(o => !o.isOurs);

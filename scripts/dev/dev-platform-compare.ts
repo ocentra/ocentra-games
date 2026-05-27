@@ -6,7 +6,8 @@ import {
   killManagedProcesses,
   spawnManaged,
 } from './cloudflare-dev-bootstrap';
-import { LocalWebConfig } from '@ocentra/endpoint-domain/constants/local';
+import { LocalWebConfig, createLocalHttpBaseUrl } from '@ocentra/endpoint-domain/constants/local';
+import { resolveMainWebPort, resolveWorkerPort } from './dev-port-config';
 
 type CompareTarget = 'web' | 'tauri' | 'android' | 'ios';
 
@@ -67,15 +68,22 @@ async function main(): Promise<void> {
   const targets = parseTargets();
   const androidHost = process.argv.find((arg) => arg.startsWith('--android-host='))?.split('=')[1] || '10.0.2.2';
   const iosHost = process.argv.find((arg) => arg.startsWith('--ios-host='))?.split('=')[1] || 'localhost';
+  const webPort = resolveMainWebPort();
+  const workerPort = resolveWorkerPort();
+  const webBaseUrl = createLocalHttpBaseUrl(LocalWebConfig.Host, webPort);
 
   log(`Starting shared web stack for ${targets.join(', ')}...`);
   spawnManaged(registry, 'npx', ['tsx', 'scripts/dev/dev-full.ts'], ROOT, 'compare-main', {
     VITE_HOST: '0.0.0.0',
+    PORT: String(webPort),
+    VITE_PORT: String(webPort),
+    WORKER_PORT: String(workerPort),
+    VITE_LOCAL_WORKER_PORT: String(workerPort),
     VITE_MAIN_ASSET_TARGET_FORCE: 'local-dev',
   });
 
-  await waitForUrl(LocalWebConfig.BaseUrl, 180000);
-  log(`Shared dev server is ready on ${LocalWebConfig.BaseUrl}`);
+  await waitForUrl(webBaseUrl, 180000);
+  log(`Shared dev server is ready on ${webBaseUrl}`);
 
   if (targets.includes('tauri')) {
     log('Attaching desktop Tauri shell to shared dev server...');
@@ -93,7 +101,7 @@ async function main(): Promise<void> {
   }
 
   if (targets.includes('android')) {
-    log(`Launching Android live reload against ${androidHost}:3000...`);
+    log(`Launching Android live reload against ${androidHost}:${webPort}...`);
     spawnManaged(
       registry,
       'npx',
@@ -105,11 +113,11 @@ async function main(): Promise<void> {
         '--host',
         androidHost,
         '--port',
-        '3000',
+        String(webPort),
         '--forwardPorts',
-        '3000:3000',
+        `${webPort}:${webPort}`,
         '--forwardPorts',
-        '8787:8787',
+        `${workerPort}:${workerPort}`,
       ],
       ROOT,
       'compare-android',
@@ -120,11 +128,11 @@ async function main(): Promise<void> {
   }
 
   if (targets.includes('ios')) {
-    log(`Launching iOS live reload against ${iosHost}:3000...`);
+    log(`Launching iOS live reload against ${iosHost}:${webPort}...`);
     spawnManaged(
       registry,
       'npx',
-      ['cap', 'run', 'ios', '--live-reload', '--host', iosHost, '--port', '3000'],
+      ['cap', 'run', 'ios', '--live-reload', '--host', iosHost, '--port', String(webPort)],
       ROOT,
       'compare-ios',
       {
@@ -133,7 +141,7 @@ async function main(): Promise<void> {
     );
   }
 
-  log(`Web shell is available at ${LocalWebConfig.BaseUrl}`);
+  log(`Web shell is available at ${webBaseUrl}`);
   await new Promise(() => undefined);
 }
 

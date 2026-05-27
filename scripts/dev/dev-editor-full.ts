@@ -9,6 +9,8 @@ import {
 } from './cloudflare-dev-bootstrap';
 import path from 'node:path';
 import { ensureTurboDevPrep } from './turbo-dev-prep';
+import { applyEditorWebEnv, applyLocalWorkerEnv, resolveEditorWebPort } from './dev-port-config';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 
 const registry = createManagedProcessRegistry();
 const force = process.argv.includes('--force') || process.env.FORCE === 'true' || process.env.VITE_FORCE === 'true';
@@ -53,9 +55,24 @@ async function main(): Promise<void> {
     skipDependencyPrep: true,
   });
   log(`Cloudflare worker + seed stage completed in ${formatDurationMs(Date.now() - workerStartedAt)}.`);
-  const assetsPublicUrl = `${workerBase.replace(/\/$/, '')}/api/v1/assets`;
+  const assetsPublicUrl = `${workerBase.replace(/\/$/, '')}${ApiEndpoint.Assets.Base}`;
+  const editorEnv: Record<string, string> = {};
+  const editorPort = resolveEditorWebPort();
+  applyLocalWorkerEnv(editorEnv);
+  applyEditorWebEnv(editorEnv, editorPort);
+  editorEnv.VITE_CLAIM_STORAGE_URL = workerBase;
+  editorEnv.VITE_R2_WORKER_URL = workerBase;
+  editorEnv.VITE_ASSETS_WORKER_URL = workerBase;
+  editorEnv.VITE_ASSETS_PUBLIC_URL = assetsPublicUrl;
+  editorEnv.VITE_EDITOR_SYNC_LOCAL_CLAIM_STORAGE_URL = workerBase;
+  editorEnv.VITE_EDITOR_SYNC_LOCAL_ASSETS_PUBLIC_URL = assetsPublicUrl;
+  editorEnv.CARGO_TARGET_DIR = path.join(ROOT, 'packages', 'asset-editor', 'src-tauri', 'target-editor');
+  if (force) {
+    editorEnv.FORCE = 'true';
+    editorEnv.VITE_FORCE = 'true';
+  }
 
-  log(`Starting asset-editor Vite with claim-storage asset URL ${workerBase}`);
+  log(`Starting asset-editor Vite on port ${editorPort} with claim-storage asset URL ${workerBase}`);
 
   const viteStartedAt = Date.now();
   const vite = spawnManaged(
@@ -64,16 +81,7 @@ async function main(): Promise<void> {
     ['run', 'dev:web', ...(force ? ['--', '--force'] : [])],
     path.join(ROOT, 'packages/asset-editor'),
     'editor-vite',
-    {
-      VITE_CLAIM_STORAGE_URL: workerBase,
-      VITE_ASSETS_WORKER_URL: workerBase,
-      VITE_ASSETS_PUBLIC_URL: assetsPublicUrl,
-      VITE_EDITOR_SYNC_TARGET_DEFAULT: 'local-dev',
-      VITE_EDITOR_SYNC_LOCAL_CLAIM_STORAGE_URL: workerBase,
-      VITE_EDITOR_SYNC_LOCAL_ASSETS_PUBLIC_URL: assetsPublicUrl,
-      CARGO_TARGET_DIR: path.join(ROOT, 'packages', 'asset-editor', 'src-tauri', 'target-editor'),
-      ...(force ? { FORCE: 'true', VITE_FORCE: 'true' } : {}),
-    }
+    editorEnv
   );
   vite.once('spawn', () => {
     log(`Editor Vite process spawned after ${formatDurationMs(Date.now() - viteStartedAt)}.`);

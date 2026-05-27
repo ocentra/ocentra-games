@@ -25,10 +25,9 @@ import {
   ApiEndpoint,
 } from '@ocentra/endpoint-domain/constants/cloudflare'
 import {
-  CloudflareLocalConfig,
   LocalWebConfig,
-  createLocalHttpBaseUrl,
 } from '@ocentra/endpoint-domain/constants/local'
+import { resolveMainWebPort, resolveWorkerBaseUrl, resolveWorkerPort } from './scripts/dev/dev-port-config'
 
 const devWatchRoots = [
   'index.html',
@@ -96,17 +95,31 @@ export default defineConfig(async ({ mode, command }) => {
     }
   })
 
+  if (env.WORKER_PORT && !process.env.WORKER_PORT?.trim()) {
+    process.env.WORKER_PORT = env.WORKER_PORT
+  }
+  const workerPort = resolveWorkerPort()
+  const workerBaseUrl = resolveWorkerBaseUrl(workerPort)
+  process.env.WORKER_PORT = process.env.WORKER_PORT || String(workerPort)
+  process.env.VITE_LOCAL_WORKER_PORT = process.env.VITE_LOCAL_WORKER_PORT || String(workerPort)
+
   if (mode === 'development') {
-    const localBase = CloudflareLocalConfig.BaseUrl
+    const localBase = workerBaseUrl
     process.env.VITE_CLAIM_STORAGE_URL = process.env.VITE_CLAIM_STORAGE_URL || process.env.VITE_ASSETS_WORKER_URL || localBase
-    process.env.VITE_ASSETS_PUBLIC_URL = process.env.VITE_ASSETS_PUBLIC_URL || `${(process.env.VITE_CLAIM_STORAGE_URL || localBase).replace(/\/$/, '')}/api/v1/assets`
+    process.env.VITE_R2_WORKER_URL = process.env.VITE_R2_WORKER_URL || process.env.VITE_CLAIM_STORAGE_URL || localBase
+    process.env.VITE_ASSETS_WORKER_URL = process.env.VITE_ASSETS_WORKER_URL || process.env.VITE_CLAIM_STORAGE_URL || localBase
+    process.env.VITE_ASSETS_PUBLIC_URL = process.env.VITE_ASSETS_PUBLIC_URL || `${(process.env.VITE_CLAIM_STORAGE_URL || localBase).replace(/\/$/, '')}${ApiEndpoint.Assets.Base}`
+    process.env.VITE_MAIN_LOCAL_CLAIM_STORAGE_URL = process.env.VITE_MAIN_LOCAL_CLAIM_STORAGE_URL || process.env.VITE_CLAIM_STORAGE_URL || localBase
+    process.env.VITE_MAIN_LOCAL_WORKER_URL = process.env.VITE_MAIN_LOCAL_WORKER_URL || process.env.VITE_CLAIM_STORAGE_URL || localBase
+    process.env.VITE_MAIN_LOCAL_ASSETS_PUBLIC_URL = process.env.VITE_MAIN_LOCAL_ASSETS_PUBLIC_URL || process.env.VITE_ASSETS_PUBLIC_URL
   }
 
-  const workerPort = parseInt(process.env.WORKER_PORT || String(CloudflareLocalConfig.Port))
-  const workerBaseUrl = createLocalHttpBaseUrl(CloudflareLocalConfig.Host, workerPort)
   const serverHost = process.env.VITE_HOST || LocalWebConfig.Host
-  const serverPort = parseInt(process.env.PORT || process.env.VITE_PORT || String(LocalWebConfig.Port))
-  const hmrClientPort = parseInt(process.env.VITE_HMR_CLIENT_PORT || process.env.PORT || process.env.VITE_PORT || String(LocalWebConfig.Port))
+  const serverPort = resolveMainWebPort()
+  process.env.OCENTRA_WEB_PORT = process.env.OCENTRA_WEB_PORT || String(serverPort)
+  process.env.PORT = process.env.PORT || String(serverPort)
+  process.env.VITE_PORT = process.env.VITE_PORT || String(serverPort)
+  const hmrClientPort = parseInt(process.env.VITE_HMR_CLIENT_PORT || String(serverPort))
 
   const plugins: PluginOption[] = [
     workspaceSourceResolver({

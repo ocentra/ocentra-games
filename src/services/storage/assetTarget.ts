@@ -1,4 +1,5 @@
 import { getLocalDevAssetsPublicUrl, getLocalDevWorkerBaseUrl } from '@/services/storage/localDevRuntime';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 
 export const MainAppAssetTarget = {
   LocalDev: 'local-dev',
@@ -40,7 +41,7 @@ function buildAssetsPublicUrl(workerUrl: string, explicitAssetsUrl: string): str
     return normalizedExplicit;
   }
   const normalizedWorker = normalizeBaseUrl(workerUrl);
-  return normalizedWorker ? `${normalizedWorker}/api/v1/assets` : '';
+  return normalizedWorker ? `${normalizedWorker}${ApiEndpoint.Assets.Base}` : '';
 }
 
 function getDefaultTargetFromEnv(): MainAppAssetTargetValue {
@@ -125,7 +126,7 @@ export function getMainAppAssetTargetDetails(
   return {
     key: target,
     label: 'Local Dev',
-    description: 'Local Cloudflare worker on the fixed dev port',
+    description: 'Local Cloudflare worker on the configured dev port',
     workerUrl: localWorkerUrl,
     assetsPublicUrl: localAssetsPublicUrl,
     configured: Boolean(localWorkerUrl),

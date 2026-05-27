@@ -3,6 +3,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runManagedVite, runCheckedCommand } from './vite-dev-manager';
+import { applyEditorWebEnv, resolveEditorWebPort } from './dev-port-config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -25,23 +26,28 @@ function formatDurationMs(ms: number): string {
 
 async function main(): Promise<void> {
   const startedAt = Date.now();
+  const editorPort = resolveEditorWebPort();
+  const spawnEnv: Record<string, string> = {};
+  applyEditorWebEnv(spawnEnv, editorPort);
   if (force) {
     log('Starting Vite with --force.');
   }
   await runManagedVite({
-    preferredPort: 5174,
-    rangeStart: 5174,
-    rangeEnd: 5174,
+    preferredPort: editorPort,
+    rangeStart: editorPort,
+    rangeEnd: editorPort,
     lockFile: path.join(ROOT, '.vite-asset-editor.lock'),
     cwd: EDITOR_DIR,
     spawnCommand: 'npm',
     spawnArgs: ['run', 'dev:raw', ...(force ? ['--', '--force'] : [])],
-    spawnEnv:
-      process.env.VITE_EDITOR_DEV_AUTH !== undefined
+    spawnEnv: {
+      ...spawnEnv,
+      ...(process.env.VITE_EDITOR_DEV_AUTH !== undefined
         ? {
             VITE_EDITOR_DEV_AUTH: process.env.VITE_EDITOR_DEV_AUTH,
           }
-        : {},
+        : {}),
+    },
     logPrefix: 'dev:editor:vite',
     beforeStart: () => {
       const inspectorStartedAt = Date.now();

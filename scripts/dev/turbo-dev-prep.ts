@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { execSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,8 +9,8 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
 const PACKAGES_DIR = path.join(ROOT, 'packages');
-const TURBO_LAST_RUN_SENTINEL = path.join(ROOT, '.temp', 'turbo-last-run');
-const TURBO_SKIP_IF_RECENT_MS = 5 * 60 * 1000;
+const TURBO_PREP_CACHE_DIR = path.join(ROOT, '.temp', 'dev-prep');
+const TURBO_PREP_CACHE_VERSION = 1;
 const SOURCE_FIRST_DEV_PACKAGES = ['@ocentra/core-ui', '@ocentra/card-game-ui'] as const;
 type PackageJson = {
   name?: string;
@@ -20,6 +21,14 @@ type PackageJson = {
 type WorkspacePackage = {
   name: string;
   dir: string;
+};
+
+type TurboPrepCacheRecord = {
+  version: number;
+  target: DevPrepTarget;
+  packageNames: string[];
+  fingerprint: string;
+  generatedAt: string;
 };
 
 export type DevPrepTarget = 'main' | 'editor' | 'worker';
@@ -97,6 +106,10 @@ function getWorkspacePackages(): WorkspacePackage[] {
   return packages;
 }
 
+function getWorkspacePackageMap(): Map<string, WorkspacePackage> {
+  return new Map(getWorkspacePackages().map((workspacePackage) => [workspacePackage.name, workspacePackage]));
+}
+
 function collectWorkspaceDependencies(packageJsonPath: string, exclude: readonly string[] = []): string[] {
   const workspacePackageNames = getWorkspacePackageNames();
   const manifest = readPackageJson(packageJsonPath);
@@ -155,6 +168,51 @@ function collectFilesRecursively(dir: string): string[] {
   return out;
 }
 
+function appendFileStat(hash: ReturnType<typeof createHash>, filePath: string): void {
+  if (!existsSync(filePath)) {
+    return;
+  }
+  const stat = statSync(filePath);
+  hash.update(path.relative(ROOT, filePath).replace(/\\/g, '/'));
+  hash.update('|');
+  hash.update(String(stat.size));
+  hash.update('|');
+  hash.update(String(Math.trunc(stat.mtimeMs)));
+  hash.update('\n');
+}
+
+function computeTurboPrepFingerprint(target: DevPrepTarget, packageNames: readonly string[]): string {
+  const hash = createHash('sha256');
+  const workspacePackageMap = getWorkspacePackageMap();
+  const config = TARGET_CONFIG[target];
+  const rootFiles = [
+    config.packageJsonPath,
+    path.join(ROOT, 'package-lock.json'),
+    path.join(ROOT, 'turbo.json'),
+  ];
+
+  hash.update(String(TURBO_PREP_CACHE_VERSION));
+  hash.update(target);
+  hash.update(packageNames.join('\n'));
+
+  for (const filePath of rootFiles) {
+    appendFileStat(hash, filePath);
+  }
+
+  for (const packageName of packageNames) {
+    const workspacePackage = workspacePackageMap.get(packageName);
+    if (!workspacePackage) {
+      continue;
+    }
+    const files = collectFilesRecursively(workspacePackage.dir).sort((left, right) => left.localeCompare(right));
+    for (const filePath of files) {
+      appendFileStat(hash, filePath);
+    }
+  }
+
+  return hash.digest('hex');
+}
+
 function findBuiltArtifactImportViolations(): string[] {
   const badFiles: string[] = [];
   const packages = getWorkspacePackages();
@@ -209,23 +267,76 @@ function runTurboBuild(packageNames: readonly string[], force = false): void {
   });
 }
 
-function isTurboRecentlyRun(): boolean {
-  const skipEnv = process.env.SKIP_TURBO_IF_RECENT === '1' || process.env.SKIP_TURBO_IF_RECENT === 'true';
-  if (!skipEnv || !existsSync(TURBO_LAST_RUN_SENTINEL)) {
-    return false;
+function hasBuiltOutputs(packageNames: readonly string[]): boolean {
+  const workspacePackageMap = getWorkspacePackageMap();
+  for (const packageName of packageNames) {
+    const workspacePackage = workspacePackageMap.get(packageName);
+    if (!workspacePackage) {
+      continue;
+    }
+    const distDir = path.join(workspacePackage.dir, 'dist');
+    if (!existsSync(distDir) || readdirSync(distDir).length === 0) {
+      return false;
+    }
   }
+  return true;
+}
+
+function turboPrepCachePath(target: DevPrepTarget): string {
+  return path.join(TURBO_PREP_CACHE_DIR, `${target}.json`);
+}
+
+function readTurboPrepCache(target: DevPrepTarget): TurboPrepCacheRecord | null {
   try {
-    const st = statSync(TURBO_LAST_RUN_SENTINEL);
-    return Date.now() - st.mtimeMs < TURBO_SKIP_IF_RECENT_MS;
+    return JSON.parse(readFileSync(turboPrepCachePath(target), 'utf8')) as TurboPrepCacheRecord;
   } catch {
-    return false;
+    return null;
   }
 }
 
-function writeTurboLastRunSentinel(): void {
+function isTurboPrepCacheValid(
+  target: DevPrepTarget,
+  packageNames: readonly string[],
+  fingerprint: string
+): boolean {
+  const force = process.env.OCENTRA_DEV_PREP_FORCE === '1' || process.env.SKIP_TURBO_IF_RECENT === '0';
+  if (force || !hasBuiltOutputs(packageNames)) {
+    return false;
+  }
+  const record = readTurboPrepCache(target);
+  if (
+    record?.version !== TURBO_PREP_CACHE_VERSION ||
+    record.target !== target ||
+    record.fingerprint !== fingerprint ||
+    record.packageNames.join('\n') !== packageNames.join('\n')
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function writeTurboPrepCache(
+  target: DevPrepTarget,
+  packageNames: readonly string[],
+  fingerprint: string
+): void {
   try {
-    mkdirSync(path.dirname(TURBO_LAST_RUN_SENTINEL), { recursive: true });
-    writeFileSync(TURBO_LAST_RUN_SENTINEL, String(Date.now()), 'utf8');
+    mkdirSync(TURBO_PREP_CACHE_DIR, { recursive: true });
+    writeFileSync(
+      turboPrepCachePath(target),
+      JSON.stringify(
+        {
+          version: TURBO_PREP_CACHE_VERSION,
+          target,
+          packageNames,
+          fingerprint,
+          generatedAt: new Date().toISOString(),
+        },
+        null,
+        2
+      ),
+      'utf8'
+    );
   } catch {
     // non-fatal
   }
@@ -249,8 +360,9 @@ export function ensureTurboDevPrep(target: DevPrepTarget, log: (message: string)
     return;
   }
 
-  if (isTurboRecentlyRun()) {
-    log(`Preparing ${config.description}: Turbo skipped (recent run; backend already built). Set SKIP_TURBO_IF_RECENT=0 to force.`);
+  const fingerprint = computeTurboPrepFingerprint(target, packageNames);
+  if (isTurboPrepCacheValid(target, packageNames, fingerprint)) {
+    log(`Preparing ${config.description}: Turbo skipped (worktree cache hit). Set OCENTRA_DEV_PREP_FORCE=1 to force.`);
     return;
   }
 
@@ -267,7 +379,7 @@ export function ensureTurboDevPrep(target: DevPrepTarget, log: (message: string)
     runBuiltArtifactImportChecks(log);
     runBuiltArtifactAssetChecks(log);
   }
-  writeTurboLastRunSentinel();
+  writeTurboPrepCache(target, packageNames, computeTurboPrepFingerprint(target, packageNames));
 }
 
 function parseTarget(argv: string[]): DevPrepTarget | null {

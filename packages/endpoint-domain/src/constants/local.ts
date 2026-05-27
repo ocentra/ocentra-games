@@ -60,6 +60,22 @@ export const LocalWebConfig = {
   },
 } as const;
 
+export const LocalEditorConfig = {
+  Port: 5174,
+  Host: Hostname.Localhost,
+  get BaseUrl() {
+    return createLocalHttpBaseUrl(this.Host, this.Port);
+  },
+} as const;
+
+export const LocalWorktreeConfig = {
+  MainWebPortBase: 3100,
+  WorkerPortBase: 8800,
+  EditorWebPortBase: 5200,
+  PortRangeSize: 1000,
+  PortModeEnv: 'OCENTRA_DEV_PORT_MODE',
+} as const;
+
 export function createLocalHttpBaseUrl(host: string, port: number): string {
   return `${localHttpProtocol}://${host}:${port}`;
 }

@@ -72,11 +72,11 @@ if (!args.has('--skip-domain-build')) {
 }
 
 if (!args.has('--skip-assets')) {
-  runNpm('Validating game assets', ['run', 'validate:game-assets']);
+  runNpm('Checking game asset validation cache', ['run', 'dev:preflight:assets']);
 }
 
 if (!args.has('--skip-generated')) {
-  runNpm('Refreshing generated exports', ['run', 'generate:exports-flattened']);
+  runNpm('Checking generated export cache', ['run', 'dev:preflight:exports']);
 }
 
 console.log('\n[setup:worktree] Ready. Start the app with: cmd /c npm run dev:web');

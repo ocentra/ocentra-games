@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import { resolveEditorWebBaseUrl, resolveEditorWebPort } from './scripts/dev/dev-port-config';
+
+const editorPort = resolveEditorWebPort();
+const editorBaseUrl = resolveEditorWebBaseUrl(editorPort);
 
 export default defineConfig({
   testDir: 'packages/asset-editor',
@@ -9,7 +13,7 @@ export default defineConfig({
   workers: 1,
   reporter: [['list']],
   use: {
-    baseURL: 'http://localhost:5175',
+    baseURL: editorBaseUrl,
     trace: 'on-first-retry',
     video: 'retain-on-failure',
     screenshot: 'only-on-failure',
@@ -25,8 +29,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'node scripts/dev/start-editor-e2e-full.mjs',
-    url: 'http://localhost:5175',
+    command: 'npx tsx scripts/dev/start-editor-e2e-full.ts',
+    url: editorBaseUrl,
     reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === '1',
     timeout: 420000,
     stdout: 'pipe',

@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { resolveMainWebPort } from './scripts/dev/dev-port-config'
 
 function resolvePlaywrightPort(): string {
   if (process.env.PLAYWRIGHT_PORT) return process.env.PLAYWRIGHT_PORT
@@ -9,10 +10,10 @@ function resolvePlaywrightPort(): string {
       const url = new URL(process.env.PLAYWRIGHT_BASE_URL)
       return url.port || (url.protocol === 'https:' ? '443' : '80')
     } catch {
-      return '3000'
+      return String(resolveMainWebPort())
     }
   }
-  return '3000'
+  return String(resolveMainWebPort())
 }
 
 function resolveWebServerTimeoutMs(): number {

@@ -2,7 +2,7 @@
  * DevPanelPage — local-only Cloudflare feature tester.
  *
  * Accessible at /dev-panel (registered in App.tsx).
- * Only useful when the wrangler worker is running on localhost:8787
+ * Only useful when the wrangler worker is running on the configured local worker port
  * (via `npm run dev:full` or `npm run dev:worker` separately).
  *
  * Sections:
@@ -15,15 +15,15 @@
 import { useState, useRef, useCallback } from 'react';
 import { auth } from '@/adapters/firebase/config';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
+import { getLocalDevWorkerBaseUrl } from '@/services/storage/localDevRuntime';
 import './DevPanelPage.css';
 
-const BASE = CloudflareLocalConfig.BaseUrl;
+const BASE = getLocalDevWorkerBaseUrl();
 
 // ── tiny fetch helpers ──────────────────────────────────────────────────────
 

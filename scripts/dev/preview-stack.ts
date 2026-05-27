@@ -9,6 +9,7 @@ import { ensureTurboDevPrep } from './turbo-dev-prep';
 import { ensurePortFree } from './port-utils';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { OpenApiServer } from '@ocentra/endpoint-domain/constants/openapi';
+import { applyLocalWorkerEnv } from './dev-port-config';
 
 function hasFlag(flag: string): boolean {
   return process.argv.slice(2).includes(flag);
@@ -236,10 +237,14 @@ function setDefaultEnv(name: string, value: string): void {
 
 function configureLocalWorkerBuildEnv(workerBase: string): void {
   const normalizedWorkerBase = workerBase.replace(/\/$/, '');
+  applyLocalWorkerEnv(process.env);
   process.env.VITE_CLAIM_STORAGE_URL = workerBase;
   process.env.VITE_R2_WORKER_URL = workerBase;
   process.env.VITE_ASSETS_WORKER_URL = workerBase;
   process.env.VITE_ASSETS_PUBLIC_URL = `${normalizedWorkerBase}${ApiEndpoint.Assets.Base}`;
+  process.env.VITE_MAIN_LOCAL_CLAIM_STORAGE_URL = workerBase;
+  process.env.VITE_MAIN_LOCAL_WORKER_URL = workerBase;
+  process.env.VITE_MAIN_LOCAL_ASSETS_PUBLIC_URL = `${normalizedWorkerBase}${ApiEndpoint.Assets.Base}`;
   process.env.VITE_MAIN_REAL_CLAIM_STORAGE_URL = workerBase;
   process.env.VITE_MAIN_REAL_ASSETS_PUBLIC_URL = `${normalizedWorkerBase}${ApiEndpoint.Assets.Base}`;
   process.env.VITE_MAIN_ASSET_TARGET_FORCE = 'local-dev';

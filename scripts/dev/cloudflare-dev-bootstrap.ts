@@ -9,7 +9,10 @@ import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { ensurePortFree, getPortOccupants } from './port-utils';
+import type { PortOccupant } from './port-utils';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
+import { resolveWorkerBaseUrl, resolveWorkerPort } from './dev-port-config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,13 +20,15 @@ export const ROOT = path.resolve(__dirname, '../..');
 export const GAME_WORKER_DIR = path.join(ROOT, 'infra/cloudflare');
 const WRANGLER_ENTRYPOINT = path.join(ROOT, 'node_modules', 'wrangler', 'bin', 'wrangler.js');
 const NODE_EXECUTABLE = process.platform === 'win32' ? 'node' : process.execPath;
-export const GAME_WORKER_PORT = parseInt(process.env.WORKER_PORT ?? String(CloudflareLocalConfig.Port), 10);
+export const GAME_WORKER_PORT = resolveWorkerPort();
 export const GAME_WORKER_HOST = CloudflareLocalConfig.Host;
-export const GAME_WORKER_BASE = `http://${GAME_WORKER_HOST}:${GAME_WORKER_PORT}`;
+export const GAME_WORKER_BASE = resolveWorkerBaseUrl(GAME_WORKER_PORT);
 export const STARTUP_TIMEOUT_MS = 300_000;
 const HEALTH_FETCH_TIMEOUT_MS = 2500;
 
 const PRODUCT_SEED_CACHE_FILE = path.join(GAME_WORKER_DIR, '.dev-seed-hash');
+const ASSET_SEED_CACHE_FILE = path.join(GAME_WORKER_DIR, '.wrangler', 'seed-assets-local-cache.json');
+const ASSET_SEED_REPORT_FILE = path.join(GAME_WORKER_DIR, '.wrangler', 'seed-assets-local-report.json');
 const WORKER_DEV_VARS_FILE = path.join(GAME_WORKER_DIR, '.dev.vars');
 const GENERATED_DEV_ENV_FILE = path.join(GAME_WORKER_DIR, '.wrangler', 'dev-firebase.env');
 const PRODUCT_SEED_SOURCE_FILES = [
@@ -31,6 +36,23 @@ const PRODUCT_SEED_SOURCE_FILES = [
   path.join(GAME_WORKER_DIR, 'src/config/dev-seed-products.ts'),
   path.join(GAME_WORKER_DIR, 'src/data/ai-catalog.ts'),
 ] as const;
+const ASSET_SEED_CRITICAL_KEYS = [
+  'catalog/index.json',
+  'GameCatalog/index.json',
+  'Pages/HomePageLayout.asset',
+] as const;
+
+type AssetSeedCacheRecord = {
+  filesHash?: string;
+  fileHashes?: Record<string, string>;
+  fileRecords?: Record<string, unknown>;
+};
+
+type AssetSeedReport = {
+  filesHash?: string;
+  files?: number;
+  mode?: string;
+};
 
 const isWindows = process.platform === 'win32';
 const ANSI_ESCAPE_PATTERN = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
@@ -262,6 +284,14 @@ function writeProductSeedCache(): void {
   }
 }
 
+function readJsonFile<T>(filePath: string): T | null {
+  try {
+    return JSON.parse(readFileSync(filePath, 'utf8')) as T;
+  } catch {
+    return null;
+  }
+}
+
 async function waitForPort(port: number, timeoutMs: number): Promise<void> {
   const start = Date.now();
   return new Promise((resolve, reject) => {
@@ -343,23 +373,44 @@ async function isWorkerHealthy(baseUrl: string): Promise<boolean> {
   return false;
 }
 
-function isManagedWorkerOccupant(occupant: { name: string; commandLine: string }): boolean {
-  const lowerName = occupant.name.toLowerCase();
-  const lowerCommand = occupant.commandLine.toLowerCase();
-  const workerDir = GAME_WORKER_DIR.toLowerCase().replace(/\\/g, '/');
-  const normalizedCommand = lowerCommand.replace(/\\/g, '/');
+function normalizeCommandValue(value: string): string {
+  return value.toLowerCase().replace(/\\/g, '/');
+}
 
-  const looksLikeWorkerProcess =
+function summarizePortOccupants(occupants: PortOccupant[]): string {
+  return occupants.length > 0
+    ? occupants.map((occupant) => `${occupant.name || 'unknown'}:${occupant.pid}`).join(', ')
+    : 'unknown process';
+}
+
+function isWorkerProcess(occupant: PortOccupant): boolean {
+  const lowerName = occupant.name.toLowerCase();
+  const normalizedCommand = normalizeCommandValue(occupant.commandLine);
+
+  return (
     lowerName.includes('wrangler') ||
     lowerName.includes('workerd') ||
     normalizedCommand.includes('wrangler') ||
-    normalizedCommand.includes('workerd');
+    normalizedCommand.includes('workerd')
+  );
+}
 
-  const pointsAtWorkerDir =
-    normalizedCommand.includes(workerDir) ||
-    normalizedCommand.includes('infra/cloudflare');
+function isCurrentWorkerOccupant(occupant: PortOccupant): boolean {
+  const workerDir = normalizeCommandValue(GAME_WORKER_DIR);
+  const rootDir = normalizeCommandValue(ROOT);
+  const normalizedCommand = normalizeCommandValue(occupant.commandLine);
+  return (
+    isWorkerProcess(occupant) &&
+    (normalizedCommand.includes(workerDir) || normalizedCommand.includes(rootDir))
+  );
+}
 
-  return looksLikeWorkerProcess && pointsAtWorkerDir;
+function isOcentraWorkerOccupant(occupant: PortOccupant): boolean {
+  const normalizedCommand = normalizeCommandValue(occupant.commandLine);
+  return (
+    isWorkerProcess(occupant) &&
+    (normalizedCommand.includes('infra/cloudflare') || normalizedCommand.includes('ocentra-games'))
+  );
 }
 
 function runCommand(
@@ -408,7 +459,7 @@ function seedAiCatalog(log: (message: string) => void): void {
 }
 
 async function seedProductsViaWorker(baseUrl: string, log: (message: string) => void): Promise<void> {
-  const seedUrl = `${baseUrl}/api/v1/test/seed-products`;
+  const seedUrl = `${baseUrl}${ApiEndpoint.Test.SeedProducts}`;
   try {
     const response = await fetchWithTimeout(seedUrl, { method: 'POST' }, 10000);
     await response.text().catch(() => undefined);
@@ -423,6 +474,59 @@ async function seedProductsViaWorker(baseUrl: string, log: (message: string) => 
   }
 }
 
+async function isLocalAssetSeedCurrent(
+  baseUrl: string,
+  log: (message: string) => void,
+  requireAssetVerify?: boolean
+): Promise<boolean> {
+  if (
+    requireAssetVerify ||
+    process.env.SEED_ASSETS_ON_BOOT === '1' ||
+    process.env.SEED_ASSETS_FORCE_ON_BOOT === '1'
+  ) {
+    return false;
+  }
+
+  const cache = readJsonFile<AssetSeedCacheRecord>(ASSET_SEED_CACHE_FILE);
+  const report = readJsonFile<AssetSeedReport>(ASSET_SEED_REPORT_FILE);
+  const cacheKeys = Object.keys(cache?.fileHashes ?? cache?.fileRecords ?? {});
+  if (
+    !cache?.filesHash ||
+    !report?.filesHash ||
+    cache.filesHash !== report.filesHash ||
+    cacheKeys.length === 0 ||
+    !report.files ||
+    report.files < 1
+  ) {
+    return false;
+  }
+
+  try {
+    const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
+    const response = await fetchWithTimeout(`${normalizedBaseUrl}${ApiEndpoint.Assets.List}`, {}, 10000);
+    if (!response.ok) {
+      return false;
+    }
+    const payload = (await response.json()) as Array<{ key?: string }>;
+    if (!Array.isArray(payload) || payload.length < report.files) {
+      return false;
+    }
+    const bucketKeys = new Set(payload.map((entry) => entry.key).filter((key): key is string => Boolean(key)));
+    const missingCriticalKey = ASSET_SEED_CRITICAL_KEYS.some(
+      (key) => cacheKeys.includes(key) && !bucketKeys.has(key)
+    );
+    if (missingCriticalKey) {
+      return false;
+    }
+    log('Asset seed skipped (local R2 cache already current for this worktree).');
+    return true;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    log(`Asset seed cache check failed; seeding will run: ${message.split('\n')[0]}`);
+    return false;
+  }
+}
+
 async function ensureSeeds(
   baseUrl: string,
   log: (message: string) => void,
@@ -430,39 +534,44 @@ async function ensureSeeds(
   options: Pick<EnsureLocalCloudflareWorkerOptions, 'waitForAssetSeed' | 'requireAssetVerify'> = {}
 ): Promise<void> {
   const startedAt = Date.now();
-  log('Starting asset seeding in background (Vite will start in parallel).');
-  const assetSeedEnv: Record<string, string> = {
-    ASSETS_VERIFY_BASE_URL: baseUrl,
-    SEED_ASSETS_CONTINUE_ON_ERROR: options.requireAssetVerify ? '0' : '1',
-  };
-  if (options.requireAssetVerify) {
-    assetSeedEnv.SEED_ASSETS_REQUIRE_VERIFY = '1';
-  }
-  const assetSeed = spawnManaged(
-    registry,
-    'npx',
-    ['tsx', 'scripts/seed-assets-local.ts'],
-    GAME_WORKER_DIR,
-    'seed-assets-local',
-    assetSeedEnv
-  );
-  const assetSeedExit = new Promise<void>((resolve, reject) => {
-    assetSeed.once('error', reject);
-    assetSeed.once('exit', (code) => {
-      if (code === 0 || code === null) {
-        resolve();
-      } else {
-        reject(new Error(`Asset seed exited with code ${code}.`));
-      }
+  const skipAssetSeed = await isLocalAssetSeedCurrent(baseUrl, log, options.requireAssetVerify);
+  let assetSeedExit: Promise<void> | null = null;
+
+  if (!skipAssetSeed) {
+    log('Starting asset seeding in background (Vite will start in parallel).');
+    const assetSeedEnv: Record<string, string> = {
+      ASSETS_VERIFY_BASE_URL: baseUrl,
+      SEED_ASSETS_CONTINUE_ON_ERROR: options.requireAssetVerify ? '0' : '1',
+    };
+    if (options.requireAssetVerify) {
+      assetSeedEnv.SEED_ASSETS_REQUIRE_VERIFY = '1';
+    }
+    const assetSeed = spawnManaged(
+      registry,
+      'npx',
+      ['tsx', 'scripts/seed-assets-local.ts'],
+      GAME_WORKER_DIR,
+      'seed-assets-local',
+      assetSeedEnv
+    );
+    assetSeedExit = new Promise<void>((resolve, reject) => {
+      assetSeed.once('error', reject);
+      assetSeed.once('exit', (code) => {
+        if (code === 0 || code === null) {
+          resolve();
+        } else {
+          reject(new Error(`Asset seed exited with code ${code}.`));
+        }
+      });
     });
-  });
-  if (!options.waitForAssetSeed) {
-    assetSeedExit.catch(() => undefined);
+    if (!options.waitForAssetSeed) {
+      assetSeedExit.catch(() => undefined);
+    }
   }
 
   if (isProductSeedCacheValid()) {
     log('Product/KV seed skipped (cache hit).');
-    if (options.waitForAssetSeed) {
+    if (options.waitForAssetSeed && assetSeedExit) {
       await assetSeedExit;
     }
     log(`Local seeding stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
@@ -473,7 +582,7 @@ async function ensureSeeds(
   seedAiCatalog(log);
   await seedProductsViaWorker(baseUrl, log);
   writeProductSeedCache();
-  if (options.waitForAssetSeed) {
+  if (options.waitForAssetSeed && assetSeedExit) {
     await assetSeedExit;
   }
   log(`Local seeding stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
@@ -485,51 +594,59 @@ export async function ensureLocalCloudflareWorker(
   options: EnsureLocalCloudflareWorkerOptions = {}
 ): Promise<{ workerBase: string; reused: boolean }> {
   const startedAt = Date.now();
-  const existingHealthy = await isWorkerHealthy(GAME_WORKER_BASE);
-  if (existingHealthy) {
-    log(`Reusing existing claim-storage worker on port ${GAME_WORKER_PORT}.`);
-    await ensureSeeds(GAME_WORKER_BASE, log, registry, options);
-    log(`Cloudflare worker stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
-    return { workerBase: GAME_WORKER_BASE, reused: true };
-  }
+  const initialOccupants = await getPortOccupants(GAME_WORKER_PORT);
 
-  if (await isPortOpen(GAME_WORKER_PORT)) {
+  if (initialOccupants.length > 0 || await isPortOpen(GAME_WORKER_PORT)) {
+    let reclaimedWorkerPort = false;
     for (let retry = 0; retry < 3; retry += 1) {
       const healthy = await isWorkerHealthy(GAME_WORKER_BASE);
-      if (healthy) {
-        log(`Reusing existing claim-storage worker on port ${GAME_WORKER_PORT} (health confirmed after port check).`);
+      const occupants = retry === 0 ? initialOccupants : await getPortOccupants(GAME_WORKER_PORT);
+      if (healthy && (occupants.length === 0 || occupants.every(isCurrentWorkerOccupant))) {
+        log(`Reusing existing claim-storage worker on port ${GAME_WORKER_PORT}.`);
         await ensureSeeds(GAME_WORKER_BASE, log, registry, options);
         log(`Cloudflare worker stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
         return { workerBase: GAME_WORKER_BASE, reused: true };
+      }
+      if (occupants.length > 0 && occupants.every(isOcentraWorkerOccupant)) {
+        const occupantSummary = summarizePortOccupants(occupants);
+        log(`Port ${GAME_WORKER_PORT} is held by worker process(es) outside this worktree: ${occupantSummary}. Reclaiming it...`);
+        const freed = await ensurePortFree(
+          GAME_WORKER_PORT,
+          (occupant) => isOcentraWorkerOccupant(occupant),
+          log,
+          5
+        );
+        if (!freed) {
+          throw new Error(`Failed to reclaim stale claim-storage worker on port ${GAME_WORKER_PORT}.`);
+        }
+        reclaimedWorkerPort = true;
+        break;
       }
       if (retry < 2) {
         await new Promise((r) => setTimeout(r, 1000));
       }
     }
 
-    const occupants = await getPortOccupants(GAME_WORKER_PORT);
-    const occupantSummary =
-      occupants.length > 0
-        ? occupants.map((occupant) => `${occupant.name || 'unknown'}:${occupant.pid}`).join(', ')
-        : 'unknown process';
+    if (!reclaimedWorkerPort) {
+      const occupants = await getPortOccupants(GAME_WORKER_PORT);
+      const occupantSummary = summarizePortOccupants(occupants);
 
-    if (occupants.length > 0 && occupants.every(isManagedWorkerOccupant)) {
-      log(
-        `Port ${GAME_WORKER_PORT} is held by stale worker process(es): ${occupantSummary}. Reclaiming it...`
-      );
-      const freed = await ensurePortFree(
-        GAME_WORKER_PORT,
-        (occupant) => isManagedWorkerOccupant(occupant),
-        log,
-        5
-      );
-      if (!freed) {
-        throw new Error(`Failed to reclaim stale claim-storage worker on port ${GAME_WORKER_PORT}.`);
+      if (occupants.length > 0 && occupants.every(isOcentraWorkerOccupant)) {
+        log(`Port ${GAME_WORKER_PORT} is held by stale worker process(es): ${occupantSummary}. Reclaiming it...`);
+        const freed = await ensurePortFree(
+          GAME_WORKER_PORT,
+          (occupant) => isOcentraWorkerOccupant(occupant),
+          log,
+          5
+        );
+        if (!freed) {
+          throw new Error(`Failed to reclaim stale claim-storage worker on port ${GAME_WORKER_PORT}.`);
+        }
+      } else {
+        throw new Error(
+          `Port ${GAME_WORKER_PORT} is already in use by ${occupantSummary}, and it is not a healthy claim-storage worker for this worktree.`
+        );
       }
-    } else {
-      throw new Error(
-        `Port ${GAME_WORKER_PORT} is already in use by ${occupantSummary}, and it is not a healthy claim-storage worker.`
-      );
     }
   }
 
@@ -544,7 +661,7 @@ export async function ensureLocalCloudflareWorker(
     runCommand('npm run predev', GAME_WORKER_DIR, log, 'Preparing Cloudflare worker dependencies...');
   }
 
-  log(`Starting claim-storage worker on fixed port ${GAME_WORKER_PORT}...`);
+  log(`Starting claim-storage worker on port ${GAME_WORKER_PORT}...`);
   const generatedWorkerEnvFile = writeGeneratedWorkerEnvFile();
   const wranglerArgs = ['dev', '--env', 'development', '--ip', GAME_WORKER_HOST, '--port', String(GAME_WORKER_PORT)];
   if (generatedWorkerEnvFile) {

@@ -5,6 +5,13 @@ import { createWriteStream, mkdirSync, existsSync, rmSync } from 'fs';
 import { createInterface } from 'readline';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import {
+  applyEditorWebEnv,
+  applyLocalWorkerEnv,
+  readPortArg,
+  resolveEditorWebPort,
+  resolveWorkerPort,
+} from './dev-port-config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -44,11 +51,12 @@ async function promptLaunchPreset(
 
 async function promptBackend(
   rl: ReturnType<typeof createInterface>,
-  preset?: EditorBackend
+  preset?: EditorBackend,
+  workerPort = resolveWorkerPort()
 ): Promise<EditorBackend> {
   if (preset) return preset;
   console.log('\n  Backend:');
-  console.log('    1) local      - Shared Cloudflare worker (port 8787), same as main app');
+  console.log(`    1) local      - Shared Cloudflare worker on localhost:${workerPort}, same as main app`);
   console.log('    2) production - Real Cloudflare (set VITE_EDITOR_SYNC_REAL_* in .env)');
   const raw = await question(rl, '  Choose (1-2): ');
   return raw === '2' ? 'production' : 'local';
@@ -135,9 +143,16 @@ function clearViteCacheForForce(): void {
   }
 }
 
-function parsePresetFromArgv(): { backend?: EditorBackend; output?: OutputChoice } {
+function parsePresetFromArgv(): {
+  backend?: EditorBackend;
+  output?: OutputChoice;
+  workerPort?: number;
+  editorPort?: number;
+} {
   const argv = process.argv.slice(2);
   let backend: EditorBackend | undefined;
+  const workerPort = readPortArg(argv, ['--worker-port', '--api-port']);
+  const editorPort = readPortArg(argv, ['--editor-port', '--port', '--use']);
   let tee = false;
   let profile = false;
   for (const arg of argv) {
@@ -147,7 +162,7 @@ function parsePresetFromArgv(): { backend?: EditorBackend; output?: OutputChoice
     else if (arg === '--profile') profile = true;
   }
   const output = tee || profile ? { teeToFile: tee, profile } : undefined;
-  return { backend, output };
+  return { backend, output, workerPort, editorPort };
 }
 
 async function main(): Promise<void> {
@@ -160,16 +175,23 @@ async function main(): Promise<void> {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
 
   const launch = await promptLaunchPreset(rl);
-  const backend = launch ? launch.backend : await promptBackend(rl, preset.backend);
+  const backend = launch ? launch.backend : await promptBackend(rl, preset.backend, preset.workerPort ?? resolveWorkerPort());
   const output = launch ? launch.output : await promptOutput(rl, preset.output);
 
   rl.close();
 
+  const editorPort = preset.editorPort ?? resolveEditorWebPort();
+  const workerPort = preset.workerPort ?? resolveWorkerPort();
   const outLabel = output.teeToFile ? (output.profile ? 'log + profile' : 'log') : 'console';
-  const backendLabel = backend === 'local' ? 'local' : 'production';
+  const backendLabel = backend === 'local' ? `local | worker: ${workerPort}` : 'production';
+  console.log(`\n  editor: ${editorPort}`);
   console.log(`\n  → tauri | ${backendLabel} | ${outLabel}${output.teeToFile ? ` → ${LOG_FILE}` : ''}\n`);
 
   const env: Record<string, string> = {};
+  applyEditorWebEnv(env, editorPort);
+  if (backend === 'local') {
+    applyLocalWorkerEnv(env, workerPort);
+  }
   if (output.profile) env.VITE_PROFILE = '1';
   if (force) {
     env.FORCE = 'true';
@@ -177,7 +199,11 @@ async function main(): Promise<void> {
   }
 
   const script = backend === 'local' ? 'scripts/dev/dev-editor-tauri.ts' : 'scripts/dev/dev-editor-tauri-production.ts';
-  const code = await run('npx', ['tsx', script, ...(force ? ['--force'] : [])], env, output.teeToFile);
+  const scriptArgs = ['tsx', script, '--editor-port', String(editorPort), ...(force ? ['--force'] : [])];
+  if (backend === 'local') {
+    scriptArgs.push('--worker-port', String(workerPort));
+  }
+  const code = await run('npx', scriptArgs, env, output.teeToFile);
   process.exit(code);
 }
 

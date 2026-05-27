@@ -10,11 +10,15 @@ import { createAppLogStorage } from '@ocentra/logging-domain/app-log/createAppLo
 import type { LogEntry } from '@ocentra/logging-domain/types/logEntry';
 import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 import {
-  CloudflareLocalConfig,
   LocalApiEndpoint,
   LocalWebConfig,
-  createLocalHttpBaseUrl,
 } from '@ocentra/endpoint-domain/constants/local';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import {
+  resolveEditorWebPort,
+  resolveWorkerBaseUrl,
+  resolveWorkerPort,
+} from '../../scripts/dev/dev-port-config';
 import { loadWorkspaceEnv } from '../../scripts/shared/loadWorkspaceEnv';
 import { workspaceSourceResolver } from '../../vite/plugins/workspaceSourceResolver';
 import JSON5 from 'json5';
@@ -32,8 +36,18 @@ const rootDir = path.resolve(__dirname, '../..');
 const assetEditorResourcesDir = path.resolve(__dirname, 'Resources');
 const coreUiHeaderProfilesDir = path.resolve(__dirname, '../core-ui/src/Header/profiles');
 loadWorkspaceEnv(__dirname, rootDir);
-const workerPort = parseInt(process.env.WORKER_PORT ?? String(CloudflareLocalConfig.Port), 10);
-const workerBaseUrl = createLocalHttpBaseUrl(CloudflareLocalConfig.Host, workerPort);
+const workerPort = resolveWorkerPort();
+const workerBaseUrl = resolveWorkerBaseUrl(workerPort);
+const editorPort = resolveEditorWebPort();
+process.env.WORKER_PORT = process.env.WORKER_PORT || String(workerPort);
+process.env.VITE_LOCAL_WORKER_PORT = process.env.VITE_LOCAL_WORKER_PORT || String(workerPort);
+process.env.OCENTRA_EDITOR_PORT = process.env.OCENTRA_EDITOR_PORT || String(editorPort);
+process.env.EDITOR_PORT = process.env.EDITOR_PORT || String(editorPort);
+process.env.PORT = process.env.PORT || String(editorPort);
+process.env.VITE_EDITOR_PORT = process.env.VITE_EDITOR_PORT || String(editorPort);
+process.env.VITE_PORT = process.env.VITE_PORT || String(editorPort);
+process.env.VITE_EDITOR_SYNC_LOCAL_CLAIM_STORAGE_URL = process.env.VITE_EDITOR_SYNC_LOCAL_CLAIM_STORAGE_URL || workerBaseUrl;
+process.env.VITE_EDITOR_SYNC_LOCAL_ASSETS_PUBLIC_URL = process.env.VITE_EDITOR_SYNC_LOCAL_ASSETS_PUBLIC_URL || `${workerBaseUrl}${ApiEndpoint.Assets.Base}`;
 
 const workspaceSourcePackages = [
   { name: '@ocentra/app-assets', rootDir: path.resolve(__dirname, '../app-assets') },
@@ -502,7 +516,7 @@ export default defineConfig(({ command }) => ({
     ],
   },
   server: {
-    port: parseInt(process.env.PORT ?? process.env.VITE_PORT ?? '5174', 10),
+    port: editorPort,
     watch: {
       ignored: [
         '**/node_modules/**',

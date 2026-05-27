@@ -74,7 +74,8 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 - After route/head SEO changes, prefer `npm run seo:audit` against a local app server (defaults to `http://127.0.0.1:3000`; override with `-- --base=http://127.0.0.1:4174` or `SEO_AUDIT_BASE_URL`) so served HTML, sitemap, robots, and fallback text are checked together. Use `npm run seo:audit:full` when you need the broader local audit sweep.
 
 ### Dev: shared backend and separate Tauri apps
-- **Shared dev backend:** One Cloudflare worker (port 8787); main app or editor can start it; the other reuses it. Same for Turbo (skip if recently run).
+- **Dev port rule:** The primary/main checkout keeps the original defaults: main web `3000`, Cloudflare worker `8787`, and editor web `5174`. Linked git worktrees auto-generate stable local defaults in `.temp/dev-ports.json` from the worktree path: main web `3100-4099`, worker `8800-9799`, and editor web `5200-6199`. Explicit CLI/env always wins (`--port`, `--worker-port`, `OCENTRA_WEB_PORT`, `OCENTRA_EDITOR_PORT`, `WORKER_PORT`, `VITE_LOCAL_WORKER_PORT`); use `OCENTRA_DEV_PORT_MODE=primary` or `OCENTRA_DEV_PORT_MODE=worktree` only to force the default mode.
+- **Shared dev backend:** One configured Cloudflare worker per checkout; main app or editor can start it and the other reuses it. Same for Turbo (skip if recently run).
 - **Worktree bootstrap:** `npm run setup:worktree -- [flags]` handles the usual first-pass worktree prep: `npm install --ignore-scripts` when needed, domain builds, game-asset validation, and generated export refresh. Use `--skip-install`, `--skip-domain-build`, `--skip-assets`, or `--skip-generated` only when you know that step is already satisfied.
 - **Two Tauri apps:** Main app binary **ocentraplatform** (platforms/desktop/tauri), editor **ocentraeditor** (packages/asset-editor/src-tauri). They do not depend on each other; each is built and run from its own directory with its own `CARGO_TARGET_DIR`.
 - **Asset editor Tauri launchers:** `npm --prefix packages/asset-editor run dev:tauri` is the direct launcher backed by `scripts/dev/dev-editor-tauri.ts`; it kills stale `ocentraeditor` processes and uses `packages/asset-editor/src-tauri/target-editor` as its dedicated Cargo target dir. `npm run dev:editor:tauri` is the simpler root shortcut that currently runs plain `cargo tauri dev` from `packages/asset-editor`.
@@ -83,8 +84,8 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 - **Fixed-target main launcher shortcuts:** `npm run dev:web`, `npm run dev:tauri`, `npm run dev:android`, and `npm run dev:ios` reuse the same interactive launcher with the target preselected when you want to skip the prompt.
 - **Compare presets:** `npm run dev:compare` starts the shared web stack and attaches the default compare set (`web`, `tauri`, `android`). Use `npm run dev:compare:web-tauri`, `npm run dev:compare:web-android`, or `npm run dev:compare:all` when you want a pinned compare target set.
 - **Interactive editor launcher:** `npm --prefix packages/asset-editor run dev` uses `scripts/dev/dev-editor-interactive.ts` when you need preset/local-vs-production backend selection, optional `.temp/dev-editor-output.log`, or `--force` Vite cache clearing before launch.
-- **Editor web-only launcher:** `npm --prefix packages/asset-editor run dev:web` starts the managed asset-editor Vite session on port `5174` after regenerating the inspector map; `npm run dev:editor:stack` uses this under the hood after shared prep and local worker bootstrap.
-- **Mobile stack launcher:** `npm run dev:android:stack` / `npm run dev:ios:stack` uses `scripts/dev/dev-mobile-full.ts` to ensure shared dev prep, start or reuse the local Cloudflare worker, and point mobile asset/storage URLs at the local worker. For Android emulator runs, the worker is exposed as `http://10.0.2.2:8787`.
+- **Editor web-only launcher:** `npm --prefix packages/asset-editor run dev:web` starts the managed asset-editor Vite session on the configured editor port after regenerating the inspector map; `npm run dev:editor:stack` uses this under the hood after shared prep and local worker bootstrap.
+- **Mobile stack launcher:** `npm run dev:android:stack` / `npm run dev:ios:stack` uses `scripts/dev/dev-mobile-full.ts` to ensure shared dev prep, start or reuse the local Cloudflare worker, and point mobile asset/storage URLs at the local worker. For Android emulator runs, the worker is exposed as `http://10.0.2.2:<configured-worker-port>`; primary checkout default is `http://10.0.2.2:8787`.
 
 ### Domain Build Standard (No .js in Source)
 - **Never** add `.js` to relative or path-alias imports in domain source (e.g. `from './foo'` not `from './foo.js'`)
@@ -238,7 +239,7 @@ npm run dev:editor:e2e   # Start editor stack for Playwright/editor flows
 npm run dev:editor:tauri # Root shortcut: plain cargo tauri dev from packages/asset-editor
 npm --prefix packages/asset-editor run dev:tauri # Direct editor Tauri launcher (stale-process cleanup, dedicated target dir)
 npm --prefix packages/asset-editor run dev # Interactive asset-editor launcher (backend/output presets, optional log/profile)
-npm --prefix packages/asset-editor run dev:web # Managed asset-editor Vite on 5174 with inspector-map refresh
+npm --prefix packages/asset-editor run dev:web # Managed asset-editor Vite on the configured editor port with inspector-map refresh
 npm --prefix packages/asset-editor run maintenance:reset-local-cache # Clear the editor's local asset cache DB
 npm run dev:seed:assets  # Seed and verify local asset payloads
 npm run dev:seed:assets:tee # Seed assets and tee output to .dev-seed-output.log
@@ -250,7 +251,7 @@ npm run build            # Production build
 npm test                 # Unit tests
 npm run test:editor      # Asset-editor package tests
 npm run test:e2e         # E2E tests
-npm run test:e2e:editor:full # Full editor E2E stack (seed local assets, worker on 8787, editor on 5175)
+npm run test:e2e:editor:full # Full editor E2E stack using the configured worker and editor ports
 npm run test:editor:prod-smoke # Prod-like asset-editor smoke test
 npm run lint             # ESLint + type check
 npm run validate:main    # Main-app focused lint + type-check

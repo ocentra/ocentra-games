@@ -6,9 +6,9 @@ import { createInterface } from 'readline';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { OpenApiServer } from '@ocentra/endpoint-domain/constants/openapi';
+import { applyLocalWorkerEnv, parsePortNumber, readPortArg, resolveWorkerPort } from './dev-port-config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -222,19 +222,22 @@ async function promptTarget(rl: ReturnType<typeof createInterface>, preset?: Tar
 async function promptBackend(
   rl: ReturnType<typeof createInterface>,
   target: Target,
-  preset?: Backend
+  preset?: Backend,
+  workerPort = resolveWorkerPort()
 ): Promise<Backend> {
   if (preset) return preset;
   const isMobile = target === 'android' || target === 'ios';
+  const localWorkerLabel = `localhost:${workerPort}`;
+  const androidWorkerLabel = `10.0.2.2:${workerPort}`;
   if (isMobile) {
     console.log('\n  Backend:');
-    console.log('    1) local      - Start worker + seed, use localhost (emulator: 10.0.2.2:8787)');
+    console.log(`    1) local      - Start worker + seed, use ${localWorkerLabel} (emulator: ${androidWorkerLabel})`);
     console.log('    2) production - Use VITE_CLAIM_STORAGE_URL from .env');
     const raw = await question(rl, '  Choose (1-2): ');
     return raw === '2' ? 'production' : 'local';
   }
   console.log('\n  Backend:');
-  console.log('    1) local      - Start worker + seed, use localhost:8787');
+  console.log(`    1) local      - Start worker + seed, use ${localWorkerLabel}`);
   console.log('    2) development - Use Cloudflare dev Worker/R2');
   console.log('    3) production  - Use Cloudflare production Worker/R2');
   console.log('    4) none        - Vite only, no backend (API calls will fail)');
@@ -331,10 +334,10 @@ async function execute(
   backend: Backend,
   output: OutputChoice,
   androidMode?: AndroidMode,
-  frontendPort?: string
+  frontendPort?: string,
+  workerPort?: number
 ): Promise<number> {
   const { teeToFile, profile } = output;
-  const workerBase = CloudflareLocalConfig.BaseUrl;
   const env: Record<string, string> = {};
 
   if (backend === 'development' || backend === 'production') {
@@ -347,10 +350,7 @@ async function execute(
     env.VITE_MAIN_REAL_ASSETS_PUBLIC_URL = `${url}${ApiEndpoint.Assets.Base}`;
     env.VITE_MAIN_ASSET_TARGET_FORCE = 'real-cloud';
   } else if (backend === 'local') {
-    env.VITE_CLAIM_STORAGE_URL = workerBase;
-    env.VITE_ASSETS_WORKER_URL = workerBase;
-    env.VITE_ASSETS_PUBLIC_URL = `${workerBase}${ApiEndpoint.Assets.Base}`;
-    env.VITE_MAIN_ASSET_TARGET_FORCE = 'local-dev';
+    applyLocalWorkerEnv(env, workerPort);
   } else {
     env.VITE_MAIN_ASSET_TARGET_FORCE = 'real-cloud';
   }
@@ -424,6 +424,7 @@ function parsePresetFromArgv(): {
   output?: OutputChoice;
   preset?: LaunchPreset;
   frontendPort?: string;
+  workerPort?: number;
 } {
   const argv = process.argv.slice(2);
   let target: Target | undefined;
@@ -433,15 +434,12 @@ function parsePresetFromArgv(): {
   let output: OutputChoice | undefined;
   let preset: LaunchPreset | undefined;
   let frontendPort: string | undefined;
+  const workerPort = readPortArg(argv, ['--worker-port', '--api-port']);
   let tee = false;
   let profile = false;
 
   const parsePortValue = (raw: string | undefined, flag: string): string => {
-    const parsed = Number.parseInt(raw ?? '', 10);
-    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 65535) {
-      throw new Error(`Invalid ${flag} value: ${raw ?? '<missing>'}`);
-    }
-    return String(parsed);
+    return String(parsePortNumber(raw, flag));
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -504,7 +502,7 @@ function parsePresetFromArgv(): {
     }
   }
   if (tee || profile) output = { teeToFile: tee, profile };
-  return { target, webMode, backend, androidMode, output, preset, frontendPort };
+  return { target, webMode, backend, androidMode, output, preset, frontendPort, workerPort };
 }
 
 async function main(): Promise<void> {
@@ -543,6 +541,7 @@ async function main(): Promise<void> {
     androidMode: presetAndroidMode,
     preset,
     frontendPort,
+    workerPort,
   } = parsePresetFromArgv();
 
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -551,7 +550,7 @@ async function main(): Promise<void> {
   const quick = await promptLaunchPreset(rl, preset);
   const target = quick?.target ?? (await promptTarget(rl, presetTarget));
   const webMode: WebFrontendMode = quick?.webMode ?? presetWebMode ?? (target === 'web' ? 'dev' : 'dev');
-  const backend = await promptBackend(rl, target, quick?.backend ?? presetBackend);
+  const backend = await promptBackend(rl, target, quick?.backend ?? presetBackend, workerPort ?? resolveWorkerPort());
   const androidMode = target === 'android' ? await promptAndroidMode(rl, presetAndroidMode) : undefined;
   const output = await promptOutput(rl, quick?.output ?? presetOutput);
   rl.close();
@@ -559,7 +558,7 @@ async function main(): Promise<void> {
   const { teeToFile } = output;
   const androidLabel = target === 'android' ? ` | android: ${androidMode}` : '';
   const webModeLabel = target === 'web' ? ` | web: ${webMode}` : '';
-  const portLabel = frontendPort ? ` | port: ${frontendPort}` : '';
+  const portLabel = `${frontendPort ? ` | port: ${frontendPort}` : ''}${backend === 'local' ? ` | worker: ${workerPort ?? resolveWorkerPort()}` : ''}`;
   const outLabel = teeToFile
     ? output.profile
       ? ' | log + profile → .temp/dev-output.log | .temp/performance-profile.json'
@@ -573,7 +572,7 @@ async function main(): Promise<void> {
     process.env.FORCE = 'true';
   }
 
-  const code = await execute(target, webMode, backend, output, androidMode, frontendPort);
+  const code = await execute(target, webMode, backend, output, androidMode, frontendPort, workerPort);
   process.exit(code);
 }
 

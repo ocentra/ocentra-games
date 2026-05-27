@@ -4,7 +4,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import type { ChildProcessWithoutNullStreams } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
+import { resolveWorkerBaseUrl, resolveWorkerPort } from './dev-port-config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -133,6 +133,10 @@ function formatTail(target: RunningCommand): string {
 }
 
 async function main(): Promise<void> {
+  const workerPort = resolveWorkerPort();
+  const workerBaseUrl = resolveWorkerBaseUrl(workerPort);
+  const workerReadyPattern = new RegExp(`Claim-storage worker ready via|Reusing existing claim-storage worker on port ${workerPort}\\.`);
+  const workerReusePattern = new RegExp(`Reusing existing claim-storage worker on port ${workerPort}\\.`);
   const editor = startScript('editor', 'dev:editor:stack');
 
   try {
@@ -144,7 +148,7 @@ async function main(): Promise<void> {
     );
     await waitForPatterns(
       editor,
-      [/Claim-storage worker ready via|Reusing existing claim-storage worker on port 8787\./],
+      [workerReadyPattern],
       240_000,
       'worker ready or reused'
     );
@@ -166,7 +170,7 @@ async function main(): Promise<void> {
       );
       await waitForPatterns(
         mainApp,
-        [/Reusing existing claim-storage worker on port 8787\./],
+        [workerReusePattern],
         240_000,
         'worker reuse'
       );
@@ -177,7 +181,7 @@ async function main(): Promise<void> {
         'main Vite start'
       );
 
-      await waitForWorkerHealth(CloudflareLocalConfig.BaseUrl, 30_000);
+      await waitForWorkerHealth(workerBaseUrl, 30_000);
       log('Smoke pass complete: editor and main stacks overlapped and main reused the existing worker.');
     } finally {
       killTree(mainApp);

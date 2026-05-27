@@ -1,4 +1,5 @@
-import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
+import { CloudflareLocalConfig, createLocalHttpBaseUrl } from '@ocentra/endpoint-domain/constants/local';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 
 export const AssetEditorSyncTarget = {
   LocalDev: 'local-dev',
@@ -40,7 +41,16 @@ function buildAssetsPublicUrl(workerUrl: string, explicitAssetsUrl: string): str
     return normalizedExplicit;
   }
   const normalizedWorker = normalizeBaseUrl(workerUrl);
-  return normalizedWorker ? `${normalizedWorker}/api/v1/assets` : '';
+  return normalizedWorker ? `${normalizedWorker}${ApiEndpoint.Assets.Base}` : '';
+}
+
+function getLocalWorkerFallbackUrl(): string {
+  const rawPort = getEnv('VITE_LOCAL_WORKER_PORT') || getEnv('WORKER_PORT');
+  const parsedPort = Number.parseInt(rawPort, 10);
+  const port = Number.isFinite(parsedPort) && parsedPort > 0 && parsedPort <= 65535
+    ? parsedPort
+    : CloudflareLocalConfig.Port;
+  return createLocalHttpBaseUrl(CloudflareLocalConfig.Host, port);
 }
 
 function getDefaultTargetFromEnv(): AssetEditorSyncTargetValue {
@@ -82,7 +92,7 @@ export function getAssetEditorSyncTargetDetails(
       getEnv('VITE_CLAIM_STORAGE_URL') ||
       getEnv('VITE_ASSETS_WORKER_URL') ||
       getEnv('VITE_R2_WORKER_URL') ||
-      CloudflareLocalConfig.BaseUrl
+      getLocalWorkerFallbackUrl()
   );
   const localAssetsPublicUrl = buildAssetsPublicUrl(
     localWorkerUrl,
@@ -114,7 +124,7 @@ export function getAssetEditorSyncTargetDetails(
   return {
     key: target,
     label: 'Local Dev',
-    description: 'Local Cloudflare worker on the fixed dev port',
+    description: 'Local Cloudflare worker on the configured dev port',
     workerUrl: localWorkerUrl,
     assetsPublicUrl: localAssetsPublicUrl,
     configured: Boolean(localWorkerUrl),

@@ -1,13 +1,23 @@
 #!/usr/bin/env node
 
 import { execSync, spawn } from 'child_process';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  applyEditorWebEnv,
+  applyLocalWorkerEnv,
+  resolveEditorWebBaseUrl,
+  resolveEditorWebPort,
+  resolveWorkerPort,
+} from './dev-port-config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
 const EDITOR_DIR = path.join(ROOT, 'packages', 'asset-editor');
 const EDITOR_TARGET_DIR = path.join(EDITOR_DIR, 'src-tauri', 'target-editor');
+const EDITOR_TAURI_DIR = path.join(EDITOR_DIR, 'src-tauri');
+const EDITOR_TAURI_CONFIG_PATH = path.join(EDITOR_TAURI_DIR, 'tauri.conf.json');
 
 function formatDurationMs(ms: number): string {
   if (ms >= 60_000) {
@@ -35,9 +45,31 @@ async function killEditorAppIfRunning(): Promise<void> {
   }
 }
 
+function createGeneratedTauriConfig(editorPort: number): string {
+  const config = JSON.parse(readFileSync(EDITOR_TAURI_CONFIG_PATH, 'utf8')) as {
+    build?: { devUrl?: string };
+  };
+  config.build = {
+    ...(config.build ?? {}),
+    devUrl: resolveEditorWebBaseUrl(editorPort),
+  };
+  const generatedDir = path.join(EDITOR_TAURI_DIR, '.generated');
+  mkdirSync(generatedDir, { recursive: true });
+  const generatedPath = path.join(generatedDir, `tauri.dev.${editorPort}.conf.json`);
+  writeFileSync(generatedPath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
+  return path.relative(EDITOR_DIR, generatedPath).replace(/\\/g, '/');
+}
+
 async function main(): Promise<void> {
   const startedAt = Date.now();
+  const editorPort = resolveEditorWebPort();
+  const workerPort = resolveWorkerPort();
+  const generatedConfigPath = createGeneratedTauriConfig(editorPort);
+  const devEnv: Record<string, string> = {};
+  applyEditorWebEnv(devEnv, editorPort);
+  applyLocalWorkerEnv(devEnv, workerPort);
   console.log('[dev:editor:tauri] Starting editor Tauri launcher...');
+  console.log(`[dev:editor:tauri] Using editor port ${editorPort} and worker port ${workerPort}.`);
 
   const killStartedAt = Date.now();
   await killEditorAppIfRunning();
@@ -45,12 +77,13 @@ async function main(): Promise<void> {
     `[dev:editor:tauri] Stale editor process cleanup completed in ${formatDurationMs(Date.now() - killStartedAt)}.`
   );
 
-  const proc = spawn('cargo', ['tauri', 'dev'], {
+  const proc = spawn('cargo', ['tauri', 'dev', '-c', generatedConfigPath], {
     cwd: EDITOR_DIR,
     stdio: 'inherit',
     shell: process.platform === 'win32',
     env: {
       ...process.env,
+      ...devEnv,
       CARGO_TARGET_DIR: EDITOR_TARGET_DIR,
     },
   });

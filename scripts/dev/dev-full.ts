@@ -8,6 +8,8 @@ import {
   spawnManaged,
 } from './cloudflare-dev-bootstrap';
 import { ensureTurboDevPrep } from './turbo-dev-prep';
+import { applyLocalWorkerEnv, applyMainWebEnv } from './dev-port-config';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 
 const registry = createManagedProcessRegistry();
 
@@ -68,11 +70,20 @@ async function main(): Promise<void> {
     skipDependencyPrep: true,
   })) as Awaited<ReturnType<typeof ensureLocalCloudflareWorker>>;
 
-  const viteClaimStorageUrl = process.env.VITE_CLAIM_STORAGE_URL || process.env.VITE_ASSETS_WORKER_URL || workerBase;
-  const viteAssetsPublicUrl =
-    process.env.VITE_ASSETS_PUBLIC_URL || `${viteClaimStorageUrl.replace(/\/$/, '')}/api/v1/assets`;
+  const viteEnv: Record<string, string> = {};
+  applyLocalWorkerEnv(viteEnv);
+  const mainWebPort = applyMainWebEnv(viteEnv);
+  const viteClaimStorageUrl = workerBase;
+  const viteAssetsPublicUrl = `${viteClaimStorageUrl.replace(/\/$/, '')}${ApiEndpoint.Assets.Base}`;
+  viteEnv.VITE_CLAIM_STORAGE_URL = viteClaimStorageUrl;
+  viteEnv.VITE_R2_WORKER_URL = viteClaimStorageUrl;
+  viteEnv.VITE_ASSETS_WORKER_URL = viteClaimStorageUrl;
+  viteEnv.VITE_ASSETS_PUBLIC_URL = viteAssetsPublicUrl;
+  viteEnv.VITE_MAIN_LOCAL_CLAIM_STORAGE_URL = viteClaimStorageUrl;
+  viteEnv.VITE_MAIN_LOCAL_WORKER_URL = viteClaimStorageUrl;
+  viteEnv.VITE_MAIN_LOCAL_ASSETS_PUBLIC_URL = viteAssetsPublicUrl;
 
-  log(`Starting Vite with claim-storage asset URL ${viteClaimStorageUrl}`);
+  log(`Starting Vite on port ${mainWebPort} with claim-storage asset URL ${viteClaimStorageUrl}`);
   log(`Using assets public URL ${viteAssetsPublicUrl}`);
 
   const vite = timer.measure('Vite bootstrap spawn', () => spawnManaged(
@@ -81,12 +92,7 @@ async function main(): Promise<void> {
     ['tsx', 'scripts/dev/dev.ts'],
     ROOT,
     'vite',
-    {
-      VITE_CLAIM_STORAGE_URL: viteClaimStorageUrl,
-      VITE_ASSETS_WORKER_URL: viteClaimStorageUrl,
-      VITE_ASSETS_PUBLIC_URL: viteAssetsPublicUrl,
-      VITE_MAIN_ASSET_TARGET_FORCE: 'local-dev',
-    }
+    viteEnv
   )) as ReturnType<typeof spawnManaged>;
 
   await new Promise<void>((resolve) => {

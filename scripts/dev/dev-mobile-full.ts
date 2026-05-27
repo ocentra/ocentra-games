@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import {
+  GAME_WORKER_PORT,
   ROOT,
   createManagedProcessRegistry,
   ensureLocalCloudflareWorker,
@@ -8,6 +9,8 @@ import {
   spawnManaged,
 } from './cloudflare-dev-bootstrap';
 import { ensureTurboDevPrep } from './turbo-dev-prep';
+import { applyLocalWorkerEnv } from './dev-port-config';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 
 type MobileTarget = 'android' | 'ios';
 
@@ -51,8 +54,17 @@ async function main(): Promise<void> {
   ensureTurboDevPrep('main', (message) => log(message));
 
   const { workerBase } = await ensureLocalCloudflareWorker(registry, log);
-  const mobileWorkerBase = target === 'android' ? 'http://10.0.2.2:8787' : workerBase;
-  const mobileAssetsPublicUrl = `${mobileWorkerBase.replace(/\/$/, '')}/api/v1/assets`;
+  const mobileWorkerBase = target === 'android' ? `http://10.0.2.2:${GAME_WORKER_PORT}` : workerBase;
+  const mobileAssetsPublicUrl = `${mobileWorkerBase.replace(/\/$/, '')}${ApiEndpoint.Assets.Base}`;
+  const mobileEnv: Record<string, string> = {};
+  applyLocalWorkerEnv(mobileEnv);
+  mobileEnv.VITE_CLAIM_STORAGE_URL = mobileWorkerBase;
+  mobileEnv.VITE_R2_WORKER_URL = mobileWorkerBase;
+  mobileEnv.VITE_ASSETS_WORKER_URL = mobileWorkerBase;
+  mobileEnv.VITE_ASSETS_PUBLIC_URL = mobileAssetsPublicUrl;
+  mobileEnv.VITE_MAIN_LOCAL_CLAIM_STORAGE_URL = mobileWorkerBase;
+  mobileEnv.VITE_MAIN_LOCAL_WORKER_URL = mobileWorkerBase;
+  mobileEnv.VITE_MAIN_LOCAL_ASSETS_PUBLIC_URL = mobileAssetsPublicUrl;
 
   log(`Using worker URL ${mobileWorkerBase}`);
   log(`Using assets public URL ${mobileAssetsPublicUrl}`);
@@ -67,12 +79,7 @@ async function main(): Promise<void> {
         ? 'cap:ios'
         : 'cap:android';
   const command = ['run', capScript];
-  const proc = spawnManaged(registry, 'npm', command, ROOT, `cap-${target}`, {
-    VITE_CLAIM_STORAGE_URL: mobileWorkerBase,
-    VITE_ASSETS_WORKER_URL: mobileWorkerBase,
-    VITE_ASSETS_PUBLIC_URL: mobileAssetsPublicUrl,
-    VITE_MAIN_ASSET_TARGET_FORCE: 'local-dev',
-  });
+  const proc = spawnManaged(registry, 'npm', command, ROOT, `cap-${target}`, mobileEnv);
 
   await new Promise<void>((resolve) => {
     proc.on('exit', () => resolve());
