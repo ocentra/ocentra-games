@@ -10,10 +10,17 @@ import { TestTokenPrefix } from '@ocentra/endpoint-domain/constants/auth';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { TournamentDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { HttpAuthScheme, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { FormField } from '@ocentra/endpoint-domain/constants/form-fields';
 import { OpenApiParameterName } from '@ocentra/endpoint-domain/constants/openapi';
 import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
-import { TournamentResultField } from '@ocentra/endpoint-domain/constants/worker-contract-values';
+import {
+  LobbyModeValues,
+  LobbyStakeTypeValues,
+  RoomTypeValues,
+  SettingsThemeValues,
+  TournamentResultField,
+} from '@ocentra/endpoint-domain/constants/worker-contract-values';
 import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
 import { generateOpenApiJson, openApiExplicitExampleRoutes } from '@/utils/openapi';
 
@@ -205,6 +212,20 @@ function pythonStringLiteral(value: string): string {
   return JSON.stringify(value);
 }
 
+function pythonValueLiteral(value: unknown): string {
+  if (value === null || value === undefined) return 'None';
+  if (typeof value === 'string') return pythonStringLiteral(value);
+  if (typeof value === 'number') return Number.isFinite(value) ? String(value) : 'None';
+  if (typeof value === 'boolean') return value ? 'True' : 'False';
+  if (Array.isArray(value)) return `[${value.map((item) => pythonValueLiteral(item)).join(', ')}]`;
+  if (typeof value === 'object') {
+    return `{${Object.entries(value)
+      .map(([key, item]) => `${pythonStringLiteral(key)}: ${pythonValueLiteral(item)}`)
+      .join(', ')}}`;
+  }
+  return 'None';
+}
+
 function resetFile(filePath: string): void {
   fs.writeFileSync(filePath, '', 'utf-8');
 }
@@ -252,9 +273,50 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
   const tournamentBasePath = ApiEndpoint.Tournament.ById(`{${OpenApiParameterName.TournamentId}}`);
   const tournamentBracketPath = `${tournamentBasePath}/${TournamentDOSegment.Bracket}`;
   const tournamentStartPath = `${tournamentBasePath}/${TournamentDOSegment.Start}`;
+  const tournamentDistributePrizesPath = `${tournamentBasePath}/${TournamentDOSegment.DistributePrizes}`;
+  const matchPath = ApiEndpoint.Matches.ById(`{${OpenApiParameterName.MatchId}}`);
   const archiveMatchPath = ApiEndpoint.Archive.ByMatchId(`{${OpenApiParameterName.MatchId}}`);
   const anonymizeMatchPath = ApiEndpoint.Matches.Anonymize(`{${OpenApiParameterName.MatchId}}`);
   const roomSpectatePath = ApiEndpoint.Rooms.Spectate(`{${OpenApiParameterName.RoomId}}`);
+  const replayPath = ApiEndpoint.Replay.ByMatchId(`{${OpenApiParameterName.MatchId}}`);
+  const replayVerifyPath = ApiEndpoint.Replay.Verify(`{${OpenApiParameterName.MatchId}}`);
+  const transparencyPath = ApiEndpoint.Transparency.ByMatchId(`{${OpenApiParameterName.MatchId}}`);
+  const disputePath = ApiEndpoint.Disputes.ById(`{${OpenApiParameterName.DisputeId}}`);
+  const creditsConsumePath = ApiEndpoint.Credits.Consume(`{${OpenApiParameterName.UserId}}`);
+  const creditsConsumeGpPath = ApiEndpoint.Credits.ConsumeGP(`{${OpenApiParameterName.UserId}}`);
+  const friendsPath = ApiEndpoint.Friends.ById(`{${OpenApiParameterName.FriendId}}`);
+  const settingsUpdatePath = ApiEndpoint.Settings.Update(`{${OpenApiParameterName.UserId}}`);
+  const matchRecordExample = {
+    match_id: fixtures.archiveMatchId,
+    matchId: fixtures.archiveMatchId,
+    version: OpenApiExampleValue.SemanticVersion,
+    schema_version: OpenApiExampleValue.SemanticVersion,
+    gameName: 'CLAIM',
+    gameType: 0,
+    game_type: 0,
+    players: [
+      {
+        player_id: fixtures.userId || OpenApiExampleValue.UserId,
+        display_name: 'Schemathesis Player',
+        score: 1,
+      },
+    ],
+    events: [
+      {
+        type: OpenApiExampleValue.MatchEventType,
+        timestamp: OpenApiExampleValue.IsoDateTime,
+      },
+    ],
+    final_state: {
+      phase: 'completed',
+      current_turn: 1,
+      current_player: fixtures.userId || OpenApiExampleValue.UserId,
+      board_state: {
+        fen: OpenApiExampleValue.MatchBoardFen,
+      },
+      winner: fixtures.userId || OpenApiExampleValue.UserId,
+    },
+  };
   const tournamentBracketExample = [
     `    if (method, path) == ("GET", ${pythonStringLiteral(tournamentBracketPath)}):`,
     '        examples.clear()',
@@ -303,21 +365,57 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     routePath: string,
     options: {
       pathParameters?: Record<string, string | number>;
+      query?: Record<string, string | number | boolean>;
+      headers?: Record<string, string>;
       body?: unknown;
     } = {}
   ): string => {
-    const pathParameters = options.pathParameters ? `, path_parameters=${JSON.stringify(options.pathParameters)}` : '';
-    const body = options.body !== undefined ? `, body=${JSON.stringify(options.body)}` : '';
+    const pathParameters = options.pathParameters ? `, path_parameters=${pythonValueLiteral(options.pathParameters)}` : '';
+    const query = options.query ? `, query=${pythonValueLiteral(options.query)}` : '';
+    const headers = options.headers ? `, headers=${pythonValueLiteral(options.headers)}` : '';
+    const body = options.body !== undefined ? `, body=${pythonValueLiteral(options.body)}` : '';
     return [
       `@schemathesis.hook("before_generate_case").apply_to(method=${pythonStringLiteral(method)}, path=${pythonStringLiteral(routePath)})`,
       `def ${functionName}(ctx, strategy):`,
       '    operation = ctx.operation',
       `    if str(getattr(operation, "method", "")).upper() != ${pythonStringLiteral(method)} or str(getattr(operation, "path", "")) != ${pythonStringLiteral(routePath)}:`,
       '        return strategy',
-      `    return st.just(Case(operation, ${pythonStringLiteral(method)}, ${pythonStringLiteral(routePath)}${pathParameters}${body}))`,
+      `    return st.just(Case(operation, ${pythonStringLiteral(method)}, ${pythonStringLiteral(routePath)}${pathParameters}${query}${headers}${body}))`,
       '',
     ].join('\n');
   };
+  const logsQueryCaseStrategy = createPinnedCaseStrategy('generate_logs_query_case', 'GET', ApiEndpoint.Logs.Query, {
+    query: {
+      limit: 10,
+    },
+  });
+  const creditsRedeemCaseStrategy = createPinnedCaseStrategy('generate_credits_redeem_case', 'POST', ApiEndpoint.Credits.Redeem, {
+    body: {
+      code: fixtures.promoCode,
+    },
+  });
+  const roomCreateCaseStrategy = createPinnedCaseStrategy('generate_room_create_case', 'POST', ApiEndpoint.Rooms.Base, {
+    body: {
+      roomId: '00000000-0000-4000-8000-000000000099',
+      hostId: fixtures.userId || OpenApiExampleValue.UserId,
+      roomType: RoomTypeValues[1],
+      maxPlayers: 2,
+      allowAI: false,
+      aiCount: 0,
+    },
+  });
+  const roomQuickJoinCaseStrategy = createPinnedCaseStrategy('generate_room_quick_join_case', 'POST', ApiEndpoint.Rooms.QuickJoin, {
+    body: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+      displayName: 'Schemathesis User',
+      gameType: 'claim',
+      mode: LobbyModeValues[0],
+      stakeType: LobbyStakeTypeValues[0],
+      maxPlayers: 2,
+      createIfMissing: true,
+      allowAI: false,
+    },
+  });
   const tournamentBracketCaseStrategy = createPinnedCaseStrategy('generate_tournament_bracket_case', 'GET', tournamentBracketPath, {
     pathParameters: {
       tournamentId: fixtures.startTournamentId,
@@ -328,6 +426,132 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
       tournamentId: fixtures.startTournamentId,
     },
     body: {},
+  });
+  const tournamentDistributePrizesCaseStrategy = createPinnedCaseStrategy(
+    'generate_tournament_distribute_prizes_case',
+    'POST',
+    tournamentDistributePrizesPath,
+    {
+      pathParameters: {
+        tournamentId: fixtures.prizeTournamentId,
+      },
+      body: {},
+    }
+  );
+  const antiCheatAnalyzeCaseStrategy = createPinnedCaseStrategy('generate_anticheat_analyze_case', 'POST', ApiEndpoint.AntiCheat.Analyze, {
+    body: {
+      ...OpenApiExampleValue.AntiCheatAnalyzeRequest,
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const creditsConsumeCaseStrategy = createPinnedCaseStrategy('generate_credits_consume_case', 'POST', creditsConsumePath, {
+    pathParameters: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+    },
+    headers: {
+      [HttpHeader.IdempotencyKey]: 'schemathesis-ac-consume',
+    },
+    body: {
+      ac_amount: 1,
+      description: 'Schemathesis AC consume',
+    },
+  });
+  const creditsConsumeGpCaseStrategy = createPinnedCaseStrategy('generate_credits_consume_gp_case', 'POST', creditsConsumeGpPath, {
+    pathParameters: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+    },
+    headers: {
+      [HttpHeader.IdempotencyKey]: 'schemathesis-gp-consume',
+    },
+    body: {
+      amount: 1,
+      currency: Currency.GP,
+      description: 'Schemathesis GP consume',
+    },
+  });
+  const matchPostCaseStrategy = createPinnedCaseStrategy('generate_match_post_case', 'POST', matchPath, {
+    pathParameters: {
+      matchId: fixtures.archiveMatchId,
+    },
+    body: matchRecordExample,
+  });
+  const matchPutCaseStrategy = createPinnedCaseStrategy('generate_match_put_case', 'PUT', matchPath, {
+    pathParameters: {
+      matchId: fixtures.archiveMatchId,
+    },
+    body: matchRecordExample,
+  });
+  const syncFromSolanaCaseStrategy = createPinnedCaseStrategy('generate_sync_from_solana_case', 'POST', ApiEndpoint.Sync.FromSolana, {
+    body: {
+      ...OpenApiExampleValue.SyncFromSolanaRequest,
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const syncReconcileCaseStrategy = createPinnedCaseStrategy('generate_sync_reconcile_case', 'POST', ApiEndpoint.Sync.Reconcile, {
+    body: {
+      ...OpenApiExampleValue.SyncReconcileRequest,
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const settingsUpdateCaseStrategy = createPinnedCaseStrategy('generate_settings_update_case', 'POST', settingsUpdatePath, {
+    pathParameters: {
+      userId: fixtures.userId || OpenApiExampleValue.UserId,
+    },
+    body: {
+      theme: SettingsThemeValues[1],
+      notifications: true,
+      notificationsEnabled: true,
+      soundEnabled: true,
+      language: 'en',
+      preferredServerRegion: 'na',
+    },
+  });
+  const disputeLookupCaseStrategy = createPinnedCaseStrategy('generate_dispute_lookup_case', 'GET', disputePath, {
+    pathParameters: {
+      disputeId: OpenApiExampleValue.DisputeId,
+    },
+  });
+  const disputeUpdateCaseStrategy = createPinnedCaseStrategy('generate_dispute_update_case', 'PUT', disputePath, {
+    pathParameters: {
+      disputeId: OpenApiExampleValue.DisputeId,
+    },
+    body: {
+      ...OpenApiExampleValue.DisputeUpdateRequest,
+      match_id: fixtures.archiveMatchId,
+    },
+  });
+  const transparencyCaseStrategy = createPinnedCaseStrategy('generate_transparency_case', 'GET', transparencyPath, {
+    pathParameters: {
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const replayCaseStrategy = createPinnedCaseStrategy('generate_replay_case', 'GET', replayPath, {
+    pathParameters: {
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const replayVerifyCaseStrategy = createPinnedCaseStrategy('generate_replay_verify_case', 'GET', replayVerifyPath, {
+    pathParameters: {
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const matchDeleteCaseStrategy = createPinnedCaseStrategy('generate_match_delete_case', 'DELETE', matchPath, {
+    pathParameters: {
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const friendCreateCaseStrategy = createPinnedCaseStrategy('generate_friend_create_case', 'POST', friendsPath, {
+    pathParameters: {
+      friendId: fixtures.friendId,
+    },
+    body: {
+      friendId: fixtures.friendId,
+    },
+  });
+  const friendDeleteCaseStrategy = createPinnedCaseStrategy('generate_friend_delete_case', 'DELETE', friendsPath, {
+    pathParameters: {
+      friendId: fixtures.friendId,
+    },
   });
   const archiveCaseStrategy = createPinnedCaseStrategy('generate_archive_case', 'POST', archiveMatchPath, {
     pathParameters: {
@@ -382,8 +606,29 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     '        return',
     '    examples.append(operation.as_strategy().example())',
     '',
+    logsQueryCaseStrategy,
+    creditsRedeemCaseStrategy,
+    roomCreateCaseStrategy,
+    roomQuickJoinCaseStrategy,
     tournamentBracketCaseStrategy,
     tournamentStartCaseStrategy,
+    tournamentDistributePrizesCaseStrategy,
+    antiCheatAnalyzeCaseStrategy,
+    creditsConsumeCaseStrategy,
+    creditsConsumeGpCaseStrategy,
+    matchPostCaseStrategy,
+    matchPutCaseStrategy,
+    syncFromSolanaCaseStrategy,
+    syncReconcileCaseStrategy,
+    settingsUpdateCaseStrategy,
+    disputeLookupCaseStrategy,
+    disputeUpdateCaseStrategy,
+    transparencyCaseStrategy,
+    replayCaseStrategy,
+    replayVerifyCaseStrategy,
+    matchDeleteCaseStrategy,
+    friendCreateCaseStrategy,
+    friendDeleteCaseStrategy,
     archiveCaseStrategy,
     anonymizeCaseStrategy,
     roomSpectateCaseStrategy,
@@ -1094,6 +1339,7 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
       if (!refreshResponse.ok) {
         await refreshResponse.text().catch(() => undefined);
       } else {
+        await refreshResponse.text().catch(() => undefined);
         console.log(`  Seeded leaderboard matches for ${uploadedMatchIds.length} example records`);
       }
     }
