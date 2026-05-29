@@ -7,6 +7,7 @@ declare const styles: {
   readonly headerBackdropShape: string;
   readonly primaryNavExtension: string;
   readonly primaryNavHost: string;
+  readonly primaryNavInteractive: string;
   readonly primaryNavSvg: string;
   readonly debugControlsFloating: string;
   readonly debugControlsFloatingDocked: string;

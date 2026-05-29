@@ -88,7 +88,6 @@ export type LobbyPageSvgSurfaceProps = {
   onStartRoom?: (roomId: string) => void;
   onAddAIRoom?: (roomId: string, draft?: LobbyAddAISeatDraft) => void;
   onSendRoomChat?: (message: string) => void;
-  onSendLobbyChat?: (message: string) => void;
   onAddFriend?: (friendId: string) => void;
   onInviteFriend?: (friendId: string) => void;
   onCreateParty?: () => void;
@@ -109,7 +108,6 @@ export type LobbyPageSvgSurfaceProps = {
   joinedRoom?: LobbyRoomLike | null;
   friends?: LobbyFriendItem[];
   chatMessages?: LobbyChatMessageItem[];
-  lobbyChatMessages?: LobbyChatMessageItem[];
   reward?: LobbyRewardStatus | null;
   party?: LobbyPartyStatus | null;
   server?: LobbyServerStatus | null;
@@ -504,7 +502,6 @@ export function LobbyPageSvgSurface({
   onStartRoom,
   onAddAIRoom,
   onSendRoomChat,
-  onSendLobbyChat,
   onAddFriend,
   onInviteFriend,
   onCreateParty,
@@ -525,7 +522,6 @@ export function LobbyPageSvgSurface({
   joinedRoom,
   friends,
   chatMessages,
-  lobbyChatMessages,
   reward,
   party,
   server,
@@ -539,7 +535,7 @@ export function LobbyPageSvgSurface({
   const [hostSize, setHostSize] = useState({ w: W, h: H });
   const [selectedMode, setSelectedMode] = useState<string>(MODE_TABS[0][0]);
   const [selectedFriendsTab, setSelectedFriendsTab] = useState('FRIENDS');
-  const [selectedFeaturedTab, setSelectedFeaturedTab] = useState('FEATURED');
+  const [selectedFeaturedTab, setSelectedFeaturedTab] = useState('STARTERS');
   const [featuredScroll, setFeaturedScroll] = useState(0);
   const [tableScroll, setTableScroll] = useState(0);
   const [playersPopupRow, setPlayersPopupRow] = useState<LobbyTableRow | null>(null);
@@ -552,7 +548,7 @@ export function LobbyPageSvgSurface({
   const [rightCollapsed, setRightCollapsed] = useState(false);
   const [seatedByRow, setSeatedByRow] = useState<Record<string, number>>({});
   const [chatDraft, setChatDraft] = useState('');
-  const [lobbyChatDraft, setLobbyChatDraft] = useState('');
+  const [rightRailChatDraft, setRightRailChatDraft] = useState('');
   const [friendSearchDraft, setFriendSearchDraft] = useState('');
   const hasPopup = Boolean(playersPopupRow || actionPopup || featuredCardPopup || filterPopup);
   const leftVisible = !leftCollapsed;
@@ -618,12 +614,14 @@ export function LobbyPageSvgSurface({
   }, [activeViewer?.name, rooms, seatedByRow, useSampleData]);
   const headerStats = useMemo(() => buildHeaderStats({ rows: tableRows, rooms, viewer: activeViewer, useSampleData }), [activeViewer, rooms, tableRows, useSampleData]);
   const featuredCards = useMemo(() => {
-    const cards = [
-      ...tableRows.map(tableRowToFeaturedCard),
-      ...DEFAULT_FEATURED_CARDS,
-    ];
+    const cards = tableRows.map(tableRowToFeaturedCard);
     return activeNowFilter ? cards.filter(card => card.presetKey === activeNowFilter) : cards;
   }, [activeNowFilter, tableRows]);
+  const starterCards = useMemo(() => (
+    activeNowFilter
+      ? DEFAULT_FEATURED_CARDS.filter(card => card.presetKey === activeNowFilter)
+      : DEFAULT_FEATURED_CARDS
+  ), [activeNowFilter]);
   const activeFilters = useMemo<LobbyActiveFilterItem[]>(
     () => (useSampleData
       ? ACTIVE_FILTERS.map(([presetKey, label, count, color, ai, live, create, imageUrl]) => ({ presetKey, label, count, color, ai, live, create, imageUrl }))
@@ -634,13 +632,13 @@ export function LobbyPageSvgSurface({
     () => (useSampleData ? FRIENDS.map(([name, state, avatarUrl]) => ({ name, state, avatarUrl })) : friends ?? []),
     [friends, useSampleData],
   );
-  const rightRailMessages = useMemo<LobbyChatMessageItem[]>(
-    () => (useSampleData ? LOBBY_CHAT_MESSAGES.map(([name, msg, ago, avatarUrl]) => ({ name, msg, ago, avatarUrl })) : lobbyChatMessages ?? []),
-    [lobbyChatMessages, useSampleData],
-  );
   const roomChatMessages = useMemo<LobbyChatMessageItem[]>(
     () => (useSampleData ? LOBBY_CHAT_MESSAGES.map(([name, msg, ago, avatarUrl]) => ({ name, msg, ago, avatarUrl })) : chatMessages ?? []),
     [chatMessages, useSampleData],
+  );
+  const rightRailMessages = useMemo<LobbyChatMessageItem[]>(
+    () => (useSampleData || activeJoinedRoom ? roomChatMessages : []),
+    [activeJoinedRoom, roomChatMessages, useSampleData],
   );
   const serverStatus = useMemo<LobbyServerStatus | null>(
     () => (useSampleData
@@ -670,8 +668,14 @@ export function LobbyPageSvgSurface({
   };
   const selectActiveFilter = (filter: string | null) => {
     setActiveNowFilter(filter);
-    setSelectedFeaturedTab('FEATURED');
+    setSelectedFeaturedTab('STARTERS');
     onFilterRooms?.(filtersForActivePreset(filter, filters));
+  };
+  const selectFeaturedTab = (tab: string) => {
+    setSelectedFeaturedTab(tab);
+    if (tab !== 'STARTERS') {
+      setActiveNowFilter(null);
+    }
   };
 
   return (
@@ -784,7 +788,7 @@ export function LobbyPageSvgSurface({
           ) : (
             <Featured
               selectedFeaturedTab={selectedFeaturedTab}
-              onSelectFeaturedTab={setSelectedFeaturedTab}
+              onSelectFeaturedTab={selectFeaturedTab}
               tableRows={tableRows}
               tableScroll={tableScroll}
               onTableScroll={setTableScroll}
@@ -800,11 +804,12 @@ export function LobbyPageSvgSurface({
               mainB={mainB}
               controls={controls}
               featuredCards={featuredCards}
+              starterCards={starterCards}
               featuredScroll={featuredScroll}
               onFeaturedScroll={setFeaturedScroll}
             />
           )}
-          {selectedFeaturedTab === 'FEATURED' && !activeJoinedRoom ? (
+          {selectedFeaturedTab === 'STARTERS' && !activeJoinedRoom ? (
             <ActiveNow mainB={mainB} controls={controls} y={controls.mainBody.filtersY} items={activeFilters} activeFilter={activeNowFilter} onSelectFilter={selectActiveFilter} />
           ) : null}
           <g className={`lobby-right-panel-motion ${rightVisible ? 'is-visible' : 'is-hidden'}`} pointerEvents={rightVisible ? 'auto' : 'none'}>
@@ -819,10 +824,16 @@ export function LobbyPageSvgSurface({
               systemMessage={useSampleData ? 'High Stakes table is now full.' : null}
               onNavigate={onNavigate}
               party={party}
+              chatTitle="TABLE CHAT"
+              chatEmptyTitle={activeJoinedRoom ? 'NO TABLE CHAT YET' : 'NO TABLE JOINED'}
+              chatEmptyBody={activeJoinedRoom ? 'Messages stay with this table.' : 'Join or create a table to chat live.'}
+              chatInputLabel="Table chat message"
+              chatInputPlaceholder={activeJoinedRoom ? 'Message table...' : 'Join a table to chat'}
+              chatInputDisabled={!activeJoinedRoom}
               friendSearchDraft={friendSearchDraft}
-              lobbyChatDraft={lobbyChatDraft}
+              chatDraft={rightRailChatDraft}
               onFriendSearchDraftChange={setFriendSearchDraft}
-              onLobbyChatDraftChange={setLobbyChatDraft}
+              onChatDraftChange={setRightRailChatDraft}
               onAddFriend={(friendId) => {
                 onAddFriend?.(friendId);
                 setFriendSearchDraft('');
@@ -830,9 +841,9 @@ export function LobbyPageSvgSurface({
               onInviteFriend={onInviteFriend}
               onCreateParty={onCreateParty}
               onLeaveParty={onLeavePartyService}
-              onSendLobbyChat={(message) => {
-                onSendLobbyChat?.(message);
-                setLobbyChatDraft('');
+              onSendChat={(message) => {
+                onSendRoomChat?.(message);
+                setRightRailChatDraft('');
               }}
               onRefreshLobbyServices={onRefreshLobbyServices}
             />

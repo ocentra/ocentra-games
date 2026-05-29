@@ -1576,7 +1576,6 @@ export function LobbyPageContent({
   joinedRoom,
   friends,
   chatMessages,
-  lobbyChatMessages,
   reward,
   party,
   server,
@@ -1596,7 +1595,6 @@ export function LobbyPageContent({
   onStartRoom,
   onAddAIRoom,
   onSendRoomChat,
-  onSendLobbyChat,
   onAddFriend,
   onInviteFriend,
   onCreateParty,
@@ -1625,7 +1623,6 @@ export function LobbyPageContent({
   joinedRoom?: LobbyRoomLike | null;
   friends?: LobbyFriendItem[];
   chatMessages?: LobbyChatMessageItem[];
-  lobbyChatMessages?: LobbyChatMessageItem[];
   reward?: LobbyRewardStatus | null;
   party?: LobbyPartyStatus | null;
   server?: LobbyServerStatus | null;
@@ -1645,7 +1642,6 @@ export function LobbyPageContent({
   onStartRoom?: (roomId: string) => void;
   onAddAIRoom?: (roomId: string, draft?: LobbyAddAISeatDraft) => void;
   onSendRoomChat?: (message: string) => void;
-  onSendLobbyChat?: (message: string) => void;
   onAddFriend?: (friendId: string) => void;
   onInviteFriend?: (friendId: string) => void;
   onCreateParty?: () => void;
@@ -1675,7 +1671,6 @@ export function LobbyPageContent({
       joinedRoom={joinedRoom}
       friends={friends}
       chatMessages={chatMessages}
-      lobbyChatMessages={lobbyChatMessages}
       reward={reward}
       party={party}
       server={server}
@@ -1695,7 +1690,6 @@ export function LobbyPageContent({
       onStartRoom={onStartRoom}
       onAddAIRoom={onAddAIRoom}
       onSendRoomChat={onSendRoomChat}
-      onSendLobbyChat={onSendLobbyChat}
       onAddFriend={onAddFriend}
       onInviteFriend={onInviteFriend}
       onCreateParty={onCreateParty}

@@ -41,7 +41,7 @@ describe('appRoutes', () => {
     expect(buildMatchesPath()).toBe('/matches');
     expect(buildMatchDetailPath('match-123')).toBe('/matches/match-123');
     expect(buildPlayerHubPath()).toBe('/player-hub');
-    expect(buildSettingsPath()).toBe('/player-hub');
+    expect(buildSettingsPath()).toBe('/settings');
     expect(buildLeaderboardPath()).toBe('/leaderboard');
     expect(buildAiBenchmarkLeaderboardPath()).toBe('/leaderboard');
     expect(buildTournamentsPath()).toBe('/tournaments');
@@ -69,7 +69,7 @@ describe('appRoutes', () => {
     expect(parseAppRoute('/matches')).toEqual({ kind: 'matches' });
     expect(parseAppRoute('/matches/match-123')).toEqual({ kind: 'matchDetail', matchId: 'match-123' });
     expect(parseAppRoute('/player-hub')).toEqual({ kind: 'playerHub' });
-    expect(parseAppRoute('/settings')).toEqual({ kind: 'playerHub' });
+    expect(parseAppRoute('/settings')).toEqual({ kind: 'settings' });
     expect(parseAppRoute('/leaderboard')).toEqual({ kind: 'leaderboard' });
     expect(parseAppRoute('/leaderboard/ai-benchmarks')).toEqual({ kind: 'leaderboard' });
     expect(parseAppRoute('/tournaments')).toEqual({ kind: 'tournaments' });

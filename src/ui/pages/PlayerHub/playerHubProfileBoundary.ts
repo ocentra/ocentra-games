@@ -5,7 +5,7 @@ import {
   PlayerProfileResponseSchema,
 } from '@ocentra/endpoint-domain/schemas/players';
 
-export const PLAYER_HUB_EMPTY_VALUE = 'N/A';
+export const PLAYER_HUB_EMPTY_VALUE = 'No data';
 
 function readString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';

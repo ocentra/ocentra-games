@@ -36,6 +36,8 @@ type LastLoadedModel = { repoId: string; quantPath: string } | null;
 const log = MainAppLogger.instance;
 log.register(import.meta.url);
 
+const AI_SETTINGS_EMPTY_VALUE = 'No data';
+
 const cloneDefaultModelLoadingSettings = (): ModelLoadingSettings => ({
   maxModelSize: DEFAULT_MODEL_LOADING_SETTINGS.maxModelSize,
   bypassModels: [...DEFAULT_MODEL_LOADING_SETTINGS.bypassModels],
@@ -132,18 +134,18 @@ export function PlayerHubAISettingsPanel() {
   const [selectedCloudProviderId, setSelectedCloudProviderId] = useState(firstProviderId(cloudProviders));
   const [cloudApiKey, setCloudApiKey] = useState('');
   const [cloudBaseUrl, setCloudBaseUrl] = useState('');
-  const [cloudStatus, setCloudStatus] = useState('Configured providers: N/A');
+  const [cloudStatus, setCloudStatus] = useState(`Configured providers: ${AI_SETTINGS_EMPTY_VALUE}`);
   const [selectedNativeProviderId, setSelectedNativeProviderId] = useState(firstProviderId(nativeProviders));
   const [nativeConfig, setNativeConfig] = useState<Record<string, string>>({});
-  const [nativeStatus, setNativeStatus] = useState('Native bridge status: N/A');
+  const [nativeStatus, setNativeStatus] = useState(`Native bridge status: ${AI_SETTINGS_EMPTY_VALUE}`);
   const [selectedLocalProviderId, setSelectedLocalProviderId] = useState(firstProviderId(localProviders));
   const [localConfig, setLocalConfig] = useState<Record<string, string>>({});
-  const [localStatus, setLocalStatus] = useState('Local endpoint status: N/A');
+  const [localStatus, setLocalStatus] = useState(`Local endpoint status: ${AI_SETTINGS_EMPTY_VALUE}`);
   const [discoveredLocalProviders, setDiscoveredLocalProviders] = useState<DiscoveredProvider[]>([]);
   const [hfTokenInput, setHfTokenInput] = useState('');
   const [browserModelRepo, setBrowserModelRepo] = useState('');
-  const [browserStatus, setBrowserStatus] = useState('Browser model catalog: N/A');
-  const [browserDeviceStatus, setBrowserDeviceStatus] = useState('Device: N/A');
+  const [browserStatus, setBrowserStatus] = useState(`Browser model catalog: ${AI_SETTINGS_EMPTY_VALUE}`);
+  const [browserDeviceStatus, setBrowserDeviceStatus] = useState(`Device: ${AI_SETTINGS_EMPTY_VALUE}`);
   const [userModels, setUserModels] = useState<Array<{ repo: string; task: string }>>([]);
   const [availableModels, setAvailableModels] = useState<BrowserModel[]>([]);
   const [selectedBrowserModelId, setSelectedBrowserModelId] = useState('');
@@ -151,7 +153,7 @@ export function PlayerHubAISettingsPanel() {
   const [lastLoadedModel, setLastLoadedModel] = useState<LastLoadedModel>(null);
   const [modelLoadingSettings, setModelLoadingSettings] = useState<ModelLoadingSettings>(cloneDefaultModelLoadingSettings);
   const [inferenceSettings, setInferenceSettings] = useState<InferenceSettings>(DEFAULT_INFERENCE_SETTINGS);
-  const [inferenceStatus, setInferenceStatus] = useState('Inference profile: N/A');
+  const [inferenceStatus, setInferenceStatus] = useState(`Inference profile: ${AI_SETTINGS_EMPTY_VALUE}`);
   const [busy, setBusy] = useState<string | null>(null);
 
   const activeCloudProvider = selectedProvider(cloudProviders, selectedCloudProviderId);
@@ -165,7 +167,7 @@ export function PlayerHubAISettingsPanel() {
     try {
       const providers = await getAiService().listConfiguredProviders();
       setConfiguredProviders(providers);
-      setCloudStatus(providers.length > 0 ? `Configured providers: ${providers.join(', ')}` : 'Configured providers: N/A');
+      setCloudStatus(providers.length > 0 ? `Configured providers: ${providers.join(', ')}` : `Configured providers: ${AI_SETTINGS_EMPTY_VALUE}`);
     } catch (error) {
       logPanelError('Failed to load configured AI providers', error);
       setConfiguredProviders([]);
@@ -176,14 +178,14 @@ export function PlayerHubAISettingsPanel() {
   const refreshNativeConfig = useCallback(async (providerId: string) => {
     if (!providerId) {
       setNativeConfig({});
-      setNativeStatus('Native bridge status: N/A');
+      setNativeStatus(`Native bridge status: ${AI_SETTINGS_EMPTY_VALUE}`);
       return;
     }
     try {
       const config = await getAiService().getLocalProviderConfig(providerId);
       const resolvedConfig = { connectionType: 'http', ...(config ?? {}) };
       setNativeConfig(resolvedConfig);
-      setNativeStatus(config ? `Loaded native config for ${providerId}.` : 'Native bridge status: N/A');
+      setNativeStatus(config ? `Loaded native config for ${providerId}.` : `Native bridge status: ${AI_SETTINGS_EMPTY_VALUE}`);
     } catch (error) {
       logPanelError('Failed to load native AI provider config', error);
       setNativeConfig({});
@@ -194,13 +196,13 @@ export function PlayerHubAISettingsPanel() {
   const refreshLocalConfig = useCallback(async (providerId: string) => {
     if (!providerId) {
       setLocalConfig({});
-      setLocalStatus('Local endpoint status: N/A');
+      setLocalStatus(`Local endpoint status: ${AI_SETTINGS_EMPTY_VALUE}`);
       return;
     }
     try {
       const config = await getAiService().getLocalProviderConfig(providerId);
       setLocalConfig(config ?? {});
-      setLocalStatus(config ? `Loaded local config for ${providerId}.` : `Local config for ${providerId}: N/A`);
+      setLocalStatus(config ? `Loaded local config for ${providerId}.` : `Local config for ${providerId}: ${AI_SETTINGS_EMPTY_VALUE}`);
     } catch (error) {
       logPanelError('Failed to load local AI provider config', error);
       setLocalConfig({});
@@ -210,13 +212,13 @@ export function PlayerHubAISettingsPanel() {
 
   const refreshBrowserSettings = useCallback(async () => {
     const hasWebGpu = typeof navigator !== 'undefined' && Boolean((navigator as Navigator & { gpu?: unknown }).gpu);
-    setBrowserDeviceStatus(hasWebGpu ? 'Device: GPU (WebGPU) available' : 'Device: CPU / WebGPU N/A');
+    setBrowserDeviceStatus(hasWebGpu ? 'Device: GPU (WebGPU) available' : 'Device: CPU / WebGPU unavailable');
     try {
       ensureAiDomainModelServices();
       const token = await getHuggingFaceToken();
       const loadingSettings = await getModelLoadingSettings();
       setModelLoadingSettings(loadingSettings);
-      setBrowserStatus(token ? 'HuggingFace token is configured for browser-local model access.' : 'HuggingFace token: N/A');
+      setBrowserStatus(token ? 'HuggingFace token is configured for browser-local model access.' : `HuggingFace token: ${AI_SETTINGS_EMPTY_VALUE}`);
     } catch (error) {
       logPanelError('Failed to load browser AI settings', error);
       setModelLoadingSettings(cloneDefaultModelLoadingSettings());
@@ -241,7 +243,7 @@ export function PlayerHubAISettingsPanel() {
         : model?.quants[0]?.path ?? '';
       setSelectedBrowserModelId(modelId);
       setSelectedQuantPath(quantPath);
-      setInferenceStatus(modelId && quantPath ? `Selected ${modelId} / ${quantPath}` : 'Inference profile: N/A');
+      setInferenceStatus(modelId && quantPath ? `Selected ${modelId} / ${quantPath}` : `Inference profile: ${AI_SETTINGS_EMPTY_VALUE}`);
     } catch (error) {
       logPanelError('Failed to load browser model catalog', error);
       setAvailableModels([]);
@@ -623,11 +625,11 @@ export function PlayerHubAISettingsPanel() {
       </div>
       <div>
         <span>Active model</span>
-        <strong>{lastLoadedModel?.repoId ?? 'N/A'}</strong>
+        <strong>{lastLoadedModel?.repoId ?? AI_SETTINGS_EMPTY_VALUE}</strong>
       </div>
       <div>
         <span>Quant</span>
-        <strong>{lastLoadedModel?.quantPath ?? 'N/A'}</strong>
+        <strong>{lastLoadedModel?.quantPath ?? AI_SETTINGS_EMPTY_VALUE}</strong>
       </div>
     </div>
   );
@@ -656,8 +658,8 @@ export function PlayerHubAISettingsPanel() {
           </label>
         </div>
         <div className="player-hub-ai-settings__provider-note">
-          <strong>{activeCloudProvider?.name ?? 'N/A'}</strong>
-          <span>{activeCloudProvider?.description ?? 'N/A'}</span>
+          <strong>{activeCloudProvider?.name ?? AI_SETTINGS_EMPTY_VALUE}</strong>
+          <span>{activeCloudProvider?.description ?? AI_SETTINGS_EMPTY_VALUE}</span>
         </div>
         <div className="player-hub-ai-settings__actions">
           <span>{cloudStatus}</span>
@@ -695,15 +697,15 @@ export function PlayerHubAISettingsPanel() {
             </label>
             <label>
               Native URL
-              <input value={nativeConfig.baseUrl ?? ''} onChange={event => handleNativeConfigChange('baseUrl', event.target.value)} placeholder="N/A" />
+              <input value={nativeConfig.baseUrl ?? ''} onChange={event => handleNativeConfigChange('baseUrl', event.target.value)} placeholder="Optional native URL" />
             </label>
             <label>
               Native host ID
-              <input value={nativeConfig.nativeHostId ?? ''} onChange={event => handleNativeConfigChange('nativeHostId', event.target.value)} placeholder="N/A" />
+              <input value={nativeConfig.nativeHostId ?? ''} onChange={event => handleNativeConfigChange('nativeHostId', event.target.value)} placeholder="Optional host ID" />
             </label>
             <label>
               Model ID
-              <input value={nativeConfig.model ?? ''} onChange={event => handleNativeConfigChange('model', event.target.value)} placeholder="N/A" />
+              <input value={nativeConfig.model ?? ''} onChange={event => handleNativeConfigChange('model', event.target.value)} placeholder="Optional model ID" />
             </label>
           </div>
           <div className="player-hub-ai-settings__actions">
@@ -715,10 +717,10 @@ export function PlayerHubAISettingsPanel() {
         <div className="player-hub-ai-settings__panel">
           <h3>Rust Runtime Contract</h3>
           <div className="player-hub-ai-settings__mini-grid">
-            <div><span>Hardware</span><strong>N/A</strong></div>
-            <div><span>Resources</span><strong>N/A</strong></div>
-            <div><span>Loaded models</span><strong>N/A</strong></div>
-            <div><span>Execution provider</span><strong>N/A</strong></div>
+            <div><span>Hardware</span><strong>{AI_SETTINGS_EMPTY_VALUE}</strong></div>
+            <div><span>Resources</span><strong>{AI_SETTINGS_EMPTY_VALUE}</strong></div>
+            <div><span>Loaded models</span><strong>{AI_SETTINGS_EMPTY_VALUE}</strong></div>
+            <div><span>Execution provider</span><strong>{AI_SETTINGS_EMPTY_VALUE}</strong></div>
           </div>
           <div className="player-hub-ai-settings__command-grid">
             {['Pull', 'Load', 'Unload', 'Delete', 'Diagnostics', 'Logs'].map(action => (
@@ -752,11 +754,11 @@ export function PlayerHubAISettingsPanel() {
               {field.label}
               {field.type === 'select' ? (
                 <select value={localConfig[field.key] ?? ''} onChange={event => handleLocalConfigChange(field.key, event.target.value)}>
-                  <option value="">N/A</option>
+                  <option value="">Not set</option>
                   {(field.options ?? []).map(option => <option key={option} value={option}>{option}</option>)}
                 </select>
               ) : (
-                <input value={localConfig[field.key] ?? ''} onChange={event => handleLocalConfigChange(field.key, event.target.value)} placeholder={field.placeholder ?? 'N/A'} />
+                <input value={localConfig[field.key] ?? ''} onChange={event => handleLocalConfigChange(field.key, event.target.value)} placeholder={field.placeholder ?? 'Optional value'} />
               )}
             </label>
           ))}
@@ -766,8 +768,8 @@ export function PlayerHubAISettingsPanel() {
           </label>
         </div>
         <div className="player-hub-ai-settings__provider-note">
-          <strong>{activeLocalProvider?.name ?? 'N/A'}</strong>
-          <span>{activeLocalProvider?.description ?? 'N/A'}</span>
+          <strong>{activeLocalProvider?.name ?? AI_SETTINGS_EMPTY_VALUE}</strong>
+          <span>{activeLocalProvider?.description ?? AI_SETTINGS_EMPTY_VALUE}</span>
         </div>
         {discoveredLocalProviders.length > 0 && (
           <div className="player-hub-ai-settings__list">
@@ -802,7 +804,7 @@ export function PlayerHubAISettingsPanel() {
           <label>
             Browser model
             <select value={selectedBrowserModelId} onChange={event => handleBrowserModelChange(event.target.value)}>
-              <option value="">N/A</option>
+              <option value="">Not set</option>
               {availableModels.map(model => (
                 <option key={model.modelId} value={model.modelId}>{model.modelId}</option>
               ))}
@@ -811,7 +813,7 @@ export function PlayerHubAISettingsPanel() {
           <label>
             Quant
             <select value={selectedQuantPath} onChange={event => setSelectedQuantPath(event.target.value)}>
-              <option value="">N/A</option>
+              <option value="">Not set</option>
               {activeQuantOptions.map(quant => (
                 <option key={quant.path} value={quant.path}>{formatQuantLabel(selectedBrowserModelId, quant, lastLoadedModel)}</option>
               ))}
@@ -850,7 +852,7 @@ export function PlayerHubAISettingsPanel() {
           <summary>User Added Models</summary>
           <div className="player-hub-ai-settings__list">
             {userModels.length === 0 ? (
-              <span>User-added models: N/A</span>
+              <span>User-added models: {AI_SETTINGS_EMPTY_VALUE}</span>
             ) : userModels.map(model => (
               <div key={model.repo}>
                 <strong>{model.repo}</strong>
@@ -904,7 +906,7 @@ export function PlayerHubAISettingsPanel() {
           <label>
             Browser model
             <select value={selectedBrowserModelId} onChange={event => handleBrowserModelChange(event.target.value)}>
-              <option value="">N/A</option>
+              <option value="">Not set</option>
               {availableModels.map(model => (
                 <option key={model.modelId} value={model.modelId}>{model.modelId}</option>
               ))}
@@ -913,7 +915,7 @@ export function PlayerHubAISettingsPanel() {
           <label>
             Quant
             <select value={selectedQuantPath} onChange={event => setSelectedQuantPath(event.target.value)}>
-              <option value="">N/A</option>
+              <option value="">Not set</option>
               {activeQuantOptions.map(quant => (
                 <option key={quant.path} value={quant.path}>{formatQuantLabel(selectedBrowserModelId, quant, lastLoadedModel)}</option>
               ))}

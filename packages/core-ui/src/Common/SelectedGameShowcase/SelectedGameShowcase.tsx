@@ -374,16 +374,17 @@ const DEFAULT_SELECTED_GAME_SHOWCASE_CONFIG = {
 };
 
 const NARROW_CONFIG_OVERRIDES = {
-  canvas: { vw: 760, vh: 1320 },
-  page: { x: 24, y: 92, width: 712, height: 1040 },
-  tabGroup: { y: 28, tabW: 92, tabH: 40, tabGap: 4, fontSize: 11, bgPadX: 8 },
-  body: { aRatio: 0.34, rowGap: 12, bottomInset: 18 },
-  sideA: { logoFont: 36, taglineFont: 13, statsY: 132, statsH: 46, statsGap: 5, artY: 210, artBottomPad: 420 },
-  overview: { titleFont: 15, titleLetterSpacing: 2, bodyFont: 10, lineGap: 16, paraGap: 32, imageRatio: 0.28 },
-  howTo: { yOffset: -2, topGap: 12, height: 300, titleFont: 16, stepTitleFont: 11, stepBodyFont: 8, arrowW: 12, stepsPerPage: 2 },
-  strip: { topGap: 12, height: 210, insetX: 18, arrowOutsideGap: -4, cardMinWidth: 116, cardMaxWidth: 160, bulletFont: 8, headerTitleFont: 10, headerTitleInsetX: 34, headerLetterSpacing: 1 },
-  tip: { sideInset: 54, height: 92, textFont: 12, textX: 96 },
-  button: { railHeight: 74, width: 260, height: 52, fontSize: 15, letterSpacing: 1.5 },
+  canvas: { vw: 390, vh: 760 },
+  visibility: { stats: false },
+  page: { x: 12, y: 47, width: 366, height: 535 },
+  tabGroup: { y: 14, tabW: 47, tabH: 28, tabGap: 3, fontSize: 7.4, bgPadX: 4, bgPadY: 4 },
+  body: { aRatio: 0.34, rowGap: 9, bottomInset: 12 },
+  sideA: { logoXPad: 12, logoY: 18, logoFont: 22, taglineFont: 9.2, taglineGap: 16, statsY: 74, statsH: 30, statsGap: 4, artY: 106, artBottomPad: 220 },
+  overview: { xPad: 10, textX: 16, titleY: 24, titleFont: 12.5, titleLetterSpacing: 1.2, bodyY: 48, bodyFont: 8.8, lineGap: 12, paraGap: 42, imageRatio: 0.25 },
+  howTo: { yOffset: 0, topGap: 10, height: 190, xPad: 10, headerH: 48, bodyPadX: 9, bodyPadBottom: 8, arrowW: 14, titleFont: 11, titleLetterSpacing: 1.1, stepTitleFont: 8.8, stepBodyFont: 6.8, stepsPerPage: 2, pagerArrowWidth: 18, pagerArrowHeight: 34, pagerSideInset: -22 },
+  strip: { topGap: 10, height: 145, insetX: 10, arrowWidth: 20, arrowHeight: 34, arrowOutsideGap: -20, cardGap: 8, cardMinWidth: 82, cardMaxWidth: 112, bulletFont: 6.8, headerTitleFont: 8.2, headerTitleInsetX: 24, headerIconInsetX: 9, headerIconSize: 14, headerLetterSpacing: 0.4, bulletTop: 42, bulletGap: 4, bulletInsetX: 10, bodyLineHeight: 9.8 },
+  tip: { sideInset: 28, height: 48, iconX: 16, textX: 54, iconFont: 14, textFont: 9.2 },
+  button: { railHeight: 52, railInsetX: 24, width: 260, height: 36, fontSize: 7.2, letterSpacing: 0.25, innerBoxW: 18, arrowSize: 6 },
 };
 
 function cloneDefaultConfig(): SelectedGameShowcaseConfig {
@@ -881,6 +882,9 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
   const hasChunkSelector = chunks.length > 1;
   const textShiftY = hasChunkSelector ? 42 : 0;
   const chunkSelectorMaxW = Math.max(120, w - o.textX - 72);
+  const textColumnW = Math.max(80, imageX - textX - 12);
+  const maxLineChars = Math.max(12, Math.floor(textColumnW / Math.max(1, o.bodyFont * 0.52)));
+  const rewrapParagraphs = cfg.canvas.vw <= 500;
   return (
     <g>
       <defs>
@@ -905,7 +909,8 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
       <text x={textX + 30} y={y + o.titleY + textShiftY} fontFamily="Impact, Arial Black" fontSize={o.titleFont} letterSpacing={o.titleLetterSpacing} fill={cfg.colors.titlePurple}>{content.title}</text>
       {content.paragraphs.map((lines, paragraphIndex) => {
         const startY = y + o.bodyY + textShiftY + paragraphIndex * o.paraGap;
-        return lines.map((line, lineIndex) => (
+        const paragraphLines = rewrapParagraphs ? wrapText(lines.filter(Boolean).join(' '), maxLineChars).slice(0, 3) : lines;
+        return paragraphLines.map((line, lineIndex) => (
           <text key={`${paragraphIndex}-${lineIndex}`} x={textX} y={startY + lineIndex * o.lineGap} fontFamily="Arial" fontSize={o.bodyFont} fill={cfg.colors.textPrimary}>{line}</text>
         ));
       })}
@@ -1598,7 +1603,8 @@ export function SelectedGameShowcase({
   const viewButtonY = actionRailY - cfg.button.height / 2;
   const actionGap = Math.max(10, Math.min(24, cfg.button.width * 0.08));
   const actionCount = Math.max(1, visibleActions.length);
-  const maxActionButtonW = Math.max(120, (actionRailW - actionGap * (actionCount - 1)) / actionCount);
+  const minimumActionButtonW = cfg.canvas.vw <= 500 ? 78 : 120;
+  const maxActionButtonW = Math.max(minimumActionButtonW, (actionRailW - actionGap * (actionCount - 1)) / actionCount);
   const actionButtonW = Math.min(cfg.button.width, maxActionButtonW);
   const actionGroupW = actionButtonW * actionCount + actionGap * (actionCount - 1);
   const actionStartX = actionRailX + actionRailW / 2 - actionGroupW / 2;

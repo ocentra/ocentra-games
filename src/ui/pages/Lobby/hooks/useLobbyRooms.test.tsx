@@ -154,7 +154,13 @@ describe('useLobbyRooms', () => {
     await waitFor(() => expect(sockets).toHaveLength(1));
 
     act(() => {
-      sockets[0].emit({ type: 'welcome', roomId: room.roomId, reconnectToken: 'token-1', room });
+      sockets[0].emit({
+        type: 'welcome',
+        roomId: room.roomId,
+        reconnectToken: 'token-1',
+        room,
+        chatHistory: [{ senderId: 'user-1', senderName: 'Host', content: 'saved table message', timestamp: Date.now() - 2000 }],
+      });
       sockets[0].emit({
         type: 'chat',
         message: { senderId: 'user-2', senderName: 'Guest', content: 'ready for claim', timestamp: Date.now() },
@@ -167,7 +173,10 @@ describe('useLobbyRooms', () => {
       });
     });
 
-    expect(result.current.chatMessages[0]).toMatchObject({ name: 'Guest', msg: 'ready for claim' });
+    expect(result.current.chatMessages).toEqual([
+      expect.objectContaining({ name: 'Host', msg: 'saved table message' }),
+      expect.objectContaining({ name: 'Guest', msg: 'ready for claim' }),
+    ]);
     expect(result.current.joinedRoom?.players?.[0]?.isReady).toBe(true);
     expect(window.sessionStorage.getItem('ocentra:lobby:reconnect:room-1')).toBe('token-1');
   });

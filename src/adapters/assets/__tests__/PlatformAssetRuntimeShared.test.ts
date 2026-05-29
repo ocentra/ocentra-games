@@ -26,6 +26,7 @@ describe('PlatformAssetRuntimeShared', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     global.fetch = ORIGINAL_FETCH;
   });
 
@@ -56,6 +57,28 @@ describe('PlatformAssetRuntimeShared', () => {
     await resolveAssetDownloadUrl({ guid: 'same' }, cfg);
     await resolveAssetDownloadUrl({ guid: 'same' }, cfg);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('resolveAssetDownloadUrl: expires signed URL cache before worker TTL', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-28T12:00:00.000Z'));
+
+    const firstTarget = 'https://cdn.example.com/signed-1';
+    const secondTarget = 'https://cdn.example.com/signed-2';
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ url: firstTarget, delivery: 'signed', expiresIn: 120 }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ url: secondTarget, delivery: 'signed', expiresIn: 120 }), { status: 200 }));
+    global.fetch = fetchMock as typeof fetch;
+
+    const cfg = minimalConfig('https://w.test');
+    await expect(resolveAssetDownloadUrl({ guid: 'signed' }, cfg)).resolves.toBe(firstTarget);
+    await expect(resolveAssetDownloadUrl({ guid: 'signed' }, cfg)).resolves.toBe(firstTarget);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    vi.setSystemTime(new Date('2026-05-28T12:01:01.000Z'));
+    await expect(resolveAssetDownloadUrl({ guid: 'signed' }, cfg)).resolves.toBe(secondTarget);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('resolveAssetDownloadUrl: uses assetsPublicUrl when set even if worker URL is missing', async () => {

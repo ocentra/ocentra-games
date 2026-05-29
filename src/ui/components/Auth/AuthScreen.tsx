@@ -6,6 +6,7 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { buildHomePath, parseAppRoute, resolvePathFromScreenToken, type AppRouteState } from '@/ui/navigation/appRoutes';
+import { announceNavigationFeedback } from '@/ui/navigation/navigationFeedbackEvents';
 import { ScreenLoadingFallback } from '@/ui/components/Loading/ScreenLoadingFallback';
 
 const LoginScreen = lazy(() => import('@/ui/features/auth/LoginScreen').then((m) => ({ default: m.LoginScreen })));
@@ -132,6 +133,7 @@ export function AuthScreen({
 
       logInfo(`Navigating to: ${nextPath}`, { from: currentPathRef.current, to: nextPath }, LOG_SCREEN_EVENTS);
       if (nextPath !== currentPathRef.current) {
+        announceNavigationFeedback();
         navigate(nextPath);
       }
     };

@@ -1288,7 +1288,7 @@ export class LobbyDO implements DurableObject {
       a.userId = userId;
       a.displayName = payload.displayName;
       ws.serializeAttachment(a);
-      this.sendTo(ws, { type: 'welcome', roomId, reconnectToken, room: this.toRoomView(room, userId) });
+      this.sendTo(ws, { type: 'welcome', roomId, reconnectToken, room: this.toRoomView(room, userId), chatHistory: room.chatHistory ?? [] });
       return;
     }
     if (room.playerIds.length >= room.maxPlayers) {
@@ -1316,7 +1316,7 @@ export class LobbyDO implements DurableObject {
     a.userId = userId;
     a.displayName = payload.displayName;
     ws.serializeAttachment(a);
-    this.sendTo(ws, { type: 'welcome', roomId, reconnectToken, room: this.toRoomView(room, userId) });
+    this.sendTo(ws, { type: 'welcome', roomId, reconnectToken, room: this.toRoomView(room, userId), chatHistory: room.chatHistory ?? [] });
     this.broadcastToRoom(roomId, { type: 'player-joined', userId, displayName: payload.displayName ?? userId, room: this.toRoomView(room, userId) });
   }
 

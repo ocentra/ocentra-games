@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { ROUTE_FEATURES, RouteFeature } from '@/config/platformFeatures';
-import { buildPlayerHubPath } from '@/ui/navigation/appRoutes';
+import { buildPlayerHubPath, buildSettingsPath } from '@/ui/navigation/appRoutes';
 import { getProxiedImageUrl, shouldProxyImage } from '@utils/imageProxy';
 import { AvatarAssetManager } from '@/lib/managers/resources/AvatarAssetManager';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
@@ -41,8 +41,8 @@ export function useCoreUIHeaderProps() {
     onUpgradeGuestClick: onUpgradeGuest,
     onAdminDashboardClick: () => navigate(ROUTE_FEATURES[RouteFeature.Admin].path),
     onViewProfileClick: () => navigate(buildPlayerHubPath()),
-    onSettingsClick: () => navigate(buildPlayerHubPath()),
-    onSecurityClick: () => navigate(buildPlayerHubPath()),
+    onSettingsClick: () => navigate(buildSettingsPath()),
+    onSecurityClick: () => navigate(buildSettingsPath()),
     onUpdatePhoto,
     getAvatars,
   });

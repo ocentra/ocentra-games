@@ -8,7 +8,6 @@ import {
   inviteToParty,
   leaveParty,
   listFriends,
-  listMessages,
   sendMessage,
 } from '@ocentra/api-domain/social';
 import {
@@ -28,7 +27,6 @@ vi.mock('@ocentra/api-domain/social', () => ({
   inviteToParty: vi.fn(),
   leaveParty: vi.fn(),
   listFriends: vi.fn(),
-  listMessages: vi.fn(),
   sendMessage: vi.fn(),
 }));
 
@@ -40,19 +38,12 @@ vi.mock('@ocentra/api-domain/playerHub', () => ({
   updateSettings: vi.fn(),
 }));
 
-const messages = [
-  { messageId: 'm-1', senderId: 'friend-1', content: 'claim lobby ready', timestamp: Date.now() - 60000 },
-];
-
 describe('useLobbySideServices', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     window.sessionStorage.clear();
-    messages.length = 1;
-    messages[0] = { messageId: 'm-1', senderId: 'friend-1', content: 'claim lobby ready', timestamp: Date.now() - 60000 };
     vi.mocked(listFriends).mockResolvedValue({ friends: [{ friendId: 'friend-1', status: 'online' }] });
     vi.mocked(getPresence).mockResolvedValue({ status: 'online' });
-    vi.mocked(listMessages).mockImplementation(async () => ({ messages: [...messages] }));
     vi.mocked(getDailyReward).mockResolvedValue({ available: true, currentDay: 2, loginStreak: 2, rewardForNext: { type: 'ac', currency: 'AC', amount: 50, ac: 50 } });
     vi.mocked(getCreditsBalance).mockResolvedValue({ user_id: 'user-1', gp_balance: 125, ac_balance: 9 });
     vi.mocked(getSettings).mockResolvedValue({ settings: { preferredServerRegion: 'eu-west' } });
@@ -61,10 +52,7 @@ describe('useLobbySideServices', () => {
     vi.mocked(getParty).mockResolvedValue({ partyId: 'party-1', leaderId: 'user-1', members: [{ userId: 'user-1' }], invites: [] });
     vi.mocked(inviteToParty).mockResolvedValue({ invited: true });
     vi.mocked(leaveParty).mockResolvedValue({ left: true });
-    vi.mocked(sendMessage).mockImplementation(async (_conversationId: string, content: string) => {
-      messages.push({ messageId: `m-${messages.length + 1}`, senderId: 'user-1', content, timestamp: Date.now() });
-      return { sent: true };
-    });
+    vi.mocked(sendMessage).mockResolvedValue({ sent: true });
     vi.mocked(claimDailyReward).mockResolvedValue({
       claimed: true,
       reward: { type: 'ac', currency: 'AC', amount: 75, ac: 75 },
@@ -73,13 +61,13 @@ describe('useLobbySideServices', () => {
     vi.mocked(updateSettings).mockResolvedValue({ settings: { preferredServerRegion: 'na-west' } });
   });
 
-  it('loads friends, lobby chat, reward balance, and saved server preference', async () => {
+  it('loads friends, reward balance, party state, and saved server preference without public lobby chat', async () => {
     const { result } = renderHook(() => useLobbySideServices('claim', 'user-1', null));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.friends).toEqual([expect.objectContaining({ userId: 'friend-1', state: 'Online' })]);
-    expect(result.current.lobbyChatMessages).toEqual([expect.objectContaining({ msg: 'claim lobby ready' })]);
+    expect(sendMessage).not.toHaveBeenCalled();
     expect(result.current.reward).toEqual(expect.objectContaining({
       available: true,
       rewardLabel: 'DAILY REWARD',
@@ -87,23 +75,20 @@ describe('useLobbySideServices', () => {
       spinRewardLabel: '50 AC',
     }));
     expect(result.current.server.selectedRegionId).toBe('eu-west');
-    expect(listMessages).toHaveBeenCalledWith('lobby-claim', { limit: 6 });
   });
 
-  it('adds friends, sends lobby chat, claims reward, and persists server choice', async () => {
+  it('adds friends, claims reward, and persists server choice', async () => {
     const { result } = renderHook(() => useLobbySideServices('claim', 'user-1', null));
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     await act(async () => {
       await result.current.addFriend('friend-2');
-      await result.current.sendLobbyChat('hello lobby');
       await result.current.claimReward();
       await result.current.selectServer('na-west');
     });
 
     expect(addFriend).toHaveBeenCalledWith('friend-2');
-    expect(sendMessage).toHaveBeenCalledWith('lobby-claim', 'hello lobby');
-    expect(result.current.lobbyChatMessages.some(message => message.msg === 'hello lobby')).toBe(true);
+    expect(sendMessage).not.toHaveBeenCalled();
     expect(claimDailyReward).toHaveBeenCalledTimes(1);
     expect(result.current.reward?.rewardLabel).toBe('75 AC');
     expect(result.current.reward?.balanceLabel).toBe('84 AC');

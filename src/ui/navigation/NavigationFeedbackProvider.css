@@ -1,0 +1,62 @@
+.ocentra-navigation-feedback {
+  position: fixed;
+  inset-block-start: calc(var(--safe-area-top) + 0.8rem);
+  inset-inline-start: 50%;
+  z-index: 10020;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  max-inline-size: min(22rem, calc(100vw - 2rem));
+  padding: 0.56rem 0.82rem;
+  border: 1px solid rgba(190, 255, 242, 0.38);
+  border-radius: 999rem;
+  background:
+    linear-gradient(135deg, rgba(5, 28, 36, 0.94), rgba(8, 53, 62, 0.9)),
+    rgba(5, 28, 36, 0.94);
+  box-shadow: 0 0.7rem 2rem rgba(0, 0, 0, 0.32), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  color: rgba(240, 255, 252, 0.96);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -0.65rem);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.ocentra-navigation-feedback--visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.ocentra-navigation-feedback__spinner {
+  inline-size: 1.35rem;
+  block-size: 1.35rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+}
+
+.ocentra-navigation-feedback__spinner .branded-loading-spinner {
+  --branded-loader-orbit-size: 1.35rem;
+  --branded-loader-logo-size: 1.16rem;
+}
+
+.ocentra-navigation-feedback__spinner .branded-loading-spinner__logo {
+  filter: drop-shadow(0 0 0.32rem rgba(84, 226, 255, 0.34));
+}
+
+.ocentra-navigation-feedback__label {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocentra-navigation-feedback {
+    transition: none;
+  }
+}

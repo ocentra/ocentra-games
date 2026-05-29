@@ -3,6 +3,7 @@ import { HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import {
   clearAssetDownloadUrlResolveCache,
+  clearAssetDownloadUrlResolveCacheForRequest,
   getWorkerBaseUrl,
   resolveAssetDownloadUrl,
 } from '@ocentra/endpoint-domain/utils/resolve-asset-download-url';
@@ -30,7 +31,12 @@ import { getEntryIndexUrl, type StorageConfig } from '@/services/storage/Storage
 
 export const ENTRY_INDEX_TTL_MS = 60 * 60 * 1000;
 
-export { clearAssetDownloadUrlResolveCache, getWorkerBaseUrl, resolveAssetDownloadUrl };
+export {
+  clearAssetDownloadUrlResolveCache,
+  clearAssetDownloadUrlResolveCacheForRequest,
+  getWorkerBaseUrl,
+  resolveAssetDownloadUrl,
+};
 
 export interface PlatformAssetFetchOptions {
   useGuidCache?: boolean;
