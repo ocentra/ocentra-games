@@ -25,6 +25,7 @@ type TransferMatch = 'presence' | 'exact';
 interface TransferCheck {
   sourcePath: string;
   targetPath: string;
+  alternateTargetPaths?: string[];
   match?: TransferMatch;
   severity?: ProcessedGameTransferIssue['severity'];
   message: string;
@@ -58,7 +59,12 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
   { sourcePath: 'strategy.tips', targetPath: 'assetDataOverrides.strategy.tips', message: 'Strategy tips must land in Strategy.' },
   { sourcePath: 'scoring.description', targetPath: 'assetDataOverrides.scoring.description', match: 'exact', message: 'Scoring description must land in CardGameScoring.' },
   { sourcePath: 'scoring.winCondition', targetPath: 'assetDataOverrides.scoring.winCondition', match: 'exact', message: 'Win condition must land in CardGameScoring.' },
-  { sourcePath: 'scoring.cardValues', targetPath: 'assetDataOverrides.scoring.cardValues', message: 'Card values must land in CardGameScoring.' },
+  {
+    sourcePath: 'scoring.cardValues',
+    targetPath: 'assetDataOverrides.scoring.cardValues',
+    alternateTargetPaths: ['assetDataOverrides.scoring.scoringRules.sourceCardValues'],
+    message: 'Card values must land in CardGameScoring.',
+  },
   { sourcePath: 'engine.deckType', targetPath: 'mechanicsModelDataOverrides.deck.deckType', match: 'exact', message: 'Engine deck type must land in the deck model asset.' },
   { sourcePath: 'engine.suitSet', targetPath: 'mechanicsModelDataOverrides.deck.suitSet', match: 'exact', message: 'Engine suit set must land in the deck model asset.' },
   { sourcePath: 'engine.rankSet', targetPath: 'mechanicsModelDataOverrides.deck.rankSet', match: 'exact', message: 'Engine rank set must land in the deck model asset.' },
@@ -182,12 +188,14 @@ function validateCheck(
     return;
   }
 
-  const target = readPath(options, check.targetPath);
+  const targetPaths = [check.targetPath, ...(check.alternateTargetPaths ?? [])];
+  const targetPath = targetPaths.find((candidatePath) => isMeaningful(readPath(options, candidatePath))) ?? check.targetPath;
+  const target = readPath(options, targetPath);
   if (!isMeaningful(target)) {
     issues.push({
       severity: check.severity ?? 'error',
       sourcePath: check.sourcePath,
-      targetPath: check.targetPath,
+      targetPath,
       message: check.message,
     });
     return;
@@ -197,7 +205,7 @@ function validateCheck(
     issues.push({
       severity: check.severity ?? 'error',
       sourcePath: check.sourcePath,
-      targetPath: check.targetPath,
+      targetPath,
       message: `${check.message} Expected ${stringifyComparable(source)} but got ${stringifyComparable(target)}.`,
     });
   }
@@ -263,14 +271,14 @@ function stringifyPublicTransferPayload(options: CreateGameModeOptions): string 
 
 function collectBlockedPublicTokens(game: Game): string[] {
   const tokens = new Set<string>();
-  const sourceCandidates = [
-    ...Object.values(game.sources ?? {}).flatMap((value) => Array.isArray(value) ? value : [value]),
-    ...game.evidence,
-  ];
-  for (const candidate of sourceCandidates) {
-    for (const value of Object.values(asRecord(candidate))) {
+  const sourceCandidates = Object.values(game.sources ?? {}).flatMap((value) => Array.isArray(value) ? value : [value]);
+  for (const candidate of [...sourceCandidates, ...game.evidence]) {
+    for (const [key, value] of Object.entries(asRecord(candidate))) {
       if (typeof value === 'string' && value.length >= 12) {
-        tokens.add(value);
+        const normalizedKey = key.toLowerCase();
+        if (normalizedKey.includes('url') || normalizedKey.includes('html') || normalizedKey === 'id' || normalizedKey === 'path' || normalizedKey === 'sourcepath') {
+          tokens.add(value);
+        }
       }
     }
   }

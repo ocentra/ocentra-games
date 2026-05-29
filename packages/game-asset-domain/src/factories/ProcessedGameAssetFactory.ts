@@ -8,6 +8,8 @@ import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetRes
 import { asAssetType } from '@ocentra/asset-domain/types/assetType';
 import type { AssetGUIDType, AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { Deck } from '@/card/deck/Deck';
+import { BannerPlaybackMode, BannerTransitionType } from '@/constants/banner-presentation';
+import { GameModeStatus } from '@/constants/game-mode-status';
 import type { CreateGameModeOptions } from '@/factories/GameModeAssetFactory';
 import { assertProcessedGameTransferCoverage } from '@/factories/ProcessedGameAssetTransferContract';
 
@@ -16,6 +18,11 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const RESOURCES_ROOT = path.resolve(REPO_ROOT, 'packages/asset-editor/Resources');
 const DECKS_ROOT = path.resolve(RESOURCES_ROOT, 'GameMode/CardGames/Decks');
+const FALLBACK_CAROUSEL_RESOURCE_PATHS = [
+  'AppAssets/PlaceHolders/image0.jpg',
+  'AppAssets/PlaceHolders/image1.jpg',
+  'AppAssets/PlaceHolders/image2.jpg',
+] as const;
 
 interface AssetEnvelope {
   system: {
@@ -30,6 +37,11 @@ interface AssetEnvelope {
 interface DeckAssetRecord {
   path: string;
   envelope: AssetEnvelope;
+}
+
+interface FallbackCarouselData {
+  slides: Array<Record<string, unknown>>;
+  primaryImageHash: string;
 }
 
 export interface BuildProcessedGameOptions {
@@ -61,6 +73,18 @@ function findAssetFiles(dir: string, fileList: string[] = []): string[] {
     }
   }
   return fileList;
+}
+
+let deckAssetRecordsCache: DeckAssetRecord[] | null = null;
+
+function getDeckAssetRecords(): DeckAssetRecord[] {
+  if (!deckAssetRecordsCache) {
+    deckAssetRecordsCache = findAssetFiles(DECKS_ROOT).map((filePath) => ({
+      path: filePath,
+      envelope: readAssetFile(filePath),
+    }));
+  }
+  return deckAssetRecordsCache;
 }
 
 function normalizeSlug(processedGamePath: string): string {
@@ -122,6 +146,73 @@ function normalizeNumericRecord(value: unknown): Record<string, number> {
       return [];
     }),
   );
+}
+
+function countRecordKeys(value: unknown): number {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? Object.keys(value).length
+    : 0;
+}
+
+function buildScoringRulesSourceCardValues(value: unknown, numericValues: Record<string, number>): Record<string, unknown> | null {
+  if (countRecordKeys(value) === 0 || countRecordKeys(value) === Object.keys(numericValues).length) {
+    return null;
+  }
+  return {
+    sourceCardValues: value,
+  };
+}
+
+function normalizeActionRecord(action: unknown): Record<string, unknown> {
+  const record = action && typeof action === 'object' && !Array.isArray(action)
+    ? { ...(action as Record<string, unknown>) }
+    : {};
+  const effectHints = record.effectHints;
+  record.effectHints = effectHints && typeof effectHints === 'object' && !Array.isArray(effectHints)
+    ? effectHints
+    : {};
+  return record;
+}
+
+function normalizePlayerActionRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, action]) => [key, normalizeActionRecord(action)]),
+  );
+}
+
+function normalizeCustomActions(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.map(normalizeActionRecord);
+}
+
+function buildFallbackCarouselData(game: Game, slug: string): FallbackCarouselData {
+  const slides = FALLBACK_CAROUSEL_RESOURCE_PATHS.flatMap((resourcePath, index) => {
+    const filePath = path.join(RESOURCES_ROOT, resourcePath);
+    if (!fs.existsSync(filePath)) {
+      return [];
+    }
+    const imageHash = hashFileHex(filePath);
+    return [{
+      id: `${slug}-common-${index + 1}`,
+      label: `${game.name} shared card-game art ${index + 1}`,
+      alt: `Shared card-game artwork for ${game.name}`,
+      imageHash,
+    }];
+  });
+
+  if (slides.length === 0) {
+    throw new Error('Processed game import requires at least one shared fallback carousel image.');
+  }
+
+  return {
+    slides,
+    primaryImageHash: String(slides[0].imageHash),
+  };
 }
 
 function buildGameInfoSections(game: Game): Record<string, unknown>[] {
@@ -236,16 +327,24 @@ function buildMechanicsContract(game: Game, slug: string): Record<string, unknow
 }
 
 function buildActionModel(game: Game): Record<string, unknown> {
-  const customActions = game.engine.customActions ?? [];
-  const playerActionIds = Object.entries(game.engine.playerActions)
+  const customActions = normalizeCustomActions(game.engine.customActions);
+  const playerActions = normalizePlayerActionRecord(game.engine.playerActions);
+  const playerActionIds = Object.entries(playerActions)
     .filter(([, value]) => Boolean((value as { supported?: boolean }).supported))
     .map(([key]) => key);
-  const customActionIds = customActions.map((action) => action.id);
+  const customActionIds = customActions
+    .map((action) => typeof action.id === 'string' ? action.id : '')
+    .filter(Boolean);
   return {
     actionIds: Array.from(new Set([...playerActionIds, ...customActionIds])),
     payloadSchemas: {},
     actionEndsTurn: Object.fromEntries(
-      [...Object.entries(game.engine.playerActions), ...customActions.map((action) => [action.id, action] as const)]
+      [
+        ...Object.entries(playerActions),
+        ...customActions
+          .filter((action): action is Record<string, unknown> & { id: string } => typeof action.id === 'string')
+          .map((action) => [action.id, action] as const),
+      ]
         .map(([id, action]) => [id, Boolean((action as { isTerminating?: boolean }).isTerminating)]),
     ),
   };
@@ -288,6 +387,8 @@ function buildMechanicsModelDataOverrides(
   linkedDeckAsset: AssetResourceEntry<Deck>,
   rankingAsset: Record<string, unknown>,
 ): NonNullable<CreateGameModeOptions['mechanicsModelDataOverrides']> {
+  const playerActions = normalizePlayerActionRecord(game.engine.playerActions);
+  const customActions = normalizeCustomActions(game.engine.customActions);
   const shared = {
     familyKernel: slug,
     familyVariant: game.overview.subCategory || game.overview.category,
@@ -376,8 +477,8 @@ function buildMechanicsModelDataOverrides(
     actions: {
       ...shared,
       actionModel: buildActionModel(game),
-      actions: game.engine.playerActions,
-      customActions: game.engine.customActions ?? [],
+      actions: playerActions,
+      customActions,
     },
     stateEvents: {
       ...shared,
@@ -484,11 +585,7 @@ export function resolveDeckAssetByTriple(
   suitSet: string,
   rankSet: string,
 ): { linkedDeckAsset: AssetResourceEntry<Deck>; deckEnvelope: AssetEnvelope } {
-  const deckFiles = findAssetFiles(DECKS_ROOT);
-  const records: DeckAssetRecord[] = deckFiles.map((filePath) => ({
-    path: filePath,
-    envelope: readAssetFile(filePath),
-  }));
+  const records = getDeckAssetRecords();
 
   for (const record of records) {
     const triples = Array.isArray(record.envelope.data.supportedTriples)
@@ -530,6 +627,11 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
   const slug = normalizeSlug(options.processedGamePath);
   const { linkedDeckAsset, deckEnvelope } = resolveDeckAsset(game);
   const rankingAsset = getCardRankingReference(deckEnvelope);
+  const carouselData = buildFallbackCarouselData(game, slug);
+  const numericCardValues = normalizeNumericRecord(game.scoring.cardValues);
+  const scoringRules = buildScoringRulesSourceCardValues(game.scoring.cardValues, numericCardValues);
+  const playerActions = normalizePlayerActionRecord(game.engine.playerActions);
+  const customActions = normalizeCustomActions(game.engine.customActions);
 
   const createOptions: CreateGameModeOptions = {
     gameId: slug,
@@ -572,9 +674,10 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
       scoring: {
         rankingAsset,
         scoringType: deriveScoringType(game),
+        ...(scoringRules ? { scoringRules } : {}),
         description: game.scoring.description,
         winCondition: game.scoring.winCondition,
-        cardValues: normalizeNumericRecord(game.scoring.cardValues),
+        cardValues: numericCardValues,
         penalties: stringifyUnknown(game.scoring.penalties),
         targetScore: typeof game.scoring.targetScore === 'number' ? game.scoring.targetScore : null,
         scoringDirection: game.scoring.scoringDirection,
@@ -622,7 +725,16 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         extensions: {},
       },
       carousel: {
-        slides: [],
+        slides: carouselData.slides,
+        autoplayIntervalMs: 1800,
+        lastImageDurationMs: 2600,
+        fastRotationDurationMs: 1800,
+        defaultRotationDurationMs: 2200,
+        fastRotationThreshold: 99,
+        slideTransitionDelayMs: 0,
+        playbackMode: BannerPlaybackMode.PingPong,
+        transitionType: BannerTransitionType.CrossDissolve,
+        transitionDurationMs: 1200,
       },
       mechanics: {
         familyKernel: slug,
@@ -635,8 +747,8 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
           dealerRotates: game.engine.turnOrder.dealerRotates,
         },
         phases: game.engine.phases,
-        actions: game.engine.playerActions,
-        customActions: game.engine.customActions,
+        actions: playerActions,
+        customActions,
         zones: game.engine.zones,
         turnPolicy: {
           direction: game.engine.turnOrder.direction,
@@ -684,6 +796,10 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         determinismNotes: buildDeterminismNotes(game),
       },
       cardGame: {
+        releaseStatus: GameModeStatus.WorkInProgress,
+        released: false,
+        bannerImage: carouselData.primaryImageHash,
+        gameIcon: carouselData.primaryImageHash,
         minPlayers: game.overview.players.minPlayers,
         maxPlayers: game.overview.players.maxPlayers,
         minHumanPlayers: 1,

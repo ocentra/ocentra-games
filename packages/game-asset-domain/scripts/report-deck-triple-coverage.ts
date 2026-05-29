@@ -24,12 +24,6 @@ type ProcessedGameJson = {
   legal?: { isCommercial?: boolean };
 };
 
-type AssetTriple = {
-  deckType: string;
-  suitSet: string;
-  rankSet: string;
-};
-
 type AssetEnvelope = {
   system?: {
     assetType?: string;
@@ -78,6 +72,34 @@ function walkAssets(rootDir: string): string[] {
   return files.sort();
 }
 
+function walkJsonFiles(rootDir: string): string[] {
+  if (!fs.existsSync(rootDir)) {
+    return [];
+  }
+
+  const files: string[] = [];
+  const stack = [rootDir];
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current) {
+      continue;
+    }
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const fullPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(fullPath);
+        continue;
+      }
+      if (entry.isFile() && entry.name.endsWith('.json')) {
+        files.push(fullPath);
+      }
+    }
+  }
+
+  return files.sort();
+}
+
 function readJson<T>(filePath: string): T {
   const raw = fs.readFileSync(filePath, 'utf8');
   return JSON5.parse(raw) as T;
@@ -107,18 +129,24 @@ function isPlaceholderStyleRanking(asset: AssetEnvelope): boolean {
 
 function main(): void {
   const failOnGap = process.argv.includes('--fail-on-gap');
+  const includeCommercial = process.argv.includes('--include-commercial');
   const commercialTripleKeys = new Set(
     COMMERCIAL_DECK_TRIPLES.map(([deckType, suitSet, rankSet]) => tripleKey(deckType, suitSet, rankSet)),
   );
-  const processedGameFiles = fs.readdirSync(PROCESSED_GAMES_DIR).filter((file) => file.endsWith('.json')).sort();
+  const processedGameFiles = walkJsonFiles(PROCESSED_GAMES_DIR);
   const triples = new Map<string, TripleUsage>();
+  let commercialGames = 0;
   let skippedCommercialGames = 0;
 
-  for (const file of processedGameFiles) {
-    const json = JSON.parse(fs.readFileSync(path.join(PROCESSED_GAMES_DIR, file), 'utf8')) as ProcessedGameJson;
+  for (const filePath of processedGameFiles) {
+    const relativePath = path.relative(PROCESSED_GAMES_DIR, filePath).replaceAll(path.sep, '/');
+    const json = JSON.parse(fs.readFileSync(filePath, 'utf8')) as ProcessedGameJson;
     if (json.legal?.isCommercial === true) {
-      skippedCommercialGames += 1;
-      continue;
+      commercialGames += 1;
+      if (!includeCommercial) {
+        skippedCommercialGames += 1;
+        continue;
+      }
     }
     const deckType = json.engine?.deckType;
     const suitSet = json.engine?.suitSet;
@@ -132,7 +160,7 @@ function main(): void {
     if (existing) {
       existing.count += 1;
       if (existing.examples.length < 5) {
-        existing.examples.push(file);
+        existing.examples.push(relativePath);
       }
       continue;
     }
@@ -142,7 +170,7 @@ function main(): void {
       suitSet,
       rankSet,
       count: 1,
-      examples: [file],
+      examples: [relativePath],
     });
   }
 
@@ -291,7 +319,8 @@ function main(): void {
 
   const report = {
     processedGames: processedGameFiles.length,
-    nonCommercialProcessedGames: processedGameFiles.length - skippedCommercialGames,
+    nonCommercialProcessedGames: processedGameFiles.length - commercialGames,
+    includedCommercialGames: includeCommercial ? commercialGames : 0,
     skippedCommercialGames,
     distinctTriplesUsedByGames: triples.size,
     allowedTriples: ALLOWED_TRIPLES.length - COMMERCIAL_DECK_TRIPLES.length,

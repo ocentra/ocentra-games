@@ -7,6 +7,7 @@ import { OperationResult } from '@ocentra/eventing-domain/core/OperationResult';
 import { createTestEventBus } from '@ocentra/eventing-domain/testing/createTestEventBus';
 import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
 import { validateAssetFile } from '@ocentra/game-asset-domain/schemas/asset/asset-file-schema';
+import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
 
 const uuidSequence = [
   '00000000-0000-4000-8000-000000000001',
@@ -277,6 +278,9 @@ describe('createGameModeBundle', () => {
 
     const parsedMain = JSON5.parse(mainAsset!.content) as {
       data?: {
+        releaseStatus?: string;
+        released?: boolean;
+        bannerImage?: string;
         deckAsset?: { assetType?: string; path?: string };
         mechanicsAsset?: { assetType?: string; checksum?: string | null };
         gameInfoAsset?: { checksum?: string | null };
@@ -285,6 +289,9 @@ describe('createGameModeBundle', () => {
       };
     };
 
+    expect(parsedMain.data?.releaseStatus).toBe(GameModeStatus.WorkInProgress);
+    expect(parsedMain.data?.released).toBe(false);
+    expect(parsedMain.data?.bannerImage).toMatch(/^[0-9a-f]{64}$/);
     expect(parsedMain.data?.deckAsset?.assetType).toBe('Deck');
     expect(parsedMain.data?.deckAsset?.path).toContain('GameMode/CardGames/Decks/');
     expect(parsedMain.data?.mechanicsAsset?.assetType).toBe('CardGameMechanics');
@@ -292,5 +299,10 @@ describe('createGameModeBundle', () => {
     expect(parsedMain.data?.gameInfoAsset?.checksum).toMatch(/^[0-9a-f]{64}$/);
     expect(parsedMain.data?.selectedGameLayoutAsset?.assetType).toBe('PageLayout');
     expect(parsedMain.data?.lobbyLayoutAsset?.assetType).toBe('PageLayout');
+
+    const carouselAsset = bundle.files.find((file) => file.metadata.assetType === 'ImageCarousel');
+    const parsedCarousel = JSON5.parse(carouselAsset!.content) as { data?: { slides?: Array<{ imageHash?: string }> } };
+    expect(parsedCarousel.data?.slides?.length).toBeGreaterThan(0);
+    expect(parsedCarousel.data?.slides?.[0]?.imageHash).toBe(parsedMain.data?.bannerImage);
   });
 });

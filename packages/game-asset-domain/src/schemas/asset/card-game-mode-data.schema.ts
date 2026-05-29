@@ -1,5 +1,6 @@
 import { schema } from '@ocentra/schema-domain/effect-builder';
 import { AssetRefSchema } from '../shared/asset-ref-schema';
+import { GameModeStatus } from '@/constants/game-mode-status';
 
 export const CardGameModeDataSchema = schema.object({
     scoringAsset: AssetRefSchema.refine(v => v.assetType === 'CardGameScoring', { message: 'scoringAsset must be a CardGameScoring' }),
@@ -24,7 +25,7 @@ export const CardGameModeDataSchema = schema.object({
     defaultDealerIsSelf: schema.boolean().optional(),
     initialNumberOfCards: schema.number().int().min(0).optional(),
     released: schema.boolean().optional(),
-    releaseStatus: schema.enum(['Alpha', 'Beta', 'Available', 'ComingSoon', 'InternalOnly']).optional(),
+    releaseStatus: schema.nativeEnum(GameModeStatus).optional(),
     gameModeCategory: schema.string().optional(),
     bannerImage: schema.string().optional(),
     gameIcon: schema.string().optional(),

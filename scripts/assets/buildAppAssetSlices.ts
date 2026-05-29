@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import JSON5 from 'json5';
 import { resolveAssetSourceRoot } from './assetSourceRoot';
 import { AssetContentSlicePath } from '@ocentra/game-asset-domain/constants/content-slices';
+import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
 import {
   AssetIndexResourceEntrySchema,
   EntryIndexSchema,
@@ -139,6 +140,10 @@ function derivePlayerMode(gameData: Record<string, unknown>): string | null {
   }
 
   return null;
+}
+
+function gameIsPubliclyEnabled(releaseStatus: string | undefined): boolean {
+  return releaseStatus === GameModeStatus.Available || releaseStatus === GameModeStatus.ComingSoon;
 }
 
 function extractGameIdFromPath(resourcePath: string): string | null {
@@ -448,7 +453,7 @@ async function buildGameArtifacts(
   const gameData = gameDoc?.data ?? {};
   const gameId = asString(gameSystem.gameId) ?? extractGameIdFromPath(resource.path) ?? resource.guid;
   const releaseStatus = asString(gameData.releaseStatus);
-  const enabled = releaseStatus !== 'Deprecated';
+  const enabled = gameIsPubliclyEnabled(releaseStatus);
 
   const gameInfoDoc = await readReferencedAsset(resourcesDir, gameData.gameInfoAsset, resourceByGuid);
   const gameInfoData = gameInfoDoc?.data ?? {};
@@ -463,7 +468,7 @@ async function buildGameArtifacts(
     enabled,
     releaseStatus,
     tags: asStringArray(gameInfoData.tags),
-    comingSoon: releaseStatus === 'ComingSoon',
+    comingSoon: releaseStatus === GameModeStatus.ComingSoon,
     bannerImage: asString(gameData.bannerImage),
     carouselImages: carouselMeta.hashes,
     gameIcon: asString(gameData.gameIcon),
@@ -751,7 +756,7 @@ export async function buildAppAssetSlices(
   const featured = builtGames
     .map((artifact) => artifact.home)
     .filter((game) => game.enabled);
-  const availableNow = featured.filter((game) => game.releaseStatus === 'Available');
+  const availableNow = featured.filter((game) => game.releaseStatus === GameModeStatus.Available);
   const recommended = [...featured];
   const home = HomePageGamesDocumentSchema.parse({
     featured,
