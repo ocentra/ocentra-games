@@ -65,6 +65,7 @@ const TOURNAMENT_ID = 'may-2026';
 const IMPORTANT_CONSOLE_TYPES = new Set(['error', 'warning']);
 const ASSET_BYTE_ENDPOINT_PREFIX = `${ApiEndpoint.Assets.Base}/`;
 const CATALOG_GAME_SLICE_PREFIX = ApiEndpoint.Slices.CatalogGame('');
+const OPTIONAL_EXTERNAL_RESOURCE_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
 const BROWSER_HARNESS_CONSOLE_PATTERNS = [
   'GroupMarkerNotSet(crbug.com/242999)',
   'Automatic fallback to software WebGL has been deprecated',
@@ -127,6 +128,14 @@ function delay(ms: number): Promise<void> {
 
 function isBrowserHarnessConsoleNoise(text: string): boolean {
   return BROWSER_HARNESS_CONSOLE_PATTERNS.some((pattern) => text.includes(pattern));
+}
+
+function isOptionalExternalResource(url: string): boolean {
+  try {
+    return OPTIONAL_EXTERNAL_RESOURCE_HOSTS.has(new URL(url).hostname);
+  } catch {
+    return false;
+  }
 }
 
 function normalizeBaseUrl(value: string): string {
@@ -233,14 +242,15 @@ async function probeRoute(context: BrowserContext, baseUrl: string, route: Route
   const failedRequests: string[] = [];
   page.on('console', (message) => {
     const text = message.text();
-    if (IMPORTANT_CONSOLE_TYPES.has(message.type()) && !isBrowserHarnessConsoleNoise(text)) {
+    const locationUrl = message.location().url;
+    if (IMPORTANT_CONSOLE_TYPES.has(message.type()) && !isBrowserHarnessConsoleNoise(text) && !isOptionalExternalResource(locationUrl)) {
       consoleMessages.push({ type: message.type(), text });
     }
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
   page.on('requestfailed', (request) => {
     const failure = request.failure()?.errorText ?? 'request failed';
-    if (request.resourceType() !== 'image') {
+    if (request.resourceType() !== 'image' && !isOptionalExternalResource(request.url())) {
       failedRequests.push(`${request.method()} ${request.url()} ${failure}`);
     }
   });
