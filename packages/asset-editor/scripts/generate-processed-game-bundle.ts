@@ -7,6 +7,7 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { OperationResult } from '@ocentra/eventing-domain/core/OperationResult';
 import { createTestEventBus } from '@ocentra/eventing-domain/testing/createTestEventBus';
 import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
+import { parseProcessedGameTaxonomyPath, type ProcessedGameTaxonomyPath } from '@ocentra/game-asset-domain/factories/ProcessedGameAssetFactory';
 import { createProcessedGameModeBundle } from '@/adapters/assets/createProcessedGameModeBundle';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,7 +17,7 @@ const repoRoot = path.resolve(__dirname, '../../..');
 interface CliOptions {
   processedGamePath: string;
   outputDir: string;
-  category?: string;
+  category?: ProcessedGameTaxonomyPath;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -34,7 +35,7 @@ function parseArgs(argv: string[]): CliOptions {
     : path.resolve(repoRoot, '.cursor/tmp/generated-game-bundles', path.basename(processedGamePath, path.extname(processedGamePath)));
 
   const category = categoryIndex >= 0 && argv[categoryIndex + 1]
-    ? argv[categoryIndex + 1]
+    ? parseProcessedGameTaxonomyPath(argv[categoryIndex + 1])
     : undefined;
 
   return {

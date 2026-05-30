@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../../../..');
 const briscolaMechanicsAssetPath = path.resolve(
   repoRoot,
-  'packages/asset-editor/Resources/GameMode/CardGames/Games/briscola/briscolaMechanics.asset',
+  'packages/asset-editor/Resources/GameMode/CardGames/Games/trick-taking/briscola/briscolaMechanics.asset',
 );
 
 describe('Briscola mechanics asset smoke', () => {

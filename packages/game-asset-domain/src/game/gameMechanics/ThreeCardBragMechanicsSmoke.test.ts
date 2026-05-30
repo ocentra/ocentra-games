@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../../../..');
 const threeCardBragMechanicsAssetPath = path.resolve(
   repoRoot,
-  'packages/asset-editor/Resources/GameMode/CardGames/Games/three-card-brag/three-card-bragMechanics.asset',
+  'packages/asset-editor/Resources/GameMode/CardGames/Games/vying/three-card-brag/three-card-bragMechanics.asset',
 );
 
 describe('Three Card Brag mechanics asset smoke', () => {

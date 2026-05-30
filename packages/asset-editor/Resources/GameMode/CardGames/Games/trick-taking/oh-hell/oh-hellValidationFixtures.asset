@@ -1,0 +1,110 @@
+{
+  system: {
+    guid: '52da3bb1-1919-495b-b3fe-ee8f7b675cb8',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/oh-hell/oh-hellValidationFixtures.asset',
+    gameId: 'oh-hell',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'oh-hell',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'oh-hell.core-runtime-contracts',
+        title: 'Oh Hell Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'oh-hell.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 7,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 35,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Oh Hell must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'oh-hell.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'oh-hell.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_round',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'play_card',
+              'bid',
+              'deal_round',
+            ],
+            explanation: 'Oh Hell must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'oh-hell.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'oh-hell.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Score the most points by winning EXACTLY the number of tricks you bid.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: '10 points bonus for making your bid + 1 point per trick taken. If you miss your bid, you get 0 points (or 1 point per trick with no bonus).',
+            linkedRuleIds: [
+              'oh-hell.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'oh-hell.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

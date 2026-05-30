@@ -1,0 +1,135 @@
+{
+  system: {
+    guid: '875271a2-f905-4760-a537-fa0160bca679',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Three Card Brag Validation Fixtures',
+    category: 'Game',
+    gameId: 'three-card-brag',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/three-card-brag/three-card-bragValidationFixtures.asset',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'three-card-brag.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'three-card-brag',
+    familyVariant: 'vying',
+    validationSuites: [
+      {
+        id: 'three-card-brag.runtime-contracts',
+        fixtures: [
+          {
+            id: 'three-card-brag.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 7,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 21,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Three Card Brag starts by collecting boot and dealing three private face-down cards to each active player.',
+            linkedRuleIds: [
+              'three-card-brag.setup.initial-deal',
+            ],
+            sourceFields: [
+              'three-card-brag.asset.initialNumberOfCards',
+              'three-card-brag.asset.minPlayers',
+              'three-card-brag.asset.maxPlayers',
+              'three-card-bragMechanics.asset.initialHandSize',
+              'three-card-bragMechanics.asset.deckCount',
+            ],
+          },
+          {
+            id: 'three-card-brag.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'betting_round',
+            supportedActionIds: [
+              'setup_round',
+            ],
+            explanation: 'The runtime must enter setup_round first, collect boot, deal three cards, and then move into betting_round.',
+            linkedRuleIds: [
+              'three-card-brag.flow.setup_round',
+            ],
+            sourceFields: [
+              'three-card-bragMechanics.asset.phases.0',
+              'three-card-bragMechanics.asset.customActions',
+            ],
+          },
+          {
+            id: 'three-card-brag.score.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'best active three-card hand wins the pot or last unfolded player wins',
+            explanation: 'A showdown compares active hands by the authored Brag ranking order; if all but one player folds, the last unfolded player takes the pot.',
+            linkedRuleIds: [
+              'three-card-brag.rank.hand-order',
+              'three-card-brag.score.pot-award',
+            ],
+            sourceFields: [
+              'three-card-bragScoring.asset.winCondition',
+              'three-card-bragMechanics.asset.phases',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'three-card-brag.ranking.examples',
+        fixtures: [
+          {
+            id: 'three-card-brag.rank.prial_threes',
+            title: 'Prial of Threes',
+            purpose: 'ranking',
+            hand: [
+              '3_spades',
+              '3_hearts',
+              '3_clubs',
+            ],
+            expectedFinalScore: 'highest prial',
+            explanation: 'Traditional Brag ranking treats the prial of threes as the strongest hand.',
+            linkedRuleIds: [
+              'three-card-brag.rank.prial',
+            ],
+          },
+          {
+            id: 'three-card-brag.rank.running_flush',
+            title: 'Running Flush',
+            purpose: 'ranking',
+            hand: [
+              'A_spades',
+              'K_spades',
+              'Q_spades',
+            ],
+            expectedFinalScore: 'running_flush',
+            explanation: 'Three consecutive cards in one suit beat an ordinary run, flush, pair, or high card.',
+            linkedRuleIds: [
+              'three-card-brag.rank.running_flush',
+            ],
+          },
+          {
+            id: 'three-card-brag.bet.blind_price',
+            title: 'Blind Price Pressure',
+            purpose: 'action',
+            hand: [
+              'unknown',
+            ],
+            expectedFinalScore: 'blind bet costs half a seeing bet at the same table stake',
+            explanation: 'The blind state matters because it changes the legal betting cost before the player sees their cards.',
+            linkedRuleIds: [
+              'three-card-brag.action.bet_blind',
+            ],
+          },
+        ],
+      },
+    ],
+  },
+}

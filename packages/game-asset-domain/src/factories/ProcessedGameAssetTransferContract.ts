@@ -84,6 +84,7 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
 ];
 
 const EDITOR_ONLY_CHECKS: TransferCheck[] = [
+  { sourcePath: '', targetPath: 'assetDataOverrides.gameInfo.editorOnly.processedSource', match: 'exact', message: 'The full processed source JSON must be retained in editor-only migration metadata so no source field is lost.' },
   { sourcePath: 'sources', targetPath: 'assetDataOverrides.gameInfo.editorOnly.sources', message: 'Sources must stay in GameInfo editorOnly metadata.' },
   { sourcePath: 'evidence', targetPath: 'assetDataOverrides.gameInfo.editorOnly.evidence', message: 'Evidence must stay in GameInfo editorOnly metadata.' },
   { sourcePath: 'extraction', targetPath: 'assetDataOverrides.gameInfo.editorOnly.extraction', message: 'Extraction audit data must stay in GameInfo editorOnly metadata.' },
@@ -216,6 +217,9 @@ function validateCheck(
 }
 
 function readPath(value: unknown, path: string): unknown {
+  if (path === '') {
+    return value;
+  }
   return path.split('.').reduce((current: unknown, segment) => {
     if (!current || typeof current !== 'object') {
       return undefined;

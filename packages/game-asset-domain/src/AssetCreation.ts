@@ -5,6 +5,7 @@ import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferr
 import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import type { GameModeAssetCategoryPath } from './factories/GameModeAssetCategoryPath';
 
 const fallback = () =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -52,7 +53,7 @@ export const generateAssetGuid = async (assetType: string, gameId: string): Prom
 export interface AssetCreationContext {
   gameId: string;
   displayName: string;
-  category: string;
+  category: GameModeAssetCategoryPath;
   timestamp: string;
 }
 

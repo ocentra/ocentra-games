@@ -1,0 +1,132 @@
+{
+  system: {
+    guid: '9ab9d0cc-b143-41ab-b69e-10e6bf7b39a5',
+    assetType: 'GameActionSet',
+    schemaVersion: 1,
+    displayName: 'Briscola Action Set',
+    category: 'Game',
+    gameId: 'briscola',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/briscola/briscolaActionSet.asset',
+  },
+  data: {
+    modelKind: 'action_set_model',
+    modelId: 'briscola.action-set.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'briscola',
+    familyVariant: 'ace-ten-draw',
+    executorId: 'trick-taking.briscola.v1',
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'draw_after_trick',
+        'score_trick',
+        'score_round',
+        'end_hand',
+      ],
+      payloadSchemas: {
+        play_card: {
+          required: [
+            'cardId',
+          ],
+        },
+      },
+      actionEndsTurn: {
+        setup_round: false,
+        play_card: true,
+        draw_after_trick: false,
+        score_trick: false,
+        score_round: false,
+        end_hand: true,
+      },
+    },
+    actions: {
+      setup_round: {
+        supported: true,
+        description: 'Deal three cards to each player and reveal one trump indicator card.',
+        constraints: 'System setup action.',
+        effectType: 'setup_round',
+        cost: '0',
+        effectHints: {
+          dealCountPerPlayer: 3,
+          trumpSource: 'revealed_upcard',
+        },
+        isTerminating: false,
+      },
+      play_card: {
+        supported: true,
+        description: 'Play one card to the current trick.',
+        constraints: 'Current player only; any card may be played because Briscola does not require following suit.',
+        effectType: 'play_card',
+        cost: '0',
+        effectHints: {
+          targetZone: 'trick',
+          followSuitRequired: false,
+        },
+        isTerminating: true,
+      },
+      draw_after_trick: {
+        supported: true,
+        description: 'After each trick while stock remains, players draw back to three cards, winner first.',
+        constraints: 'System action after trick resolution; skipped when the stock is empty.',
+        effectType: 'draw',
+        cost: '0',
+        effectHints: {
+          sourceZone: 'stock',
+          winnerDrawsFirst: true,
+          targetHandSize: 3,
+        },
+        isTerminating: false,
+      },
+      score_trick: {
+        supported: true,
+        description: 'Award the trick to the highest trump or highest led-suit card and collect its card points.',
+        constraints: 'System action after all players have played one card.',
+        effectType: 'score_trick',
+        cost: '0',
+        effectHints: {
+          valueSystem: 'briscola_points',
+          trumpBeatsLedSuit: true,
+        },
+        isTerminating: false,
+      },
+      score_round: {
+        supported: true,
+        description: 'Count captured card points and close the hand.',
+        constraints: 'System action after the final trick.',
+        effectType: 'score_round',
+        cost: '0',
+        effectHints: {
+          valueSystem: 'briscola_points',
+        },
+        isTerminating: false,
+      },
+      end_hand: {
+        supported: true,
+        description: 'End the hand after all cards are played and compare captured card points.',
+        constraints: 'System action after the final trick.',
+        effectType: 'end_hand',
+        cost: '0',
+        effectHints: {
+          winningThreshold: 61,
+        },
+        isTerminating: true,
+      },
+    },
+    customActions: [
+      {
+        id: 'deal_3_each_turn_trump',
+        supported: true,
+        description: 'Deal three cards to each player and reveal one trump indicator card.',
+        cost: '0',
+        constraints: 'System setup action.',
+        effectType: 'setup_round',
+        effectHints: {
+          dealCountPerPlayer: 3,
+          trumpSource: 'revealed_upcard',
+        },
+        isTerminating: false,
+      },
+    ],
+  },
+}

@@ -1,3 +1,5 @@
+import * as Schema from 'effect/Schema';
+
 export const CATEGORY_VALUES = [
   "Abstract strategy",
   "Accumulation",
@@ -47,6 +49,10 @@ export const CATEGORY = {
 } as const;
 
 export type Category = (typeof CATEGORY_VALUES)[number];
+
+export const GameCategorySchema = Schema.Literal(...CATEGORY_VALUES).pipe(Schema.brand('GameCategory'));
+export type GameCategory = typeof GameCategorySchema.Type;
+export const decodeGameCategory = Schema.decodeUnknownSync(GameCategorySchema);
 
 export const SUB_CATEGORY_VALUES = [
   "2-Player / Card Battle",
@@ -338,3 +344,10 @@ export const SUB_CATEGORY_VALUES = [
 ] as const;
 
 export type SubCategory = (typeof SUB_CATEGORY_VALUES)[number] | null;
+
+export const GameSubCategoryValueSchema = Schema.Literal(...SUB_CATEGORY_VALUES).pipe(Schema.brand('GameSubCategory'));
+export type GameSubCategory = typeof GameSubCategoryValueSchema.Type | null;
+const decodeGameSubCategoryValue = Schema.decodeUnknownSync(GameSubCategoryValueSchema);
+export function decodeGameSubCategory(value: unknown): GameSubCategory {
+  return value == null ? null : decodeGameSubCategoryValue(value);
+}

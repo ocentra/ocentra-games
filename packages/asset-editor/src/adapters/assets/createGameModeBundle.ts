@@ -28,12 +28,14 @@ import { generateAssetGuid, type CreatedAsset, type AssetCreationContext } from 
 import { getSerializableClassMetadata, type SerializableConstructor } from '@ocentra/asset-domain/serialization/decorators';
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import { tryGameId, type AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
+import type { GameModeAssetCategoryPath } from '@ocentra/game-asset-domain/factories/GameModeAssetCategoryPath';
+import type { ProcessedGameTaxonomyPath } from '@ocentra/game-asset-domain/factories/ProcessedGameTaxonomyPath';
 import { createStandard52CardRankingEntry, createStandard52CardRankingReference, createStandard52DeckEntry } from '@/adapters/assets/gameModeAssetDefaults';
 
 export interface CreateGameModeBundleOptions {
   gameId: string;
   displayName: string;
-  category: string;
+  category: GameModeAssetCategoryPath;
   copyFromTemplate?: Record<string, unknown>;
   assetDataOverrides?: Partial<Record<'rules' | 'strategy' | 'scoring' | 'gameInfo' | 'layout' | 'selectedGameLayout' | 'lobbyLayout' | 'deck' | 'carousel' | 'mechanics' | 'cardGame', Record<string, unknown>>>;
   mechanicsModelDataOverrides?: Partial<Record<GameMechanicsModelRefKey, Record<string, unknown>>>;
@@ -42,7 +44,7 @@ export interface CreateGameModeBundleOptions {
 
 export interface CreateProcessedGameModeBundleOptions {
   processedGamePath: string;
-  category?: string;
+  category?: ProcessedGameTaxonomyPath;
 }
 
 export interface GameModeBundleFile {
@@ -257,13 +259,13 @@ async function enrichSerializedAsset(
     schemaVersion?: number;
     displayName?: string;
     icon?: string;
-    category?: string;
+    category?: unknown;
     name: string;
   };
   const classMetadata = getSerializableClassMetadata(constructor);
   const assetType = classMetadata?.assetType ?? constructorWithStatics.assetType ?? constructorWithStatics.name;
   const displayName = fallbackDisplayName || classMetadata?.displayName || constructorWithStatics.displayName || assetType;
-  const category = classMetadata?.category ?? constructorWithStatics.category ?? fallbackCategory;
+  const category = classMetadata?.category ?? (typeof constructorWithStatics.category === 'string' ? constructorWithStatics.category : fallbackCategory);
   const schemaVersion = classMetadata?.schemaVersion ?? constructorWithStatics.schemaVersion ?? 1;
   const system: Record<string, unknown> = {
     guid: asset.guid,
@@ -402,7 +404,7 @@ function createMechanicsModelRefs(
 
 export async function createGameModeBundle(options: CreateGameModeBundleOptions): Promise<GameModeBundle> {
   const normalizedGameId = options.gameId.trim().toLowerCase();
-  const category = options.category.trim() || 'CardGames';
+  const category = options.category;
   const folder = `GameMode/${category}/${normalizedGameId}`;
   const context: AssetCreationContext = {
     gameId: normalizedGameId,
