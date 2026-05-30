@@ -115,6 +115,11 @@ fn hash_bytes_hex(bytes: &[u8]) -> String {
     out
 }
 
+fn is_internal_resource_path(path: &str) -> bool {
+    path.to_lowercase().ends_with(".meta")
+        || path.split('/').any(|segment| segment.starts_with('.'))
+}
+
 fn open_db() -> Result<Connection, String> {
     let path = db_path();
     if let Some(parent) = path.parent() {
@@ -317,7 +322,7 @@ fn collect_scan_entries(root: &Path, dir: &Path) -> Result<Vec<(String, u64, Opt
                 .unwrap_or(&path)
                 .to_string_lossy()
                 .replace('\\', "/");
-            if rel.to_lowercase().ends_with(".meta") {
+            if is_internal_resource_path(&rel) {
                 continue;
             }
             let modified_secs = meta
@@ -973,7 +978,7 @@ fn catalog_record_from_index_entry(entry: AssetIndexEntry) -> Option<CatalogReso
 }
 
 fn is_hidden_index_path(path: &str) -> bool {
-    path.contains("/.index/") || path.starts_with(".index/")
+    is_internal_resource_path(path)
 }
 
 fn folder_prefix(folder: &str) -> String {

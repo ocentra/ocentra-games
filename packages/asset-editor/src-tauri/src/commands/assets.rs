@@ -66,6 +66,11 @@ fn hash_bytes_hex(bytes: &[u8]) -> String {
     out
 }
 
+fn is_internal_resource_path(path: &str) -> bool {
+    path.to_lowercase().ends_with(".meta")
+        || path.split('/').any(|segment| segment.starts_with('.'))
+}
+
 #[tauri::command]
 pub fn write_asset(path: String, content: Vec<u8>) -> Result<(), String> {
     let full = resources_dir().join(&path);
@@ -130,6 +135,10 @@ pub fn list_dir(folder: String) -> Result<Vec<DirEntry>, String> {
     let mut entries: Vec<DirEntry> = read
         .flatten()
         .filter_map(|e| {
+            let name = e.file_name().to_string_lossy().to_string();
+            if name.starts_with('.') {
+                return None;
+            }
             let meta = e.metadata().ok()?;
             let rel = e
                 .path()
@@ -137,8 +146,11 @@ pub fn list_dir(folder: String) -> Result<Vec<DirEntry>, String> {
                 .ok()?
                 .to_string_lossy()
                 .replace('\\', "/");
+            if is_internal_resource_path(&rel) {
+                return None;
+            }
             Some(DirEntry {
-                name: e.file_name().to_string_lossy().to_string(),
+                name,
                 path: rel,
                 is_dir: meta.is_dir(),
                 size: if meta.is_file() { meta.len() } else { 0 },
@@ -180,7 +192,7 @@ fn collect_scan_assets(root: &Path, dir: &Path) -> Result<Vec<AssetMeta>, String
                 .unwrap_or(&path)
                 .to_string_lossy()
                 .replace('\\', "/");
-            if rel.to_lowercase().ends_with(".meta") {
+            if is_internal_resource_path(&rel) {
                 continue;
             }
             let modified_secs = meta

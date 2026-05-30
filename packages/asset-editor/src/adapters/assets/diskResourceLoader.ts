@@ -11,6 +11,7 @@ import {
   readAsset,
   computeAssetHash,
   getDiskResourceEntriesFromTauri,
+  isInternalResourceIndexPath,
 } from '@/adapters/assets/TauriAssetAdapter'
 import type { Infer } from '@ocentra/schema-domain/effect';
 import { AssetIndexEntrySchema } from '@/lib/validation/schemas'
@@ -159,7 +160,7 @@ async function _getDiskResourceEntriesInternal(): Promise<ResourceEntry[]> {
     const lowerPath = path.toLowerCase()
     const fileName = path.split('/').pop() ?? ''
 
-    if (lowerPath.endsWith('.meta')) {
+    if (isInternalResourceIndexPath(path)) {
       continue
     }
 

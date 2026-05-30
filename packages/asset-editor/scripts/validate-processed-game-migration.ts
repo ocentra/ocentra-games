@@ -512,6 +512,15 @@ function validateGeneratedTaxonomyPath(sourcePath: string, bundle: GameModeBundl
   const expectedCategory = (options.category ?? deriveProcessedGameCategory(sourcePath, options.processedRoot))
     .replace(/\\/g, '/')
     .replace(/^\/+|\/+$/g, '');
+  const expectedCategoryDir = path.resolve(resourcesRoot, 'GameMode', expectedCategory);
+  if (!fs.existsSync(expectedCategoryDir) || !fs.statSync(expectedCategoryDir).isDirectory()) {
+    addIssue(
+      issues,
+      sourcePath,
+      'target-taxonomy-folder-missing',
+      `Target category folder must be scaffolded before migration: Resources/GameMode/${expectedCategory}.`,
+    );
+  }
   const expectedPrefix = normalizeResourcePath(`Resources/GameMode/${expectedCategory}/`);
   const normalizedMainPath = normalizeResourcePath(bundle.mainAssetPath);
   const taxonomyRoot = 'gamemode/cardgames/games/';

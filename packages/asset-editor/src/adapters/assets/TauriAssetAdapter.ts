@@ -37,8 +37,9 @@ export function createBrowserResourceUrl(path: string): URL {
   return new URL(`/Resources/${resourcePath}`, window.location.origin)
 }
 
-function isInternalResourceIndexPath(path: string): boolean {
-  return normalizeResourcePath(path).toLowerCase().endsWith('.meta')
+export function isInternalResourceIndexPath(path: string): boolean {
+  const normalizedPath = normalizeResourcePath(path).toLowerCase()
+  return normalizedPath.endsWith('.meta') || normalizedPath.split('/').some((segment) => segment.startsWith('.'))
 }
 
 function filterInternalResourceIndexEntries(
