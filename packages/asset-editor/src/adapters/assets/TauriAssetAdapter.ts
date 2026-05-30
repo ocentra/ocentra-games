@@ -25,14 +25,14 @@ export function createBrowserResourceUrl(path: string): URL {
   const normalizedPath = normalizeResourcePath(path)
   if (
     normalizedPath.includes('\0') ||
-    /^[a-z][a-z0-9+.-]*:/i.test(normalizedPath)
+    /^[a-z][a-z0-9+.-]*:/i.test(normalizedPath) ||
+    normalizedPath.split('/').some(segment => segment === '..')
   ) {
     throw new Error('Invalid browser asset path')
   }
   const resourcePath = normalizedPath
     .split('/')
     .filter(Boolean)
-    .map(segment => encodeURIComponent(segment))
     .join('/')
   return new URL(`/Resources/${resourcePath}`, window.location.origin)
 }
