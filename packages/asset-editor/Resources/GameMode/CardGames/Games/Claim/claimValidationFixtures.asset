@@ -16,6 +16,58 @@
     familyVariant: 'hoarder',
     validationSuites: [
       {
+        id: 'claim.runtime-contracts',
+        fixtures: [
+          {
+            id: 'claim.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 1,
+            expectedVisibility: 'private',
+            explanation: 'Claim starts every round by shuffling one standard deck and dealing three private cards to each of the four active seats.',
+            linkedRuleIds: [
+              'claim.setup.initial-deal',
+            ],
+            sourceFields: [
+              'claim.asset.initialNumberOfCards',
+              'claim.asset.minPlayers',
+              'claim.asset.maxPlayers',
+              'claimMechanics.asset.initialHandSize',
+              'claimMechanics.asset.deckCount',
+            ],
+          },
+          {
+            id: 'claim.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'turn_loop',
+            supportedActionIds: [
+              'setup_round',
+            ],
+            explanation: 'The runtime must enter setup_round first, run only the system setup action, and then move into turn_loop.',
+            linkedRuleIds: [
+              'claim.flow.setup_round',
+            ],
+            sourceFields: [
+              'claimMechanics.asset.phases.0',
+              'claimMechanics.asset.customActions',
+            ],
+          },
+        ],
+      },
+      {
         id: 'claim.scoring.examples',
         fixtures: [
           {

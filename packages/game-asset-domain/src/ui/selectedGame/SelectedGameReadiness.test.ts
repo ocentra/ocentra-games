@@ -22,6 +22,8 @@ describe('SelectedGameReadiness', () => {
         data: {
           displayName: options.displayName,
           deckAsset: options.linkedDeckAsset,
+          initialNumberOfCards: overrides.cardGame?.initialNumberOfCards,
+          minDecks: overrides.cardGame?.minDecks,
           minPlayers: overrides.cardGame?.minPlayers,
           maxPlayers: overrides.cardGame?.maxPlayers,
         },

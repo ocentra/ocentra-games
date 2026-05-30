@@ -16,6 +16,58 @@
     familyVariant: 'ace-ten-draw',
     validationSuites: [
       {
+        id: 'briscola.runtime-contracts',
+        fixtures: [
+          {
+            id: 'briscola.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 18,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Briscola starts by dealing three face-down cards to each player from one Italian 40-card deck, with a turned trump card for the stock.',
+            linkedRuleIds: [
+              'briscola.setup.initial-deal',
+            ],
+            sourceFields: [
+              'briscola.asset.initialNumberOfCards',
+              'briscola.asset.minPlayers',
+              'briscola.asset.maxPlayers',
+              'briscolaMechanics.asset.initialHandSize',
+              'briscolaMechanics.asset.deckCount',
+            ],
+          },
+          {
+            id: 'briscola.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'trick_play',
+            supportedActionIds: [
+              'setup_round',
+            ],
+            explanation: 'The runtime must enter setup_round first, run the system setup action, and then advance to trick_play.',
+            linkedRuleIds: [
+              'briscola.flow.setup_round',
+            ],
+            sourceFields: [
+              'briscolaMechanics.asset.phases.0',
+              'briscolaMechanics.asset.customActions',
+            ],
+          },
+        ],
+      },
+      {
         id: 'briscola.scoring.examples',
         fixtures: [
           {

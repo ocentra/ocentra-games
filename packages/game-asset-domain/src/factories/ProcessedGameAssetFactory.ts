@@ -23,6 +23,7 @@ const FALLBACK_CAROUSEL_RESOURCE_PATHS = [
   'AppAssets/PlaceHolders/image1.jpg',
   'AppAssets/PlaceHolders/image2.jpg',
 ] as const;
+const PUBLIC_JUNK_TEXT_PATTERN = /\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
 
 interface AssetEnvelope {
   system: {
@@ -125,6 +126,44 @@ function stringifyUnknown(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
+function publicText(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const trimmed = value.trim();
+  return trimmed && !PUBLIC_JUNK_TEXT_PATTERN.test(trimmed) ? trimmed : '';
+}
+
+function firstPublicText(...values: unknown[]): string {
+  for (const value of values) {
+    const text = publicText(value);
+    if (text) {
+      return text;
+    }
+  }
+  return '';
+}
+
+function publicSetupEquipment(game: Game): string {
+  return firstPublicText(game.setup.equipment, game.setup.deck, game.overview.deck);
+}
+
+function buildPublicVariationList(game: Game): Record<string, unknown>[] {
+  return game.variations.list.flatMap((variation) => {
+    const name = publicText(variation.name);
+    const description = publicText(variation.description);
+    if (!name || !description) {
+      return [];
+    }
+    const id = publicText(variation.id);
+    return [{
+      ...(id ? { id } : {}),
+      name,
+      description,
+    }];
+  });
+}
+
 function normalizeNumericRecord(value: unknown): Record<string, number> {
   if (!value || typeof value !== 'object') {
     return {};
@@ -152,6 +191,25 @@ function countRecordKeys(value: unknown): number {
   return value && typeof value === 'object' && !Array.isArray(value)
     ? Object.keys(value).length
     : 0;
+}
+
+function isMeaningfulPublicValue(value: unknown): boolean {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === 'string') {
+    return Boolean(publicText(value));
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.some(isMeaningfulPublicValue);
+  }
+  if (typeof value === 'object') {
+    return Object.values(value).some(isMeaningfulPublicValue);
+  }
+  return false;
 }
 
 function buildScoringRulesSourceCardValues(value: unknown, numericValues: Record<string, number>): Record<string, unknown> | null {
@@ -224,11 +282,12 @@ function buildGameInfoSections(game: Game): Record<string, unknown>[] {
   const setupContent = [
     ...paragraphBlocks(game.setup.players),
     ...paragraphBlocks(game.setup.deck),
-    ...paragraphBlocks(game.setup.equipment),
+    ...paragraphBlocks(publicSetupEquipment(game)),
     ...paragraphBlocks(game.setup.dealing),
   ];
+  const publicVariationList = buildPublicVariationList(game);
   const variationsBlock = listBlock(
-    game.variations.list.map((variation) => `${variation.name}: ${variation.description}`)
+    publicVariationList.map((variation) => `${String(variation.name)}: ${String(variation.description)}`)
   );
 
   return [
@@ -272,23 +331,47 @@ function buildSetupContent(game: Game): Record<string, unknown> {
   return {
     players: game.setup.players,
     deck: game.setup.deck,
-    equipment: game.setup.equipment,
+    equipment: publicSetupEquipment(game),
     dealing: game.setup.dealing,
   };
 }
 
 function buildVariationsContent(game: Game): Record<string, unknown> {
+  const list = buildPublicVariationList(game);
   return {
-    list: game.variations.list,
-    noVariationsReason: game.variations.noVariationsReason ?? '',
+    list,
+    noVariationsReason: list.length === 0 ? firstPublicText(game.variations.noVariationsReason, 'Base ruleset only.') : '',
   };
 }
 
 function buildAiContent(game: Game): Record<string, unknown> {
   return {
-    difficulty: game.ai.difficulty,
-    considerations: game.ai.considerations,
+    difficulty: isMeaningfulPublicValue(game.ai.difficulty) ? game.ai.difficulty : game.overview.difficulty,
+    considerations: isMeaningfulPublicValue(game.ai.considerations)
+      ? game.ai.considerations
+      : buildAiConsiderations(game),
   };
+}
+
+function buildAiConsiderations(game: Game): string[] {
+  return [game.rules.objective, game.rules.gameplay, ...game.rules.keyRules]
+    .map(publicText)
+    .filter(Boolean)
+    .slice(0, 4);
+}
+
+function buildStrategySummary(game: Game): string {
+  const authored = [game.strategy.basic, game.strategy.intermediate, game.strategy.advanced]
+    .map(publicText)
+    .filter(Boolean)
+    .join('\n\n');
+  if (authored.length >= 20) {
+    return authored;
+  }
+  return [game.rules.objective, game.rules.gameplay]
+    .map(publicText)
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 function buildEditorOnlyMetadata(game: Game): Record<string, unknown> {
@@ -348,6 +431,83 @@ function buildActionModel(game: Game): Record<string, unknown> {
         .map(([id, action]) => [id, Boolean((action as { isTerminating?: boolean }).isTerminating)]),
     ),
   };
+}
+
+function buildValidationSuites(game: Game, slug: string): Record<string, unknown>[] {
+  const firstPhase = game.engine.phases[0];
+  const supportedActions = [
+    ...Object.entries(normalizePlayerActionRecord(game.engine.playerActions))
+      .filter(([, action]) => Boolean((action as { supported?: boolean }).supported))
+      .map(([id]) => id),
+    ...normalizeCustomActions(game.engine.customActions)
+      .map((action) => typeof action.id === 'string' && action.supported === true ? action.id : '')
+      .filter(Boolean),
+  ];
+  return [
+    {
+      id: `${slug}.core-runtime-contracts`,
+      title: `${game.name} Core Runtime Contracts`,
+      fixtures: [
+        {
+          id: `${slug}.setup.initial-deal`,
+          title: 'Initial deal',
+          purpose: 'setup',
+          expectedInitialHandSize: game.engine.initialHandSize,
+          expectedPlayerCounts: {
+            min: game.engine.playerConfig.minPlayers,
+            max: game.engine.playerConfig.maxPlayers,
+            recommended: game.overview.players.recommendedPlayers ?? game.engine.playerConfig.optimalPlayers,
+          },
+          expectedTotalInitialCards: game.engine.initialHandSize * game.engine.playerConfig.maxPlayers,
+          expectedDeckCount: game.engine.deckCount,
+          expectedVisibility: game.engine.cardVisibility.initialDeal,
+          explanation: `${game.name} must start by giving each active player ${game.engine.initialHandSize} card(s), matching the processed setup and engine initialHandSize.`,
+          linkedRuleIds: [`${slug}.setup.initial-deal`],
+          sourceFields: ['setup.dealing', 'engine.initialHandSize', 'engine.playerConfig', 'engine.cardVisibility.initialDeal'],
+        },
+        {
+          id: `${slug}.flow.first-phase`,
+          title: 'Opening phase',
+          purpose: 'flow',
+          expectedFirstPhase: firstPhase.id,
+          expectedActor: firstPhase.actor,
+          expectedLegalActions: firstPhase.legalActions,
+          expectedNextPhase: firstPhase.nextPhase,
+          supportedActionIds: supportedActions,
+          explanation: `${game.name} must enter ${firstPhase.id} first and expose exactly the legal actions authored for that phase.`,
+          linkedRuleIds: [`${slug}.flow.${firstPhase.id}`],
+          sourceFields: ['engine.phases.0', 'engine.playerActions', 'engine.customActions'],
+        },
+        {
+          id: `${slug}.scoring.primary-outcome`,
+          title: 'Primary scoring outcome',
+          purpose: 'scoring',
+          expectedFinalScore: stringifyUnknown(game.scoring.targetScore ?? game.scoring.winCondition),
+          scoringDirection: game.scoring.scoringDirection,
+          targetScore: game.scoring.targetScore,
+          cardValues: game.scoring.cardValues,
+          explanation: game.scoring.description,
+          linkedRuleIds: [`${slug}.score.win-condition`],
+          sourceFields: ['scoring.description', 'scoring.winCondition', 'scoring.cardValues', 'scoring.targetScore', 'scoring.scoringDirection'],
+        },
+      ],
+    },
+  ];
+}
+
+function buildValidationExamples(game: Game, slug: string): Record<string, unknown>[] {
+  return [
+    {
+      id: `${slug}.initial-deal-preview`,
+      purpose: 'Runtime setup preview and playtest assertion.',
+      expectedInitialHandSize: game.engine.initialHandSize,
+      expectedPlayerCounts: {
+        min: game.engine.playerConfig.minPlayers,
+        max: game.engine.playerConfig.maxPlayers,
+      },
+      expectedVisibility: game.engine.cardVisibility.initialDeal,
+    },
+  ];
 }
 
 function asMechanicsRecord(value: unknown, fallbackKey: string): Record<string, unknown> {
@@ -494,8 +654,8 @@ function buildMechanicsModelDataOverrides(
     },
     validation: {
       ...shared,
-      validationSuites: [],
-      examples: [],
+      validationSuites: buildValidationSuites(game, slug),
+      examples: buildValidationExamples(game, slug),
     },
   };
 }
@@ -649,7 +809,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         setup: {
           players: game.setup.players,
           deck: game.setup.deck,
-          equipment: game.setup.equipment,
+          equipment: publicSetupEquipment(game),
           dealing: game.setup.dealing,
         },
         turnFlow: game.rules.gameplay,
@@ -661,9 +821,9 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         trumpBonusValues: null,
       },
       strategy: {
-        LLM: [game.strategy.basic, game.strategy.intermediate, game.strategy.advanced].filter(Boolean).join('\n\n'),
-        Player: [game.strategy.basic, game.strategy.intermediate, game.strategy.advanced].filter(Boolean).join('\n\n'),
-        basic: game.strategy.basic ?? '',
+        LLM: buildStrategySummary(game),
+        Player: buildStrategySummary(game),
+        basic: publicText(game.strategy.basic) || game.rules.objective,
         intermediate: game.strategy.intermediate ?? '',
         advanced: game.strategy.advanced ?? '',
         tips: game.strategy.tips.map((tip: string) => ({
@@ -701,7 +861,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         difficulty: game.overview.difficulty,
         duration: game.overview.duration,
         origin: game.overview.origin,
-        originName: game.overview.originName,
+        originName: firstPublicText(game.overview.originName, game.name),
         deck: game.overview.deck,
         alsoKnownAs: game.alsoKnownAs,
         playersDisplay: game.overview.players.display ?? '',
@@ -791,7 +951,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         bankingConfig: game.engine.bankingConfig,
         roundConfig: game.engine.roundConfig,
         constants: game.engine.constants,
-        finalHandSize: game.engine.finalHandSize,
+        finalHandSize: game.engine.finalHandSize ?? undefined,
         deckCount: game.engine.deckCount,
         implementationHints: game.engine.implementationHints,
         progression: game.engine.progression,

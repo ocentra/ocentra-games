@@ -16,6 +16,73 @@
     familyVariant: 'vying',
     validationSuites: [
       {
+        id: 'three-card-brag.runtime-contracts',
+        fixtures: [
+          {
+            id: 'three-card-brag.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 7,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 21,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Three Card Brag starts by collecting boot and dealing three private face-down cards to each active player.',
+            linkedRuleIds: [
+              'three-card-brag.setup.initial-deal',
+            ],
+            sourceFields: [
+              'three-card-brag.asset.initialNumberOfCards',
+              'three-card-brag.asset.minPlayers',
+              'three-card-brag.asset.maxPlayers',
+              'three-card-bragMechanics.asset.initialHandSize',
+              'three-card-bragMechanics.asset.deckCount',
+            ],
+          },
+          {
+            id: 'three-card-brag.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'betting_round',
+            supportedActionIds: [
+              'setup_round',
+            ],
+            explanation: 'The runtime must enter setup_round first, collect boot, deal three cards, and then move into betting_round.',
+            linkedRuleIds: [
+              'three-card-brag.flow.setup_round',
+            ],
+            sourceFields: [
+              'three-card-bragMechanics.asset.phases.0',
+              'three-card-bragMechanics.asset.customActions',
+            ],
+          },
+          {
+            id: 'three-card-brag.score.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'best active three-card hand wins the pot or last unfolded player wins',
+            explanation: 'A showdown compares active hands by the authored Brag ranking order; if all but one player folds, the last unfolded player takes the pot.',
+            linkedRuleIds: [
+              'three-card-brag.rank.hand-order',
+              'three-card-brag.score.pot-award',
+            ],
+            sourceFields: [
+              'three-card-bragScoring.asset.winCondition',
+              'three-card-bragMechanics.asset.phases',
+            ],
+          },
+        ],
+      },
+      {
         id: 'three-card-brag.ranking.examples',
         fixtures: [
           {

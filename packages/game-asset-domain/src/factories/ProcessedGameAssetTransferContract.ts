@@ -20,7 +20,7 @@ export const ProcessedGameTransferReportSchema = schema.object({
 export type ProcessedGameTransferIssue = schema.infer<typeof ProcessedGameTransferIssueSchema>;
 export type ProcessedGameTransferReport = schema.infer<typeof ProcessedGameTransferReportSchema>;
 
-type TransferMatch = 'presence' | 'exact';
+type TransferMatch = 'presence' | 'exact' | 'publicVariationList';
 
 interface TransferCheck {
   sourcePath: string;
@@ -47,7 +47,7 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
   { sourcePath: 'setup.deck', targetPath: 'assetDataOverrides.gameInfo.setupContent.deck', match: 'exact', message: 'Setup deck must land in GameInfo setupContent.' },
   { sourcePath: 'setup.equipment', targetPath: 'assetDataOverrides.gameInfo.setupContent.equipment', match: 'exact', message: 'Setup equipment must land in GameInfo setupContent.' },
   { sourcePath: 'setup.dealing', targetPath: 'assetDataOverrides.gameInfo.setupContent.dealing', match: 'exact', message: 'Setup dealing must land in GameInfo setupContent.' },
-  { sourcePath: 'variations.list', targetPath: 'assetDataOverrides.gameInfo.variationsContent.list', match: 'exact', message: 'Variations must land in GameInfo variationsContent.' },
+  { sourcePath: 'variations.list', targetPath: 'assetDataOverrides.gameInfo.variationsContent.list', match: 'publicVariationList', message: 'Public variations must land in GameInfo variationsContent without editor-only override metadata.' },
   { sourcePath: 'ai.difficulty', targetPath: 'assetDataOverrides.gameInfo.aiContent.difficulty', match: 'exact', message: 'AI difficulty notes must land in GameInfo aiContent.' },
   { sourcePath: 'ai.considerations', targetPath: 'assetDataOverrides.gameInfo.aiContent.considerations', match: 'exact', message: 'AI considerations must land in GameInfo aiContent.' },
   { sourcePath: 'rules.objective', targetPath: 'assetDataOverrides.rules.objective', match: 'exact', message: 'Rule objective must land in CardGameRules.' },
@@ -111,6 +111,7 @@ const REQUIRED_LINKED_ASSET_KEYS = [
   'stateEventModel',
   'validationFixtures',
 ] as const;
+const PUBLIC_JUNK_TEXT_PATTERN = /\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
 
 export function validateProcessedGameTransferCoverage(
   game: Game,
@@ -183,7 +184,10 @@ function validateCheck(
   check: TransferCheck,
   issues: ProcessedGameTransferIssue[],
 ): void {
-  const source = readPath(game, check.sourcePath);
+  const rawSource = readPath(game, check.sourcePath);
+  const source = check.match === 'publicVariationList'
+    ? normalizePublicVariationList(rawSource)
+    : rawSource;
   if (!isMeaningful(source)) {
     return;
   }
@@ -237,6 +241,37 @@ function isMeaningful(value: unknown): boolean {
     return Object.values(value).some(isMeaningful);
   }
   return false;
+}
+
+function normalizePublicVariationList(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.flatMap((variation) => {
+    if (!variation || typeof variation !== 'object' || Array.isArray(variation)) {
+      return [];
+    }
+    const record = variation as Record<string, unknown>;
+    const name = publicText(record.name);
+    const description = publicText(record.description);
+    if (!name || !description) {
+      return [];
+    }
+    const id = publicText(record.id);
+    return [{
+      ...(id ? { id } : {}),
+      name,
+      description,
+    }];
+  });
+}
+
+function publicText(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const trimmed = value.trim();
+  return trimmed && !PUBLIC_JUNK_TEXT_PATTERN.test(trimmed) ? trimmed : '';
 }
 
 function valuesEqual(left: unknown, right: unknown): boolean {

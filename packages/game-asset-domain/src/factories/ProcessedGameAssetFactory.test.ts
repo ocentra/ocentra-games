@@ -61,7 +61,36 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
       },
     });
     expect(options.mechanicsModelDataOverrides?.validation).toMatchObject({
-      validationSuites: [],
+      validationSuites: [
+        {
+          id: 'buta-no-shippo.core-runtime-contracts',
+          fixtures: expect.arrayContaining([
+            expect.objectContaining({
+              purpose: 'setup',
+              expectedInitialHandSize: 3,
+              expectedPlayerCounts: expect.objectContaining({
+                min: 2,
+                max: 8,
+              }),
+              expectedDeckCount: 1,
+            }),
+            expect.objectContaining({
+              purpose: 'flow',
+              expectedFirstPhase: 'play',
+              expectedLegalActions: expect.arrayContaining(['play_card']),
+            }),
+            expect.objectContaining({
+              purpose: 'scoring',
+              expectedFinalScore: expect.stringContaining('fewer penalty cards'),
+            }),
+          ]),
+        },
+      ],
+      examples: [
+        expect.objectContaining({
+          expectedInitialHandSize: 3,
+        }),
+      ],
     });
     expect(JSON.stringify(overrides.gameInfo.sections)).not.toContain('sourceUrl');
   });
