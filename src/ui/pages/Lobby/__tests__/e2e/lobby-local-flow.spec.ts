@@ -1,8 +1,16 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
-import { buildPublicGameLobbyPath } from '@ocentra/endpoint-domain/constants/public-routes';
+import {
+  buildPublicGameLobbyPath,
+  buildPublicGamePlayPath,
+} from '@ocentra/endpoint-domain/constants/public-routes';
 
-const ClaimLobbyPath = buildPublicGameLobbyPath('claim:ddc6d965-14a7-4586-8a15-674e0daf8b5c');
-const ClipboardOrigin = 'http://localhost:3000';
+const ClaimGameId = 'claim:ddc6d965-14a7-4586-8a15-674e0daf8b5c';
+const ClaimLobbyPath = buildPublicGameLobbyPath(ClaimGameId);
+const ClaimPlayPath = buildPublicGamePlayPath(ClaimGameId);
+
+function escapedPathRegex(path: string): RegExp {
+  return new RegExp(`${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\?.*)?$`);
+}
 
 async function openClaimLobby(page: Page) {
   await page.goto(ClaimLobbyPath);
@@ -68,7 +76,8 @@ async function exerciseSideServices(page: Page, joinCode: string) {
   await expect(page.getByRole('button', { name: /Server: NA West/ })).toBeVisible({ timeout: 15000 });
 
   await page.getByRole('button', { name: 'DAILY REWARD' }).click();
-  await expect(page.getByText(/GP \/ .*AC|CLAIMED/).first()).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('button', { name: 'CLOSE' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'CLOSE' }).click();
 
   await page.getByRole('button', { name: 'SHARE' }).click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()), { timeout: 15000 }).toContain(joinCode);
@@ -90,12 +99,12 @@ test.describe('Claim lobby local multiplayer flow', () => {
     const codeGuestContext = await browser.newContext();
     const contexts = [hostContext, publicGuestContext, codeGuestContext];
     try {
-      await hostContext.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: ClipboardOrigin });
       const hostPage = await hostContext.newPage();
       const publicGuestPage = await publicGuestContext.newPage();
       const codeGuestPage = await codeGuestContext.newPage();
 
       await openClaimLobby(hostPage);
+      await hostContext.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(hostPage.url()).origin });
       const joinCode = await createTableFromLobby(hostPage);
       await exerciseSideServices(hostPage, joinCode);
       await addAISeat(hostPage);
@@ -119,10 +128,15 @@ test.describe('Claim lobby local multiplayer flow', () => {
 
       await hostPage.getByRole('button', { name: 'READY', exact: true }).click();
       await expect(hostPage.getByRole('button', { name: 'UNREADY', exact: true })).toBeVisible({ timeout: 15000 });
-      await hostPage.getByRole('button', { name: 'START', exact: true }).click();
-      await expect(hostPage.getByText(/STARTING/).first()).toBeVisible({ timeout: 15000 });
-      await expect(publicGuestPage.getByText(/STARTING/).first()).toBeVisible({ timeout: 15000 });
-      await expect(codeGuestPage.getByText(/STARTING/).first()).toBeVisible({ timeout: 15000 });
+      await Promise.all([
+        hostPage.waitForURL(escapedPathRegex(ClaimPlayPath), { timeout: 30000 }),
+        publicGuestPage.waitForURL(escapedPathRegex(ClaimPlayPath), { timeout: 30000 }),
+        codeGuestPage.waitForURL(escapedPathRegex(ClaimPlayPath), { timeout: 30000 }),
+        hostPage.getByRole('button', { name: 'START', exact: true }).click(),
+      ]);
+      await expect(hostPage.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 30000 });
+      await expect(publicGuestPage.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 30000 });
+      await expect(codeGuestPage.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 30000 });
     } finally {
       await closeContexts(contexts);
     }

@@ -51,6 +51,7 @@ export type AppRouteState =
   | { kind: 'matchmaking'; gameId?: string }
   | { kind: 'lobby'; gameId?: string }
   | { kind: 'game'; gameId: string }
+  | { kind: 'gamePlay'; gameId: string }
   | { kind: 'template' }
   | { kind: 'notFound'; path: string }
   | { kind: 'legacy'; token: string };
@@ -91,6 +92,7 @@ function notFoundRoute(segments: string[]): AppRouteState {
 function getGameContextFromRoute(state: AppRouteState): string | undefined {
   if (
     state.kind === 'game' ||
+    state.kind === 'gamePlay' ||
     state.kind === 'matchmaking' ||
     state.kind === 'lobby'
   ) {
@@ -234,7 +236,7 @@ export function parseAppRoute(pathname: string): AppRouteState {
       return fourth ? notFoundRoute(segments) : { kind: 'leaderboard' };
     }
     if (third === PublicRouteSegment.Play) {
-      return fourth ? notFoundRoute(segments) : { kind: 'game', gameId: second };
+      return fourth ? notFoundRoute(segments) : { kind: 'gamePlay', gameId: second };
     }
     if (second === PublicRouteSegment.CardGame && third === PublicRouteSegment.Template) {
       return fourth ? notFoundRoute(segments) : { kind: 'template' };

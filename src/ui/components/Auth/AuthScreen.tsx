@@ -16,6 +16,7 @@ const SettingsScreen = lazy(() => import('@/ui/features/settings/SettingsScreen'
 const ShopScreen = lazy(() => import('@/ui/features/shop/ShopScreen').then((m) => ({ default: m.ShopScreen })));
 const MatchmakingScreen = lazy(() => import('@/ui/features/matchmaking/MatchmakingScreen').then((m) => ({ default: m.MatchmakingScreen })));
 const LobbyScreen = lazy(() => import('@/ui/features/lobby/LobbyScreen').then((m) => ({ default: m.LobbyScreen })));
+const CardGamePlayScreen = lazy(() => import('@/ui/pages/games/CardGamePlay/GameScreenPage').then((m) => ({ default: m.GameScreenPage })));
 const SocialScreen = lazy(() => import('@/ui/features/social/SocialScreen').then((m) => ({ default: m.SocialScreen })));
 const CompetitionScreen = lazy(() => import('@/ui/features/competition/CompetitionScreen').then((m) => ({ default: m.CompetitionScreen })));
 const PlayerHubScreen = lazy(() => import('@/ui/features/playerHub/PlayerHubScreen').then((m) => ({ default: m.PlayerHubScreen })));
@@ -285,6 +286,14 @@ export function AuthScreen({
             initialGameSlug={route.gameId}
             initialDetailSection={route.kind === 'rules' ? 'rules' : 'overview'}
           />
+        </Suspense>
+      );
+    }
+
+    if (route.kind === 'gamePlay') {
+      return (
+        <Suspense fallback={<RouteFallback />}>
+          <CardGamePlayScreen gameModeId={route.gameId} />
         </Suspense>
       );
     }

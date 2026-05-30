@@ -1566,6 +1566,33 @@ export function SelectedGameShowcase({
   const sideAStats = metricFallbacks(presentation.sideA.stats);
   const visibleActions = presentation.actions.filter((action) => action.enabled !== false);
   const showInternalDesignerControls = designerMode && showDesignerControls;
+  const presentationProbeJson = useMemo(() => JSON.stringify({
+    version: 1,
+    activeTabId: activeTab.id,
+    activeChunkId: activeChunk?.id ?? null,
+    heroTitle: presentation.hero.title,
+    heroTaglineLines: presentation.hero.taglineLines,
+    stats: presentation.sideA.stats,
+    tabs: tabs.map((tab) => ({
+      id: tab.id,
+      label: tab.label,
+      tip: tab.tip ?? presentation.tip[tab.id] ?? '',
+      chunkCount: tab.chunks.length,
+      chunks: tab.chunks.map((chunk) => ({
+        id: chunk.id,
+        title: chunk.title,
+        eyebrow: chunk.eyebrow ?? '',
+        kind: chunk.kind,
+        body: chunk.body,
+        bullets: chunk.bullets,
+        visualRefs: chunk.visualRefs ?? [],
+      })),
+    })),
+    actions: visibleActions.map((action) => ({
+      id: action.id,
+      label: action.label,
+    })),
+  }), [activeChunk?.id, activeTab.id, presentation.hero.taglineLines, presentation.hero.title, presentation.sideA.stats, presentation.tip, tabs, visibleActions]);
   const vw = cfg.canvas.vw;
   const defaultVh = cfg.canvas.vh;
   const measuredAspect = containerSize.width > 0 && containerSize.height > 0 ? containerSize.width / containerSize.height : vw / defaultVh;
@@ -1658,7 +1685,17 @@ export function SelectedGameShowcase({
   }, [activeTabId, onActiveTabChange]);
 
   return (
-    <div ref={containerRef} className={`selected-game-showcase relative w-full ${bgClass} text-white ${className ?? ''}`} style={rootStyle}>
+    <div
+      ref={containerRef}
+      className={`selected-game-showcase relative w-full ${bgClass} text-white ${className ?? ''}`}
+      data-active-tab-id={activeTab.id}
+      data-active-chunk-id={activeChunk?.id ?? ''}
+      data-testid="selected-game-showcase"
+      style={rootStyle}
+    >
+      <script type="application/json" data-testid="selected-game-presentation-state">
+        {presentationProbeJson}
+      </script>
       <svg viewBox={`0 0 ${vw} ${vh}`} width="100%" height={showInternalDesignerControls ? undefined : '100%'} preserveAspectRatio="xMidYMin meet" className={showInternalDesignerControls ? 'block h-auto w-full' : 'block h-full w-full'}>
         <defs>
           <linearGradient id="tabActive" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={cfg.colors.tabActiveTop} /><stop offset="0.62" stopColor={cfg.colors.tabActiveMid} /><stop offset="1" stopColor={cfg.colors.tabActiveBottom} /></linearGradient>
@@ -1700,7 +1737,26 @@ export function SelectedGameShowcase({
               const tabY = cfg.tabGroup.y;
               const text = tab.label.toUpperCase();
               return (
-                <g key={tab.id} onClick={() => selectTopTab(tab.id)} onMouseEnter={() => setHoverTopTab(tab.id)} onMouseLeave={() => setHoverTopTab(null)} style={{ cursor: 'pointer' }} filter={active ? 'url(#cyanGlow)' : hover ? 'url(#tabGreenGlow)' : undefined}>
+                <g
+                  key={tab.id}
+                  aria-label={`${tab.label} information`}
+                  aria-selected={active}
+                  data-testid={`selected-game-tab-${tab.id}`}
+                  onClick={() => selectTopTab(tab.id)}
+                  onKeyDown={(event) => {
+                    if (event.key !== 'Enter' && event.key !== ' ') {
+                      return;
+                    }
+                    event.preventDefault();
+                    selectTopTab(tab.id);
+                  }}
+                  onMouseEnter={() => setHoverTopTab(tab.id)}
+                  onMouseLeave={() => setHoverTopTab(null)}
+                  role="tab"
+                  style={{ cursor: 'pointer' }}
+                  tabIndex={0}
+                  filter={active ? 'url(#cyanGlow)' : hover ? 'url(#tabGreenGlow)' : undefined}
+                >
                   <path d={roundedRectPath(tx, tabY, tabW, tabH, cfg.tabGroup.tabTopRadius, cfg.tabGroup.tabTopRadius, cfg.tabGroup.tabBottomRadius, cfg.tabGroup.tabBottomRadius)} fill={active ? 'url(#buttonGradient)' : hover ? 'url(#tabHoverFill)' : cfg.colors.tabInactiveFill} fillOpacity={active ? 0.88 : hover ? 0.7 : 0.62} stroke={active ? '#d8bfff' : hover ? cfg.colors.arrowHover : cfg.colors.tabStroke} strokeWidth={active || hover ? 1.7 : 1.25} strokeOpacity={active ? 0.86 : hover ? 0.82 : 0.5} />
                   <rect x={tx + 4} y={tabY + 4} width={Math.max(0, tabW - 8)} height={Math.min(cfg.tabGroup.shineH, Math.max(0, tabH - 8))} rx={Math.max(0, cfg.tabGroup.tabTopRadius - 2)} fill="#ffffff" opacity={active ? 0.14 : hover ? 0.08 : 0.04} pointerEvents="none" />
                   <SvgFitText x={tx + 13} y={tabY + tabH * 0.18} width={Math.max(18, tabW - 26)} height={tabH * 0.62} text={text} maxFontSize={cfg.tabGroup.fontSize} minFontSize={8} fontWeight="900" fill={active ? '#ffffff' : hover ? '#9dffc2' : '#d9edff'} />
@@ -1827,6 +1883,8 @@ export function SelectedGameShowcase({
                 return (
                   <g
                     key={action.id}
+                    aria-label={action.label}
+                    data-testid={`selected-game-action-${action.id}`}
                     style={{ cursor: 'pointer' }}
                     onClick={() => {
                       if (onActionClick) {
@@ -1835,6 +1893,19 @@ export function SelectedGameShowcase({
                         onViewLobbies?.();
                       }
                     }}
+                    onKeyDown={(event) => {
+                      if (event.key !== 'Enter' && event.key !== ' ') {
+                        return;
+                      }
+                      event.preventDefault();
+                      if (onActionClick) {
+                        onActionClick(action.id);
+                      } else if (action.id === 'view-lobbies') {
+                        onViewLobbies?.();
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
                   >
                     <rect x={bx} y={by} width={bw} height={bh} rx={cfg.button.radius} fill="url(#buttonGradient)" stroke="#d8bfff" strokeOpacity={cfg.button.strokeOpacity} filter={cfg.glow.button ? 'url(#buttonEdgeGlow)' : undefined} />
                     <rect x={bx + 3} y={by + 3} width={Math.max(0, bw - 6)} height={cfg.button.shineH} rx={Math.max(0, cfg.button.radius - 2)} fill="#ffffff" opacity="0.11" />

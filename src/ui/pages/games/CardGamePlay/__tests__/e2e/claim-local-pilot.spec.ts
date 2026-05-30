@@ -1,78 +1,64 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import {
+  attachPilotDiagnostics,
+  ClaimPlayPath,
+  driveClaimPilotToCompletion,
+  expectClaimInitialDeal,
+  readPilotRuntimeState,
+  waitForClaimPilotReady,
+} from './claim-pilot-e2e-helpers';
 
-test.describe.configure({ timeout: 60000 });
-
-const waitForPilotToBeReady = async (page: Page) => {
-  await expect(page.getByTestId('claim-pilot-floor-zone')).toBeVisible({ timeout: 20000 });
-  await expect(page.getByTestId('claim-pilot-floor-zone')).not.toContainText('Waiting', { timeout: 20000 });
-  await expect(page.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 20000 });
-};
+test.describe.configure({ timeout: 120000 });
 
 test.describe('Claim local pilot', () => {
-  test('loads the Claim pilot route and starts a visible-hand match', async ({ page }) => {
-    page.on('pageerror', (error) => {
-      process.stdout.write(`[pageerror] ${error.message}\n`);
-    });
-    page.on('requestfailed', (request) => {
-      process.stdout.write(`[requestfailed] ${request.url()} ${request.failure()?.errorText ?? 'unknown'}\n`);
-    });
-    page.on('console', (message) => {
-      if (message.type() === 'error') {
-        process.stdout.write(`[console:error] ${message.text()}\n`);
-      }
-    });
+  test('loads the asset-backed Claim pilot with a real deal and legal first action state', async ({ page }) => {
+    attachPilotDiagnostics(page);
 
-    await page.goto('/games/claim/play', { waitUntil: 'domcontentloaded' });
+    await page.goto(`${ClaimPlayPath}?seed=42&autoStartSeconds=0&botDelayMs=25`, { waitUntil: 'domcontentloaded' });
 
-    await waitForPilotToBeReady(page);
-    await expect(page.getByTestId('claim-pilot-redeal')).toBeVisible({ timeout: 20000 });
-    await expect(page.getByRole('button', { name: /^(Declare|Pick|Pass|Showdown)/ }).first()).toBeVisible({ timeout: 20000 });
+    const state = await waitForClaimPilotReady(page);
+    expectClaimInitialDeal(state);
+    await expect(page.getByRole('button', { name: /^(Declare|Stock|Discard|Drop|Done|Pass|Showdown)/ }).first()).toBeVisible({ timeout: 20000 });
   });
 
-  test('updates the Claim pilot action state after declare and pick interactions', async ({ page }) => {
-    page.on('pageerror', (error) => {
-      process.stdout.write(`[pageerror] ${error.message}\n`);
-    });
-    page.on('requestfailed', (request) => {
-      process.stdout.write(`[requestfailed] ${request.url()} ${request.failure()?.errorText ?? 'unknown'}\n`);
-    });
-    page.on('console', (message) => {
-      if (message.type() === 'error') {
-        process.stdout.write(`[console:error] ${message.text()}\n`);
-      }
-    });
+  test('plays Claim through scoring, round advancement, and final game result', async ({ page }) => {
+    attachPilotDiagnostics(page);
 
-    await page.goto('/games/claim/play', { waitUntil: 'domcontentloaded' });
+    await page.goto(`${ClaimPlayPath}?seed=42&autoStartSeconds=0&botDelayMs=25`, { waitUntil: 'domcontentloaded' });
 
-    await waitForPilotToBeReady(page);
-    await expect(page.getByTestId('claim-pilot-redeal')).toBeVisible({ timeout: 20000 });
+    const initialState = await waitForClaimPilotReady(page);
+    expectClaimInitialDeal(initialState);
 
-    const declareButtons = page.getByRole('button', { name: /^Declare / });
-    await expect(declareButtons.first()).toBeVisible({ timeout: 20000 });
-    await declareButtons.first().click();
+    const finalState = await driveClaimPilotToCompletion(page);
+    await expect(page.getByText(/Winner:|Tie game/).first()).toBeVisible({ timeout: 20000 });
+    expect(finalState.isGameOver).toBe(true);
+    expect(finalState.round).toBeGreaterThan(1);
+    expect(finalState.players.some((player) => player.finalRoundScore !== null)).toBe(true);
+    expect(finalState.players.some((player) => player.settlementDelta !== null)).toBe(true);
+  });
 
-    await expect(page.getByText(/Declared: clubs/i)).toBeVisible({ timeout: 20000 });
+  test('keeps invalid showdown hidden until the current player has a valid claim', async ({ page }) => {
+    attachPilotDiagnostics(page);
 
-    const pickButtons = page.getByRole('button', { name: /^Pick / });
-    await expect(pickButtons.first()).toBeVisible({ timeout: 20000 });
-    await pickButtons.first().click();
+    await page.goto(`${ClaimPlayPath}?seed=42&autoStartSeconds=0&botDelayMs=25`, { waitUntil: 'domcontentloaded' });
 
-    await expect(page.getByRole('button', { name: 'Pass' })).toBeVisible({ timeout: 20000 });
-    await expect(page.getByTestId('claim-pilot-table')).toBeVisible();
+    let state = await waitForClaimPilotReady(page);
+    expect(state.hudActions.some((action) => action.kind === 'call_showdown')).toBe(false);
+
+    await page.getByRole('button', { name: /^Declare / }).first().click();
+    await expect.poll(async () => {
+      state = await readPilotRuntimeState(page);
+      return state.players.find((player) => !player.isAI)?.declaredSuit ?? null;
+    }, { timeout: 20000 }).not.toBeNull();
+
+    state = await readPilotRuntimeState(page);
+    if (state.players.find((player) => !player.isAI)?.finalRoundScore === null) {
+      expect(state.hudActions.some((action) => action.kind === 'call_showdown')).toBe(false);
+    }
   });
 
   test('shows a readiness error for unsupported pilot routes', async ({ page }) => {
-    page.on('pageerror', (error) => {
-      process.stdout.write(`[pageerror] ${error.message}\n`);
-    });
-    page.on('requestfailed', (request) => {
-      process.stdout.write(`[requestfailed] ${request.url()} ${request.failure()?.errorText ?? 'unknown'}\n`);
-    });
-    page.on('console', (message) => {
-      if (message.type() === 'error') {
-        process.stdout.write(`[console:error] ${message.text()}\n`);
-      }
-    });
+    attachPilotDiagnostics(page);
 
     await page.goto('/games/three-card-brag/play', { waitUntil: 'domcontentloaded' });
 

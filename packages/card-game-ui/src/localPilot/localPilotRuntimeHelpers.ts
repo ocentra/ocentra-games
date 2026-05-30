@@ -31,6 +31,7 @@ export interface LocalPilotHudActionDescriptor {
 }
 
 interface BuildLocalPilotHudActionsOptions {
+  canCallShowdown?: boolean;
   currentPlayer: Player | null;
   distinctDeclareSuits: string[];
   gameState: GameState | null;
@@ -278,6 +279,7 @@ export function getLocalPilotWinnerText(players: Player[]): string | null {
 }
 
 export function buildLocalPilotHudActions({
+  canCallShowdown = true,
   currentPlayer,
   distinctDeclareSuits,
   gameState,
@@ -344,7 +346,7 @@ export function buildLocalPilotHudActions({
     });
   }
 
-  if (legalActions.includes('call_showdown')) {
+  if (legalActions.includes('call_showdown') && canCallShowdown) {
     terminalActions.push({
       kind: 'call_showdown',
       label: 'Showdown',
