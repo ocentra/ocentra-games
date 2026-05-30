@@ -1,5 +1,6 @@
+import { createRuntimeCard, runtimePiecesToCards } from '@/deck/runtimeDeck';
 import type { IDeckProvider } from '@/interfaces/IDeckProvider';
-import { Suit, type Card, type CardValue } from '@/types/game';
+import { Suit, type Card, type CardValue, type RuntimePiece } from '@/types/game';
 
 class SeededDeckProvider implements IDeckProvider {
   private seed: number;
@@ -16,8 +17,12 @@ class SeededDeckProvider implements IDeckProvider {
     return this.deckFactory();
   }
 
-  shuffleDeck(deck: Card[]): Card[] {
-    const shuffled = [...deck];
+  async createDeck(): Promise<RuntimePiece[]> {
+    return this.createStandardDeck();
+  }
+
+  shuffleDeck(deck: RuntimePiece[]): RuntimePiece[] {
+    const shuffled = deck.map((piece) => ({ ...piece, identity: { ...piece.identity }, tags: [...piece.tags] }));
     let currentIndex = shuffled.length;
     this.resetSeed();
 
@@ -30,9 +35,9 @@ class SeededDeckProvider implements IDeckProvider {
     return shuffled;
   }
 
-  dealInitialHands(deck: Card[], playerCount: number, handSize: number): { hands: Card[][]; remainingDeck: Card[] } {
-    const hands: Card[][] = Array.from({ length: playerCount }, () => []);
-    const remainingDeck = [...deck];
+  dealInitialHands(deck: RuntimePiece[], playerCount: number, handSize: number): { hands: RuntimePiece[][]; remainingDeck: RuntimePiece[] } {
+    const hands: RuntimePiece[][] = Array.from({ length: playerCount }, () => []);
+    const remainingDeck = deck.map((piece) => ({ ...piece, identity: { ...piece.identity }, tags: [...piece.tags] }));
 
     for (let cardIndex = 0; cardIndex < handSize; cardIndex += 1) {
       for (let playerIndex = 0; playerIndex < playerCount; playerIndex += 1) {
@@ -46,9 +51,15 @@ class SeededDeckProvider implements IDeckProvider {
     return { hands, remainingDeck };
   }
 
-  drawCard(deck: Card[]): { card: Card | null; remainingDeck: Card[] } {
-    const remainingDeck = [...deck];
-    const card = remainingDeck.shift() ?? null;
+  drawPiece(deck: RuntimePiece[]): { piece: RuntimePiece | null; remainingDeck: RuntimePiece[] } {
+    const remainingDeck = deck.map((piece) => ({ ...piece, identity: { ...piece.identity }, tags: [...piece.tags] }));
+    const piece = remainingDeck.shift() ?? null;
+    return { piece, remainingDeck };
+  }
+
+  drawCard(deck: RuntimePiece[]): { card: Card | null; remainingDeck: RuntimePiece[] } {
+    const { piece, remainingDeck } = this.drawPiece(deck);
+    const card = runtimePiecesToCards(piece ? [piece] : [])[0] ?? null;
     return { card, remainingDeck };
   }
 
@@ -73,7 +84,7 @@ class SeededDeckProvider implements IDeckProvider {
 
 function createDeck(values: CardValue[]): Card[] {
   return [Suit.SPADES, Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS].flatMap((suit) =>
-    values.map((value) => ({
+    values.map((value) => createRuntimeCard({
       suit,
       value,
       id: `${value}_of_${suit}`,

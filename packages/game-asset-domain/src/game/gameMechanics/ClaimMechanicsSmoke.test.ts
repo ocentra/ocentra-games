@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
 import { GamePhase } from '@ocentra/game-domain/types/game';
 import { validateAssetFile } from '@/schemas/asset/asset-file-schema';
-import { CardGameMechanicsDataSchema } from '@/schemas/asset/card-game-mechanics-data.schema';
+import { decodeCardGameMechanicsData } from '@/schemas/asset/card-game-mechanics-data.schema';
 import { toMechanicsSpec } from './MechanicsTranslator';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +23,7 @@ describe('Claim mechanics asset smoke', () => {
     const validation = validateAssetFile(parsed);
     expect(validation.success).toBe(true);
 
-    const data = CardGameMechanicsDataSchema.parse((parsed as { data: unknown }).data);
+    const data = decodeCardGameMechanicsData((parsed as { data: unknown }).data);
     const spec = toMechanicsSpec(data);
 
     const engine = new GameEngine();
@@ -31,18 +31,20 @@ describe('Claim mechanics asset smoke', () => {
     engine.loadMechanicsSpec(spec);
     engine.addPlayer({ id: 'p1', name: 'Player 1' });
     engine.addPlayer({ id: 'p2', name: 'Player 2' });
+    engine.addPlayer({ id: 'p3', name: 'Player 3' });
+    engine.addPlayer({ id: 'p4', name: 'Player 4' });
 
     await engine.startGame();
 
     const state = engine.getGameState();
     expect(state?.mechanicsPhaseId).toBe('turn_loop');
     expect(state?.phase).toBe(GamePhase.PLAYER_ACTION);
-    expect(state?.floorCard).not.toBeNull();
+    expect(state?.players).toHaveLength(4);
     expect(state?.players.every((player) => player.hand.length === 3)).toBe(true);
 
     const activePlayer = state!.players[state!.currentPlayer];
     const declareResult = engine.processPlayerAction({
-      type: 'declare',
+      type: 'declare_suit',
       playerId: activePlayer.id,
       data: { suit: activePlayer.hand[0].suit },
       timestamp: new Date(state!.lastAction.getTime() + 1000),

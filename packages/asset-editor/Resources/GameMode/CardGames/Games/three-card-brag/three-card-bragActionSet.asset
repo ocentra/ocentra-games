@@ -17,17 +17,27 @@
     executorId: 'vying.betting.v1',
     actionModel: {
       actionIds: [
+        'setup_round',
         'ante',
+        'bet',
         'bet_blind',
         'see_cards',
         'bet_seeing',
         'raise',
         'call',
         'fold',
+        'call_showdown',
         'request_showdown',
+        'reveal_hand',
+        'score_round',
         'award_pot',
       ],
       payloadSchemas: {
+        bet: {
+          required: [
+            'amount',
+          ],
+        },
         bet_blind: {
           required: [
             'amount',
@@ -45,18 +55,35 @@
         },
       },
       actionEndsTurn: {
+        setup_round: false,
         ante: false,
+        bet: true,
         bet_blind: true,
         see_cards: false,
         bet_seeing: true,
         raise: true,
         call: true,
         fold: true,
+        call_showdown: true,
         request_showdown: true,
+        reveal_hand: false,
+        score_round: false,
         award_pot: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        description: 'Collect boot and deal three private cards to each player.',
+        constraints: 'System action at the start of each hand.',
+        effectType: 'setup_round',
+        cost: 'boot',
+        effectHints: {
+          dealCountPerPlayer: 3,
+          boot: 'baseBet',
+        },
+        isTerminating: false,
+      },
       ante: {
         supported: true,
         description: 'Contribute the agreed boot to seed the pot.',
@@ -67,6 +94,17 @@
           targetZone: 'pot',
         },
         isTerminating: false,
+      },
+      bet: {
+        supported: true,
+        description: 'Put chips into the pot during the betting round.',
+        constraints: 'Current active player only; amount must be positive.',
+        effectType: 'bet',
+        cost: 'variable',
+        effectHints: {
+          pot: 'roundPot',
+        },
+        isTerminating: true,
       },
       bet_blind: {
         supported: true,
@@ -114,6 +152,17 @@
         },
         isTerminating: true,
       },
+      call_showdown: {
+        supported: true,
+        description: 'Move active players to hand reveal and rank comparison.',
+        constraints: 'At least two active players must remain.',
+        effectType: 'call_showdown',
+        cost: '0',
+        effectHints: {
+          reveal: 'active_players',
+        },
+        isTerminating: true,
+      },
       request_showdown: {
         supported: true,
         description: 'Force a comparison according to the current table stakes.',
@@ -124,6 +173,26 @@
           evaluator: 'three_card_brag_hand_rank',
         },
         isTerminating: true,
+      },
+      reveal_hand: {
+        supported: true,
+        description: 'Reveal a three-card hand during showdown.',
+        constraints: 'Showdown phase only.',
+        effectType: 'reveal_hand',
+        cost: '0',
+        effectHints: {},
+        isTerminating: false,
+      },
+      score_round: {
+        supported: true,
+        description: 'Rank active hands and award the pot.',
+        constraints: 'System action after folds or showdown reveal.',
+        effectType: 'score_round',
+        cost: '0',
+        effectHints: {
+          scoringType: 'three_card_brag_hand_rank',
+        },
+        isTerminating: false,
       },
     },
     customActions: [

@@ -17,9 +17,11 @@
     executorId: 'trick-taking.briscola.v1',
     actionModel: {
       actionIds: [
+        'setup_round',
         'play_card',
         'draw_after_trick',
         'score_trick',
+        'score_round',
         'end_hand',
       ],
       payloadSchemas: {
@@ -30,13 +32,27 @@
         },
       },
       actionEndsTurn: {
+        setup_round: false,
         play_card: true,
         draw_after_trick: false,
         score_trick: false,
+        score_round: false,
         end_hand: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        description: 'Deal three cards to each player and reveal one trump indicator card.',
+        constraints: 'System setup action.',
+        effectType: 'setup_round',
+        cost: '0',
+        effectHints: {
+          dealCountPerPlayer: 3,
+          trumpSource: 'revealed_upcard',
+        },
+        isTerminating: false,
+      },
       play_card: {
         supported: true,
         description: 'Play one card to the current trick.',
@@ -71,6 +87,17 @@
         effectHints: {
           valueSystem: 'briscola_points',
           trumpBeatsLedSuit: true,
+        },
+        isTerminating: false,
+      },
+      score_round: {
+        supported: true,
+        description: 'Count captured card points and close the hand.',
+        constraints: 'System action after the final trick.',
+        effectType: 'score_round',
+        cost: '0',
+        effectHints: {
+          valueSystem: 'briscola_points',
         },
         isTerminating: false,
       },

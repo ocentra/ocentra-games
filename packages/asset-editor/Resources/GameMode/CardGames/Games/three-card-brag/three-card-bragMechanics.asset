@@ -26,7 +26,7 @@
     ],
     playerConfig: {
       playerMode: 'multiplayer',
-      minPlayers: 2,
+      minPlayers: 3,
       maxPlayers: 7,
       optimalPlayers: 4,
       dealerRotates: true,
@@ -39,7 +39,7 @@
         legalActions: [
           'setup_round',
         ],
-        nextPhase: 'betting',
+        nextPhase: 'betting_round',
         isMandatory: true,
         loopIndex: null,
         totalLoops: null,
@@ -50,8 +50,8 @@
         notes: 'Collect boot, deal three private cards to each player, and seed the pot.',
       },
       {
-        id: 'betting',
-        label: 'Betting',
+        id: 'betting_round',
+        label: 'Betting Round',
         actor: 'current_player',
         legalActions: [
           'bet',
@@ -104,7 +104,16 @@
         isMandatory: true,
         loopIndex: null,
         totalLoops: null,
-        conditionalNext: [],
+        conditionalNext: [
+          {
+            condition: 'game_end_reached',
+            nextPhase: null,
+          },
+          {
+            condition: 'start_next_round',
+            nextPhase: 'setup_round',
+          },
+        ],
         cardVisibilityChanges: {},
         notes: 'Award the pot to the best active hand or the last unfolded player.',
       },
@@ -570,11 +579,11 @@
       authority: 'local_authoritative',
       multiplayerSyncModel: 'deferred',
       replaySnapshotCompatible: true,
-      readiness: 'metadata_corrected_not_claim_pilot_ready',
+      readiness: 'playable_pilot_ready',
     },
-    progression: ['setup_round', 'betting', 'showdown', 'score_round'],
+    progression: ['setup_round', 'betting_round', 'showdown', 'score_round'],
     roles: ['dealer', 'blind_player', 'seen_player', 'folded_player', 'showdown_player'],
-    determinismNotes: 'Deterministic once shuffle seed, dealer rotation, and action order are fixed. Claim remains the only playable pilot in this pass.',
+    determinismNotes: 'Deterministic once shuffle seed, dealer rotation, and action order are fixed. The smoke test covers deal, bet, fold, showdown, reveal, and pot award.',
     assetType: 'CardGameMechanics',
   },
 }
