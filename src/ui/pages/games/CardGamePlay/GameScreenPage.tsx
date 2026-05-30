@@ -1,12 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
-import { createClaimBotAction } from '@ocentra/game-domain/engine/mechanics/family/ClaimFamilyResolver';
+import {
+  calculateClaimPlayerScore,
+  createClaimBotAction,
+} from '@ocentra/game-domain/engine/mechanics/family/ClaimFamilyResolver';
+import { compileClaimRuntimeConfig } from '@ocentra/game-domain/schema/claim';
 import type { GameState, PlayerActionTypeValue, Suit } from '@ocentra/game-domain/types/game';
 import { AIPersonality, GamePhase } from '@ocentra/game-domain/types/game';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AppScreenToken, buildHomePath } from '@/ui/navigation/appRoutes';
 import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
 import type {
@@ -42,9 +46,58 @@ interface GameScreenPageProps {
 const LOCAL_PILOT_PLAYER_COUNT = 4;
 const AUTO_START_COUNTDOWN_SECONDS = 3;
 const BOT_ACTION_DELAY_MS = 350;
+const LOCAL_PILOT_SEED = 42;
+
+interface ClaimFamilyStateSnapshot {
+  bankrollByPlayerId?: Record<string, number>;
+  declaredSuitByPlayerId?: Record<string, Suit>;
+  eliminatedPlayerIds?: string[];
+  roundScoresByPlayerId?: Record<string, { finalScore?: number; rawScore?: number }>;
+  settlementByPlayerId?: Record<string, { bankrollAfter?: number; bankrollBefore?: number; totalDelta?: number }>;
+  showdownCallerId?: string | null;
+  undeclaredDebtByPlayerId?: Record<string, number>;
+}
 
 function getSeatName(index: number): string {
   return index === 0 ? 'You' : `Seat ${index + 1}`;
+}
+
+function readPilotNumberParam(params: URLSearchParams, name: string, fallback: number, min: number, max: number): number {
+  const raw = params.get(name);
+  if (!raw) {
+    return fallback;
+  }
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) ? Math.max(min, Math.min(max, parsed)) : fallback;
+}
+
+function getClaimFamilyStateSnapshot(gameState: GameState | null): ClaimFamilyStateSnapshot {
+  const familyState = gameState?.mechanicsContext?.familyState;
+  return familyState && typeof familyState === 'object'
+    ? familyState as ClaimFamilyStateSnapshot
+    : {};
+}
+
+function canCallClaimShowdown(bundle: LocalPlayableGameBundle | null, gameState: GameState | null): boolean {
+  if (!bundle || !gameState || bundle.spec.familyKernel !== 'claim') {
+    return true;
+  }
+  const currentPlayer = gameState.players[gameState.currentPlayer] ?? null;
+  if (!currentPlayer) {
+    return false;
+  }
+  const familyState = getClaimFamilyStateSnapshot(gameState);
+  const declaredSuit = familyState.declaredSuitByPlayerId?.[currentPlayer.id] ?? currentPlayer.declaredSuit;
+  if (!declaredSuit) {
+    return false;
+  }
+  const config = compileClaimRuntimeConfig(bundle.spec);
+  const score = calculateClaimPlayerScore(
+    currentPlayer,
+    declaredSuit,
+    familyState.undeclaredDebtByPlayerId?.[currentPlayer.id] ?? 0,
+  );
+  return currentPlayer.hand.length >= config.minHandSize && score.finalScore >= config.showdownMinimum;
 }
 
 function cloneGameStateSnapshot(state: GameState | null): GameState | null {
@@ -94,15 +147,28 @@ function cloneGameStateSnapshot(state: GameState | null): GameState | null {
 
 export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) => {
   const headerProps = useCoreUIHeaderProps();
+  const location = useLocation();
   const navigate = useNavigate();
   const [bundle, setBundle] = useState<LocalPlayableGameBundle | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [seed] = useState(42);
   const [startingMatch, setStartingMatch] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [timerNow, setTimerNow] = useState(() => Date.now());
+  const pilotSearchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const seed = useMemo(
+    () => readPilotNumberParam(pilotSearchParams, 'seed', LOCAL_PILOT_SEED, 1, Number.MAX_SAFE_INTEGER),
+    [pilotSearchParams],
+  );
+  const autoStartCountdownSeconds = useMemo(
+    () => readPilotNumberParam(pilotSearchParams, 'autoStartSeconds', AUTO_START_COUNTDOWN_SECONDS, 0, 30),
+    [pilotSearchParams],
+  );
+  const botActionDelayMs = useMemo(
+    () => readPilotNumberParam(pilotSearchParams, 'botDelayMs', BOT_ACTION_DELAY_MS, 0, 5000),
+    [pilotSearchParams],
+  );
   const engineRef = useRef<GameEngine | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const autoStartArmedRef = useRef(false);
@@ -125,7 +191,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
 
         setBundle(result.bundle);
         setError(result.error);
-        setCountdown(result.bundle ? AUTO_START_COUNTDOWN_SECONDS : null);
+        setCountdown(result.bundle ? autoStartCountdownSeconds : null);
         autoStartArmedRef.current = false;
         botActionKeyRef.current = null;
       } catch (loadError) {
@@ -151,7 +217,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       unsubscribeRef.current = null;
       engineRef.current = null;
     };
-  }, [gameModeId]);
+  }, [autoStartCountdownSeconds, gameModeId]);
 
   useEffect(() => {
     const hideLoading = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
@@ -187,6 +253,10 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const winnersText = useMemo(
     () => (gameState ? getLocalPilotWinnerText(gameState.players) : null),
     [gameState],
+  );
+  const canCurrentPlayerCallShowdown = useMemo(
+    () => canCallClaimShowdown(bundle, gameState),
+    [bundle, gameState],
   );
 
   const handleHome = () => {
@@ -296,12 +366,12 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
 
       setError(null);
       setGameState(cloneGameStateSnapshot(engine.getGameState()));
-    }, BOT_ACTION_DELAY_MS);
+    }, botActionDelayMs);
 
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [bundle, gameState, isGameOver, seed, startingMatch]);
+  }, [botActionDelayMs, bundle, gameState, isGameOver, seed, startingMatch]);
 
   const dispatchAction = useCallback((type: PlayerActionTypeValue, playerId: string, data?: unknown) => {
     const engine = engineRef.current;
@@ -344,7 +414,13 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     }
 
     autoStartArmedRef.current = true;
-    setCountdown(AUTO_START_COUNTDOWN_SECONDS);
+    if (autoStartCountdownSeconds <= 0) {
+      setCountdown(null);
+      void startMatch();
+      return;
+    }
+
+    setCountdown(autoStartCountdownSeconds);
 
     const intervalId = window.setInterval(() => {
       setCountdown((current) => {
@@ -363,15 +439,16 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [bundle, error, gameState, loading, startMatch, startingMatch]);
+  }, [autoStartCountdownSeconds, bundle, error, gameState, loading, startMatch, startingMatch]);
 
   const hudActions = useMemo<LocalPilotHudActionDescriptor[]>(() => buildLocalPilotHudActions({
+    canCallShowdown: canCurrentPlayerCallShowdown,
     currentPlayer,
     distinctDeclareSuits,
     gameState,
     legalActions,
     revealablePlayers,
-  }), [currentPlayer, distinctDeclareSuits, gameState, legalActions, revealablePlayers]);
+  }), [canCurrentPlayerCallShowdown, currentPlayer, distinctDeclareSuits, gameState, legalActions, revealablePlayers]);
 
   const runtimeHudControls = useMemo<HudArtworkControls | undefined>(() => {
     if (!bundle) {
@@ -501,9 +578,92 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       gameState,
     });
   }, [bundle, gameState]);
+  const runtimeProbeState = useMemo(() => {
+    const familyState = getClaimFamilyStateSnapshot(gameState);
+    return {
+      version: 1,
+      gameId: gameModeId,
+      displayName: bundle?.displayName ?? gameModeId,
+      seed,
+      autoStartCountdownSeconds,
+      botActionDelayMs,
+      loading,
+      startingMatch,
+      countdown,
+      error,
+      ready: Boolean(bundle && !loading && !error),
+      playerCount: bundle?.playerCount ?? LOCAL_PILOT_PLAYER_COUNT,
+      sourceDeckSize: bundle?.deckSize ?? 0,
+      phase: gameState?.phase ?? null,
+      mechanicsPhaseId: gameState?.mechanicsPhaseId ?? null,
+      round: gameState?.round ?? null,
+      isGameOver,
+      legalActions,
+      hudActions: hudActions.map((action) => ({
+        kind: action.kind,
+        label: action.label,
+      })),
+      currentPlayer: currentPlayer ? {
+        id: currentPlayer.id,
+        index: gameState?.currentPlayer ?? null,
+        isAI: currentPlayer.isAI,
+        name: currentPlayer.name,
+        handCount: currentPlayer.hand.length,
+      } : null,
+      deckCount: gameState?.deck.length ?? null,
+      discardCount: gameState?.discardPile.length ?? null,
+      tableCount: gameState?.mechanicsContext?.tableCards.length ?? null,
+      capturedCount: gameState
+        ? Object.values(gameState.mechanicsContext?.capturedCardsByPlayerId ?? {}).reduce((sum, cards) => sum + cards.length, 0)
+        : null,
+      players: gameState?.players.map((player) => ({
+        id: player.id,
+        name: player.name,
+        isAI: player.isAI,
+        handCount: player.hand.length,
+        declaredSuit: familyState.declaredSuitByPlayerId?.[player.id] ?? player.declaredSuit,
+        bankroll: familyState.bankrollByPlayerId?.[player.id] ?? null,
+        debt: familyState.undeclaredDebtByPlayerId?.[player.id] ?? 0,
+        score: player.score,
+        finalRoundScore: familyState.roundScoresByPlayerId?.[player.id]?.finalScore ?? null,
+        settlementDelta: familyState.settlementByPlayerId?.[player.id]?.totalDelta ?? null,
+        eliminated: familyState.eliminatedPlayerIds?.includes(player.id) ?? false,
+      })) ?? [],
+      showdownCallerId: familyState.showdownCallerId ?? null,
+      winnersText,
+    };
+  }, [
+    bundle,
+    autoStartCountdownSeconds,
+    botActionDelayMs,
+    countdown,
+    currentPlayer,
+    error,
+    gameModeId,
+    gameState,
+    hudActions,
+    isGameOver,
+    legalActions,
+    loading,
+    seed,
+    startingMatch,
+    winnersText,
+  ]);
+  const runtimeProbeJson = useMemo(() => JSON.stringify(runtimeProbeState), [runtimeProbeState]);
 
   return (
-    <div className="playable-game-screen">
+    <div
+      className="playable-game-screen"
+      data-testid="local-pilot-runtime"
+      data-game-id={gameModeId}
+      data-phase={gameState?.phase ?? ''}
+      data-mechanics-phase={gameState?.mechanicsPhaseId ?? ''}
+      data-round={gameState?.round ?? ''}
+      data-game-over={isGameOver ? 'true' : 'false'}
+    >
+      <script type="application/json" data-testid="local-pilot-runtime-state">
+        {runtimeProbeJson}
+      </script>
       <CardGameTemplatePage
         document={bundle?.layoutDocument}
         playerCount={bundle?.playerCount ?? LOCAL_PILOT_PLAYER_COUNT}

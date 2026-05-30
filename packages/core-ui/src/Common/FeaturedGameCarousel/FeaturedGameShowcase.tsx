@@ -249,6 +249,7 @@ function SvgArrowButton({
   radius,
   hoverColor,
   ids,
+  testId,
 }: {
   x: number;
   y: number;
@@ -259,6 +260,7 @@ function SvgArrowButton({
   radius: number;
   hoverColor: string;
   ids: (name: string) => string;
+  testId: string;
 }) {
   const [isHover, setIsHover] = useState(false);
   const cx = x + width / 2;
@@ -278,10 +280,20 @@ function SvgArrowButton({
 
   return (
     <g
+      aria-label={`${direction === 'left' ? 'Previous' : 'Next'} featured game`}
+      data-testid={testId}
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onClick();
+        }
+      }}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
+      role="button"
       style={{ cursor: 'pointer' }}
+      tabIndex={0}
       filter={isHover ? `url(#${ids('cyanGlow')})` : undefined}
     >
       <path d={outerPath} fill={isHover ? '#0d5930' : `url(#${ids('navIdle')})`} stroke={isHover ? hoverColor : '#69caff'} strokeWidth={isHover ? 2.3 : 1.5} />
@@ -702,6 +714,8 @@ function LearnMoreButton({
   strokeColor,
   onClick,
   ids,
+  gameIdentifier,
+  gameTitle,
 }: {
   x: number;
   y: number;
@@ -710,6 +724,8 @@ function LearnMoreButton({
   strokeColor: string;
   onClick?: () => void;
   ids: (name: string) => string;
+  gameIdentifier: string;
+  gameTitle: string;
 }) {
   const radius = 9;
   const innerW = height * 0.5;
@@ -723,7 +739,25 @@ function LearnMoreButton({
   const arrow = `${arrowCx - 4},${arrowCy - 8} ${arrowCx + 6},${arrowCy} ${arrowCx - 4},${arrowCy + 8}`;
 
   return (
-    <g style={{ cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
+    <g
+      aria-label={`Learn more about ${gameTitle}`}
+      data-active-game-id={gameIdentifier}
+      data-active-game-title={gameTitle}
+      data-testid="featured-game-learn-more"
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (!onClick) {
+          return;
+        }
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onClick();
+        }
+      }}
+      role="button"
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      tabIndex={onClick ? 0 : -1}
+    >
       <rect x={x} y={y} width={width} height={height} rx={radius} fill={`url(#${ids('learnMore')})`} stroke={strokeColor} strokeWidth="1.6" />
       <text x={x + labelAreaW / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="central" fontSize={textFontSize} fontWeight="800" fill="#ffffff" fontFamily="Arial">
         {text}
@@ -1296,8 +1330,8 @@ export const FeaturedGameShowcase: React.FC<FeaturedGameShowcaseProps> = ({
         <svg viewBox={`0 0 ${vw} ${vh}`} width="100%" preserveAspectRatio="xMidYMin meet" shapeRendering="geometricPrecision" textRendering="geometricPrecision" style={{ display: 'block', height: 'auto', width: '100%' }}>
           <ShowcaseDefs ids={ids} />
 
-          <SvgArrowButton x={edgeInset} y={stageY + stageH / 2 - arrowH / 2} width={arrowW} height={arrowH} radius={c.arrows.radius} hoverColor={c.colors.arrowHover} direction="left" onClick={goPrev} ids={ids} />
-          <SvgArrowButton x={vw - edgeInset - arrowW} y={stageY + stageH / 2 - arrowH / 2} width={arrowW} height={arrowH} radius={c.arrows.radius} hoverColor={c.colors.arrowHover} direction="right" onClick={goNext} ids={ids} />
+          <SvgArrowButton x={edgeInset} y={stageY + stageH / 2 - arrowH / 2} width={arrowW} height={arrowH} radius={c.arrows.radius} hoverColor={c.colors.arrowHover} direction="left" onClick={goPrev} ids={ids} testId="featured-game-carousel-prev" />
+          <SvgArrowButton x={vw - edgeInset - arrowW} y={stageY + stageH / 2 - arrowH / 2} width={arrowW} height={arrowH} radius={c.arrows.radius} hoverColor={c.colors.arrowHover} direction="right" onClick={goNext} ids={ids} testId="featured-game-carousel-next" />
 
           <rect x={stageX} y={stageY} width={stageW} height={stageH} rx={c.overall.stageRadius} fill="#000000" opacity="0.28" filter={`url(#${ids('skeletonShadow')})`} pointerEvents="none" />
           <g>
@@ -1373,7 +1407,17 @@ export const FeaturedGameShowcase: React.FC<FeaturedGameShowcaseProps> = ({
                 </>
               ) : null}
               {showLearnMore ? (
-                <LearnMoreButton x={learnMoreX} y={learnMoreY} width={c.sideA.learnMoreW} height={c.sideA.learnMoreH} strokeColor={c.colors.learnMoreStroke} onClick={onLearnMore ? () => onLearnMore(getGameIdentifier(currentGame)) : undefined} ids={ids} />
+                <LearnMoreButton
+                  x={learnMoreX}
+                  y={learnMoreY}
+                  width={c.sideA.learnMoreW}
+                  height={c.sideA.learnMoreH}
+                  strokeColor={c.colors.learnMoreStroke}
+                  onClick={onLearnMore ? () => onLearnMore(getGameIdentifier(currentGame)) : undefined}
+                  ids={ids}
+                  gameIdentifier={getGameIdentifier(currentGame)}
+                  gameTitle={getGameTitle(currentGame)}
+                />
               ) : null}
             </g>
 

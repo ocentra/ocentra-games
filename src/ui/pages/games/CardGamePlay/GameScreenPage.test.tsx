@@ -24,6 +24,7 @@ class ResizeObserverMock {
 }
 
 vi.mock('react-router-dom', () => ({
+  useLocation: () => ({ search: '' }),
   useNavigate: () => mockNavigate,
 }));
 

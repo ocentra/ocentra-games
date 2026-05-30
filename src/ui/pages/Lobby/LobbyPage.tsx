@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
@@ -24,6 +24,7 @@ import { createDefaultLobbyRoomForm, type CreateLobbyRoomForm } from '@/ui/pages
 import { readMultiplayerConfig } from '@/ui/pages/Matchmaking/types';
 import {
   AppScreenToken,
+  buildGamePlayPath,
   buildGameLobbyPath,
   buildGameMatchmakingPath,
   buildLeaderboardPath,
@@ -111,6 +112,7 @@ async function writeRoomShareText(room: { joinCode?: string; roomId?: string; ro
 export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPageProps) {
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [assetContext, setAssetContext] = useState<LobbyAssetContext | null>(null);
+  const startedRoomHandoffRef = useRef<string | null>(null);
   const { runWithSession } = useAuthAccess();
   const requestedGameType = gameId ?? readMultiplayerConfig().gameId;
   const activeGameType = assetContext?.routeId ?? requestedGameType;
@@ -160,6 +162,29 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     setFilters,
   } = useLobbyRooms(activeGameType);
   const sideServices = useLobbySideServices(activeGameType, user?.uid, joinedRoom);
+  useEffect(() => {
+    if (joinedRoom?.gameStatus !== 'starting') {
+      return;
+    }
+    const handoffKey = joinedRoom.matchId ?? joinedRoom.roomId;
+    if (!handoffKey || startedRoomHandoffRef.current === handoffKey) {
+      return;
+    }
+    startedRoomHandoffRef.current = handoffKey;
+    const searchParams = new URLSearchParams({
+      roomId: joinedRoom.roomId,
+      matchId: joinedRoom.matchId ?? joinedRoom.roomId,
+      source: 'lobby',
+    });
+    const currentSearchParams = new URLSearchParams(window.location.search);
+    ['seed', 'autoStartSeconds', 'botDelayMs'].forEach((name) => {
+      const value = currentSearchParams.get(name);
+      if (value) {
+        searchParams.set(name, value);
+      }
+    });
+    EventBus.instance.publish(new ShowScreenEvent(`${buildGamePlayPath(activeGameType)}?${searchParams.toString()}`));
+  }, [activeGameType, joinedRoom?.gameStatus, joinedRoom?.matchId, joinedRoom?.roomId]);
   const viewerWinRatio = user ? Math.max(0, Math.min(1, user.winRate > 1 ? user.winRate / 100 : user.winRate)) : 0;
   const lobbyViewer = user
     ? {

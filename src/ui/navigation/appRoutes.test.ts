@@ -77,6 +77,7 @@ describe('appRoutes', () => {
     expect(parseAppRoute('/games/claim/leaderboard')).toEqual({ kind: 'leaderboard' });
     expect(parseAppRoute('/games/claim/lobby')).toEqual({ kind: 'lobby', gameId: 'claim' });
     expect(parseAppRoute('/games/claim/matchmaking')).toEqual({ kind: 'matchmaking', gameId: 'claim' });
+    expect(parseAppRoute('/games/claim/play')).toEqual({ kind: 'gamePlay', gameId: 'claim' });
   });
 
   it('does not preserve the removed competition leaderboard route', () => {
