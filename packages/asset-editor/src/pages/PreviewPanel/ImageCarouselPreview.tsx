@@ -17,7 +17,12 @@ import { ImageBatchLoadRequestEvent, ImageLoadPriority, type ImageBatchRequestIt
 import { ImageBatchLoadedEvent } from '@ocentra/eventing-domain/events/image/ImageBatchLoadedEvent';
 import { createGuid } from '@ocentra/app-core/guid';
 import type { AssetEntry } from '@ocentra/boundary-domain/types/asset-entry';
-import { computeAssetHash } from '@/adapters/assets/TauriAssetAdapter';
+import {
+  computeAssetHash,
+  createBrowserResourceUrl,
+  getResourceByHashDb,
+  isTauri,
+} from '@/adapters/assets/TauriAssetAdapter';
 import { ImageVariant } from '@/lib/cache/editorImageTypes';
 import './ImageCarouselPreview.css';
 
@@ -234,6 +239,8 @@ export const ImageCarouselPreview: React.FC<ImageCarouselPreviewProps> = ({
   }, []);
 
   useEffect(() => {
+    if (!isTauri()) return;
+
     const requests: ImageBatchRequestItem[] = hashesToLoad
       .filter((hash) => !resolvedImageUrls.has(hash) && !carouselImageUrlCache.has(hash) && !activeImageLoadErrors.has(hash) && !pendingImageHashesRef.current.has(hash))
       .map((hash) => {
@@ -251,6 +258,53 @@ export const ImageCarouselPreview: React.FC<ImageCarouselPreviewProps> = ({
       new ImageBatchLoadRequestEvent(requests, imageLoadSubscriberIdRef.current, false)
     );
   }, [activeImageLoadErrors, hashesToLoad, resolvedImageUrls]);
+
+  useEffect(() => {
+    if (isTauri() || hashesToLoad.length === 0) return;
+
+    const missingHashes = hashesToLoad.filter((hash) => !resolvedImageUrls.has(hash) && !carouselImageUrlCache.has(hash));
+    if (missingHashes.length === 0) return;
+
+    let cancelled = false;
+
+    void Promise.all(missingHashes.map(async (hash) => {
+      const entry = await getResourceByHashDb(hash);
+      if (entry?.resourceEntryType !== 'ImageResourceEntry') {
+        return null;
+      }
+      return [hash, createBrowserResourceUrl(entry.path).toString()] as const;
+    })).then((resolved) => {
+      if (cancelled) return;
+
+      const resolvedPairs = resolved.filter((pair): pair is readonly [string, string] => pair !== null);
+      if (resolvedPairs.length === 0) return;
+
+      setImageUrls((prev) => {
+        const next = new Map(prev);
+        resolvedPairs.forEach(([hash, url]) => {
+          carouselImageUrlCache.set(hash, url);
+          pendingImageHashesRef.current.delete(hash);
+          next.set(hash, url);
+        });
+        return next;
+      });
+
+      setImageLoadErrors((prev) => {
+        let changed = false;
+        const next = new Map(prev);
+        resolvedPairs.forEach(([hash]) => {
+          if (next.delete(hash)) {
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
+    }).catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hashesToLoad, resolvedImageUrls]);
 
   const currentPlaybackMode = playbackValue(data.playbackMode);
   const playbackImageCount = getBannerPlaybackImageCount(slideImages.length, currentPlaybackMode);

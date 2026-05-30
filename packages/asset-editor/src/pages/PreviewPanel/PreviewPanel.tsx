@@ -49,6 +49,7 @@ const PREVIEW_ASSET_TYPE = {
   dominoDeck: assetTypeMap.DominoDeck.assetType,
   hanafudaDeck: assetTypeMap.HanafudaDeck.assetType,
   mahjongDeck: assetTypeMap.MahjongDeck.assetType,
+  cardGameDeckModel: assetTypeMap.CardGameDeckModel.assetType,
   card: assetTypeMap.Card.assetType,
   cardRanking: assetTypeMap.CardRanking.assetType,
   deckRanking: assetTypeMap.DeckRanking.assetType,
@@ -65,6 +66,7 @@ const DECK_PREVIEW_ASSET_TYPES = new Set<string>([
   PREVIEW_ASSET_TYPE.dominoDeck,
   PREVIEW_ASSET_TYPE.hanafudaDeck,
   PREVIEW_ASSET_TYPE.mahjongDeck,
+  PREVIEW_ASSET_TYPE.cardGameDeckModel,
 ]);
 
 const CARD_RANKING_PREVIEW_ASSET_TYPES = new Set<string>([
