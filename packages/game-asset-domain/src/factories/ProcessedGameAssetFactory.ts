@@ -514,6 +514,17 @@ function buildValidationExamples(game: Game, slug: string): Record<string, unkno
   ];
 }
 
+function buildRuleExampleHands(game: Game): string[] {
+  const firstPhase = game.engine.phases[0];
+  return [
+    `Opening deal: ${game.engine.playerConfig.minPlayers}-${game.engine.playerConfig.maxPlayers} player(s), ${game.engine.initialHandSize} card(s) per player, ${game.engine.deckCount} deck(s), initial visibility ${game.engine.cardVisibility.initialDeal}.`,
+    firstPhase
+      ? `Opening flow: start in ${firstPhase.id}; ${firstPhase.actor} may use ${firstPhase.legalActions.join(', ')} before ${firstPhase.nextPhase ?? 'round end'}.`
+      : '',
+    `Scoring check: ${game.scoring.description} Expected outcome: ${stringifyUnknown(game.scoring.targetScore ?? game.scoring.winCondition)}.`,
+  ].map(publicText).filter(Boolean);
+}
+
 function asMechanicsRecord(value: unknown, fallbackKey: string): Record<string, unknown> {
   if (value && typeof value === 'object' && !Array.isArray(value)) {
     return value as Record<string, unknown>;
@@ -819,7 +830,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         },
         turnFlow: game.rules.gameplay,
         moveValidityConditions: buildMoveValidityConditions(game),
-        exampleHands: [],
+        exampleHands: buildRuleExampleHands(game),
         bonusRules: '',
         bonusRuleGuids: [],
         useTrump: game.engine.useTrump,

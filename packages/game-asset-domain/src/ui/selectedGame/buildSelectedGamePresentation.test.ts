@@ -84,6 +84,11 @@ const claimLikeBundle = {
         familyKernel: 'claim',
         executorId: 'claim.hoarder.v1',
         strategyExecutorId: 'claim.bot.deterministic.v1',
+        linkedAssetKeys: {
+          rules: 'claimRules',
+          scoring: 'claimScoring',
+          validationFixtures: 'claimValidationFixtures',
+        },
       },
     },
   },
@@ -95,6 +100,7 @@ const claimLikeBundle = {
       showdownRules: { minimumFinalScore: 27 },
       ruleGroups: [{ id: 'setup', label: 'Setup', ruleIds: ['deal'] }],
       rules: [{ id: 'deal', text: 'Deal three cards.' }],
+      exampleHands: ['A K Q of Spades: declared as Spades scores 117.'],
     },
   },
   scoring: {
@@ -141,6 +147,26 @@ const claimLikeBundle = {
       validationSuites: [
         {
           fixtures: [
+            {
+              title: 'Initial deal',
+              purpose: 'setup',
+              expectedInitialHandSize: 3,
+              explanation: 'Every player receives three cards before the first player action.',
+            },
+            {
+              title: 'Opening phase',
+              purpose: 'flow',
+              expectedFirstPhase: 'setup_round',
+              expectedNextPhase: 'turn_loop',
+              explanation: 'The runtime starts with the setup phase.',
+            },
+            {
+              title: 'Running flush',
+              purpose: 'ranking',
+              hand: ['A_spades', 'K_spades', 'Q_spades'],
+              expectedFinalScore: 'running_flush',
+              explanation: 'Three consecutive cards in one suit beat a plain run.',
+            },
             {
               title: 'A K Q of Spades',
               purpose: 'scoring',
@@ -221,6 +247,22 @@ describe('buildSelectedGamePresentation', () => {
       'View Lobbies',
       'Play Local Pilot',
     ]);
+  });
+
+  it('surfaces authored examples and validation fixtures in public tabs', () => {
+    const presentation = buildSelectedGamePresentation(claimLikeBundle);
+    const rules = presentation.tabs.find((tab) => tab.id === 'rules')?.chunks ?? [];
+    const ranking = presentation.tabs.find((tab) => tab.id === 'ranking')?.chunks ?? [];
+    const scoring = presentation.tabs.find((tab) => tab.id === 'scoring')?.chunks ?? [];
+    const systems = presentation.tabs.find((tab) => tab.id === 'systems')?.chunks ?? [];
+
+    expect(rules.map((chunk) => chunk.title)).toEqual(expect.arrayContaining(['Example Hands', 'Runtime Examples']));
+    expect(ranking.map((chunk) => chunk.title)).toContain('Ranking Examples');
+    expect(scoring.map((chunk) => chunk.title)).toContain('Examples');
+    expect(systems.map((chunk) => chunk.title)).toContain('Linked Assets');
+    expect(systems.map((chunk) => chunk.title)).toContain('Validation Fixtures');
+    expect(rules.flatMap((chunk) => chunk.bullets).join(' ')).toContain('Every player receives three cards');
+    expect(systems.flatMap((chunk) => chunk.bullets).join(' ')).toContain('Validation Fixtures: claimValidationFixtures');
   });
 
   it('can restrict selected-game actions for catalog-only entries', () => {
