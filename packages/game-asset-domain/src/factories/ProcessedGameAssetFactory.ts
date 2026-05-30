@@ -726,6 +726,9 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
       },
       carousel: {
         slides: carouselData.slides,
+        visualAssetStatus: 'needs_final_art',
+        visualAssetSource: 'shared_fallback_art',
+        visualAssetReplacementRequired: true,
         autoplayIntervalMs: 1800,
         lastImageDurationMs: 2600,
         fastRotationDurationMs: 1800,

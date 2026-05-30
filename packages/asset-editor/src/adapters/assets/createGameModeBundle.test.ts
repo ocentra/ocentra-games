@@ -301,8 +301,18 @@ describe('createGameModeBundle', () => {
     expect(parsedMain.data?.lobbyLayoutAsset?.assetType).toBe('PageLayout');
 
     const carouselAsset = bundle.files.find((file) => file.metadata.assetType === 'ImageCarousel');
-    const parsedCarousel = JSON5.parse(carouselAsset!.content) as { data?: { slides?: Array<{ imageHash?: string }> } };
+    const parsedCarousel = JSON5.parse(carouselAsset!.content) as {
+      data?: {
+        slides?: Array<{ imageHash?: string }>;
+        visualAssetStatus?: string;
+        visualAssetSource?: string;
+        visualAssetReplacementRequired?: boolean;
+      };
+    };
     expect(parsedCarousel.data?.slides?.length).toBeGreaterThan(0);
     expect(parsedCarousel.data?.slides?.[0]?.imageHash).toBe(parsedMain.data?.bannerImage);
+    expect(parsedCarousel.data?.visualAssetStatus).toBe('needs_final_art');
+    expect(parsedCarousel.data?.visualAssetSource).toBe('shared_fallback_art');
+    expect(parsedCarousel.data?.visualAssetReplacementRequired).toBe(true);
   });
 });

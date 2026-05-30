@@ -20,6 +20,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../..');
 const defaultProcessedRoot = path.resolve(repoRoot, 'packages/card-games/src/processed-games');
 const resourcesRoot = path.resolve(repoRoot, 'packages/asset-editor/Resources');
+const placeholderResourceRoot = path.resolve(resourcesRoot, 'AppAssets/PlaceHolders');
 const defaultReportPath = path.resolve(repoRoot, '.temp/processed-game-migration-report.json');
 
 const MigrationPathSchema = schema.string().trim().min(1).brand<'MigrationPath'>();
@@ -47,6 +48,8 @@ const MigrationSummarySchema = schema.object({
   passed: schema.number().int().min(0),
   failed: schema.number().int().min(0),
   issueCount: schema.number().int().min(0),
+  errorCount: schema.number().int().min(0),
+  warningCount: schema.number().int().min(0),
 });
 const MigrationReportSchema = schema.object({
   summary: MigrationSummarySchema,
@@ -82,6 +85,7 @@ interface ResourceIndex {
   assetsByGuid: Map<string, AssetEnvelope>;
   assetsByPath: Map<string, AssetEnvelope>;
   imageHashes: Set<string>;
+  placeholderImageHashes: Set<string>;
 }
 
 interface ParsedBundle {
@@ -158,6 +162,8 @@ const PUBLIC_CONTENT_ASSET_TYPES = new Set([
 ]);
 
 const JUNK_TEXT_PATTERN = /\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
+const IMAGE_RESOURCE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.bmp', '.avif']);
+const ZERO_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
 
 function readArgValue(argv: string[], name: string): string | undefined {
   const equalsPrefix = `${name}=`;
@@ -255,6 +261,7 @@ function buildResourceIndex(): ResourceIndex {
   const assetsByGuid = new Map<string, AssetEnvelope>();
   const assetsByPath = new Map<string, AssetEnvelope>();
   const imageHashes = new Set<string>();
+  const placeholderImageHashes = new Set<string>();
   const files = findResourceFiles(resourcesRoot);
 
   for (const filePath of files) {
@@ -272,12 +279,17 @@ function buildResourceIndex(): ResourceIndex {
       }
       continue;
     }
-    if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.bmp', '.avif'].includes(extension)) {
-      imageHashes.add(hashFileHex(filePath));
+    if (IMAGE_RESOURCE_EXTENSIONS.has(extension)) {
+      const hash = hashFileHex(filePath);
+      imageHashes.add(hash);
+      const relativeToPlaceholderRoot = path.relative(placeholderResourceRoot, filePath);
+      if (!relativeToPlaceholderRoot.startsWith('..') && !path.isAbsolute(relativeToPlaceholderRoot)) {
+        placeholderImageHashes.add(hash);
+      }
     }
   }
 
-  return { assetsByGuid, assetsByPath, imageHashes };
+  return { assetsByGuid, assetsByPath, imageHashes, placeholderImageHashes };
 }
 
 function addIssue(
@@ -286,14 +298,29 @@ function addIssue(
   code: string,
   message: string,
   assetPath?: string,
+  severity: MigrationIssue['severity'] = 'error',
 ): void {
   issues.push(MigrationIssueSchema.parse({
-    severity: 'error',
+    severity,
     sourcePath,
     assetPath,
     code,
     message,
   }));
+}
+
+function addWarning(
+  issues: MigrationIssue[],
+  sourcePath: string,
+  code: string,
+  message: string,
+  assetPath?: string,
+): void {
+  addIssue(issues, sourcePath, code, message, assetPath, 'warning');
+}
+
+function hasErrors(issues: MigrationIssue[]): boolean {
+  return issues.some((issue) => issue.severity === 'error');
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -567,10 +594,12 @@ function validateImageCarousel(sourcePath: string, imageCarousel: AssetEnvelope 
   }
   const slides = readPath(imageCarousel.data, 'slides');
   const assetPath = imageCarousel.system?.treePath ?? 'ImageCarousel';
+  const data = asRecord(imageCarousel.data);
   if (!Array.isArray(slides) || slides.length === 0) {
     addIssue(issues, sourcePath, 'empty-image-carousel', 'Generated ImageCarousel must contain shared fallback slides.', assetPath);
     return;
   }
+  let fallbackSlideCount = 0;
   slides.forEach((slide, index) => {
     const imageHash = asText(asRecord(slide).imageHash);
     if (!imageHash) {
@@ -579,8 +608,74 @@ function validateImageCarousel(sourcePath: string, imageCarousel: AssetEnvelope 
     }
     if (!resources.imageHashes.has(imageHash)) {
       addIssue(issues, sourcePath, 'carousel-slide-image-missing-resource', `Carousel slide ${index} references imageHash ${imageHash}, but no resource image has that hash.`, assetPath);
+      return;
+    }
+    if (resources.placeholderImageHashes.has(imageHash)) {
+      fallbackSlideCount += 1;
     }
   });
+  if (fallbackSlideCount > 0) {
+    addWarning(issues, sourcePath, 'carousel-slide-uses-fallback-art', `${fallbackSlideCount} carousel slide(s) use shared fallback art and need final game-specific frames.`, assetPath);
+  }
+  if (data.visualAssetStatus === 'needs_final_art') {
+    addWarning(issues, sourcePath, 'carousel-needs-final-art', 'Generated ImageCarousel is marked as needing final art replacement.', assetPath);
+  }
+}
+
+function validateDeckCardVisuals(
+  sourcePath: string,
+  deck: AssetEnvelope | null,
+  parsedBundle: ParsedBundle,
+  resources: ResourceIndex,
+  issues: MigrationIssue[],
+): void {
+  if (!deck) {
+    return;
+  }
+  const assetPath = deck.system?.treePath ?? 'Deck';
+  const composition = readPath(deck.data, 'composition');
+  if (!Array.isArray(composition)) {
+    return;
+  }
+  const counts = {
+    unresolved: 0,
+    missing: 0,
+    unknown: 0,
+    fallback: 0,
+  };
+
+  composition.map(asRecord).forEach((entry) => {
+    const cardAsset = resolveAssetRef(entry.pieceTemplate, parsedBundle, resources);
+    if (!cardAsset) {
+      counts.unresolved += 1;
+      return;
+    }
+    const imageHash = asText(asRecord(cardAsset.data).imageHash).toLowerCase();
+    if (!imageHash || imageHash === ZERO_HASH) {
+      counts.missing += 1;
+      return;
+    }
+    if (!resources.imageHashes.has(imageHash)) {
+      counts.unknown += 1;
+      return;
+    }
+    if (resources.placeholderImageHashes.has(imageHash)) {
+      counts.fallback += 1;
+    }
+  });
+
+  if (counts.unresolved > 0) {
+    addIssue(issues, sourcePath, 'deck-card-asset-unresolved', `${counts.unresolved} deck composition card reference(s) do not resolve.`, assetPath);
+  }
+  if (counts.missing > 0) {
+    addWarning(issues, sourcePath, 'deck-card-image-missing', `${counts.missing} deck card asset(s) have no final image hash.`, assetPath);
+  }
+  if (counts.unknown > 0) {
+    addWarning(issues, sourcePath, 'deck-card-image-unknown', `${counts.unknown} deck card image hash(es) do not match resource image files.`, assetPath);
+  }
+  if (counts.fallback > 0) {
+    addWarning(issues, sourcePath, 'deck-card-image-fallback', `${counts.fallback} deck card asset(s) use shared fallback art.`, assetPath);
+  }
 }
 
 function validateMainAssetRefs(
@@ -691,6 +786,7 @@ function validateSelectedGameReadiness(
       `selected-game-${readinessIssue.code}`,
       `${readinessIssue.severity.toUpperCase()}: ${readinessIssue.message}`,
       findBundleAssetPath(parsedBundle, gameMode) || undefined,
+      readinessIssue.severity,
     );
   }
 }
@@ -715,6 +811,7 @@ async function validateOne(sourcePath: string, options: CliOptions, resources: R
     validateMainAssetRefs(sourcePath, mainAsset, parsedBundle, resources, issues);
     validateGameInfo(sourcePath, findBundleAsset(parsedBundle, 'GameInfo'), issues);
     validateImageCarousel(sourcePath, findBundleAsset(parsedBundle, 'ImageCarousel'), resources, issues);
+    validateDeckCardVisuals(sourcePath, resolveAssetRef(asRecord(mainAsset?.data).deckAsset, parsedBundle, resources), parsedBundle, resources, issues);
     validateMechanicsGraph(sourcePath, parsedBundle, issues);
     validatePublicContent(sourcePath, parsedBundle, issues);
     validateSelectedGameReadiness(sourcePath, parsedBundle, resources, issues);
@@ -735,7 +832,7 @@ async function validateOne(sourcePath: string, options: CliOptions, resources: R
     gameName,
     generatedFiles: bundle?.files.length ?? 0,
     generatedAssetTypes,
-    ok: issues.length === 0,
+    ok: !hasErrors(issues),
     issues,
   });
 }
@@ -794,6 +891,8 @@ async function main(): Promise<void> {
   }
 
   const issueCount = reports.reduce((sum, report) => sum + report.issues.length, 0);
+  const errorCount = reports.reduce((sum, report) => sum + report.issues.filter((issue) => issue.severity === 'error').length, 0);
+  const warningCount = reports.reduce((sum, report) => sum + report.issues.filter((issue) => issue.severity === 'warning').length, 0);
   const migrationReport = MigrationReportSchema.parse({
     summary: {
       generatedAt: new Date().toISOString(),
@@ -803,6 +902,8 @@ async function main(): Promise<void> {
       passed: reports.filter((report) => report.ok).length,
       failed: reports.filter((report) => !report.ok).length,
       issueCount,
+      errorCount,
+      warningCount,
     },
     games: reports,
   });

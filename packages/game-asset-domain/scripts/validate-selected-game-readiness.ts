@@ -23,11 +23,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const RESOURCES_ROOT = path.resolve(__dirname, '../../asset-editor/Resources');
 const GAMES_ROOT = path.resolve(RESOURCES_ROOT, 'GameMode/CardGames/Games');
+const PLACEHOLDER_RESOURCE_ROOT = path.resolve(RESOURCES_ROOT, 'AppAssets/PlaceHolders');
 const failOnWarnings = process.argv.includes('--fail-on-warning') || process.argv.includes('--strict');
 const IMAGE_EXTENSIONS = new Set(['.gif', '.jpg', '.jpeg', '.png', '.webp']);
 const PUBLIC_RELEASE_STATUSES = new Set(['Available', 'ComingSoon']);
 const SHA_256_PATTERN = /^[a-f0-9]{64}$/;
+const ZERO_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
 const REQUIRED_LINKED_MODEL_KEYS = ['deckModel', 'actionSet', 'validationFixtures'] as const;
+const NON_BLOCKING_WARNING_CODES = new Set([
+  'visual-art-needs-final',
+  'placeholder-image-used',
+  'deck-card-image-missing',
+  'deck-card-image-unknown',
+  'deck-card-image-placeholder',
+]);
 
 function findAssetFiles(dir: string, fileList: string[] = []): string[] {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -132,6 +141,11 @@ const assetsByPath = new Map<string, AssetEnvelope>();
 const assetsByGuid = new Map<string, AssetEnvelope>();
 const assetPathByGuid = new Map<string, string>();
 const imageHashes = new Set(findResourceFiles(RESOURCES_ROOT, IMAGE_EXTENSIONS).map(sha256File));
+const placeholderImageHashes = new Set(
+  fs.existsSync(PLACEHOLDER_RESOURCE_ROOT)
+    ? findResourceFiles(PLACEHOLDER_RESOURCE_ROOT, IMAGE_EXTENSIONS).map(sha256File)
+    : [],
+);
 
 for (const filePath of assetFiles) {
   const asset = readAsset(filePath);
@@ -333,6 +347,10 @@ function validateImageContract(bundle: LoadedGameBundle): SelectedGameReadinessI
     issues.push(issue('error', 'carousel-wrong-asset-type', `${pathForAsset(bundle.images)}.system.assetType`, 'carouselImagesAsset must resolve to ImageCarousel.'));
   }
 
+  if (imageData.visualAssetStatus === 'needs_final_art') {
+    issues.push(issue('warning', 'visual-art-needs-final', `${pathForAsset(bundle.images)}.data.visualAssetStatus`, 'Carousel is intentionally using non-final art and needs replacement before release quality is final.'));
+  }
+
   if (slides.length < 3) {
     issues.push(issue('error', 'carousel-too-small', `${pathForAsset(bundle.images)}.data.slides`, 'Public game carousel must contain at least 3 slides.'));
   }
@@ -379,6 +397,10 @@ function requireKnownImageHash(issues: SelectedGameReadinessIssue[], hash: strin
   }
   if (!imageHashes.has(hash.toLowerCase())) {
     issues.push(issue('error', 'unknown-image-hash', issuePath, `${fieldName} does not match any image file under Resources.`));
+    return;
+  }
+  if (placeholderImageHashes.has(hash.toLowerCase())) {
+    issues.push(issue('warning', 'placeholder-image-used', issuePath, `${fieldName} uses shared fallback art and needs a final game-specific image.`));
   }
 }
 
@@ -606,6 +628,52 @@ function validateDeckContract(bundle: LoadedGameBundle): SelectedGameReadinessIs
     issues.push(issue('error', 'deck-too-small-for-initial-deal', `${deckPath}.data.composition`, `Deck has ${totalDeckCards} card(s), but max players and setup require at least ${requiredCards}.`));
   }
 
+  issues.push(...validateDeckCardVisuals(bundle.deck, deckPath));
+  return issues;
+}
+
+function validateDeckCardVisuals(deck: AssetEnvelope | null, deckPath: string): SelectedGameReadinessIssue[] {
+  const issues: SelectedGameReadinessIssue[] = [];
+  const counts = {
+    unresolved: 0,
+    missing: 0,
+    unknown: 0,
+    placeholder: 0,
+  };
+
+  asArray(dataOf(deck).composition).map(asRecord).forEach((entry) => {
+    const cardAsset = loadAssetFromRef(entry.pieceTemplate);
+    if (!cardAsset) {
+      counts.unresolved += 1;
+      return;
+    }
+    const imageHash = asText(dataOf(cardAsset).imageHash).toLowerCase();
+    if (!imageHash || imageHash === ZERO_HASH) {
+      counts.missing += 1;
+      return;
+    }
+    if (!imageHashes.has(imageHash)) {
+      counts.unknown += 1;
+      return;
+    }
+    if (placeholderImageHashes.has(imageHash)) {
+      counts.placeholder += 1;
+    }
+  });
+
+  if (counts.unresolved > 0) {
+    issues.push(issue('error', 'deck-card-asset-unresolved', `${deckPath}.data.composition`, `${counts.unresolved} deck composition card reference(s) do not resolve.`));
+  }
+  if (counts.missing > 0) {
+    issues.push(issue('warning', 'deck-card-image-missing', `${deckPath}.data.composition`, `${counts.missing} deck card asset(s) have no final image hash.`));
+  }
+  if (counts.unknown > 0) {
+    issues.push(issue('warning', 'deck-card-image-unknown', `${deckPath}.data.composition`, `${counts.unknown} deck card image hash(es) do not match resource image files.`));
+  }
+  if (counts.placeholder > 0) {
+    issues.push(issue('warning', 'deck-card-image-placeholder', `${deckPath}.data.composition`, `${counts.placeholder} deck card asset(s) use shared fallback art.`));
+  }
+
   return issues;
 }
 
@@ -679,8 +747,10 @@ const reports = gameModeFiles.map((gameModePath) => {
 });
 
 let blockingCount = 0;
+let warningCount = 0;
 for (const report of reports) {
-  const blocking = report.issues.filter((issue) => issue.severity === 'error' || failOnWarnings);
+  const blocking = report.issues.filter((issue) => issue.severity === 'error' || (failOnWarnings && !NON_BLOCKING_WARNING_CODES.has(issue.code)));
+  warningCount += report.issues.filter((issue) => issue.severity === 'warning').length;
   blockingCount += blocking.length;
   if (report.issues.length === 0) {
     console.log(`${report.label}: ready`);
@@ -693,6 +763,9 @@ for (const report of reports) {
 }
 
 console.log(`\nSelected-game readiness scanned ${reports.length} game mode asset(s).`);
+if (warningCount > 0) {
+  console.warn(`Selected-game readiness found ${warningCount} work-left warning(s).`);
+}
 if (blockingCount > 0) {
   console.error(`Selected-game readiness found ${blockingCount} blocking issue(s).`);
   process.exit(1);
