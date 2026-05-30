@@ -410,27 +410,44 @@ function cloneConfig(config: SelectedGameShowcaseConfig): SelectedGameShowcaseCo
   return JSON.parse(JSON.stringify(config)) as SelectedGameShowcaseConfig;
 }
 
+function isUnsafeConfigPathPart(part: string): boolean {
+  return part === '__proto__' || part === 'prototype' || part === 'constructor' || part.length === 0;
+}
+
+function setConfigProperty(target: ConfigRecord, key: string, value: unknown): void {
+  Object.defineProperty(target, key, {
+    configurable: true,
+    enumerable: true,
+    value,
+    writable: true,
+  });
+}
+
 function getByPath(obj: ConfigRecord, path: string): unknown {
+  if (!isAllowedConfigPath(path)) return undefined;
   return path.split('.').reduce<unknown>((acc, part) => {
     if (typeof acc !== 'object' || acc === null) return undefined;
-    if (part === '__proto__' || part === 'prototype' || part === 'constructor') return undefined;
+    if (isUnsafeConfigPathPart(part)) return undefined;
     return (acc as ConfigRecord)[part];
   }, obj);
 }
 
 function setByPath<T extends ConfigRecord>(obj: T, path: string, value: unknown): T {
+  if (!isAllowedConfigPath(path)) return obj;
   const parts = path.split('.');
-  if (parts.some(part => part === '__proto__' || part === 'prototype' || part === 'constructor')) {
+  if (parts.some(isUnsafeConfigPathPart)) {
     return obj;
   }
   const root = { ...obj };
   let cursor: ConfigRecord = root;
   for (let i = 0; i < parts.length - 1; i += 1) {
-    const current = cursor[parts[i]];
-    cursor[parts[i]] = typeof current === 'object' && current !== null ? { ...(current as ConfigRecord) } : {};
-    cursor = cursor[parts[i]] as ConfigRecord;
+    const part = parts[i];
+    const current = cursor[part];
+    const next = typeof current === 'object' && current !== null ? { ...(current as ConfigRecord) } : {};
+    setConfigProperty(cursor, part, next);
+    cursor = next;
   }
-  cursor[parts[parts.length - 1]] = value;
+  setConfigProperty(cursor, parts[parts.length - 1], value);
   return root as T;
 }
 
@@ -1327,6 +1344,16 @@ const CONTROL_GROUPS: Record<string, ControlGroup> = {
     ],
   },
 };
+
+const ALLOWED_CONFIG_PATHS = new Set<string>(
+  Object.values(CONTROL_GROUPS).flatMap((group) =>
+    group.sections.flatMap((section) => section.fields.map((field) => field[0]))
+  )
+);
+
+function isAllowedConfigPath(path: string): boolean {
+  return ALLOWED_CONFIG_PATHS.has(path);
+}
 
 const ControlNumberField = React.memo(function ControlNumberField({ config, setConfig, path, label, min, max, step = 1 }: {
   config: SelectedGameShowcaseConfig;
