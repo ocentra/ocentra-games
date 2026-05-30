@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '790f6653-ecfa-4e24-8a77-1d67e4b799a4',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/last-one/last-oneValidationFixtures.asset',
+    gameId: 'last-one',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'last-one',
+    familyVariant: 'Matching / Eights Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'last-one.core-runtime-contracts',
+        title: 'Last One Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'last-one.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 42,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Last One must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'last-one.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'last-one.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'starter_card',
+            supportedActionIds: [
+              'deal',
+              'draw',
+              'reveal',
+              'play',
+              'call_last_one',
+              'win',
+              'continue',
+            ],
+            explanation: 'Last One must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'last-one.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'last-one.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'low_wins',
+            targetScore: 100,
+            cardValues: {
+              numberCard: '5',
+            },
+            explanation: 'Penalty point system for cards remaining when another player goes out.',
+            linkedRuleIds: [
+              'last-one.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'last-one.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

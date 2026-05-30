@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '40c6923d-e73d-40a5-b3fc-4d3c04146b4f',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/hund/hundValidationFixtures.asset',
+    gameId: 'hund',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hund',
+    familyVariant: 'Shedding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'hund.core-runtime-contracts',
+        title: 'Hund Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'hund.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Hund must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'hund.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'hund.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Hund must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'hund.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'hund.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'low_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '1',
+              K: '10',
+              Q: '10',
+              J: '10',
+              Joker: '50',
+            },
+            explanation: 'Be the first player to discard all cards from your hand.',
+            linkedRuleIds: [
+              'hund.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'hund.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

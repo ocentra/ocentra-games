@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '33686ed7-a241-4267-a383-3c10d8239e6a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/quinientos/quinientosValidationFixtures.asset',
+    gameId: 'quinientos',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'quinientos',
+    familyVariant: 'Draw-and-Discard / Basic Rummy',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'quinientos.core-runtime-contracts',
+        title: 'Quinientos Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'quinientos.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Quinientos must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'quinientos.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'quinientos.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Quinientos must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'quinientos.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'quinientos.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '500',
+            scoringDirection: 'high_wins',
+            targetScore: 500,
+            cardValues: {
+              '2': '2',
+              '3': '3',
+              '4': '4',
+              '5': '5',
+              '6': '6',
+              '7': '7',
+              '8': '8',
+              '9': '9',
+              '10': '10',
+              A: '15',
+              J: '10',
+              Q: '10',
+              K: '10',
+            },
+            explanation: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+            linkedRuleIds: [
+              'quinientos.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'quinientos.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

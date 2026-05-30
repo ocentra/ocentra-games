@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: '8f7e3720-7bb7-4d3e-9fe9-5b28d426be63',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/99-trick-taking/99-trick-takingValidationFixtures.asset',
+    gameId: '99-trick-taking',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '99-trick-taking',
+    familyVariant: 'Exact Bidding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '99-trick-taking.core-runtime-contracts',
+        title: '99 (trick-taking) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '99-trick-taking.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 25,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '99 (trick-taking) must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '99-trick-taking.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '99-trick-taking.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: '99 (trick-taking) must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              '99-trick-taking.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: '99-trick-taking.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Score points by making exactly your bid (tricks bid via discard: Clubs=3, Hearts=2, Spades=1, Diamonds=0).',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Points for making exact bid; bonuses for declarations. First to target wins.',
+            linkedRuleIds: [
+              '99-trick-taking.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '99-trick-taking.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '691c0b89-c6ff-41d2-80a4-ba1ac7ca7e44',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/mariagenspiel/mariagenspielValidationFixtures.asset',
+    gameId: 'mariagenspiel',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mariagenspiel',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mariagenspiel.core-runtime-contracts',
+        title: 'Mariagenspiel (Mariage) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mariagenspiel.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Mariagenspiel (Mariage) must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mariagenspiel.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mariagenspiel.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_6_each_turn_trump',
+            ],
+            expectedNextPhase: 'phase1_play',
+            supportedActionIds: [
+              'play_card',
+              'draw',
+              'deal_6_each_turn_trump',
+              'play_any_card',
+              'declare_marriage',
+            ],
+            explanation: 'Mariagenspiel (Mariage) must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'mariagenspiel.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'mariagenspiel.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '66',
+            scoringDirection: 'high_wins',
+            targetScore: 66,
+            cardValues: {
+              '7': '0',
+              '8': '0',
+              '9': '0',
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages.',
+            linkedRuleIds: [
+              'mariagenspiel.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mariagenspiel.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

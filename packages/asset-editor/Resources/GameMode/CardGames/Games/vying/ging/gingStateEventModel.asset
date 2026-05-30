@@ -1,0 +1,79 @@
+{
+  system: {
+    guid: '3f240ad7-73ba-493b-8131-5724cdfa765b',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/ging/gingStateEventModel.asset',
+    gameId: 'ging',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ging',
+    familyVariant: 'Gambling',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'pot',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'tableau',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 4,
+        max_players: 4,
+        hand_size: 7,
+        deck_count: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'stake',
+        'deal',
+        'declare',
+        'resolution',
+      ],
+      actions: [
+        'ante',
+        'deal',
+        'declare',
+        'reveal_hand',
+        'award_pot',
+      ],
+    },
+    examples: [],
+  },
+}

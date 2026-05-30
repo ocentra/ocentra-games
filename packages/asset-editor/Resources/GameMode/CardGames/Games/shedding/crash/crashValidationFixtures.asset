@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '3ec65434-7a86-4b82-a5cd-136587953fdf',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/crash/crashValidationFixtures.asset',
+    gameId: 'crash',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'crash',
+    familyVariant: 'Shedding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'crash.core-runtime-contracts',
+        title: 'Crash Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'crash.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Crash must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'crash.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'crash.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Crash must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'crash.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'crash.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '11',
+            scoringDirection: 'high_wins',
+            targetScore: 11,
+            cardValues: {
+              '2': '0',
+              '3': '0',
+              '4': '0',
+              '5': '0',
+              '6': '0',
+              '7': '0',
+              '8': '0',
+              '9': '0',
+              '10': '0',
+              A: '0',
+              J: '0',
+              Q: '0',
+              K: '0',
+            },
+            explanation: 'One point per 3-card hand won; first to agreed target wins (Pagat: 7, 10, 11, 12, 13 or 21 points).',
+            linkedRuleIds: [
+              'crash.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'crash.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

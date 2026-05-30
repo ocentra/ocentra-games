@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '1e001200-289d-4a58-a64a-74f0857b1a1e',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/m-nsch/m-nschPhaseFlowModel.asset',
+    gameId: 'm-nsch',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'm-nsch',
+    familyVariant: 'Jass',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '4 players in fixed partnerships, partners sitting opposite each other.',
+        deck: '36-card Jass deck (6 through Ace in four suits: Acorns, Shields, Flowers, Bells). Can use standard deck with 5s and below removed. Ranking in trumps: Under (Jack), 9, Ace, King, Ober (Queen), Banner (10), 8, 7, 6. In non-trump: Ace, King, Ober, Under, Banner, 9, 8, 7, 6.',
+        equipment: '36-card Jass deck or modified standard deck, score sheet.',
+        dealing: '9 cards to each player, dealt in packets of 3.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

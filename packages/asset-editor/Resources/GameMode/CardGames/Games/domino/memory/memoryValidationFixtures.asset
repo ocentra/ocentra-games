@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: '862f26bf-3c50-4658-b1a5-01195eec1329',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/memory/memoryValidationFixtures.asset',
+    gameId: 'memory',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'memory',
+    familyVariant: 'Memory',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'memory.core-runtime-contracts',
+        title: 'Memory Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'memory.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Memory must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'memory.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'memory.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'reveal_two_tiles',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'reveal_two_tiles',
+            ],
+            explanation: 'Memory must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'memory.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'memory.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '50',
+            scoringDirection: 'high_wins',
+            targetScore: 50,
+            cardValues: {},
+            explanation: 'Players capture pairs of tiles that total 12. First to reach 50 captured tiles (25 pairs), or another predetermined total, wins the game.',
+            linkedRuleIds: [
+              'memory.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'memory.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

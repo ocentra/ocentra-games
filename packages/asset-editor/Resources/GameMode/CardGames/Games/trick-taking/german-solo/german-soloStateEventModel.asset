@@ -1,0 +1,72 @@
+{
+  system: {
+    guid: '2978ddd3-4f7c-4610-9116-4c056ed6f230',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/german-solo/german-soloStateEventModel.asset',
+    gameId: 'german-solo',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'german-solo',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'face_down',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 4,
+        max_players: 4,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'bidding',
+        'trick_play',
+        'resolution',
+      ],
+      actions: [
+        'deal',
+        'declare',
+        'award_pot',
+        'play_card',
+        'pass',
+        'bid',
+      ],
+    },
+    examples: [],
+  },
+}

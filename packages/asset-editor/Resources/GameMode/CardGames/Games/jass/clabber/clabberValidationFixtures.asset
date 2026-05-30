@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'ddca1205-0fac-4b0b-a105-616c753d3f64',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/clabber/clabberValidationFixtures.asset',
+    gameId: 'clabber',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'clabber',
+    familyVariant: 'Jass / Marriage',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'clabber.core-runtime-contracts',
+        title: 'Clabber Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'clabber.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 24,
+            expectedVisibility: 'face_down',
+            explanation: 'Clabber must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'clabber.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'clabber.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_6_per_player',
+              'turn_up_trump_card',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'pass',
+              'deal_6_per_player',
+              'turn_up_trump_card',
+              'play',
+              'lead',
+              'follow',
+              'ruff_mandatory',
+              'overtrump',
+              'announce_meld',
+            ],
+            explanation: 'Clabber must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'clabber.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'clabber.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '500',
+            scoringDirection: 'high_wins',
+            targetScore: 500,
+            cardValues: {},
+            explanation: 'Cumulative score to 500. Points come from card values in tricks (J=20, 9=14 in trumps), melds, and the last trick bonus.',
+            linkedRuleIds: [
+              'clabber.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'clabber.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

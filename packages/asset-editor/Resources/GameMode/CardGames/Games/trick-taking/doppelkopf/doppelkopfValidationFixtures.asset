@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '3502fbd7-fbd3-4b03-942b-e2a8a430ec89',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/doppelkopf/doppelkopfValidationFixtures.asset',
+    gameId: 'doppelkopf',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'doppelkopf',
+    familyVariant: 'Partnership with Secret Alliances',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'doppelkopf.core-runtime-contracts',
+        title: 'Doppelkopf Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'doppelkopf.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Doppelkopf must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'doppelkopf.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'doppelkopf.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_12',
+            ],
+            expectedNextPhase: 'announce',
+            supportedActionIds: [
+              'deal',
+              'declare',
+              'play_card',
+              'pass',
+              'deal_12',
+              'announce_re',
+              'announce_kontra',
+              'hochzeit',
+            ],
+            explanation: 'Doppelkopf must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'doppelkopf.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'doppelkopf.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Re team scores 121+; Kontra scores 120+ card points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '9': '0',
+              '10': '10',
+              Ace: '11',
+              King: '4',
+              Queen: '3',
+              Jack: '2',
+            },
+            explanation: 'Game points awarded for winning, with multipliers for announcements.',
+            linkedRuleIds: [
+              'doppelkopf.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'doppelkopf.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

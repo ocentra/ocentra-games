@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: 'dc0299bb-865f-43ab-adbf-ba22f083b1ae',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/tarocchi/tarocchi-sicilian/tarocchi-sicilianValidationFixtures.asset',
+    gameId: 'tarocchi-sicilian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tarocchi-sicilian',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tarocchi-sicilian.core-runtime-contracts',
+        title: 'Tarocchi Siciliano Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tarocchi-sicilian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 20,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 120,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tarocchi Siciliano must start by giving each active player 20 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tarocchi-sicilian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tarocchi-sicilian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Tarocchi Siciliano must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'tarocchi-sicilian.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'tarocchi-sicilian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Take more than half (55+) card points; win last trick and bonuses for jochi.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              trump_20: '10',
+              trump_1: '10',
+              fool: '10',
+              trumps_16_19: '5',
+              kings: '5',
+              queens: '4',
+              horses: '3',
+              maids: '2',
+              other: '1',
+              last_trick_bonus: '5',
+            },
+            explanation: '109 card points total. Batches of three count minus 2; last trick +5. Trump 20, 1, Fool 10 each; trumps 16-19 and Kings 5; Queens 4, Horses 3, Maids 2; others 1.',
+            linkedRuleIds: [
+              'tarocchi-sicilian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tarocchi-sicilian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 20,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

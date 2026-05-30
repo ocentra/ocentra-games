@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: '560781a0-c193-4e1b-bed8-8452a33b665e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/solo/soloValidationFixtures.asset',
+    gameId: 'solo',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'solo',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'solo.core-runtime-contracts',
+        title: 'Solo Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'solo.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Solo must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'solo.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'solo.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Solo must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'solo.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'solo.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Declarer (and partner if applicable) must win the contracted number of tricks (e.g. 5 for Question/IsIt/Solo, 6 for 6 Trick Solo, 8 for Bull Solo). If successful, declarer scores; otherwise defenders score.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Score by bid value (e.g. Nickel Solo: bid value times 5 cents per opponent). Declarer pays each opponent if set; opponents pay declarer if contract is made. Mackers and First/Last add bonuses.',
+            linkedRuleIds: [
+              'solo.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'solo.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

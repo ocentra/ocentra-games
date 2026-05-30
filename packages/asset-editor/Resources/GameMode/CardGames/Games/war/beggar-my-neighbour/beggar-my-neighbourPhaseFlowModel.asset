@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '8b24e224-532b-489e-a237-29d26421b56b',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/beggar-my-neighbour/beggar-my-neighbourPhaseFlowModel.asset',
+    gameId: 'beggar-my-neighbour',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'beggar-my-neighbour',
+    familyVariant: 'War / Accumulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'turning_round',
+        label: 'Card Turning',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'payment_round',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'payment_round',
+        label: 'Paying the Fee',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'turning_round',
+        isMandatory: false,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 to 4 players.',
+        deck: 'Standard 52-card deck (Ace high).',
+        equipment: 'Standard pack.',
+        dealing: 'Deal the entire deck clockwise until all cards are distributed. Each player keeps their cards in a face-down pile (stack). No one may look at their cards.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'turning_round',
+      'payment_round',
+    ],
+    examples: [],
+  },
+}

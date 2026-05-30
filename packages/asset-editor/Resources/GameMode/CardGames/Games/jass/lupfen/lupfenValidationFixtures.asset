@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '611f1eed-aa01-47ea-877b-e629770dbee5',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/lupfen/lupfenValidationFixtures.asset',
+    gameId: 'lupfen',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'lupfen',
+    familyVariant: 'Solo vs Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'lupfen.core-runtime-contracts',
+        title: 'Lupfen Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'lupfen.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 45,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Lupfen must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'lupfen.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'lupfen.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'auction',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+              'bid',
+              'bid_game',
+              'bid_solo',
+              'bid_grand',
+              'choose_trump',
+              'score',
+            ],
+            explanation: 'Lupfen must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'lupfen.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'lupfen.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '61',
+            scoringDirection: 'high_wins',
+            targetScore: 61,
+            cardValues: {},
+            explanation: 'Card points from tricks. Declarer needs 61+ to win.',
+            linkedRuleIds: [
+              'lupfen.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'lupfen.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

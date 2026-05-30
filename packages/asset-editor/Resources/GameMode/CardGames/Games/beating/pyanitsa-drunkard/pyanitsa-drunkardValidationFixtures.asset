@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: '3cbe83ba-72a5-4ff3-91d5-8dba130687c8',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/pyanitsa-drunkard/pyanitsa-drunkardValidationFixtures.asset',
+    gameId: 'pyanitsa-drunkard',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pyanitsa-drunkard',
+    familyVariant: 'War / Accumulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pyanitsa-drunkard.core-runtime-contracts',
+        title: "P'yanitsa (Russian Drunkard) Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'pyanitsa-drunkard.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "P'yanitsa (Russian Drunkard) must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'pyanitsa-drunkard.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pyanitsa-drunkard.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'reveal',
+            expectedActor: 'all_simultaneous',
+            expectedLegalActions: [
+              'reveal_top',
+            ],
+            expectedNextPhase: 'capture',
+            supportedActionIds: [
+              'reveal_top',
+              'award_trick',
+              'add_face_down',
+              'add_face_up',
+            ],
+            explanation: "P'yanitsa (Russian Drunkard) must enter reveal first and expose exactly the legal actions authored for that phase.",
+            linkedRuleIds: [
+              'pyanitsa-drunkard.flow.reveal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'pyanitsa-drunkard.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Last player with cards wins; or in Giveaway variant, first to lose all cards wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'No point scoring. Goal is to capture the entire deck.',
+            linkedRuleIds: [
+              'pyanitsa-drunkard.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pyanitsa-drunkard.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

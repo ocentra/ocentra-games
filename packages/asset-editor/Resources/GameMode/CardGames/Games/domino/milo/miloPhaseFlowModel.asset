@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'd3242092-3a2e-415d-abb4-dc11d2293213',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/milo/miloPhaseFlowModel.asset',
+    gameId: 'milo',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'milo',
+    familyVariant: 'Partnership Line Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Four players in fixed partnerships. Partners sit facing each other.',
+        deck: 'Type: Double-six domino set\nNumber of tiles: 28\nAll tiles dealt to the four players.',
+        equipment: 'Double-six domino set (28 tiles)\nTable space',
+        dealing: 'All 28 tiles are dealt; seven tiles each. Play is normally counter-clockwise.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

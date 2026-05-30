@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: 'ca5b8991-5f38-4f8a-8daa-a567ffb73639',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/durak/podkidnoy-durak/podkidnoy-durakValidationFixtures.asset',
+    gameId: 'podkidnoy-durak',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'podkidnoy-durak',
+    familyVariant: 'Partnership / Shedding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'podkidnoy-durak.core-runtime-contracts',
+        title: 'Podkidnoy Durak (Durak Podkidnoy) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'podkidnoy-durak.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Podkidnoy Durak (Durak Podkidnoy) must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'podkidnoy-durak.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'podkidnoy-durak.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'main_play',
+            supportedActionIds: [
+              'deal',
+              'declare',
+              'play_card',
+              'draw',
+              'pass',
+              'go_out',
+            ],
+            explanation: 'Podkidnoy Durak (Durak Podkidnoy) must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'podkidnoy-durak.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'podkidnoy-durak.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'low_wins',
+            targetScore: 1,
+            cardValues: {
+              '6': '0',
+              '7': '1',
+              '8': '2',
+              '9': '3',
+              '10': '4',
+              J: '5',
+              Q: '6',
+              K: '7',
+              A: '8',
+            },
+            explanation: 'Scoring uses the documented rules for Podkidnoy Durak (Durak Podkidnoy) and determines round or match winners accordingly.',
+            linkedRuleIds: [
+              'podkidnoy-durak.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'podkidnoy-durak.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

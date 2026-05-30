@@ -1,0 +1,142 @@
+{
+  system: {
+    guid: '2c4d61cc-85be-425b-8b4f-3884179a0b17',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/garrafina/garrafinaPhaseFlowModel.asset',
+    gameId: 'garrafina',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'garrafina',
+    familyVariant: 'Line / Scoring',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal Tiles',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'lead',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal seven tiles per player and prepare any heap tiles for 2- or 3-player variants.',
+      },
+      {
+        id: 'lead',
+        label: 'Lead Starting Double',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+          'pass',
+          'buy_stock',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Starting player leads required opening double or passes; in 2/3-player variants they may exchange with heap if legal.',
+      },
+      {
+        id: 'play_loop',
+        label: 'Train Play',
+        actor: 'each_player_counterclockwise',
+        legalActions: [
+          'play_card',
+          'pass',
+          'go_out',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_went_out',
+            nextPhase: 'resolution',
+          },
+          {
+            condition: 'all_players_blocked',
+            nextPhase: 'resolution',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Players extend own train or eligible open opponent trains; trains open on pass and can close after end changes.',
+      },
+      {
+        id: 'resolution',
+        label: 'Score Deal',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Score winner and losers by pip totals according to going-out or blocked result.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 to 4 players; four-player is the base form.',
+        deck: 'One double-six domino set of 28 tiles.',
+        equipment: 'Optional train markers to show which trains are open after a pass.',
+        dealing: 'Deal 7 tiles to each player. In 4-player games all tiles are dealt. In 3-player games one 7-tile heap remains face down. In 2-player games two 7-tile heaps remain face down.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'Track train ownership and open/private state transitions after passes and opponent plays.',
+        'Validate mandatory-play rule across own and currently open trains.',
+        'Support variant-only hand exchange with one-heap or two-heap limits and settlement multipliers.',
+      ],
+    },
+    progression: [
+      'deal',
+      'lead',
+      'play_loop',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

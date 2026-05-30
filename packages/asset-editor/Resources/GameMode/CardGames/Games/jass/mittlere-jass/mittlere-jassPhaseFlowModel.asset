@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '9ef12d80-5e0f-4626-a67c-cfd721c13d80',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/mittlere-jass/mittlere-jassPhaseFlowModel.asset',
+    gameId: 'mittlere-jass',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mittlere-jass',
+    familyVariant: 'Jass',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'right_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3 players, each playing for themselves.',
+        deck: '36-card Jass deck (6 through Ace in four suits: Acorns, Shields, Flowers, Bells). Can use standard deck with 5s and below removed.',
+        equipment: '36-card Jass deck or modified standard deck, scoring slate (for sticks and potatoes).',
+        dealing: 'All 36 cards dealt out, 12 to each player, in packets of 3. Deal and play are anticlockwise.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'right_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 12,
+        mustFollowSuit: true,
+        mustOvertrump: true,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

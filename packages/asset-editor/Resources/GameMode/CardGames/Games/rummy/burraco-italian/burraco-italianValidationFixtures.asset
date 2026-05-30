@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: 'a4d7da67-db81-41c5-bf27-d3396cadbe77',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/burraco-italian/burraco-italianValidationFixtures.asset',
+    gameId: 'burraco-italian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'burraco-italian',
+    familyVariant: 'Rummy / Set-Collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'burraco-italian.core-runtime-contracts',
+        title: 'Burraco Italian Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'burraco-italian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Burraco Italian must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'burraco-italian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'burraco-italian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Burraco Italian must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'burraco-italian.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'burraco-italian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '2000',
+            scoringDirection: 'high_wins',
+            targetScore: 2000,
+            cardValues: {
+              Joker: '30 points per joker.',
+              'Two (pinella)': '20 points per two in any suit.',
+              Ace: '15 points per ace.',
+              'K, Q, J, 10, 9, 8': '10 points per card.',
+              '7, 6, 5, 4, 3': '5 points per card.',
+            },
+            explanation: 'Teams score the point values of all cards they have melded on the table, receive bonuses for burracos (clean or dirty) and for going out, and subtract the values of any cards left in hand. A clean burraco (seven or more natural cards) is worth 200 points, a dirty burraco (seven or more cards including at least one wild card) is worth 100 points, going out (closing) is worth 100 points, and a team that has not taken its pozzetto at the end of the hand loses 100 points.',
+            linkedRuleIds: [
+              'burraco-italian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'burraco-italian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

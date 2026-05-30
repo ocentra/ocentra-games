@@ -1,0 +1,78 @@
+{
+  system: {
+    guid: '551f4862-b21b-4c42-ac5a-be160e8a276a',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/indian-poker-no-peek/indian-poker-no-peekStateEventModel.asset',
+    gameId: 'indian-poker-no-peek',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'indian-poker-no-peek',
+    familyVariant: 'Indian Poker / Vying',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'NA',
+        tableauCards: 'NA',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 8,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'position_cards',
+        'betting',
+        'showdown',
+      ],
+      actions: [
+        'deal',
+        'fold',
+        'check',
+        'call',
+        'bet',
+        'raise',
+        'award_pot',
+        'place_on_forehead',
+        'reveal',
+      ],
+    },
+    examples: [],
+  },
+}

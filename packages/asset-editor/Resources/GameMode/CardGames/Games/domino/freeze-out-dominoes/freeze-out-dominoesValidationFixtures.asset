@@ -1,0 +1,113 @@
+{
+  system: {
+    guid: '4b5c40e4-f14e-42ea-8b3b-89254dd4dc34',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/freeze-out-dominoes/freeze-out-dominoesValidationFixtures.asset',
+    gameId: 'freeze-out-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'freeze-out-dominoes',
+    familyVariant: 'Line / Block Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'freeze-out-dominoes.core-runtime-contracts',
+        title: 'Freeze Out Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'freeze-out-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Freeze Out Dominoes must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'freeze-out-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'freeze-out-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'round_start',
+            supportedActionIds: [
+              'deal',
+              'reveal_lead',
+              'reveal_tile',
+              'collect_dominoes',
+              'system_determine_winner',
+              'system_check_game_end',
+            ],
+            explanation: 'Freeze Out Dominoes must enter setup first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'freeze-out-dominoes.flow.setup',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'freeze-out-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player to capture all dominoes wins.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'No points are explicitly scored. The game is won simply by accumulating all dominoes.',
+            linkedRuleIds: [
+              'freeze-out-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'freeze-out-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

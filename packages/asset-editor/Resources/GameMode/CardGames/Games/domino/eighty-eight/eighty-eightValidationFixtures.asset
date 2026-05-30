@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: 'a499a44f-32b0-497c-8ba1-bda8da7fa774',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/eighty-eight/eighty-eightValidationFixtures.asset',
+    gameId: 'eighty-eight',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'eighty-eight',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'eighty-eight.core-runtime-contracts',
+        title: 'Eighty-Eight (Texas 88) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'eighty-eight.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_up',
+            explanation: 'Eighty-Eight (Texas 88) must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'eighty-eight.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'eighty-eight.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Eighty-Eight (Texas 88) must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'eighty-eight.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'eighty-eight.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First team to reach 500 points wins. Points from count tiles in won tricks.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Score points by winning tricks and capturing 'count' tiles. Be the first team to reach 500 points.",
+            linkedRuleIds: [
+              'eighty-eight.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'eighty-eight.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

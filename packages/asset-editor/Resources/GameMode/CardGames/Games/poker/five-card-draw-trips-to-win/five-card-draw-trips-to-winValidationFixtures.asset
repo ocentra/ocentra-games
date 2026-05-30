@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: 'e11b9912-d5fb-4018-8a00-089966990a22',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/five-card-draw-trips-to-win/five-card-draw-trips-to-winValidationFixtures.asset',
+    gameId: 'five-card-draw-trips-to-win',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'five-card-draw-trips-to-win',
+    familyVariant: 'Draw Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'five-card-draw-trips-to-win.core-runtime-contracts',
+        title: 'Trips to Win (5 Card Draw) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'five-card-draw-trips-to-win.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Trips to Win (5 Card Draw) must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'five-card-draw-trips-to-win.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'five-card-draw-trips-to-win.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Trips to Win (5 Card Draw) must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'five-card-draw-trips-to-win.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'five-card-draw-trips-to-win.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Best hand wins only if it is at least three of a kind; else push, pot carries.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Qualifier: trips minimum to win.',
+            linkedRuleIds: [
+              'five-card-draw-trips-to-win.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'five-card-draw-trips-to-win.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

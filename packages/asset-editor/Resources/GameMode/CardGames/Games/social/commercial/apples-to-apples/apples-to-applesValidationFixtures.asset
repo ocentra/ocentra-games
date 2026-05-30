@@ -1,0 +1,109 @@
+{
+  system: {
+    guid: 'b9cad098-4a71-4260-a103-c5bdc4c6fdef',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/apples-to-apples/apples-to-applesValidationFixtures.asset',
+    gameId: 'apples-to-apples',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'apples-to-apples',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'apples-to-apples.core-runtime-contracts',
+        title: 'Apples to Apples Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'apples-to-apples.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 10,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Apples to Apples must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'apples-to-apples.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'apples-to-apples.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'turning_round',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'flip_top_card',
+            ],
+            expectedNextPhase: 'payment_round',
+            supportedActionIds: [
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Apples to Apples must enter turning_round first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'apples-to-apples.flow.turning_round',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'apples-to-apples.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '4',
+            scoringDirection: 'high_wins',
+            targetScore: 4,
+            cardValues: {},
+            explanation: 'Each won green card is one point; first to the agreed total wins.',
+            linkedRuleIds: [
+              'apples-to-apples.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'apples-to-apples.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 10,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

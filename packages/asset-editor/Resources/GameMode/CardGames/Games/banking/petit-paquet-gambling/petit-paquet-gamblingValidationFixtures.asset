@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: 'baada73d-8f7a-4881-981e-a1b6c42cd8eb',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/petit-paquet-gambling/petit-paquet-gamblingValidationFixtures.asset',
+    gameId: 'petit-paquet-gambling',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'petit-paquet-gambling',
+    familyVariant: 'Partition / Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'petit-paquet-gambling.core-runtime-contracts',
+        title: 'Petit Paquet Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'petit-paquet-gambling.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 10,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Petit Paquet must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'petit-paquet-gambling.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'petit-paquet-gambling.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'place_bets',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'bet',
+            ],
+            expectedNextPhase: 'deal_packets',
+            supportedActionIds: [
+              'bet',
+              'deal_packets',
+              'reveal_top_cards',
+              'pay_packet_wins',
+            ],
+            explanation: 'Petit Paquet must enter place_bets first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'petit-paquet-gambling.flow.place_bets',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'petit-paquet-gambling.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Bet on a packet that reveals a higher card than the Banker's card.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Bet on a packet that reveals a higher card than the Banker's card.",
+            linkedRuleIds: [
+              'petit-paquet-gambling.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'petit-paquet-gambling.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 10,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: '7fcac4f9-5dad-46a6-9151-d0bfa1f83ef9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/scopa/scopa-scalette/scopa-scaletteValidationFixtures.asset',
+    gameId: 'scopa-scalette',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'scopa-scalette',
+    familyVariant: 'Scopa Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'scopa-scalette.core-runtime-contracts',
+        title: 'Scopa con le Scalette Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'scopa-scalette.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Scopa con le Scalette must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'scopa-scalette.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'scopa-scalette.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Scopa con le Scalette must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'scopa-scalette.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'scopa-scalette.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player or team to reach the agreed target (usually 11 or more) wins. Ties broken by an extra hand. Taking all coins/diamonds (Scala) wins immediately.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Standard Scopa points (scopa/sweep, most cards, most coins/diamonds, settebello, primiera) plus Scalette: Scaletta bassa (A-2-3 coins) = 3 points, extend upward to Horse/Queen for up to 9; Scaletta alta (K-Q-J coins) = 5 points, extend downward to 2 for up to 11; Scala (all coins/diamonds) wins the game outright. Target typically 11 or more (21, 31, 41 when using extra Scalette points).',
+            linkedRuleIds: [
+              'scopa-scalette.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'scopa-scalette.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

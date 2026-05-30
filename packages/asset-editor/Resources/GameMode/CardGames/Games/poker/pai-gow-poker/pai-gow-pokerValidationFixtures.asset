@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: 'fec25194-f36d-4af5-a31c-ad54a9887967',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/pai-gow-poker/pai-gow-pokerValidationFixtures.asset',
+    gameId: 'pai-gow-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pai-gow-poker',
+    familyVariant: 'Casino Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pai-gow-poker.core-runtime-contracts',
+        title: 'Pai Gow Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pai-gow-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 7,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 49,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Pai Gow Poker must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pai-gow-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pai-gow-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'betting',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'bet',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'bet',
+              'deal_seven_cards',
+              'partition_into_two_hands',
+              'reveal_hands',
+              'settle_bets',
+            ],
+            explanation: 'Pai Gow Poker must enter betting first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'pai-gow-poker.flow.betting',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'pai-gow-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Both the 5-card and 2-card hands must outrank the banker's corresponding hands.",
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win both hands to win (minus commission); lose both to lose; split one each for a push.',
+            linkedRuleIds: [
+              'pai-gow-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pai-gow-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

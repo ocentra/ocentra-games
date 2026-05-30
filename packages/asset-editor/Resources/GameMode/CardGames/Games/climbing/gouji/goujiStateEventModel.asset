@@ -1,0 +1,70 @@
+{
+  system: {
+    guid: '1b5ccf8d-a6a9-4137-906c-337475f1b6c0',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/climbing/gouji/goujiStateEventModel.asset',
+    gameId: 'gouji',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'gouji',
+    familyVariant: 'Climbing / Rank-exchange',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'table',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        deck_count: 4,
+        hand_size: 36,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'climb_play',
+        'resolution',
+      ],
+      actions: [
+        'deal',
+        'award_pot',
+        'play_card',
+        'pass',
+        'go_out',
+      ],
+    },
+    examples: [],
+  },
+}

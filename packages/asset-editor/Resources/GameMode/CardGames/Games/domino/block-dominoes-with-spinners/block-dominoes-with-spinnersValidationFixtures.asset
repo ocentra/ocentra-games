@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: 'ba3c3d8b-3654-414d-b136-d019e944234f',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/block-dominoes-with-spinners/block-dominoes-with-spinnersValidationFixtures.asset',
+    gameId: 'block-dominoes-with-spinners',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'block-dominoes-with-spinners',
+    familyVariant: 'Cross / Block Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'block-dominoes-with-spinners.core-runtime-contracts',
+        title: 'Block Dominoes with Spinners Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'block-dominoes-with-spinners.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Block Dominoes with Spinners must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'block-dominoes-with-spinners.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'block-dominoes-with-spinners.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal_tiles',
+            ],
+            expectedNextPhase: 'lead_double',
+            supportedActionIds: [
+              'pass',
+              'deal_tiles',
+              'lead_spinner_double',
+              'draw_for_double',
+              'place_tile',
+              'count_pips',
+              'calculate_winner',
+            ],
+            explanation: 'Block Dominoes with Spinners must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'block-dominoes-with-spinners.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'block-dominoes-with-spinners.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: "Winner scores losers' pips minus own pips. Game to 101 (2p) or 61 (3-4p).",
+            linkedRuleIds: [
+              'block-dominoes-with-spinners.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'block-dominoes-with-spinners.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

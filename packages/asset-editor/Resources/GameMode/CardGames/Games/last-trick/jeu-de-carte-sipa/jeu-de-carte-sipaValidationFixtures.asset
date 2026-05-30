@@ -1,0 +1,109 @@
+{
+  system: {
+    guid: '6f8eccb8-cf88-4fa2-a80b-3f9d63ea5a5e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/jeu-de-carte-sipa/jeu-de-carte-sipaValidationFixtures.asset',
+    gameId: 'jeu-de-carte-sipa',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'jeu-de-carte-sipa',
+    familyVariant: 'Last-Trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'jeu-de-carte-sipa.core-runtime-contracts',
+        title: 'Jeu de Carte Sipa Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'jeu-de-carte-sipa.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Jeu de Carte Sipa must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'jeu-de-carte-sipa.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'jeu-de-carte-sipa.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+            ],
+            explanation: 'Jeu de Carte Sipa must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'jeu-de-carte-sipa.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'jeu-de-carte-sipa.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win the final trick of the hand. If you win it with a 7, you score higher bonus points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: '- **2 points**: Win the last trick with a 7.\n- **4 points**: Win the last TWO tricks, both with 7s.\n- **6 points**: Win the last THREE tricks, all with 7s (nearly impossible).\n- **1 point**: Win the last trick with any other card.',
+            linkedRuleIds: [
+              'jeu-de-carte-sipa.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'jeu-de-carte-sipa.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

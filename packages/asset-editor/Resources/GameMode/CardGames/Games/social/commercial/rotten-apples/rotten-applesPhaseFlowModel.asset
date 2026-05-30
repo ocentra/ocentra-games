@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'f5f6fd45-397a-40a4-abad-d66e61681956',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/rotten-apples/rotten-applesPhaseFlowModel.asset',
+    gameId: 'rotten-apples',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'rotten-apples',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'turning_round',
+        label: 'Card Turning',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'payment_round',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'payment_round',
+        label: 'Paying the Fee',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'turning_round',
+        isMandatory: false,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3 or more players use the table arrangement described for Rotten Apples.',
+        deck: 'Dedicated Rotten Apples prompt and response deck',
+        equipment: 'Dedicated Rotten Apples prompt and response deck, score area, and enough table space for play.',
+        dealing: 'Prepare Dedicated Rotten Apples prompt and response deck and deal or lay out cards according to the documented Rotten Apples rules before play begins.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'turning_round',
+      'payment_round',
+    ],
+    examples: [],
+  },
+}

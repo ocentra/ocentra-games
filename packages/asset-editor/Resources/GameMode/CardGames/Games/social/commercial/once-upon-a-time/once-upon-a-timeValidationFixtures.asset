@@ -1,0 +1,109 @@
+{
+  system: {
+    guid: '6a4a6916-6c5d-4a05-be71-119f9dde3f1e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/once-upon-a-time/once-upon-a-timeValidationFixtures.asset',
+    gameId: 'once-upon-a-time',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'once-upon-a-time',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'once-upon-a-time.core-runtime-contracts',
+        title: 'Once Upon a Time Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'once-upon-a-time.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Once Upon a Time must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'once-upon-a-time.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'once-upon-a-time.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'turning_round',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'flip_top_card',
+            ],
+            expectedNextPhase: 'payment_round',
+            supportedActionIds: [
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Once Upon a Time must enter turning_round first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'once-upon-a-time.flow.turning_round',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'once-upon-a-time.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Play all story cards and steer the tale to your ending card.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Published scoring or victory conditions determine the winner.',
+            linkedRuleIds: [
+              'once-upon-a-time.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'once-upon-a-time.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

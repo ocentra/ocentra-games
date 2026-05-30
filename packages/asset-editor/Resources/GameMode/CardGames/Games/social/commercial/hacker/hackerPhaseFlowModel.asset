@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '6febbcb4-ec45-41d8-930b-4faf70e750f3',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/hacker/hackerPhaseFlowModel.asset',
+    gameId: 'hacker',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hacker',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'turning_round',
+        label: 'Card Turning',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'payment_round',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'payment_round',
+        label: 'Paying the Fee',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'turning_round',
+        isMandatory: false,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3-6 players use the table arrangement described for Hacker.',
+        deck: 'Dedicated Hacker card deck',
+        equipment: 'Dedicated Hacker card deck, score area, and enough table space for play.',
+        dealing: 'Prepare the dedicated Hacker deck and any shared scoring, resource, or tableau area described by the rules.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'turning_round',
+      'payment_round',
+    ],
+    examples: [],
+  },
+}

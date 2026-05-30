@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'ea39c1f8-fad1-4ecc-bd4e-7b60299e260a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/bismarck/bismarckValidationFixtures.asset',
+    gameId: 'bismarck',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bismarck',
+    familyVariant: 'Quota Whist',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bismarck.core-runtime-contracts',
+        title: 'Bismarck Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bismarck.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 16,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bismarck must start by giving each active player 16 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bismarck.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bismarck.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_4_faceup',
+              'deal_16_each',
+            ],
+            expectedNextPhase: 'choose_contract',
+            supportedActionIds: [
+              'play_card',
+              'deal_4_faceup',
+              'deal_16_each',
+              'choose_sang',
+              'choose_pass',
+              'choose_spader',
+              'choose_valfri',
+              'pickup_table_cards',
+              'discard_4',
+              'calculate_quota_score',
+            ],
+            explanation: 'Bismarck must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'bismarck.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'bismarck.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest cumulative score after all 12 deals.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Quota-based: +1 per trick over quota, -1 per trick under. Zero-sum across 3 players. Tracked on a grid with cumulative totals.',
+            linkedRuleIds: [
+              'bismarck.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bismarck.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 16,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

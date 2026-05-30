@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: 'ac83eeb6-5f46-4ca9-8b0c-fdd735e4bcce',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/honest-john/honest-johnValidationFixtures.asset',
+    gameId: 'honest-john',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'honest-john',
+    familyVariant: 'Line / Block Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'honest-john.core-runtime-contracts',
+        title: 'Honest John Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'honest-john.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 8,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Honest John must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'honest-john.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'honest-john.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+              'buy_tile_from_neighbor',
+              'pass',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'buy_tile_from_neighbor',
+            ],
+            explanation: 'Honest John must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'honest-john.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'honest-john.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Be the first player to play all tiles in your hand OR have the fewest pips remaining.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Be the first player to play all tiles in your hand OR have the fewest pips remaining.',
+            linkedRuleIds: [
+              'honest-john.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'honest-john.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,70 @@
+{
+  system: {
+    guid: '3727a543-5e78-4001-922b-4208c6736a8e',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/blind-watten/blind-wattenStateEventModel.asset',
+    gameId: 'blind-watten',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'blind-watten',
+    familyVariant: 'Watten Family / Alpine Games',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 5,
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        hand_size: 5,
+        target_score: 15,
+      },
+    },
+    eventModel: {
+      phases: [
+        'dealing',
+        'secret_selection',
+        'play_loop',
+        'scoring',
+      ],
+      actions: [
+        'raise',
+        'play_card',
+        'pass',
+        'deal_5_each',
+        'forehand_shows_schlag',
+        'dealer_shows_trump_suit',
+        'calculate_match_points',
+        'propose_raise',
+      ],
+    },
+    examples: [],
+  },
+}

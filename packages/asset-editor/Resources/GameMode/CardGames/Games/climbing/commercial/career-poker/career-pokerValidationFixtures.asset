@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '37013a27-831a-45eb-ac9a-adb12d11cf7d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/climbing/commercial/career-poker/career-pokerValidationFixtures.asset',
+    gameId: 'career-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'career-poker',
+    familyVariant: 'Climbing',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'career-poker.core-runtime-contracts',
+        title: 'Career Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'career-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 8,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 104,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Career Poker must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'career-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'career-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'dealing',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal_13_each',
+            ],
+            expectedNextPhase: 'climbing',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'deal_13_each',
+              'play_combination',
+              'calculate_penalties',
+            ],
+            explanation: 'Career Poker must enter dealing first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'career-poker.flow.dealing',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'career-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1000',
+            scoringDirection: 'high_wins',
+            targetScore: 1000,
+            cardValues: {
+              '2': '15',
+              A: '14',
+              K: '13',
+              Q: '12',
+              J: '11',
+              T: '10',
+            },
+            explanation: 'Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers).',
+            linkedRuleIds: [
+              'career-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'career-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

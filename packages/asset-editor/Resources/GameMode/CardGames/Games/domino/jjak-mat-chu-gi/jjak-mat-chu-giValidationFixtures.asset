@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: 'f6e3c93c-45c7-46ae-917b-fb3a27d77fa6',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/jjak-mat-chu-gi/jjak-mat-chu-giValidationFixtures.asset',
+    gameId: 'jjak-mat-chu-gi',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'jjak-mat-chu-gi',
+    familyVariant: 'Memory',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'jjak-mat-chu-gi.core-runtime-contracts',
+        title: 'Jjak-mat-chu-gi Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'jjak-mat-chu-gi.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Jjak-mat-chu-gi must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'jjak-mat-chu-gi.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'jjak-mat-chu-gi.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'turn_loop',
+            supportedActionIds: [
+              'deal',
+              'draw',
+              'discard',
+              'meld',
+              'claim_discard',
+            ],
+            explanation: 'Jjak-mat-chu-gi must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'jjak-mat-chu-gi.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'jjak-mat-chu-gi.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Be the first to form three complete pairs in your hand.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Be the first to form three complete pairs in your hand.',
+            linkedRuleIds: [
+              'jjak-mat-chu-gi.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'jjak-mat-chu-gi.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

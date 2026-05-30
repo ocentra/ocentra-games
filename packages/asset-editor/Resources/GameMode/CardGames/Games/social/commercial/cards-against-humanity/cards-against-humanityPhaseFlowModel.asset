@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '10fb84eb-2c19-4da6-9ff2-242c955bf4dd',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/cards-against-humanity/cards-against-humanityPhaseFlowModel.asset',
+    gameId: 'cards-against-humanity',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'cards-against-humanity',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'turning_round',
+        label: 'Card Turning',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'payment_round',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'payment_round',
+        label: 'Paying the Fee',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'turning_round',
+        isMandatory: false,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '4 or more players use the table arrangement described for Cards Against Humanity.',
+        deck: 'Dedicated prompt and answer cards',
+        equipment: 'Dedicated prompt and answer cards, score area, and enough table space for play.',
+        dealing: 'Deal answer cards to each player and reveal one prompt card for the round.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'turning_round',
+      'payment_round',
+    ],
+    examples: [],
+  },
+}

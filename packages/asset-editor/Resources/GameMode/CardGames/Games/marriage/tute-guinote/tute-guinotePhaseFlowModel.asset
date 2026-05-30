@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '6f9d80f0-53a1-48f7-bf6e-4a52aff048b8',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/tute-guinote/tute-guinotePhaseFlowModel.asset',
+    gameId: 'tute-guinote',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tute-guinote',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'right_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Two or more players.',
+        deck: 'Standard Spanish 40-card pack: four suits (Oros, Copas, Espadas, Bastos), ranks Ace down to Two. In Guiñote the jack (sota) ranks above the horse (caballo) and is worth 3 points; the horse is worth 2. Same pack as Tute.',
+        equipment: 'Cards',
+        dealing: 'The first dealer is chosen at random. In Guiñote the winner of the last trick deals the next hand; if a hand ends by claim the winner of the game deals next.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'right_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 10,
+        mustFollowSuit: true,
+        mustOvertrump: true,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

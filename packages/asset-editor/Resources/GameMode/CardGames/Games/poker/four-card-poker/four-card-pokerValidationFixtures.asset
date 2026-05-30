@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '5683ebb4-f677-4cfb-89e3-e0be3a740369',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/four-card-poker/four-card-pokerValidationFixtures.asset',
+    gameId: 'four-card-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'four-card-poker',
+    familyVariant: 'Draw Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'four-card-poker.core-runtime-contracts',
+        title: 'Four Card Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'four-card-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 6,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Four Card Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'four-card-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'four-card-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'ante',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'ante',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'ante',
+              'fold',
+              'execute_deal',
+              'resolve_showdown',
+              'play_bet_1x',
+              'play_bet_2x',
+              'play_bet_3x',
+            ],
+            explanation: 'Four Card Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'four-card-poker.flow.ante',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'four-card-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Form a better four-card poker hand than the dealer.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Form a better four-card poker hand than the dealer.',
+            linkedRuleIds: [
+              'four-card-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'four-card-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

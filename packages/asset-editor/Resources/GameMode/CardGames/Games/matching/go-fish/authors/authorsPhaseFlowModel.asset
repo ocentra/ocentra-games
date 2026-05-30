@@ -1,0 +1,98 @@
+{
+  system: {
+    guid: '2f038792-103a-4e89-ae6f-5a65b70fff7d',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/go-fish/authors/authorsPhaseFlowModel.asset',
+    gameId: 'authors',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'authors',
+    familyVariant: 'Memory / Quartets',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Full Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal_all_even',
+        ],
+        nextPhase: 'ask_loop',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'ask_loop',
+        label: 'The Inquiry',
+        actor: 'current_player',
+        legalActions: [
+          'ask_specific_card',
+        ],
+        nextPhase: 'end_round',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'end_round',
+        label: 'Tally Books',
+        actor: 'system',
+        legalActions: [
+          'count_books',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3-6 players (best with 4-5).',
+        deck: 'Standard 52 cards.',
+        equipment: 'Standard pack, score sheet for counting books.',
+        dealing: 'The entire deck is dealt out as evenly as possible. Some players may have one more card than others.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'ask_loop',
+      'end_round',
+    ],
+    examples: [],
+  },
+}

@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: 'a6603223-8798-4b36-a555-7dd2168fba0b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/marjapussi/marjapussiValidationFixtures.asset',
+    gameId: 'marjapussi',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'marjapussi',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'marjapussi.core-runtime-contracts',
+        title: 'Marjapussi Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'marjapussi.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Marjapussi must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'marjapussi.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'marjapussi.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+              'declare_marriage',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+              'declare_marriage',
+            ],
+            explanation: 'Marjapussi must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'marjapussi.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'marjapussi.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '10',
+            scoringDirection: 'high_wins',
+            targetScore: 10,
+            cardValues: {
+              '6': '0',
+              '7': '0',
+              '8': '0',
+              '9': '0',
+              '10': '10',
+              A: '10 or 11 (simplified 10, original 11)',
+              K: '4 or 5 (simplified 5, original 4)',
+              Q: '3 or 5 (simplified 5, original 3)',
+              J: '2 or 5 (simplified 5, original 2)',
+            },
+            explanation: 'Game points are scored for declaring trumps (2), non-trump marriages (1 each), last trick (1), and majority of card points (1; tie awards none). Card points: Ace 10 or 11, Ten 10, King 4 or 5, Queen 3 or 5, Jack 2 or 5, 9-6 zero (simplified or original system).',
+            linkedRuleIds: [
+              'marjapussi.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'marjapussi.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '779bc7c3-0951-4442-8529-38b6e45e3c76',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/amerikaner/amerikanerValidationFixtures.asset',
+    gameId: 'amerikaner',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'amerikaner',
+    familyVariant: 'Secret Partnership (Boston)',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'amerikaner.core-runtime-contracts',
+        title: 'Amerikaner Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'amerikaner.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 60,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Amerikaner must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'amerikaner.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'amerikaner.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_cards',
+              'create_kitty',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'deal_cards',
+              'create_kitty',
+              'bid_number',
+              'bid_amerikaner',
+              'take_kitty',
+              'discard_four',
+              'call_partner_card',
+              'apply_bid_outcome',
+            ],
+            explanation: 'Amerikaner must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'amerikaner.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'amerikaner.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'high_wins',
+            targetScore: 100,
+            cardValues: {},
+            explanation: 'Points are awarded based on whether the bid was successful.',
+            linkedRuleIds: [
+              'amerikaner.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'amerikaner.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

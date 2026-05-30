@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'ac8dbec1-2d73-467c-a9e5-d0796aabd85e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/horse/horseValidationFixtures.asset',
+    gameId: 'horse',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'horse',
+    familyVariant: 'Poker Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'horse.core-runtime-contracts',
+        title: 'HORSE Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'horse.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 2,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'HORSE must start by giving each active player 2 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'horse.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'horse.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'ante',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'ante',
+            ],
+            expectedNextPhase: 'betting_round',
+            supportedActionIds: [
+              'ante',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'award_pot',
+            ],
+            explanation: 'HORSE must enter ante first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'horse.flow.ante',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'horse.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win chips/money by winning pots in each of the five poker variants.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win chips/money by winning pots in each of the five poker variants.',
+            linkedRuleIds: [
+              'horse.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'horse.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 2,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

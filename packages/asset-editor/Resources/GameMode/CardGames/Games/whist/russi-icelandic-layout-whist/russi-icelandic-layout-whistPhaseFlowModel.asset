@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'fe0f1edf-b7ab-4877-86a4-e6808dcb24cf',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/russi-icelandic-layout-whist/russi-icelandic-layout-whistPhaseFlowModel.asset',
+    gameId: 'russi-icelandic-layout-whist',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'russi-icelandic-layout-whist',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Two players only. A standard 52-card pack is used; cards in each suit rank A (high) down to 2 (low). Turn to deal alternates; each player receives 26 cards: 9 face down on the table, 9 face up on those, and 8 in hand.',
+        deck: 'Standard 52-card pack; A (high) to 2 (low) in each suit.',
+        equipment: '',
+        dealing: "Turn to deal alternates. Each player receives 26 cards: 9 face down on table (5 lower row, 4 upper row), then 9 face up on top of those, then 8 to hand. Dealer's opponent receives first card; cards dealt alternately.",
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 26,
+        mustFollowSuit: true,
+        mustOvertrump: false,
+        leadRestrictions: 'Any card may be led.',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

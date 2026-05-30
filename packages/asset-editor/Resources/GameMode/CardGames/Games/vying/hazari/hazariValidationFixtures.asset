@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'fb6bf45b-aadb-4bb6-8f46-1d4a0bde72d2',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/hazari/hazariValidationFixtures.asset',
+    gameId: 'hazari',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hazari',
+    familyVariant: 'Brag Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'hazari.core-runtime-contracts',
+        title: 'Hazari Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'hazari.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 52,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Hazari must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'hazari.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'hazari.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'role:dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'partition',
+            supportedActionIds: [
+              'deal',
+              'declare',
+              'reveal_hand',
+              'award_pot',
+            ],
+            explanation: 'Hazari must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'hazari.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'hazari.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1000',
+            scoringDirection: 'high_wins',
+            targetScore: 1000,
+            cardValues: {
+              '10': '10',
+              Ace: '10',
+              King: '10',
+              Queen: '10',
+              Jack: '10',
+              others: '0',
+            },
+            explanation: 'All Aces, Kings, Queens, Jacks, and 10s are worth 10 points each. All other cards are 0 points.',
+            linkedRuleIds: [
+              'hazari.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'hazari.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

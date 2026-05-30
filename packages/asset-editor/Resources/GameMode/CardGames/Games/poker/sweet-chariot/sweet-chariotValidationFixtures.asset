@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '33206f1d-6c58-40c9-b6b7-a2a2795424b5',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/sweet-chariot/sweet-chariotValidationFixtures.asset',
+    gameId: 'sweet-chariot',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sweet-chariot',
+    familyVariant: 'Lowball',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sweet-chariot.core-runtime-contracts',
+        title: 'Sweet Chariot Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sweet-chariot.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 40,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sweet Chariot Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sweet-chariot.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sweet-chariot.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'first_bet',
+            supportedActionIds: [
+              'ante',
+              'deal',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'choose_hole_board',
+            ],
+            explanation: 'Sweet Chariot Poker must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'sweet-chariot.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'sweet-chariot.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Lowest hand at showdown wins the pot; ace-to-five low ranking.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Pot is won by the player with the lowest five-card hand at showdown (ace-to-five ranking), or by the last player when all others fold. Ties split the pot.',
+            linkedRuleIds: [
+              'sweet-chariot.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sweet-chariot.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

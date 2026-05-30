@@ -1,0 +1,81 @@
+{
+  system: {
+    guid: '8403cf35-7db5-49ac-b0c6-fee75ade8be0',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/aluette/aluetteStateEventModel.asset',
+    gameId: 'aluette',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'aluette',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 12,
+        },
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 9,
+        },
+        {
+          id: 'trick',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+        {
+          id: 'custom:captured_tricks',
+          type: 'area',
+          visibility: 'public',
+          owner: 'player',
+          capacity: null,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 4,
+        max_players: 4,
+        hand_size: 9,
+        round_limit: 5,
+        deck_count: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'trick_play',
+        'settlement',
+      ],
+      actions: [
+        'deal',
+        'award_pot',
+        'play_card',
+      ],
+    },
+    examples: [],
+  },
+}

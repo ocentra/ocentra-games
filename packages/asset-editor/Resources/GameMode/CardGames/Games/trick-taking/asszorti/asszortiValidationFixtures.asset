@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'f167e7ca-9764-4bb3-ab01-ed0fb960ee17',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/asszorti/asszortiValidationFixtures.asset',
+    gameId: 'asszorti',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'asszorti',
+    familyVariant: 'Tarokk / Preferansz Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'asszorti.core-runtime-contracts',
+        title: 'Asszorti Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'asszorti.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 11,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 33,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Asszorti must start by giving each active player 11 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'asszorti.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'asszorti.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_asszorti',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'deal_asszorti',
+              'bid_talon_count',
+              'draw_talon',
+              'discard_cards',
+              'declare_trump',
+              'announce_arrivazs',
+              'double_game',
+              'double_arrivazs',
+              'calculate_score',
+            ],
+            explanation: 'Asszorti must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'asszorti.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'asszorti.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest score after a set number of rounds or reaching a target (e.g., 50).',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Base points are multiplied by the bid level and any Doubles.',
+            linkedRuleIds: [
+              'asszorti.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'asszorti.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 11,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

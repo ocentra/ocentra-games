@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '6f748f97-d881-478c-88df-2ac0091ffa3c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/p-sur/p-surValidationFixtures.asset',
+    gameId: 'p-sur',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'p-sur',
+    familyVariant: 'Arithmetic Capture',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'p-sur.core-runtime-contracts',
+        title: 'Pasur Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'p-sur.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Pasur must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'p-sur.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'p-sur.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal_batch',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+              'reveal_market',
+            ],
+            expectedNextPhase: 'play_loop',
+            supportedActionIds: [
+              'deal',
+              'reveal_market',
+              'award_pot',
+              'play_card',
+              'advance_phase',
+            ],
+            explanation: 'Pasur must enter deal_batch first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'p-sur.flow.deal_batch',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'p-sur.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '62',
+            scoringDirection: 'high_wins',
+            targetScore: 62,
+            cardValues: {
+              'Haft Khaj (7+ clubs)': '7 points',
+              Ace: '1 point each',
+              Jack: '1 point each',
+              '2 of Clubs': '2 points',
+              '10 of Diamonds': '3 points',
+              Sur: '5 points each',
+            },
+            explanation: 'At round end score captured cards and sur markers: 7 points for clubs majority (Haft Khaj), 1 each Ace, 1 each Jack, 2 for 2 of Clubs, 3 for 10 of Diamonds, and 5 per sur.',
+            linkedRuleIds: [
+              'p-sur.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'p-sur.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

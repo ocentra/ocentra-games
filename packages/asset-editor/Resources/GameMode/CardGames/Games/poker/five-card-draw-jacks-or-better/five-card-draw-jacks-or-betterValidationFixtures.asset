@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'a1d279fa-26bf-4813-97e4-3f4a61d5ba3c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/five-card-draw-jacks-or-better/five-card-draw-jacks-or-betterValidationFixtures.asset',
+    gameId: 'five-card-draw-jacks-or-better',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'five-card-draw-jacks-or-better',
+    familyVariant: 'Draw Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'five-card-draw-jacks-or-better.core-runtime-contracts',
+        title: 'Jacks or Better (5 Card Draw) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'five-card-draw-jacks-or-better.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Jacks or Better (5 Card Draw) must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'five-card-draw-jacks-or-better.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'five-card-draw-jacks-or-better.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'ante',
+            expectedActor: 'all_simultaneous',
+            expectedLegalActions: [
+              'post_ante',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'deal',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'pass',
+              'post_ante',
+              'open_if_qualified',
+              'discard_and_draw',
+              'show_hand',
+            ],
+            explanation: 'Jacks or Better (5 Card Draw) must enter ante first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'five-card-draw-jacks-or-better.flow.ante',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'five-card-draw-jacks-or-better.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Standard Five Card Draw scoring. Opener requirement ensures qualified hands only.',
+            linkedRuleIds: [
+              'five-card-draw-jacks-or-better.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'five-card-draw-jacks-or-better.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

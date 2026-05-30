@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: 'fe1fd992-633f-48be-a7e1-247485f89c35',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/bingo-dominoes/bingo-dominoesValidationFixtures.asset',
+    gameId: 'bingo-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bingo-dominoes',
+    familyVariant: 'Trick-taking / Chinese Dominoes',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bingo-dominoes.core-runtime-contracts',
+        title: 'Bingo (Dominoes) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bingo-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 14,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bingo (Dominoes) must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bingo-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bingo-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'dealing',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'draw_7',
+            ],
+            expectedNextPhase: 'play_loop',
+            supportedActionIds: [
+              'declare',
+              'draw',
+              'draw_7',
+              'calculate_game_points',
+              'play_tile',
+              'close_stock',
+              'claim_victory',
+            ],
+            explanation: 'Bingo (Dominoes) must enter dealing first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'bingo-dominoes.flow.dealing',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'bingo-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '7',
+            scoringDirection: 'high_wins',
+            targetScore: 7,
+            cardValues: {
+              '6-6': '12 points',
+              '5-5': '10 points',
+              '4-4': '8 points',
+              '3-3': '6 points',
+              '2-2': '4 points',
+              '1-1': '2 points',
+              Others: '0',
+            },
+            explanation: 'Win tricks worth at least 70 points. Game points: 1 (loser has 30+), 2 (loser has <30), 3 (loser won 0 tricks). Match to 7 game points.',
+            linkedRuleIds: [
+              'bingo-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bingo-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

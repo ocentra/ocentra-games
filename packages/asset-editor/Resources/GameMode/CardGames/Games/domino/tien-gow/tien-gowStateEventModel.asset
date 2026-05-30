@@ -1,0 +1,75 @@
+{
+  system: {
+    guid: '8e7fff6a-32ce-4f3b-8e85-bf10dff4f6df',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/tien-gow/tien-gowStateEventModel.asset',
+    gameId: 'tien-gow',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tien-gow',
+    familyVariant: 'Trick-taking / Chinese Dominoes',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'tableau',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        trick_count: 8,
+        hand_size: 8,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup',
+        'play',
+        'resolve_trick',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'discard',
+        'resolve_trick_winner',
+      ],
+    },
+    examples: [],
+  },
+}

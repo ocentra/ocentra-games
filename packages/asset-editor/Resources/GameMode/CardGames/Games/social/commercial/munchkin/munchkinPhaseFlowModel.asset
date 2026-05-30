@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '36b41c6e-68b7-43d6-8362-78856e019b4c',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/munchkin/munchkinPhaseFlowModel.asset',
+    gameId: 'munchkin',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'munchkin',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'turning_round',
+        label: 'Card Turning',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'payment_round',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'payment_round',
+        label: 'Paying the Fee',
+        actor: 'current_player',
+        legalActions: [
+          'flip_top_card',
+        ],
+        nextPhase: 'turning_round',
+        isMandatory: false,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3-6 players use the table arrangement described for Munchkin.',
+        deck: 'Dedicated Munchkin door and treasure cards',
+        equipment: 'Dedicated Munchkin door and treasure cards, score area, and enough table space for play.',
+        dealing: 'Prepare the dedicated Munchkin cards and any shared table, score, or resource areas from the published rules.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'turning_round',
+      'payment_round',
+    ],
+    examples: [],
+  },
+}

@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '0459abb1-6b3a-4074-8ff5-3e2f4d347ccd',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/draw-and-discard/thirty-one-greek/thirty-one-greekValidationFixtures.asset',
+    gameId: 'thirty-one-greek',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'thirty-one-greek',
+    familyVariant: 'Showdown / Prime',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'thirty-one-greek.core-runtime-contracts',
+        title: 'Thirty-One (Greek) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'thirty-one-greek.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 9,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 27,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Thirty-One (Greek) must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'thirty-one-greek.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'thirty-one-greek.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Thirty-One (Greek) must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'thirty-one-greek.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'thirty-one-greek.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Get a hand totaling 31 points in one suit, or have a higher score than the lowest player.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '2': '2',
+              '3': '3',
+              '4': '4',
+              '5': '5',
+              '6': '6',
+              '7': '7',
+              '8': '8',
+              '9': '9',
+              '10': '10',
+              A: '11',
+              K: '10',
+              Q: '10',
+              J: '10',
+            },
+            explanation: 'Lowest score loses a life. If doing 31 exactly (Blitz), round ends immediately and everyone else loses a life.',
+            linkedRuleIds: [
+              'thirty-one-greek.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'thirty-one-greek.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 9,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

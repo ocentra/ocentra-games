@@ -1,0 +1,113 @@
+{
+  system: {
+    guid: 'cddc41ad-c7cc-4dd7-a258-263a26e669ec',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/siwweschr-m/siwweschr-mValidationFixtures.asset',
+    gameId: 'siwweschr-m',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'siwweschr-m',
+    familyVariant: 'Last-trick / Elimination',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'siwweschr-m.core-runtime-contracts',
+        title: 'Siwweschroom Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'siwweschr-m.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 8,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Siwweschroom must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'siwweschr-m.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'siwweschr-m.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'trick_play',
+            supportedActionIds: [
+              'deal',
+              'fold',
+              'play_card',
+              'knock',
+              'apply_penalties',
+              'eliminate_players',
+            ],
+            explanation: 'Siwweschroom must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'siwweschr-m.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'siwweschr-m.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '7',
+            scoringDirection: 'low_wins',
+            targetScore: 7,
+            cardValues: {},
+            explanation: 'Penalty-life system with variable stake based on knocks. Folding concedes the current stake; staying risks a larger loss if the last trick is lost.',
+            linkedRuleIds: [
+              'siwweschr-m.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'siwweschr-m.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

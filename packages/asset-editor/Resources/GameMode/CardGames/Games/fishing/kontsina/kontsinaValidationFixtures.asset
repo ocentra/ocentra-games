@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: '2ad949c5-f179-4c44-b596-261305f2cad7',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/kontsina/kontsinaValidationFixtures.asset',
+    gameId: 'kontsina',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kontsina',
+    familyVariant: 'Casino / Capture',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'kontsina.core-runtime-contracts',
+        title: 'Kontsina (Koltsina) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'kontsina.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Kontsina (Koltsina) must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'kontsina.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'kontsina.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Kontsina (Koltsina) must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'kontsina.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'kontsina.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {
+              '2C': '1 point (good 2 / lucky 2); also counts toward most clubs.',
+              '10D': '1 point (good 10 / lucky 10).',
+            },
+            explanation: '2 points for most cards (tie at 26 each = no points), 1 for most clubs, 1 for capturing the 2 of clubs (good 2), 1 for the 10 of diamonds (good 10). Majority of round points wins the round; overall winner is whoever wins more rounds. Variant: first to an agreed total (e.g. 21) wins.',
+            linkedRuleIds: [
+              'kontsina.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'kontsina.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

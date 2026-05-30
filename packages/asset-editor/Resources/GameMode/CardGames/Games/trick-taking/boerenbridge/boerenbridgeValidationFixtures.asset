@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '4384e174-21d0-4bb2-872e-11d3104b86bf',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/boerenbridge/boerenbridgeValidationFixtures.asset',
+    gameId: 'boerenbridge',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'boerenbridge',
+    familyVariant: 'Exact Bidding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'boerenbridge.core-runtime-contracts',
+        title: 'Boerenbridge Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'boerenbridge.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 1,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 7,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 7,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Boerenbridge must start by giving each active player 1 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'boerenbridge.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'boerenbridge.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'dealing',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal_n_cards',
+              'reveal_trump',
+            ],
+            expectedNextPhase: 'auction',
+            supportedActionIds: [
+              'play_card',
+              'bid',
+              'deal_n_cards',
+              'bid_exact_tricks',
+              'reveal_trump',
+              'calculate_exact_bid_points',
+            ],
+            explanation: 'Boerenbridge must enter dealing first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'boerenbridge.flow.dealing',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'boerenbridge.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest cumulative score after the final round.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Successful bid = 10 pts + 1 per trick. Unsuccessful = 0 pts.',
+            linkedRuleIds: [
+              'boerenbridge.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'boerenbridge.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 1,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

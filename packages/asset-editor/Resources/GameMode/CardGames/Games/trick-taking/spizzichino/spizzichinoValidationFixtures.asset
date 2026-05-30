@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '41f33a16-e06c-490e-8668-e3be692591fc',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/spizzichino/spizzichinoValidationFixtures.asset',
+    gameId: 'spizzichino',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'spizzichino',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'spizzichino.core-runtime-contracts',
+        title: 'Spizzichino Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'spizzichino.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Spizzichino must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'spizzichino.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'spizzichino.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_pizzichino',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'play_card',
+              'meld',
+              'deal_pizzichino',
+            ],
+            explanation: 'Spizzichino must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'spizzichino.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'spizzichino.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '51',
+            scoringDirection: 'high_wins',
+            targetScore: 51,
+            cardValues: {
+              '1': '1',
+              '2': '0.333',
+              '3': '0.333',
+              '4': '0',
+              '5': '0',
+              '6': '0',
+              '7': '0',
+              Re: '0.333',
+              Cavallo: '0.333',
+              Fante: '0.333',
+            },
+            explanation: 'Ace=1, 2/3/Pictures=1/3 point. Last trick bonus.',
+            linkedRuleIds: [
+              'spizzichino.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'spizzichino.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

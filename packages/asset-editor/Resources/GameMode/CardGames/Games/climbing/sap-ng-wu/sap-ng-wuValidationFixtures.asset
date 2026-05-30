@@ -1,0 +1,110 @@
+{
+  system: {
+    guid: '8dabc7b6-8d51-4925-a4fa-d631dca1e00a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/climbing/sap-ng-wu/sap-ng-wuValidationFixtures.asset',
+    gameId: 'sap-ng-wu',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sap-ng-wu',
+    familyVariant: 'Climbing',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sap-ng-wu.core-runtime-contracts',
+        title: 'Sap Ng Wu Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sap-ng-wu.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 28,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 112,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sap Ng Wu must start by giving each active player 28 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sap-ng-wu.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sap-ng-wu.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Sap Ng Wu must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'sap-ng-wu.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'sap-ng-wu.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '15',
+            scoringDirection: 'high_wins',
+            targetScore: 15,
+            cardValues: {
+              wu: '1',
+            },
+            explanation: 'Each card or combination won counts as one wu. First to 15 or more wu may declare (sik wu). Chip payments: 1 for 15-17 wu, 2 for 18-20, 3 for 21-23, 4 for 24-26, 5 for 27-28. Four of a kind won: each opponent pays 1 chip. 8-card supreme counts as 16 wu.',
+            linkedRuleIds: [
+              'sap-ng-wu.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sap-ng-wu.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 28,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

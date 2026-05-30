@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'dac9c9a3-37d0-40e9-9520-06e9a5127c7f',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/mizerka-polish/mizerka-polishPhaseFlowModel.asset',
+    gameId: 'mizerka-polish',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mizerka-polish',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: "Three players. Play is clockwise. Any player may deal first; the turn to deal passes clockwise. In each deal the three roles are: dealer (deals and has a quota of 1 trick in trump contracts, 7 in mizerka), forehand or left of dealer (chooses the contract after seeing six cards and has quota 7 in trump contracts, 1 in mizerka), and middlehand or right of dealer (quota 5 in both). The player to dealer's left leads to the first trick.",
+        deck: '52 cards. Rank: Ace (High) to 2 (Low).',
+        equipment: '',
+        dealing: 'Each player gets 6 cards. 6 for the talon. Then the rest (13 total each + 13 for talon).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 13,
+        mustFollowSuit: true,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

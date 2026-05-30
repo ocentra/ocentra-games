@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: '4b9f6a2d-25c2-4561-b2da-bac26a68bcd6',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/357-poker/357-pokerValidationFixtures.asset',
+    gameId: '357-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '357-poker',
+    familyVariant: 'Stud / Wild Cards',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '357-poker.core-runtime-contracts',
+        title: '3 5 7 Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '357-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 10,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '3 5 7 Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '357-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '357-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'declare',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'declare_in',
+              'declare_out',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'ante',
+              'declare_in',
+              'declare_out',
+            ],
+            explanation: '3 5 7 Poker must enter declare first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              '357-poker.flow.declare',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: '357-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First to three legs wins the pot',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'At each stage, only player in scores a leg; if multiple stay in, loser(s) match the pot to winner(s). First to three legs wins the pot.',
+            linkedRuleIds: [
+              '357-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '357-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

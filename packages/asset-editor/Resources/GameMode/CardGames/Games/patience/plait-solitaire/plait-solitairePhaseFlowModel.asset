@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: 'd2471c9a-4b5f-436d-99af-436ebbe7b275',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/plait-solitaire/plait-solitairePhaseFlowModel.asset',
+    gameId: 'plait-solitaire',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'plait-solitaire',
+    familyVariant: 'Two-Deck Patience',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'system',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Place 13 cards in plait, 32 in 8 tableau piles (4 each), one card as first foundation base, remainder as stock.',
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+          'draw',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'moves_available',
+            nextPhase: 'play',
+          },
+          {
+            condition: 'stock_has_cards',
+            nextPhase: 'play',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Move cards from plait, tableau, or stock to foundations (up in suit) or tableau (down alternating color); or turn next card from stock.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'fixed_player',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'One player. Plait is a solo patience game played by a single person; BVS and historical sources describe it as a single-player card game with no opponents or partners.',
+        deck: '104 cards (two standard 52-card decks).',
+        equipment: '',
+        dealing: 'Deal 13 cards in a plait (open reserve). Deal 32 cards into 8 tableau piles (4 cards per pile). Place one card above as the first foundation base; the seven other cards of the same rank become foundation bases as they appear. Remainder is stock.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'fixed_player',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'play',
+    ],
+    examples: [],
+  },
+}

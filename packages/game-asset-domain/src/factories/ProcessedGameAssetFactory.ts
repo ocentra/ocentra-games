@@ -122,7 +122,7 @@ export function deriveProcessedGameCategory(processedGamePath: string, processed
     .map((segment) => segment.trim().toLowerCase())
     .filter(Boolean);
 
-  if (segments[segments.length - 1] === sourceSlug) {
+  if (segments.length > 1 && segments[segments.length - 1] === sourceSlug) {
     segments.pop();
   }
 

@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: 'a7cea46d-f230-4bcc-9c9c-2d789ddb1d16',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/tapp-tarock/tapp-tarockValidationFixtures.asset',
+    gameId: 'tapp-tarock',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tapp-tarock',
+    familyVariant: 'Tarot',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tapp-tarock.core-runtime-contracts',
+        title: 'Tapp Tarock Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tapp-tarock.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 16,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tapp Tarock must start by giving each active player 16 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tapp-tarock.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tapp-tarock.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'deal',
+              'declare',
+              'award_pot',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Tapp Tarock must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'tapp-tarock.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'tapp-tarock.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Declarer wins by taking 36+ card points; defenders win if declarer fails. Optional announcements add bonus points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              king: '5',
+              queen: '4',
+              cavalier: '3',
+              jack: '2',
+              trull: '5',
+              other_trump: '1',
+              pip: '1',
+            },
+            explanation: 'Card points in packets of three, 2 deducted per packet; declarer needs 36 (35⅔ rounded up) to win. Game values: Dreier 3, Unterer 4, Oberer 5, Solo 8, Valat 12 or 24 announced. Bonuses for Köpfe, Tarock Trull, Royal Trull, Pagat Ultimo, Valat.',
+            linkedRuleIds: [
+              'tapp-tarock.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tapp-tarock.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 16,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

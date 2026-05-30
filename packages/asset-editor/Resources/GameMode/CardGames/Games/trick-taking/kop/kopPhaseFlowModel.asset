@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'e7f1f149-eb13-482a-a665-5fab6fcec19e',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/kop/kopPhaseFlowModel.asset',
+    gameId: 'kop',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kop',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '4 players playing in partnerships or solo depending on the contract.',
+        deck: '16 French-suited cards: Ace, 10, Queen, Jack in four suits. Aces are not the highest! Order: â™¥A > â™£10 > â™ 10 > â™¥10 > Queens > Jacks > â™¢A > â™¢10.',
+        equipment: '',
+        dealing: 'Dealer deals 4 cards to each player (usually in a single round).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 4,
+        mustFollowSuit: true,
+        mustOvertrump: true,
+        leadRestrictions: 'Any card may be led.',
+        trickWinCondition: 'highest_trump_if_played_else_highest_led',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: true,
+          biddingSystem: 'german_style',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: true,
+          doubling: true,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

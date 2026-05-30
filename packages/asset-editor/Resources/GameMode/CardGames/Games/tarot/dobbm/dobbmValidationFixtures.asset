@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: '82c3823f-cc75-4546-ad53-51eea7ce06c2',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/dobbm/dobbmValidationFixtures.asset',
+    gameId: 'dobbm',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'dobbm',
+    familyVariant: 'Tarot / Ace-Ten',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'dobbm.core-runtime-contracts',
+        title: 'Dobbm Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'dobbm.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 5,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 40,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Dobbm must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'dobbm.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'dobbm.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'deal',
+              'award_pot',
+              'play_card',
+              'discard',
+              'bid',
+            ],
+            explanation: 'Dobbm must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'dobbm.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'dobbm.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {
+              '6': '0',
+              '7': '0',
+              '8': '0',
+              '9': '0',
+              Ace: '11',
+              Sow: '11',
+              Ten: '10',
+              King: '4',
+              Ober: '3',
+              Unter: '2',
+            },
+            explanation: 'Points are counted from captured ace-ten cards and contract success.',
+            linkedRuleIds: [
+              'dobbm.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'dobbm.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

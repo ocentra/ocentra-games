@@ -1,0 +1,67 @@
+{
+  system: {
+    guid: '4c9aabc2-8157-434b-b07a-34352022fbf3',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/canasta/canastaStateEventModel.asset',
+    gameId: 'canasta',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'canasta',
+    familyVariant: 'Partnership Meld / Draw-Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'player',
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_up',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'face_up',
+        tableauCards: 'NA',
+      },
+      constants: {
+        target_score: 5000,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'play_loop',
+      ],
+      actions: [
+        'deal',
+        'draw',
+        'discard',
+        'meld',
+      ],
+    },
+    examples: [],
+  },
+}

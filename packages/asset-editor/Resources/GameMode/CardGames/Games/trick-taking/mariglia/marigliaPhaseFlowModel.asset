@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '60ec42e3-577a-4df7-8895-6f56cde54ef2',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/mariglia/marigliaPhaseFlowModel.asset',
+    gameId: 'mariglia',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mariglia',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '4 players in two fixed partnerships, partners sitting opposite each other. Deal and play are anticlockwise.',
+        deck: '40-card Italian deck of the French-suited Genoese pattern. Ranking: 7 (Mariglia) > Ace > King > Jack > Queen > 6 > 5 > 4 > 3 > 2. Note: Jack ranks higher than Queen (as in Portugal and Southern Italy).',
+        equipment: '',
+        dealing: "First dealer chosen by drawing cards (lowest deals). Turn to deal passes to the right. Dealer shuffles, player to left cuts (minimum 5 cards each portion). Deal anticlockwise in packets of 5 cards (two rounds), 10 cards each. Bottom card (dealer's last card) indicates trumps (il trionfo) and is placed face up.",
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 10,
+        mustFollowSuit: true,
+        mustOvertrump: true,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

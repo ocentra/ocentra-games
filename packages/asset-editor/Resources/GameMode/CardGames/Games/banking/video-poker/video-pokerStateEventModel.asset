@@ -1,0 +1,73 @@
+{
+  system: {
+    guid: '5dfa1630-5b1c-46d0-a48e-5fc56befb016',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/video-poker/video-pokerStateEventModel.asset',
+    gameId: 'video-poker',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'video-poker',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 52,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'hold_select',
+        'draw_replacement',
+        'payout',
+        'game_end',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'draw',
+        'discard',
+        'evaluate_payout',
+        'end_round',
+      ],
+    },
+    examples: [],
+  },
+}

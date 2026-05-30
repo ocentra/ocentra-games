@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: 'bd26b6fa-2bb8-498c-b6cd-1fc217cf314b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bisca/biscaValidationFixtures.asset',
+    gameId: 'bisca',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bisca',
+    familyVariant: 'Ace-Ten / Draw',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bisca.core-runtime-contracts',
+        title: 'Bisca Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bisca.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bisca must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bisca.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bisca.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_3_each_turn_trump',
+            ],
+            expectedNextPhase: 'draw_phase',
+            supportedActionIds: [
+              'play_card',
+              'deal_3_each_turn_trump',
+              'play_any_card',
+              'draw_from_stock',
+            ],
+            explanation: 'Bisca must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'bisca.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'bisca.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '61',
+            scoringDirection: 'high_wins',
+            targetScore: 61,
+            cardValues: {
+              '2': '0',
+              '3': '0',
+              '4': '0',
+              '5': '0',
+              '6': '0',
+              '7': '10',
+              A: '11',
+              K: '4',
+              J: '3',
+              Q: '2',
+            },
+            explanation: 'Count card points in won tricks.',
+            linkedRuleIds: [
+              'bisca.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bisca.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: '1ecf2048-1997-457d-8433-47eca016d824',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/hol-s-der-geier/hol-s-der-geierValidationFixtures.asset',
+    gameId: 'hol-s-der-geier',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hol-s-der-geier',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'hol-s-der-geier.core-runtime-contracts',
+        title: "Hol's der Geier Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'hol-s-der-geier.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 15,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 75,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "Hol's der Geier must start by giving each active player 15 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'hol-s-der-geier.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'hol-s-der-geier.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: "Hol's der Geier must enter play first and expose exactly the legal actions authored for that phase.",
+            linkedRuleIds: [
+              'hol-s-der-geier.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'hol-s-der-geier.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Have the highest total score after 15 rounds.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Players earn points from Mouse cards (+1 to +10) they win and lose points from Vulture cards (-1 to -5) they take. Sum all prize cards collected; highest total after 15 rounds wins.',
+            linkedRuleIds: [
+              'hol-s-der-geier.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'hol-s-der-geier.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 15,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

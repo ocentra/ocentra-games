@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: 'bcfcea87-076c-4da6-b61a-4df2bd0b2aa3',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/basra/basraValidationFixtures.asset',
+    gameId: 'basra',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'basra',
+    familyVariant: 'Casino Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'basra.core-runtime-contracts',
+        title: 'Basra Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'basra.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Basra must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'basra.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'basra.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal_round',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_4_cards',
+            ],
+            expectedNextPhase: 'play_turn',
+            supportedActionIds: [
+              'play_card',
+              'deal_4_cards',
+              'capture_card_match',
+              'capture_card_sum',
+              'play_jack_sweep',
+              'play_7_diamond_sweep',
+              'discard_card',
+              'continue_round',
+              'redeal_hands',
+              'end_game_scoring',
+            ],
+            explanation: 'Basra must enter deal_round first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'basra.flow.deal_round',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'basra.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '101',
+            scoringDirection: 'high_wins',
+            targetScore: 101,
+            cardValues: {
+              Jack: '1 point',
+              Ace: '1 point',
+              '10 of Diamonds': '2 points',
+              '2 of Clubs': '2 points',
+              'Most Cards': '30 points',
+            },
+            explanation: 'Points are tallied at the end of the game (deck exhaustion).',
+            linkedRuleIds: [
+              'basra.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'basra.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

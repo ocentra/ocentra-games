@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'da0e5b9e-cd2b-4d1e-994d-e464042ff486',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/giltspiel/giltspielValidationFixtures.asset',
+    gameId: 'giltspiel',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'giltspiel',
+    familyVariant: 'Watten Family / Alpine Games',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'giltspiel.core-runtime-contracts',
+        title: 'Giltspiel Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'giltspiel.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Giltspiel must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'giltspiel.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'giltspiel.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'play_and_bet',
+            supportedActionIds: [
+              'deal',
+              'fold',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'award_pot',
+              'play_card',
+              'concede_spiel',
+              'contest_figure',
+            ],
+            explanation: 'Giltspiel must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'giltspiel.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'giltspiel.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First partnership to reach agreed target score (typically 11 or 15) wins.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Each deal awards figure values for Gleich, Hanger, and Spiel, with values increased by accepted bets and modified by concessions or penalties.',
+            linkedRuleIds: [
+              'giltspiel.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'giltspiel.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

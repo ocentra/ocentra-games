@@ -1,0 +1,109 @@
+{
+  system: {
+    guid: 'b59d9105-a353-4484-8811-71c99dfb3cbb',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/chez-geek/chez-geekValidationFixtures.asset',
+    gameId: 'chez-geek',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'chez-geek',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'chez-geek.core-runtime-contracts',
+        title: 'Chez Geek Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'chez-geek.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Chez Geek must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'chez-geek.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'chez-geek.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'turning_round',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'flip_top_card',
+            ],
+            expectedNextPhase: 'payment_round',
+            supportedActionIds: [
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Chez Geek must enter turning_round first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'chez-geek.flow.turning_round',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'chez-geek.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '20',
+            scoringDirection: 'high_wins',
+            targetScore: 20,
+            cardValues: {},
+            explanation: 'First player to the published Slack target wins.',
+            linkedRuleIds: [
+              'chez-geek.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'chez-geek.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

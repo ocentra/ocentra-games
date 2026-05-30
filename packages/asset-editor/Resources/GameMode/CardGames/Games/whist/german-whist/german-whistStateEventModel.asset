@@ -1,0 +1,79 @@
+{
+  system: {
+    guid: '66228d46-1130-411b-a9f2-9f943e5359a7',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/german-whist/german-whistStateEventModel.asset',
+    gameId: 'german-whist',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'german-whist',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'face_down',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 2,
+        deck_count: 1,
+        trick_count: 26,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'stage_one',
+        'stage_two',
+        'resolution',
+      ],
+      actions: [
+        'deal',
+        'award_pot',
+        'play_card',
+        'draw',
+        'discard',
+      ],
+    },
+    examples: [],
+  },
+}

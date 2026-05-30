@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'd4c9f604-db80-4956-b4a2-fbf70c6bda45',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/bid-whist/bid-whistValidationFixtures.asset',
+    gameId: 'bid-whist',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bid-whist',
+    familyVariant: 'Whist Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bid-whist.core-runtime-contracts',
+        title: 'Bid Whist Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bid-whist.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bid Whist must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bid-whist.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bid-whist.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'dealing',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal_12_kitty_6',
+            ],
+            expectedNextPhase: 'auction',
+            supportedActionIds: [
+              'declare',
+              'play_card',
+              'discard',
+              'pass',
+              'bid',
+              'deal_12_kitty_6',
+              'bid_books_direction',
+              'take_kitty',
+              'discard_6',
+              'calculate_match_points',
+            ],
+            explanation: 'Bid Whist must enter dealing first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'bid-whist.flow.dealing',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'bid-whist.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '7',
+            scoringDirection: 'high_wins',
+            targetScore: 7,
+            cardValues: {},
+            explanation: 'Points are awarded for making the bid (bid amount) or subtracted for getting set.',
+            linkedRuleIds: [
+              'bid-whist.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bid-whist.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

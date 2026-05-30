@@ -1,0 +1,88 @@
+{
+  system: {
+    guid: '606ee872-307a-420a-8ed4-f09016436ebe',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/marriage/marriage-nepali/marriage-nepaliPhaseFlowModel.asset',
+    gameId: 'marriage-nepali',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'marriage-nepali',
+    familyVariant: 'Draw and Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'draw',
+          'discard',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Each turn: draw one card (from stock or top of discard), then discard one card. First to lay three pure sets chooses tiplu; first to go out with all cards in sets (and one discard) or with eight dublees ends the hand.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 to 5 players. Each plays individually.',
+        deck: 'Three standard 52-card packs shuffled together: 156 cards in all. No printed jokers; wild cards are created each deal (tiplu, poplu, jhiplu).',
+        equipment: '',
+        dealing: 'Dealer gives 21 cards to each player. The next card is turned face up to start the discard pile; the rest form the face-down stock. Deal and play are clockwise in the most common rules; some regional rules use anticlockwise.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'tiplu_selection',
+        'maal_scoring',
+      ],
+    },
+    progression: [],
+    examples: [],
+  },
+}

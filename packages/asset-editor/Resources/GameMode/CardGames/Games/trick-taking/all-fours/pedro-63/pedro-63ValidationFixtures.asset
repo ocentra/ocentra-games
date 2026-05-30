@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '25d3835a-c249-48e1-81e7-9352d963a55e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/pedro-63/pedro-63ValidationFixtures.asset',
+    gameId: 'pedro-63',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pedro-63',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pedro-63.core-runtime-contracts',
+        title: '63 Pedro Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pedro-63.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '63 Pedro must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pedro-63.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pedro-63.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'bid',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'bid',
+              'pass',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: '63 Pedro must enter bid first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'pedro-63.flow.bid',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'pedro-63.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '152',
+            scoringDirection: 'high_wins',
+            targetScore: 152,
+            cardValues: {
+              trump_ace: '1',
+              trump_king: '25',
+              trump_jack: '1',
+              trump_ten: '1',
+              trump_nine: '9',
+              right_pedro: '5',
+              left_pedro: '5',
+              trump_three: '15',
+              trump_two: '1',
+            },
+            explanation: 'Each team keeps a cumulative score. Points are won by capturing scoring trumps in tricks (ace 1, king 25, jack 1, ten 1, nine 9, right pedro 5, left pedro 5, three 15, two 1). The two (low) is scored by the team that was dealt it. First team to 152 wins.',
+            linkedRuleIds: [
+              'pedro-63.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pedro-63.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,88 @@
+{
+  system: {
+    guid: '17c0fdac-954f-4d89-9916-b171fe918b07',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/shithead/shitheadStateEventModel.asset',
+    gameId: 'shithead',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'shithead',
+    familyVariant: 'Shedding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'custom:face_up_row',
+          type: 'area',
+          visibility: 'public',
+          owner: 'player',
+          capacity: 3,
+        },
+        {
+          id: 'custom:face_down_row',
+          type: 'area',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 3,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        min_players: 2,
+        max_players: 6,
+        optimal_players: 4,
+        deck_count: 1,
+        hand_size: 3,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'play_loop',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'draw',
+        'discard',
+      ],
+    },
+    examples: [],
+  },
+}

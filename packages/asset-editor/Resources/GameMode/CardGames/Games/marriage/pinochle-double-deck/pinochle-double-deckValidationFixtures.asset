@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'df33a104-36bd-4357-8b7f-24b941620575',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/pinochle-double-deck/pinochle-double-deckValidationFixtures.asset',
+    gameId: 'pinochle-double-deck',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pinochle-double-deck',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pinochle-double-deck.core-runtime-contracts',
+        title: 'Pinochle Double Deck Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pinochle-double-deck.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 20,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 80,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Pinochle Double Deck must start by giving each active player 20 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pinochle-double-deck.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pinochle-double-deck.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'bid',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'bid',
+              'pass',
+            ],
+            expectedNextPhase: 'meld',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'bid',
+              'meld',
+            ],
+            explanation: 'Pinochle Double Deck must enter bid first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'pinochle-double-deck.flow.bid',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'pinochle-double-deck.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1500',
+            scoringDirection: 'high_wins',
+            targetScore: 1500,
+            cardValues: {
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'Meld points plus trick points (counters) per hand; bidding team must make contract or is set (bid subtracted). First partnership to reach target (e.g. 1500) wins.',
+            linkedRuleIds: [
+              'pinochle-double-deck.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pinochle-double-deck.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 20,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: 'a354b396-844b-4dc6-a394-7dd390912bf6',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/faro/faroValidationFixtures.asset',
+    gameId: 'faro',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'faro',
+    familyVariant: 'Gambling / Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'faro.core-runtime-contracts',
+        title: 'Faro Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'faro.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 10,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Faro must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'faro.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'faro.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'reveal_pair',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'reveal_pair',
+            ],
+            explanation: 'Faro must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'faro.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'faro.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Player wins if their bet card is drawn as the 'Winner' (second card in a pair). Coppering inverts thisâ€”player wins if coppering bet card is drawn as 'Loser' (first card).",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              Ace: '1',
+              '2-King': '1',
+              Splits: '0',
+            },
+            explanation: 'Betting outcomes determined by card draws. House profits from splits only.',
+            linkedRuleIds: [
+              'faro.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'faro.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 10,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

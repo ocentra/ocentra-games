@@ -1,0 +1,71 @@
+{
+  system: {
+    guid: 'b7a68b2d-160d-45e2-8346-37b6d11007e1',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/khanhoo/khanhooStateEventModel.asset',
+    gameId: 'khanhoo',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'khanhoo',
+    familyVariant: 'Draw-and-Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 30,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 120,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 120,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_up',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'NA',
+        tableauCards: 'NA',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'play',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'draw',
+        'discard',
+        'go_out',
+        'claim_discard_to_win',
+        'claim_discard_for_dui',
+      ],
+    },
+    examples: [],
+  },
+}

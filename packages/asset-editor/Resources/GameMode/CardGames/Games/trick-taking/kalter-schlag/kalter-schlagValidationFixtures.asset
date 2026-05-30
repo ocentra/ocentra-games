@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: 'e6d1b980-77f6-4f80-a00a-d0fd4bd4e8bd',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/kalter-schlag/kalter-schlagValidationFixtures.asset',
+    gameId: 'kalter-schlag',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kalter-schlag',
+    familyVariant: 'Avoidance',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'kalter-schlag.core-runtime-contracts',
+        title: 'Kalter Schlag Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'kalter-schlag.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Kalter Schlag must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'kalter-schlag.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'kalter-schlag.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_cards',
+            ],
+            expectedNextPhase: 'kontra',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+              'deal_cards',
+              'kontra',
+              're',
+              'calculate_penalty',
+            ],
+            explanation: 'Kalter Schlag must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'kalter-schlag.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'kalter-schlag.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'low_wins',
+            targetScore: 'NA',
+            cardValues: {
+              Ace: '11 points',
+              Ten: '10 points',
+              King: '4 points',
+              Queen: '3 points',
+              Jack: '2 points (also trump)',
+              '9, 8, 7': '0 points',
+            },
+            explanation: 'Points are bad in this avoidance game. Card values: Ace 11, Ten 10, King 4, Queen 3, Jack 2, others 0.',
+            linkedRuleIds: [
+              'kalter-schlag.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'kalter-schlag.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

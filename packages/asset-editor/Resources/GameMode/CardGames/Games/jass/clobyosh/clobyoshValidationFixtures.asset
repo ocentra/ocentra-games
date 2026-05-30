@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: 'ef97ef90-59fb-43db-bc88-aac6498b0657',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/clobyosh/clobyoshValidationFixtures.asset',
+    gameId: 'clobyosh',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'clobyosh',
+    familyVariant: 'Jass / Marriage Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'clobyosh.core-runtime-contracts',
+        title: 'Clobyosh Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'clobyosh.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 32,
+            expectedVisibility: 'face_down',
+            explanation: 'Clobyosh must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'clobyosh.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'clobyosh.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal_6_turn',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_6_turn_1',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'deal_6_turn_1',
+              'take',
+              'schmeiss',
+              'deal_3_each',
+              'declare_meld',
+            ],
+            explanation: 'Clobyosh must enter deal_6_turn first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'clobyosh.flow.deal_6_turn',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'clobyosh.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '501',
+            scoringDirection: 'high_wins',
+            targetScore: 501,
+            cardValues: {},
+            explanation: 'Points are cumulative.',
+            linkedRuleIds: [
+              'clobyosh.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'clobyosh.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

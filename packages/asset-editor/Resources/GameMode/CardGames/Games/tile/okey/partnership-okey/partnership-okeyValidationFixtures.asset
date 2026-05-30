@@ -1,0 +1,113 @@
+{
+  system: {
+    guid: '27438733-09c0-44fd-aab9-35121a829f82',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tile/okey/partnership-okey/partnership-okeyValidationFixtures.asset',
+    gameId: 'partnership-okey',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'partnership-okey',
+    familyVariant: 'Tile',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'partnership-okey.core-runtime-contracts',
+        title: 'Partnership Okey Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'partnership-okey.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 14,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 56,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Partnership Okey must start by giving each active player 14 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'partnership-okey.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'partnership-okey.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'draw',
+              'discard',
+              'go_out',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+              'draw',
+              'discard',
+              'go_out',
+            ],
+            explanation: 'Partnership Okey must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'partnership-okey.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'partnership-okey.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First team (or last players) to have two with highest scores when someone reaches 0 or below.',
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Each player starts with 20 points. Losing points when opponents win: ordinary win -2, seven pairs or joker-discard win -4, gÃ¶sterme -1.',
+            linkedRuleIds: [
+              'partnership-okey.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'partnership-okey.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 14,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

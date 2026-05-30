@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '88faa136-002f-4915-bb28-bd80a97153d9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/texas-hold-em/texas-hold-emValidationFixtures.asset',
+    gameId: 'texas-hold-em',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'texas-hold-em',
+    familyVariant: 'Community Card',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'texas-hold-em.core-runtime-contracts',
+        title: "Texas Hold'em Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'texas-hold-em.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 2,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 10,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "Texas Hold'em must start by giving each active player 2 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'texas-hold-em.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'texas-hold-em.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal_hole',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_hole_cards',
+            ],
+            expectedNextPhase: 'preflop_bet',
+            supportedActionIds: [
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'award_pot',
+              'deal_hole_cards',
+              'deal_flop',
+              'deal_turn',
+              'deal_river',
+            ],
+            explanation: "Texas Hold'em must enter deal_hole first and expose exactly the legal actions authored for that phase.",
+            linkedRuleIds: [
+              'texas-hold-em.flow.deal_hole',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'texas-hold-em.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold.',
+            linkedRuleIds: [
+              'texas-hold-em.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'texas-hold-em.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 2,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 10,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

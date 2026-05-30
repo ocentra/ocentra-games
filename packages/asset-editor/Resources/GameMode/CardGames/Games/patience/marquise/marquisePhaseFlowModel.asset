@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '7d070943-f15d-4201-9d78-6b03b015e166',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/marquise/marquisePhaseFlowModel.asset',
+    gameId: 'marquise',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'marquise',
+    familyVariant: 'One-Deck',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'system',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+        },
+        notes: 'Deal tableau and reserve; remainder forms stock.',
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+          'turn_stock',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'moves_available',
+            nextPhase: 'play',
+          },
+          {
+            condition: 'stock_has_cards',
+            nextPhase: 'play',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Move cards to foundations (same suit ascending) or fill empty tableau from stock; turn stock when no play possible.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'One player only. Marquise is a solitaire (patience) game for a single player; the player works against the layout, building four foundation piles by suit and managing the tableau and stock.',
+        deck: '32 cards (Hearts, Diamonds, Clubs, Spades).',
+        equipment: '',
+        dealing: 'Deal according to solitaire layout; reserve and tableau as per rules.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'play',
+    ],
+    examples: [],
+  },
+}

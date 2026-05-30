@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '03ac4ed7-e506-47b9-beb1-8bd94beffa85',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/high-card-flush/high-card-flushValidationFixtures.asset',
+    gameId: 'high-card-flush',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'high-card-flush',
+    familyVariant: 'Casino Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'high-card-flush.core-runtime-contracts',
+        title: 'High Card Flush Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'high-card-flush.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 6,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 42,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'High Card Flush must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'high-card-flush.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'high-card-flush.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'ante',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'ante',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'ante',
+              'fold',
+              'raise',
+              'deal_7_cards',
+              'settle_showdown',
+            ],
+            explanation: 'High Card Flush must enter ante first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'high-card-flush.flow.ante',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'high-card-flush.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+            linkedRuleIds: [
+              'high-card-flush.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'high-card-flush.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

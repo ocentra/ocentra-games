@@ -1,0 +1,113 @@
+{
+  system: {
+    guid: '95eaec83-d87c-4ede-93ef-dbb4d168d743',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/invented/mort-la-morte/mort-la-morteValidationFixtures.asset',
+    gameId: 'mort-la-morte',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mort-la-morte',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mort-la-morte.core-runtime-contracts',
+        title: 'Mort (La Morte) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mort-la-morte.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 45,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Mort (La Morte) must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mort-la-morte.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mort-la-morte.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'bidding',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'bid',
+              'accept',
+              'drop_out',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'play_card',
+              'bid',
+              'accept',
+              'drop_out',
+            ],
+            explanation: 'Mort (La Morte) must enter bidding first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'mort-la-morte.flow.bidding',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'mort-la-morte.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '50',
+            scoringDirection: 'high_wins',
+            targetScore: 50,
+            cardValues: {},
+            explanation: 'Maker scores contract value if bid made; defenders score contract value if maker fails. Droppers: contract minus 1 if 0 tricks, else 0. Each trick worth 1. Game typically to 50 points or after a set number of deals.',
+            linkedRuleIds: [
+              'mort-la-morte.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mort-la-morte.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

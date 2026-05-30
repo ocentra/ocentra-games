@@ -1,0 +1,146 @@
+{
+  system: {
+    guid: '5d0c909d-69a8-454d-b541-0afd1b246291',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/doppelkopf/doppelkopfPhaseFlowModel.asset',
+    gameId: 'doppelkopf',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'doppelkopf',
+    familyVariant: 'Partnership with Secret Alliances',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal 12 Each',
+        actor: 'dealer',
+        legalActions: [
+          'deal_12',
+        ],
+        nextPhase: 'announce',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'announce',
+        label: 'Reserved / Announcements',
+        actor: 'current_player',
+        legalActions: [
+          'announce_re',
+          'announce_kontra',
+          'hochzeit',
+          'pass',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: false,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'play_loop',
+        label: '12 Tricks',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Doppelkopf is played by exactly four players in the standard game. Two form the Re team and two form Kontra; the partnership is not fixed at the start—it is determined secretly by who holds the Queens of Clubs. With five people present, the game can be played with the dealer sitting out each hand.',
+        deck: '48 cards: Double deck of 9-10-J-Q-K-A in 4 suits (9s to Aces); 8s and below discarded. Each rank appears TWICE.',
+        equipment: 'Cards. Score sheet or Ramsch log.',
+        dealing: '12 cards each. Entirely dealt.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 12,
+        mustFollowSuit: true,
+        mustOvertrump: false,
+        leadRestrictions: 'Player to left of dealer leads first trick; thereafter winner of previous trick leads.',
+        trickWinCondition: 'highest_trump_if_played_else_highest_led',
+        trickWinnerLeads: true,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+        pointValues: {
+          specificCards: [
+            {
+              card: 'Ace',
+              points: 11,
+            },
+            {
+              card: '10',
+              points: 10,
+            },
+            {
+              card: 'King',
+              points: 4,
+            },
+            {
+              card: 'Queen',
+              points: 3,
+            },
+            {
+              card: 'Jack',
+              points: 2,
+            },
+            {
+              card: '9',
+              points: 0,
+            },
+          ],
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'announce',
+      'play_loop',
+    ],
+    examples: [],
+  },
+}

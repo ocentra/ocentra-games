@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '6a472ea4-b061-4332-a51b-37fee84174ae',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/commercial/girl-genius-the-works/girl-genius-the-worksValidationFixtures.asset',
+    gameId: 'girl-genius-the-works',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'girl-genius-the-works',
+    familyVariant: 'Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'girl-genius-the-works.core-runtime-contracts',
+        title: 'Girl Genius The Works Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'girl-genius-the-works.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Girl Genius The Works must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'girl-genius-the-works.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'girl-genius-the-works.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_cards',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'deal_cards',
+              'ask_for_rank',
+              'draw_stock',
+              'check_books',
+              'give_cards',
+              'say_go_fish',
+              'lay_down_book',
+              'check_game_end',
+            ],
+            explanation: 'Girl Genius The Works must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'girl-genius-the-works.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'girl-genius-the-works.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Use matching cards and effects to complete the product-defined scoring patterns before opponents.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Published endgame scoring or victory conditions determine the winner.',
+            linkedRuleIds: [
+              'girl-genius-the-works.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'girl-genius-the-works.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: '4fa0299a-f9f0-4c0c-b560-1483f5aa4681',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/pedro-sancho/pedro-sanchoValidationFixtures.asset',
+    gameId: 'pedro-sancho',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pedro-sancho',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pedro-sancho.core-runtime-contracts',
+        title: 'Pedro Sancho Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pedro-sancho.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Pedro Sancho must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pedro-sancho.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pedro-sancho.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'bid',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'bid',
+              'pass',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Pedro Sancho must enter bid first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'pedro-sancho.flow.bid',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'pedro-sancho.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'high_wins',
+            targetScore: 100,
+            cardValues: {},
+            explanation: 'Scoring trumps: high (A) 1, low (2) 1, jack 1, game (10) 1, pedro (5) 5, sancho (9) 9; total 18 per deal. Counted in that order. If bid is made, team scores points won; if bid fails, bidder loses the amount bid. First to 100 wins.',
+            linkedRuleIds: [
+              'pedro-sancho.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pedro-sancho.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

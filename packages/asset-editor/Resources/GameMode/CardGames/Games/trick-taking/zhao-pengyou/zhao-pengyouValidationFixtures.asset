@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '09d91bd6-99f4-4af5-b602-823e4ace367d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/zhao-pengyou/zhao-pengyouValidationFixtures.asset',
+    gameId: 'zhao-pengyou',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'zhao-pengyou',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'zhao-pengyou.core-runtime-contracts',
+        title: 'Zhào Péngyou Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'zhao-pengyou.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 17,
+            expectedPlayerCounts: {
+              min: 5,
+              max: 12,
+              recommended: 9,
+            },
+            expectedTotalInitialCards: 204,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Zhào Péngyou must start by giving each active player 17 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'zhao-pengyou.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'zhao-pengyou.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_counterclockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Zhào Péngyou must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'zhao-pengyou.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'zhao-pengyou.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Level up through ranks. First team to Ace level wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '5': '5',
+              '10': '10',
+              K: '10',
+            },
+            explanation: '5=5pts, 10=10pts, K=10pts. 100 total per hand. Last trick doubles.',
+            linkedRuleIds: [
+              'zhao-pengyou.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'zhao-pengyou.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 17,
+        expectedPlayerCounts: {
+          min: 5,
+          max: 12,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

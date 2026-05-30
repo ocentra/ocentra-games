@@ -1,0 +1,78 @@
+{
+  system: {
+    guid: '9126cc13-b59c-4095-8bda-c5cfa864e6f9',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/kakeya-toranpu/kakeya-toranpuStateEventModel.asset',
+    gameId: 'kakeya-toranpu',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kakeya-toranpu',
+    familyVariant: 'Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_up',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'NA',
+        tableauCards: 'NA',
+      },
+      constants: {
+        hand_size: 13,
+        min_players: 4,
+        max_players: 6,
+      },
+    },
+    eventModel: {
+      phases: [
+        'partnership_draw',
+        'deal',
+        'trump_selection',
+        'trick_play',
+        'scoring',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'draw_sticks',
+        'deal_cards',
+        'determine_trump',
+        'count_face_cards',
+        'exchange_stones',
+      ],
+    },
+    examples: [],
+  },
+}

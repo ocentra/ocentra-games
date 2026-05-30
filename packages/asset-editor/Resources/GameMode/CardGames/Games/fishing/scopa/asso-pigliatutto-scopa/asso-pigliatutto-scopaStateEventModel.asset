@@ -1,0 +1,71 @@
+{
+  system: {
+    guid: 'b776b059-ad21-4842-962e-c74a1d58d147',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/scopa/asso-pigliatutto-scopa/asso-pigliatutto-scopaStateEventModel.asset',
+    gameId: 'asso-pigliatutto-scopa',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'asso-pigliatutto-scopa',
+    familyVariant: 'Scopa Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 40,
+        },
+        {
+          id: 'tableau',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 40,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 40,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'play_card',
+        'check_refill',
+        'game_end',
+      ],
+      actions: [
+        'deal_3_cards',
+        'play_card_capture',
+        'play_card_discard',
+        'refill_hands_or_end',
+        'score_and_end_round',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: '21a503af-2d0d-46ac-8f4c-99710a2ce0db',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/klaverjassen/klaverjassenValidationFixtures.asset',
+    gameId: 'klaverjassen',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'klaverjassen',
+    familyVariant: 'Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'klaverjassen.core-runtime-contracts',
+        title: 'Klaverjassen Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'klaverjassen.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Klaverjassen must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'klaverjassen.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'klaverjassen.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'deal',
+              'declare',
+              'play_card',
+              'pass',
+              'bid',
+              'meld',
+              'score_round',
+            ],
+            explanation: 'Klaverjassen must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'klaverjassen.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'klaverjassen.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest score after 16 hands',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {
+              trump_jack: '20',
+              trump_nine: '14',
+              ace: '11',
+              ten: '10',
+              king: '4',
+              queen: '3',
+              jack: '2',
+              other: '0',
+            },
+            explanation: 'Points from card values (162 total), roem melds, and last trick. Must score 82+ if choosing trumps.',
+            linkedRuleIds: [
+              'klaverjassen.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'klaverjassen.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '84844be7-5025-44e3-9aa4-beb3735e5f4e',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/stops/earl-of-coventry/earl-of-coventryPhaseFlowModel.asset',
+    gameId: 'earl-of-coventry',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'earl-of-coventry',
+    familyVariant: 'Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal entire deck one by one clockwise. Unequal hand sizes allowed.',
+      },
+      {
+        id: 'play',
+        label: 'Lead or Match or Pass',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+          'pass',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_hand_empty',
+            nextPhase: null,
+          },
+          {
+            condition: 'fourth_card_played',
+            nextPhase: 'play',
+          },
+          {
+            condition: 'next_player_turn',
+            nextPhase: 'play',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Lead any card, or match same rank if held, or pass if no match. Fourth card of rank wins lead; player who played it leads next.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '4 to 8 players; best with a larger group to ensure cards are widely distributed.',
+        deck: 'Standard 52-card pack. Aces are low.',
+        equipment: '52-card deck.',
+        dealing: 'The entire deck is dealt out one by one. It does not matter if some players have one card more than others.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'play',
+    ],
+    examples: [],
+  },
+}

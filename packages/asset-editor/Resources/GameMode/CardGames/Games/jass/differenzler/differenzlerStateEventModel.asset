@@ -1,0 +1,82 @@
+{
+  system: {
+    guid: '2c197c2e-5613-4825-96d1-ec008f886e78',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/differenzler/differenzlerStateEventModel.asset',
+    gameId: 'differenzler',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'differenzler',
+    familyVariant: 'Jass / Bidding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: null,
+        },
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 9,
+        },
+        {
+          id: 'trick',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+        {
+          id: 'custom:score_area',
+          type: 'track',
+          visibility: 'public',
+          owner: 'table',
+          capacity: null,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'NA',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 3,
+        max_players: 4,
+        hand_size: 9,
+        trick_count: 9,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'predict_points',
+        'trick_play',
+        'resolution',
+      ],
+      actions: [
+        'deal',
+        'award_pot',
+        'play_card',
+        'bid',
+      ],
+    },
+    examples: [],
+  },
+}

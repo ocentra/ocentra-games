@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'fff74c62-b2be-41ff-b6a8-35f4a17d0c18',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/knock-poker/knock-pokerValidationFixtures.asset',
+    gameId: 'knock-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'knock-poker',
+    familyVariant: 'Poker Hand Collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'knock-poker.core-runtime-contracts',
+        title: 'Knock Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'knock-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 25,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Knock Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'knock-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'knock-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'ante',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'ante',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'ante',
+              'deal',
+              'fold',
+              'call',
+              'reveal_hand',
+              'award_pot',
+              'draw',
+              'discard',
+            ],
+            explanation: 'Knock Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'knock-poker.flow.ante',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'knock-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Have the highest-ranking five-card poker hand at showdown',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Best poker hand wins the pot. Knocker wins: others pay 2 chips each. Knocker loses: pays 2 chips to each staying player. Folders pay 1 chip to knocker.',
+            linkedRuleIds: [
+              'knock-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'knock-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

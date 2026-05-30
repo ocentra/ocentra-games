@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '60cfacc1-b39a-4317-a7c9-e32099b50226',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/pitch-oklahoma/pitch-oklahomaValidationFixtures.asset',
+    gameId: 'pitch-oklahoma',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pitch-oklahoma',
+    familyVariant: 'Point-Trick / All Fours',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pitch-oklahoma.core-runtime-contracts',
+        title: 'Oklahoma 10-point Pitch Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pitch-oklahoma.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 54,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Oklahoma 10-point Pitch must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pitch-oklahoma.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pitch-oklahoma.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'discard',
+              'pass',
+              'bid',
+              'draw_from_widow',
+              'award_points',
+            ],
+            explanation: 'Oklahoma 10-point Pitch must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'pitch-oklahoma.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'pitch-oklahoma.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '21',
+            scoringDirection: 'high_wins',
+            targetScore: 21,
+            cardValues: {},
+            explanation: 'Points from High, Low, Jack, Off-Jack, Jokers, Game, Trey (optional). Bid and make to score; set = lose bid.',
+            linkedRuleIds: [
+              'pitch-oklahoma.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pitch-oklahoma.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

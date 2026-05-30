@@ -1,0 +1,110 @@
+{
+  system: {
+    guid: '68ca61a3-3d74-41f9-ba1e-0a13132b2a70',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/fives-and-threes-dominoes/fives-and-threes-dominoesValidationFixtures.asset',
+    gameId: 'fives-and-threes-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'fives-and-threes-dominoes',
+    familyVariant: 'Fives and Threes Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'fives-and-threes-dominoes.core-runtime-contracts',
+        title: 'Fives and Threes dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'fives-and-threes-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Fives and Threes dominoes must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'fives-and-threes-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'fives-and-threes-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+            ],
+            explanation: 'Fives and Threes dominoes must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'fives-and-threes-dominoes.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'fives-and-threes-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '61',
+            scoringDirection: 'high_wins',
+            targetScore: 61,
+            cardValues: {},
+            explanation: 'After each play, total the two open ends of the layout; if the total is a multiple of 5, 3 or both, score immediately (3→1, 5→1, 6→2, 9→3, 10→2, 12→4, 15→8, 18→6, 20→4). Chip-out scores 1. First to exactly 61 wins; scores that would exceed 61 are disregarded.',
+            linkedRuleIds: [
+              'fives-and-threes-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'fives-and-threes-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

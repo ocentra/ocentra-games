@@ -1,0 +1,106 @@
+{
+  system: {
+    guid: 'd5617ada-9d44-4d74-9a69-25e5432be84a',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/bluff/bluffPhaseFlowModel.asset',
+    gameId: 'bluff',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bluff',
+    familyVariant: 'Bluffing',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'dealing',
+        label: 'Full Deal',
+        actor: 'system',
+        legalActions: [
+          'deal_all',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'play_loop',
+        label: 'Claim and Challenge',
+        actor: 'current_player',
+        legalActions: [
+          'play_facedown',
+          'pass',
+          'challenge_previous',
+        ],
+        nextPhase: 'resolution',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'resolution',
+        label: 'Challenge Reveal',
+        actor: 'system',
+        legalActions: [
+          'reveal_cards',
+          'award_pile_to_loser',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: false,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3 to 6 players playing individually.',
+        deck: 'Standard 52-card French pack (No Jokers).',
+        equipment: 'Standard pack.',
+        dealing: 'Deal the entire deck as evenly as possible clockwise. Players keep their hands private but their card count visible.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+      ],
+      authoritativeServer: true,
+      customLogicNeeded: [
+        'Challenge resolution logic.',
+        'Rank sequencing tracking.',
+      ],
+    },
+    progression: [
+      'dealing',
+      'play_loop',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

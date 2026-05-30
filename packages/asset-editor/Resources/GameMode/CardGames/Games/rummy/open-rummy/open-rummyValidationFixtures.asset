@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '1ce883ea-fbdf-43f3-b263-e16ab9e228d9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/open-rummy/open-rummyValidationFixtures.asset',
+    gameId: 'open-rummy',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'open-rummy',
+    familyVariant: 'Partnership / Draw-and-Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'open-rummy.core-runtime-contracts',
+        title: 'Open Rummy Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'open-rummy.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 45,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 270,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Open Rummy must start by giving each active player 45 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'open-rummy.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'open-rummy.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Open Rummy must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'open-rummy.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'open-rummy.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1500',
+            scoringDirection: 'high_wins',
+            targetScore: 1500,
+            cardValues: {
+              '2': '2',
+              '3-6': '0.5',
+              '7-K': '1',
+              A: '1.5',
+              joker: '4',
+            },
+            explanation: 'Cumulative team score. Card values: 3-6=0.5, 7-K=1, A=1.5, 2=2, joker=4. Bonuses for complete sets, suited groups. Show bonus 20.',
+            linkedRuleIds: [
+              'open-rummy.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'open-rummy.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 45,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

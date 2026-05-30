@@ -1,0 +1,113 @@
+{
+  system: {
+    guid: 'f6136123-718f-481f-b657-450db5c06f7a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/video-poker/video-pokerValidationFixtures.asset',
+    gameId: 'video-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'video-poker',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'video-poker.core-runtime-contracts',
+        title: 'Video Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'video-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 5,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Video Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'video-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'video-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'hold_select',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'draw',
+              'discard',
+              'evaluate_payout',
+              'end_round',
+            ],
+            explanation: 'Video Poker must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'video-poker.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'video-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Achieve best poker hand. Higher hand = higher payout.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Pay table: Royal Flush(800x), Straight Flush(50x), Four-of-Kind(25x), Full House(9x), Flush(6x), Straight(4x), Three-of-Kind(3x), Two Pair(2x), Jacks+(1x).',
+            linkedRuleIds: [
+              'video-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'video-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

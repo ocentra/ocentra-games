@@ -1,0 +1,64 @@
+{
+  system: {
+    guid: '08e45b87-aac5-456d-8be8-9b0256309ba8',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/billitonnen/billitonnenStateEventModel.asset',
+    gameId: 'billitonnen',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'billitonnen',
+    familyVariant: 'Block / Blind',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'hidden',
+          owner: 'player',
+          capacity: 7,
+        },
+        {
+          id: 'custom:line',
+          type: 'track',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 28,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        hand_size: 7,
+      },
+    },
+    eventModel: {
+      phases: [
+        'dealing',
+        'play_loop',
+        'resolution',
+      ],
+      actions: [
+        'deal_tiles_facedown',
+        'flip_leftmost_tile',
+        'place_on_line',
+        'return_facedown',
+      ],
+    },
+    examples: [],
+  },
+}

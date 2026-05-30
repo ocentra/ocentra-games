@@ -1,0 +1,138 @@
+{
+  system: {
+    guid: 'a881723b-3715-4ff4-bbe2-915924e73f63',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/fifty-six/fifty-sixPhaseFlowModel.asset',
+    gameId: 'fifty-six',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'fifty-six',
+    familyVariant: 'Point-Trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal_56_batches',
+        ],
+        nextPhase: 'bidding',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'bidding',
+        label: 'Bidding',
+        actor: 'current_player',
+        legalActions: [
+          'bid',
+          'pass',
+          'double_bid',
+          'redouble_bid',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'right_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '4, 6, or 8 players in two fixed teams. Partners sit alternately.',
+        deck: 'Two standard decks stripped of all cards below 9. Total 48 cards (A, K, Q, J, 10, 9 of each suit, twice). For 8 players, Sevens and Eights are added (Total 64).',
+        equipment: '',
+        dealing: 'Cards are dealt in three rounds: 8 cards per player initially. Bidding occurs during the dealing process.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'right_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 12,
+        mustFollowSuit: true,
+        mustOvertrump: null,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_trump_if_played_else_highest_led',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: true,
+          biddingSystem: 'auction',
+          minBid: 28,
+          maxBid: 56,
+          passAllowed: true,
+          doubling: true,
+        },
+        pointValues: {
+          specificCards: [
+            {
+              card: 'J',
+              points: 3,
+            },
+            {
+              card: '9',
+              points: 2,
+            },
+            {
+              card: 'A',
+              points: 1,
+            },
+            {
+              card: '10',
+              points: 1,
+            },
+          ],
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'bidding',
+      'play',
+    ],
+    examples: [],
+  },
+}

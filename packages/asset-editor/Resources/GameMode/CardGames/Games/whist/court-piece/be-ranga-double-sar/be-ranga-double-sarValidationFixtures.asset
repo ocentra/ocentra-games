@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: 'd15807ae-add0-471d-b011-33b343e78e67',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/court-piece/be-ranga-double-sar/be-ranga-double-sarValidationFixtures.asset',
+    gameId: 'be-ranga-double-sar',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'be-ranga-double-sar',
+    familyVariant: 'Whist Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'be-ranga-double-sar.core-runtime-contracts',
+        title: 'Be-Ranga Double Sar Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'be-ranga-double-sar.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 52,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Be-Ranga Double Sar must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'be-ranga-double-sar.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'be-ranga-double-sar.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal_first_5',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_5_each',
+            ],
+            expectedNextPhase: 'trump_call',
+            supportedActionIds: [
+              'play_card',
+              'deal_5_each',
+              'call_trump_suit',
+              'deal_8_each',
+            ],
+            explanation: 'Be-Ranga Double Sar must enter deal_first_5 first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'be-ranga-double-sar.flow.deal_first_5',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'be-ranga-double-sar.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '7',
+            scoringDirection: 'high_wins',
+            targetScore: 7,
+            cardValues: {},
+            explanation: "Scoring is usually tracked by 'Games' or 'Kots'.",
+            linkedRuleIds: [
+              'be-ranga-double-sar.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'be-ranga-double-sar.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

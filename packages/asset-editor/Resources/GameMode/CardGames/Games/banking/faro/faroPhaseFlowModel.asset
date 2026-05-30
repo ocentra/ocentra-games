@@ -1,0 +1,67 @@
+{
+  system: {
+    guid: '23ab1217-2e9e-4e3f-a0fe-1b50582fea67',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/faro/faroPhaseFlowModel.asset',
+    gameId: 'faro',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'faro',
+    familyVariant: 'Gambling / Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'system',
+        legalActions: [
+          'reveal_pair',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Main game phase',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Any number of players can bet against a single Banker. Traditionally 1-10 players.',
+        deck: 'Standard 52-card deck. Card ranks: Ace (low) through King (high).',
+        equipment: "1. **Dealing Box**: Special box with a slot to expose card faces while preventing double-dealing. 2. **Layout**: Pasteboard or cloth with 13 card ranks (Ace through King) where players place bets. 3. **Case Keeper**: An abacus-like device with beads to track which cards have been drawn from the deck. 4. **Coppers**: Hexagonal tokens placed on bets to indicate 'losing' prediction.",
+        dealing: "Dealer (the Banker) shuffles the deck and places it in the dealing box. The first card exposed (the 'Soda') is a dead card and is removed from play. Betting then begins.",
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

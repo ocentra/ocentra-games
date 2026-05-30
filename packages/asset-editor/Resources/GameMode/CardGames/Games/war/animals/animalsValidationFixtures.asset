@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '1425c717-448d-4f31-81c9-4de91f6ae945',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/animals/animalsValidationFixtures.asset',
+    gameId: 'animals',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'animals',
+    familyVariant: "Children's",
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'animals.core-runtime-contracts',
+        title: 'Animals Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'animals.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 6,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Animals must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'animals.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'animals.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_identities',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'select_animal',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'select_animal',
+              'deal_all_unseen',
+              'flip_card',
+              'shout_animal',
+              'declare_winner',
+            ],
+            explanation: 'Animals must enter setup_identities first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'animals.flow.setup_identities',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'animals.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'The player with the most cards when the deck has been fully dealt and no further cards remain to be turned wins the game.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'The game is a capture-style contest where, after the full deck has been dealt and played through, the player who has collected the most cards wins.',
+            linkedRuleIds: [
+              'animals.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'animals.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

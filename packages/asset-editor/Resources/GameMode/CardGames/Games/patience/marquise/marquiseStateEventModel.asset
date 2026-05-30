@@ -1,0 +1,74 @@
+{
+  system: {
+    guid: 'ad36302c-f44c-4535-8a39-cdfac094569f',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/marquise/marquiseStateEventModel.asset',
+    gameId: 'marquise',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'marquise',
+    familyVariant: 'One-Deck',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'tableau',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 32,
+        },
+        {
+          id: 'foundation',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 8,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'play',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'turn_stock',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,71 @@
+{
+  system: {
+    guid: '6b77bef9-4370-4fee-9029-2b647b671b5b',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/da-fu/da-fuStateEventModel.asset',
+    gameId: 'da-fu',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'da-fu',
+    familyVariant: 'Draw-and-Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 20,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 120,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 120,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_up',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'NA',
+        tableauCards: 'NA',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'play',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'draw',
+        'discard',
+        'go_out',
+        'claim_discard_to_win',
+        'claim_discard_for_dui',
+      ],
+    },
+    examples: [],
+  },
+}

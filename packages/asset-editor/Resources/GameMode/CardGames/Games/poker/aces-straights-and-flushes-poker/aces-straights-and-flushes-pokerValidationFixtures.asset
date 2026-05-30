@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'a4f48523-3557-47ad-a371-ede41007820d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/aces-straights-and-flushes-poker/aces-straights-and-flushes-pokerValidationFixtures.asset',
+    gameId: 'aces-straights-and-flushes-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'aces-straights-and-flushes-poker',
+    familyVariant: 'Stud Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'aces-straights-and-flushes-poker.core-runtime-contracts',
+        title: 'Aces, Straights and Flushes Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'aces-straights-and-flushes-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'mixed',
+            explanation: 'Aces, Straights and Flushes Poker must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'aces-straights-and-flushes-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'aces-straights-and-flushes-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'ante',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'ante',
+            ],
+            expectedNextPhase: 'joker_setup',
+            supportedActionIds: [
+              'ante',
+              'deal',
+              'reveal_market',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'award_pot',
+            ],
+            explanation: 'Aces, Straights and Flushes Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'aces-straights-and-flushes-poker.flow.ante',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'aces-straights-and-flushes-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Pot game. Best high hand under bug-joker rule wins.',
+            linkedRuleIds: [
+              'aces-straights-and-flushes-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'aces-straights-and-flushes-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'mixed',
+      },
+    ],
+  },
+}

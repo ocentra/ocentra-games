@@ -1,0 +1,77 @@
+{
+  system: {
+    guid: '5564d7b1-7bae-4d0d-a680-3db8e1ad4847',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/bridge/bridge-with-semi-exposed-dummies/bridge-with-semi-exposed-dummiesStateEventModel.asset',
+    gameId: 'bridge-with-semi-exposed-dummies',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bridge-with-semi-exposed-dummies',
+    familyVariant: 'Bridge Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 13,
+        },
+        {
+          id: 'custom:dummy',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'player',
+          capacity: 13,
+        },
+        {
+          id: 'trick',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'mixed',
+      },
+      constants: {
+        hand_size: 13,
+        trick_count: 13,
+      },
+    },
+    eventModel: {
+      phases: [
+        'dealing',
+        'auction',
+        'play_loop',
+        'scoring',
+      ],
+      actions: [
+        'play_card',
+        'pass',
+        'bid',
+        'deal_13_hand_13_dummy',
+        'play_from_hand',
+        'play_from_dummy',
+        'bid_contract',
+        'calculate_match_points',
+      ],
+    },
+    examples: [],
+  },
+}

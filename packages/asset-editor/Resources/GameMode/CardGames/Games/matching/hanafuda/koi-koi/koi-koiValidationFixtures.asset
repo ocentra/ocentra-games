@@ -1,0 +1,110 @@
+{
+  system: {
+    guid: '671988db-c215-4854-aa4d-129f1b2ad51a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/hanafuda/koi-koi/koi-koiValidationFixtures.asset',
+    gameId: 'koi-koi',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'koi-koi',
+    familyVariant: 'Hanafuda',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'koi-koi.core-runtime-contracts',
+        title: 'Koi-Koi Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'koi-koi.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Koi-Koi must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'koi-koi.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'koi-koi.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_oya_8_8_8',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'play_card',
+              'draw',
+              'deal_oya_8_8_8',
+            ],
+            explanation: 'Koi-Koi must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'koi-koi.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'koi-koi.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+            linkedRuleIds: [
+              'koi-koi.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'koi-koi.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

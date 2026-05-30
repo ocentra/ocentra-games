@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: '9f2f18cc-44e1-4433-8238-22d3d6aac7c1',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/lansquenet/skin/skinValidationFixtures.asset',
+    gameId: 'skin',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'skin',
+    familyVariant: 'Gambling / Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'skin.core-runtime-contracts',
+        title: 'Skin Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'skin.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 1,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 20,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Skin must start by giving each active player 1 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'skin.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'skin.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'case_card',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'issue_case_cards',
+            ],
+            expectedNextPhase: 'reveal',
+            supportedActionIds: [
+              'call',
+              'bet',
+              'raise',
+              'issue_case_cards',
+            ],
+            explanation: 'Skin must enter case_card first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'skin.flow.case_card',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'skin.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Have your card survive while others fall (are matched).',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Have your card survive while others fall (are matched).',
+            linkedRuleIds: [
+              'skin.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'skin.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 1,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 20,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

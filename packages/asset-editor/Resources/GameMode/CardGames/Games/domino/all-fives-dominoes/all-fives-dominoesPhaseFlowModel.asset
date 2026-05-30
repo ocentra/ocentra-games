@@ -1,0 +1,142 @@
+{
+  system: {
+    guid: 'e804a5cf-c7e0-4b80-b09f-51bc8cec204c',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/all-fives-dominoes/all-fives-dominoesPhaseFlowModel.asset',
+    gameId: 'all-fives-dominoes',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'all-fives-dominoes',
+    familyVariant: 'Fives and Threes Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'system',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play_tiles',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Wash and draw hands; remaining tiles become boneyard.',
+      },
+      {
+        id: 'play_tiles',
+        label: 'Play Tiles',
+        actor: 'active_players_clockwise',
+        legalActions: [
+          'play_card',
+          'draw',
+          'pass',
+        ],
+        nextPhase: 'play_tiles',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'all_tiles_played == true',
+            nextPhase: 'hand_summary',
+          },
+          {
+            condition: 'all_players_blocked == true',
+            nextPhase: 'hand_summary',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Place matching tile; if no legal play, draw from boneyard until playable or empty, then pass.',
+      },
+      {
+        id: 'hand_summary',
+        label: 'Settlement',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: "Apply end-of-hand bonus from opponents' pips rounded to nearest five.",
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 players (7 tiles each) or 4 players in partnerships (5 tiles each).',
+        deck: 'Standard 28-tile double-six set, from 0-0 to 6-6.',
+        equipment: 'Domino set, score sheet or scoreboard.',
+        dealing: "Tiles are 'washed' (shuffled) face down. Players draw their hand; remaining tiles are the 'Boneyard'.",
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+        'draw',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'spinner_branching_logic',
+        'multiple_of_five_end_scoring',
+        'rounded_pip_bonus',
+        'muggins_optional_call',
+      ],
+    },
+    progression: [
+      'deal',
+      'play_tiles',
+      'hand_summary',
+    ],
+    examples: [],
+  },
+}

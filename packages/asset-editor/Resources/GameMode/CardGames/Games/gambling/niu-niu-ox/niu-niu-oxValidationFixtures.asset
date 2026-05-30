@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '9c10de06-9455-4a15-8194-fcd22f9f3fd6',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/gambling/niu-niu-ox/niu-niu-oxValidationFixtures.asset',
+    gameId: 'niu-niu-ox',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'niu-niu-ox',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'niu-niu-ox.core-runtime-contracts',
+        title: 'Niu Niu (Ox-Ox, Bullfighting) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'niu-niu-ox.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 10,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 50,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Niu Niu (Ox-Ox, Bullfighting) must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'niu-niu-ox.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'niu-niu-ox.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'bet_phase',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'bet',
+            ],
+            expectedNextPhase: 'deal_phase',
+            supportedActionIds: [
+              'bet',
+              'reveal_hand',
+              'award_pot',
+              'deal_cards',
+              'confirm_split',
+            ],
+            explanation: 'Niu Niu (Ox-Ox, Bullfighting) must enter bet_phase first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'niu-niu-ox.flow.bet_phase',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'niu-niu-ox.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Have a higher hand value than the banker.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Have a higher hand value than the banker.',
+            linkedRuleIds: [
+              'niu-niu-ox.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'niu-niu-ox.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 10,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

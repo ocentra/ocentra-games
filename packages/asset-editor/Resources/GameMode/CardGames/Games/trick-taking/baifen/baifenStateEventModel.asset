@@ -1,0 +1,73 @@
+{
+  system: {
+    guid: '1130cd51-1d70-469a-b0f1-c8bcdc31997b',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/baifen/baifenStateEventModel.asset',
+    gameId: 'baifen',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'baifen',
+    familyVariant: 'Point-Trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_up',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'NA',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'dealing',
+        'trump_declaration',
+        'trick_play',
+        'final_tally',
+      ],
+      actions: [
+        'deal_individual_cards',
+        'declare_trump_suit',
+        'lead_card',
+        'follow_suit',
+        'play_trump',
+        'sum_points',
+        'check_threshold',
+      ],
+    },
+    examples: [],
+  },
+}

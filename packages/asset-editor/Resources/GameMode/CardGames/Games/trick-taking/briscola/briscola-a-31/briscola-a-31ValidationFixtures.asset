@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'adb7c0d5-78be-415a-bbbc-f579e96752ca',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/briscola/briscola-a-31/briscola-a-31ValidationFixtures.asset',
+    gameId: 'briscola-a-31',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'briscola-a-31',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'briscola-a-31.core-runtime-contracts',
+        title: 'Briscola a 31 Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'briscola-a-31.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Briscola a 31 must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'briscola-a-31.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'briscola-a-31.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Briscola a 31 must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'briscola-a-31.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'briscola-a-31.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '31',
+            scoringDirection: 'high_wins',
+            targetScore: 31,
+            cardValues: {
+              Ace: '11 points.',
+              Three: '10 points.',
+              King: '4 points.',
+              Queen: '3 points.',
+              Jack: '2 points.',
+              Others: '0 points; non-picture cards have no point value.',
+            },
+            explanation: 'Card points are counted using Briscola values (Ace 11, Three 10, King 4, Queen 3, Jack 2; others 0). In Briscola a 31, play stops as soon as a player claims to have at least 31 points in their tricks; if the claim is correct they win, and if it is incorrect the opponent wins the hand.',
+            linkedRuleIds: [
+              'briscola-a-31.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'briscola-a-31.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

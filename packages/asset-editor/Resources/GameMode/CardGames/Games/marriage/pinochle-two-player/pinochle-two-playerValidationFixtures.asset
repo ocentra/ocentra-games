@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: 'e7913fdb-6b57-4abc-9353-501c24417cbe',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/pinochle-two-player/pinochle-two-playerValidationFixtures.asset',
+    gameId: 'pinochle-two-player',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pinochle-two-player',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pinochle-two-player.core-runtime-contracts',
+        title: 'Pinochle Two Player Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pinochle-two-player.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Pinochle Two Player must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pinochle-two-player.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pinochle-two-player.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_12_each',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'bid',
+              'meld',
+              'deal_12_each',
+            ],
+            explanation: 'Pinochle Two Player must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'pinochle-two-player.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'pinochle-two-player.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1000',
+            scoringDirection: 'high_wins',
+            targetScore: 1000,
+            cardValues: {
+              '9': '0',
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'Meld points (runs, marriages, pinochles, arounds, dix) plus trick points. Counters in tricks: A 10 K worth 10 each; last trick 10; total 250 per hand. Bid winner must make at least bid or score is deducted.',
+            linkedRuleIds: [
+              'pinochle-two-player.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pinochle-two-player.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

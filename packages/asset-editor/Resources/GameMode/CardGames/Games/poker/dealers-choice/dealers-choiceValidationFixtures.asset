@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: 'cf1d648a-12c0-409e-873d-3e7766cb68c3',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/dealers-choice/dealers-choiceValidationFixtures.asset',
+    gameId: 'dealers-choice',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'dealers-choice',
+    familyVariant: 'Poker Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'dealers-choice.core-runtime-contracts',
+        title: "Dealer's Choice Poker Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'dealers-choice.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 2,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 10,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: "Dealer's Choice Poker must start by giving each active player 2 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'dealers-choice.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'dealers-choice.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'selection',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'select_variant',
+              'explain_rules',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'ante',
+              'select_variant',
+              'explain_rules',
+            ],
+            explanation: "Dealer's Choice Poker must enter selection first and expose exactly the legal actions authored for that phase.",
+            linkedRuleIds: [
+              'dealers-choice.flow.selection',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'dealers-choice.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest/Lowest hand or successfully bluffing the table.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Standard Poker hand rankings apply unless the chosen variant specifies otherwise (e.g., Lowball, Badugi ranking).',
+            linkedRuleIds: [
+              'dealers-choice.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'dealers-choice.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 2,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 10,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

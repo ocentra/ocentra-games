@@ -1,0 +1,77 @@
+{
+  system: {
+    guid: '6f0e7edb-3c25-4761-8764-9b8ed5123295',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/sheng-ji/sheng-jiStateEventModel.asset',
+    gameId: 'sheng-ji',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sheng-ji',
+    familyVariant: 'Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 108,
+        },
+        {
+          id: 'custom:kitty',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 8,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        min_players: 4,
+        max_players: 6,
+        optimal_players: 4,
+        deck_count: 2,
+        kitty_size: 8,
+        hand_size: 25,
+        trick_count: 25,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'bidding',
+        'play_tricks',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'pass',
+        'bid',
+      ],
+    },
+    examples: [],
+  },
+}

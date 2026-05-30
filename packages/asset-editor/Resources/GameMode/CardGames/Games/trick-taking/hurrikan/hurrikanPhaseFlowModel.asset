@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '886ea69e-240d-4f2d-bfe3-dafce9ef743c',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/hurrikan/hurrikanPhaseFlowModel.asset',
+    gameId: 'hurrikan',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hurrikan',
+    familyVariant: 'Scopa-variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'main_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal 3 cards to each player. Place 4 cards face-up on table.',
+      },
+      {
+        id: 'main_play',
+        label: 'Main Play',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: 'main_play',
+        isMandatory: true,
+        loopIndex: 1,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'all_cards_played',
+            nextPhase: 'scoring',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Player plays card. Capture if match single card or sum. Hurrikan = empty table = bonus. Discard if no capture.',
+      },
+      {
+        id: 'scoring',
+        label: 'Scoring',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Score points. Continue to 16.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 players (Standard).',
+        deck: 'Usually 32-40 cards. If using 52, remove 8s, 9s, 10s. Ranking: Ace (1), 2-7 (Face), Jack (8), Queen (9), King (10).',
+        equipment: 'Standard deck of cards.',
+        dealing: 'Deal 3 cards to each player and 4 face-up on the table.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'sum_combinations',
+        'sweep_detection',
+      ],
+    },
+    progression: [
+      'deal',
+      'main_play',
+      'scoring',
+    ],
+    examples: [],
+  },
+}

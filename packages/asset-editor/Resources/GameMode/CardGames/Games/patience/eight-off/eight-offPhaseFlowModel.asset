@@ -1,0 +1,109 @@
+{
+  system: {
+    guid: '7ba991ba-0f9e-409e-89f5-5b9e93ec5b0d',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/eight-off/eight-offPhaseFlowModel.asset',
+    gameId: 'eight-off',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'eight-off',
+    familyVariant: 'Solitaire',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'system',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+        },
+        notes: 'Deal 6 to each of 8 tableau columns, 4 to free cells. All face-up.',
+      },
+      {
+        id: 'play',
+        label: 'Move',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'moves_available',
+            nextPhase: 'play',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Move to foundation (Ace up same suit), tableau (one rank lower same suit), free cell, or sequence (max = empty cells + 1). Only King or K-led sequence to empty column.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'One player only. Eight Off is a patience (solitaire) game played by a single person; there are no opponents or partners.',
+        deck: 'Single standard 52-card deck; all cards dealt face up into eight tableau columns and four reserve cells at the start.',
+        equipment: 'Standard deck and a playing surface; no other equipment required.',
+        dealing: 'Deal face up: six cards to each of eight tableau columns, and the remaining four cards into the first four reserve (free) cells.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'play',
+    ],
+    examples: [],
+  },
+}

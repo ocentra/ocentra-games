@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '5f622dd8-681a-4d86-9a9f-eefd2dfbecd9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/austrian-dominoes/austrian-dominoesValidationFixtures.asset',
+    gameId: 'austrian-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'austrian-dominoes',
+    familyVariant: 'Line / Draw',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'austrian-dominoes.core-runtime-contracts',
+        title: 'Austrian Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'austrian-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Austrian Dominoes must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'austrian-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'austrian-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'remove_doubles',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'remove_doubles',
+              'deal_tiles',
+              'match_tile_brick',
+              'draw_from_talon',
+              'count_opposing_pips',
+            ],
+            explanation: 'Austrian Dominoes must enter setup first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'austrian-dominoes.flow.setup',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'austrian-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'high_wins',
+            targetScore: 100,
+            cardValues: {},
+            explanation: 'Round-based point accumulation.',
+            linkedRuleIds: [
+              'austrian-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'austrian-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

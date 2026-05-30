@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '0e2b9f3f-176b-4655-9bbe-1a8cf5c08d34',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/five-card-draw-jacks-back/five-card-draw-jacks-backValidationFixtures.asset',
+    gameId: 'five-card-draw-jacks-back',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'five-card-draw-jacks-back',
+    familyVariant: 'Draw Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'five-card-draw-jacks-back.core-runtime-contracts',
+        title: 'Jacks Back (5 Card Draw) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'five-card-draw-jacks-back.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Jacks Back (5 Card Draw) must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'five-card-draw-jacks-back.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'five-card-draw-jacks-back.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'ante',
+            expectedActor: 'all_simultaneous',
+            expectedLegalActions: [
+              'post_ante',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'deal',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'post_ante',
+              'draw_cards',
+              'expose_one_card',
+              'show_hand',
+            ],
+            explanation: 'Jacks Back (5 Card Draw) must enter ante first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'five-card-draw-jacks-back.flow.ante',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'five-card-draw-jacks-back.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest 5-card Poker hand at showdown wins pot.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Standard Five Card Draw scoring. Exposure mechanic adds information for final betting.',
+            linkedRuleIds: [
+              'five-card-draw-jacks-back.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'five-card-draw-jacks-back.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

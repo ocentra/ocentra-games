@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '628e88b9-aaab-414a-8107-10f210b53b87',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/encaje/encajeValidationFixtures.asset',
+    gameId: 'encaje',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'encaje',
+    familyVariant: 'Vying',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'encaje.core-runtime-contracts',
+        title: 'Encaje Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'encaje.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Encaje must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'encaje.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'encaje.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'grande_betting',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'pass',
+              'bet',
+              'raise',
+              'fold',
+            ],
+            expectedNextPhase: 'chica_betting',
+            supportedActionIds: [
+              'fold',
+              'bet',
+              'raise',
+              'declare',
+              'pass',
+            ],
+            explanation: 'Encaje must enter grande_betting first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'encaje.flow.grande_betting',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'encaje.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'The game ends when all players except one have eliminated all their stones and all temporary pots are settled. The last player remaining with stones is the loser of the game.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Players start with 15-21 stones each and try to eliminate them through betting phases. Stones are removed from play based on showdown results and betting outcomes.',
+            linkedRuleIds: [
+              'encaje.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'encaje.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

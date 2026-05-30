@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: 'e491c3a6-4948-4d7d-b98d-7b360282bce9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/have-a-heart-poker/have-a-heart-pokerValidationFixtures.asset',
+    gameId: 'have-a-heart-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'have-a-heart-poker',
+    familyVariant: 'Evasion',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'have-a-heart-poker.core-runtime-contracts',
+        title: 'Have a Heart Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'have-a-heart-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 78,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Have a Heart must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'have-a-heart-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'have-a-heart-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'role:dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'passing',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+              'score_hand',
+            ],
+            explanation: 'Have a Heart must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'have-a-heart-poker.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'have-a-heart-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'low_wins',
+            targetScore: 100,
+            cardValues: {
+              Heart: '1',
+              Queen_of_Spades: '13',
+            },
+            explanation: 'Hearts are 1 point each. Queen of Spades is 13 points.',
+            linkedRuleIds: [
+              'have-a-heart-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'have-a-heart-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,76 @@
+{
+  system: {
+    guid: 'a5ebc905-56ee-40d7-b750-ed125611dd7f',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/giog/giogStateEventModel.asset',
+    gameId: 'giog',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'giog',
+    familyVariant: 'Trick-taking / Multi-game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'custom:captured',
+          type: 'pool',
+          visibility: 'private',
+          owner: 'player',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 4,
+        deck_count: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'distribution',
+        'trick_play',
+        'resolution',
+      ],
+      actions: [
+        'deal',
+        'declare',
+        'award_pot',
+        'play_card',
+      ],
+    },
+    examples: [],
+  },
+}

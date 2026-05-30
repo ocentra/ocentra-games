@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '0b5b67bc-264c-4eff-8f1a-8051012c2ecf',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/passing/pig/vatra/vatraValidationFixtures.asset',
+    gameId: 'vatra',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'vatra',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'vatra.core-runtime-contracts',
+        title: 'Vatra Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'vatra.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 13,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 65,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Vatra must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'vatra.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'vatra.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+              'bid',
+              'finish_hand',
+            ],
+            explanation: 'Vatra must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'vatra.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'vatra.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Collect four-of-a-kind first. Don't be last.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'First out = winner. Last = loser (punished).',
+            linkedRuleIds: [
+              'vatra.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'vatra.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 13,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

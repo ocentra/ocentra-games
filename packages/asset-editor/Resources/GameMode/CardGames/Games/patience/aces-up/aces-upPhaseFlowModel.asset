@@ -1,0 +1,101 @@
+{
+  system: {
+    guid: 'c9ca41e8-e7a9-40d8-8a6a-28ed4e7f2a7c',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/aces-up/aces-upPhaseFlowModel.asset',
+    gameId: 'aces-up',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'aces-up',
+    familyVariant: 'Non-Builder',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup',
+        label: 'Initial Deal',
+        actor: 'system',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+        },
+        notes: 'Deal one card to each of four tableau piles.',
+      },
+      {
+        id: 'play',
+        label: 'Main Play',
+        actor: 'current_player',
+        legalActions: [
+          'discard',
+          'play_card',
+          'deal',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'stock_remaining_or_moves_available',
+            nextPhase: 'play',
+          },
+        ],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+        },
+        notes: 'Discard lower same-suit top cards, move top card into empty pile, or deal a new row from stock.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'One player only. Aces Up is a patience (solitaire) game played by a single player using one deck and four tableau piles, with a space for discards.',
+        deck: 'Standard 52-card deck.',
+        equipment: 'One shuffled deck and table space for four tableau piles.',
+        dealing: 'Deal four cards face up, one to each tableau pile. The rest of the deck is the stock.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'dealer',
+        dealerRotates: false,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'same_suit_higher_rank_discard',
+      ],
+    },
+    progression: [
+      'setup',
+      'play',
+    ],
+    examples: [],
+  },
+}

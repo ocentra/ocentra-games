@@ -1,0 +1,113 @@
+{
+  system: {
+    guid: '3624a6da-3655-40c6-b00a-c1bb9b49e8aa',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/marafon-beccaccino/marafon-beccaccinoValidationFixtures.asset',
+    gameId: 'marafon-beccaccino',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'marafon-beccaccino',
+    familyVariant: 'Tressette Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'marafon-beccaccino.core-runtime-contracts',
+        title: 'Marafon-Beccaccino Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'marafon-beccaccino.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 40,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Marafon-Beccaccino must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'marafon-beccaccino.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'marafon-beccaccino.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_10_each',
+              'turn_trump',
+            ],
+            expectedNextPhase: 'declare_cricca',
+            supportedActionIds: [
+              'pass',
+              'deal_10_each',
+              'turn_trump',
+              'declare_cricca',
+              'play_card_with_signal',
+            ],
+            explanation: 'Marafon-Beccaccino must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'marafon-beccaccino.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'marafon-beccaccino.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '41',
+            scoringDirection: 'high_wins',
+            targetScore: 41,
+            cardValues: {},
+            explanation: 'Points are tallied cumulatively.',
+            linkedRuleIds: [
+              'marafon-beccaccino.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'marafon-beccaccino.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

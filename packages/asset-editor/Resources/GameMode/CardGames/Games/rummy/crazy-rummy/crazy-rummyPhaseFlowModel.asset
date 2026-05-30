@@ -1,0 +1,125 @@
+{
+  system: {
+    guid: '7c6054e2-35e0-4ded-ace8-99d1bf9f32c7',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/crazy-rummy/crazy-rummyPhaseFlowModel.asset',
+    gameId: 'crazy-rummy',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'crazy-rummy',
+    familyVariant: 'Meld and Layoff',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'initial_deal',
+        label: 'Initial Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'turn',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Dealer gives each player seven cards and one extra card to first player.',
+      },
+      {
+        id: 'turn',
+        label: 'Player Turn',
+        actor: 'current_player',
+        legalActions: [
+          'draw',
+          'meld',
+          'pass',
+          'discard',
+          'go_out',
+        ],
+        nextPhase: 'turn',
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_goes_out',
+            nextPhase: 'scoring',
+          },
+        ],
+        cardVisibilityChanges: {
+          discard: 'face_up',
+        },
+        notes: 'Draw, optionally meld/lay off, then discard.',
+      },
+      {
+        id: 'scoring',
+        label: 'Deal Scoring',
+        actor: 'system',
+        legalActions: [
+          'reveal_hand',
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          reveal_hand: 'face_up',
+        },
+        notes: 'Count penalty points in hands and update cumulative scores.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2-6 players (4 is common).',
+        deck: 'Standard 52-card deck, usually without jokers in base rules.',
+        equipment: 'Deck, score sheet, and chips or tokens if side payments are used.',
+        dealing: 'Deal 7 cards to each player and an eighth card to player left of dealer, who begins.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+        'draw',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'rotating_wild_rank',
+        'wild_substitution_validation',
+        'cumulative_scoring_over_deals',
+      ],
+    },
+    progression: [
+      'initial_deal',
+      'turn',
+      'scoring',
+    ],
+    examples: [],
+  },
+}

@@ -1,0 +1,73 @@
+{
+  system: {
+    guid: '21b989e2-da69-43cb-9d19-a7ca074d0ab1',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/magarac/magaracPhaseFlowModel.asset',
+    gameId: 'magarac',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'magarac',
+    familyVariant: 'Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'passing',
+        label: 'Card Passing',
+        actor: 'all_simultaneous',
+        legalActions: [
+          'pass',
+          'declare',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Players pass cards left simultaneously until someone gets four of a kind.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Optimal with 4-6 players.',
+        deck: 'Use 4 cards of the same rank for each player. (e.g., 4 players = 16 cards total).',
+        equipment: 'Standard deck, tokens for spelling MAGARAC.',
+        dealing: 'Each player is dealt 4 cards face-down.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'reaction_timing',
+      ],
+    },
+    progression: [],
+    examples: [],
+  },
+}

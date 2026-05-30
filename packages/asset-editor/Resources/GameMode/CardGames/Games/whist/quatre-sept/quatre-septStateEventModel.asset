@@ -1,0 +1,72 @@
+{
+  system: {
+    guid: 'a8d39889-c714-409e-a4d8-e0e130dc832c',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/quatre-sept/quatre-septStateEventModel.asset',
+    gameId: 'quatre-sept',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'quatre-sept',
+    familyVariant: 'Point-trick / No Trump',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'NA',
+        tableauCards: 'face_up',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'check_four_sevens',
+        'play',
+        'score_hand',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'declare_four_sevens',
+        'announce_politaine',
+        'count_points',
+        'award_politaine',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: '9233fc82-b96b-420d-bb33-433265244ae5',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/russian-bank/russian-bankValidationFixtures.asset',
+    gameId: 'russian-bank',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'russian-bank',
+    familyVariant: 'Two-Deck Patience',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'russian-bank.core-runtime-contracts',
+        title: 'Russian Bank Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'russian-bank.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 10,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Russian Bank must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'russian-bank.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'russian-bank.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Russian Bank must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'russian-bank.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'russian-bank.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player to play off all cards from hand, reserve, and waste pile wins the game; first to reach agreed target score (e.g. 300) wins the match.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Winner scores 30 points plus 1 per card left in opponent's hand and waste piles, plus 2 per card left in opponent's reserve. Stalemate: player with lower remaining count scores the difference (no 30-point bonus). Agreed target (e.g. 300) wins the match.",
+            linkedRuleIds: [
+              'russian-bank.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'russian-bank.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

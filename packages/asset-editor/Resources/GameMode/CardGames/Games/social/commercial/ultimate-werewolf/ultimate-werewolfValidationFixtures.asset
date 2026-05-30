@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '00244754-4d4c-4a7f-b934-03be30177588',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/ultimate-werewolf/ultimate-werewolfValidationFixtures.asset',
+    gameId: 'ultimate-werewolf',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ultimate-werewolf',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ultimate-werewolf.core-runtime-contracts',
+        title: 'Ultimate Werewolf Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ultimate-werewolf.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 5,
+              max: 5,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Ultimate Werewolf must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ultimate-werewolf.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ultimate-werewolf.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'turning_round',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'flip_top_card',
+            ],
+            expectedNextPhase: 'payment_round',
+            supportedActionIds: [
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Ultimate Werewolf must enter turning_round first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'ultimate-werewolf.flow.turning_round',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'ultimate-werewolf.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'high_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '1',
+              K: '13',
+              Q: '12',
+              J: '11',
+            },
+            explanation: 'No scoring; the activity ends when the deck has been picked up.',
+            linkedRuleIds: [
+              'ultimate-werewolf.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ultimate-werewolf.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 5,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

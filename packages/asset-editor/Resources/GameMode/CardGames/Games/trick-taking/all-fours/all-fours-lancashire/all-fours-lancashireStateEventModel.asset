@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'af01e961-950c-4db3-bee8-a67ff2eea151',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/all-fours-lancashire/all-fours-lancashireStateEventModel.asset',
+    gameId: 'all-fours-lancashire',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'all-fours-lancashire',
+    familyVariant: 'Classic Point-scoring (Regional)',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: null,
+        },
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 6,
+        },
+        {
+          id: 'trick',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+        {
+          id: 'custom:captured_tricks',
+          type: 'area',
+          visibility: 'public',
+          owner: 'team',
+          capacity: null,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 4,
+        max_players: 4,
+        hand_size: 6,
+        trick_count: 6,
+        target_score: 11,
+        deck_count: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'pitch',
+        'trick_play',
+        'score_hand',
+      ],
+      actions: [
+        'deal',
+        'award_pot',
+        'play_card',
+      ],
+    },
+    examples: [],
+  },
+}

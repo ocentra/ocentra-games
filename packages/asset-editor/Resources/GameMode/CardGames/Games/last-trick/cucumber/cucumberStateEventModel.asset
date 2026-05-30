@@ -1,0 +1,74 @@
+{
+  system: {
+    guid: '69bb2d8c-63bf-451d-b845-bd325b09dd87',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/cucumber/cucumberStateEventModel.asset',
+    gameId: 'cucumber',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'cucumber',
+    familyVariant: 'Lose Last Trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: null,
+        },
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 7,
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 7,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'NA',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 7,
+        hand_size: 7,
+        trick_count: 7,
+        target_score: 21,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'trick_play',
+        'resolution',
+      ],
+      actions: [
+        'deal',
+        'award_pot',
+        'play_card',
+      ],
+    },
+    examples: [],
+  },
+}

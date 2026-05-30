@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: 'ee3b1ec7-4e97-454b-8608-1b43c9257975',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/mariaccio/mariaccioValidationFixtures.asset',
+    gameId: 'mariaccio',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mariaccio',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mariaccio.core-runtime-contracts',
+        title: 'Mariaccio Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mariaccio.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 10,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Mariaccio must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mariaccio.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mariaccio.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+              'declare',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'declare',
+              'play_card',
+            ],
+            explanation: 'Mariaccio must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'mariaccio.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'mariaccio.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '250',
+            scoringDirection: 'high_wins',
+            targetScore: 250,
+            cardValues: {
+              '2': '0',
+              '3': '10',
+              '4': '0',
+              '5': '0',
+              '6': '0',
+              '7': '0',
+              Ace: '11',
+              King: '4',
+              Knight: '3',
+              Jack: '2',
+            },
+            explanation: 'Card points from tricks (Ace 11, 3 10, King 4, Knight 3, Jack 2, 7-2 zero) plus Mariaccio bonuses (40 for trump marriage, 20 for non-trump).',
+            linkedRuleIds: [
+              'mariaccio.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mariaccio.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

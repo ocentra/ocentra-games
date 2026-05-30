@@ -1,0 +1,73 @@
+{
+  system: {
+    guid: '7e83c8a0-5359-4b03-a4a2-a5a7892a0f04',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/bieten/bietenStateEventModel.asset',
+    gameId: 'bieten',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bieten',
+    familyVariant: 'Last-Trick / Betting',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        target_score: 15,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'betting_round',
+        'trick_play',
+        'showdown',
+      ],
+      actions: [
+        'play_card',
+        'deal_3_each',
+        'bet_category',
+        'concede_category',
+        'evaluate_categories',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,140 @@
+{
+  system: {
+    guid: 'd0db01a9-688a-4156-8384-915228cd1034',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/giog/giogPhaseFlowModel.asset',
+    gameId: 'giog',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'giog',
+    familyVariant: 'Trick-taking / Multi-game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'distribution',
+        label: 'Priority Reveal and Draft',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'trick_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Mix pieces, establish priority by reveal, and distribute stack drafts into player hands.',
+      },
+      {
+        id: 'trick_play',
+        label: 'Multi-Trick Combination Play',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+          'declare',
+        ],
+        nextPhase: 'trick_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'all_hands_empty',
+            nextPhase: 'resolution',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_down',
+          declare: 'face_up',
+        },
+        notes: 'Leader sets count and type; all others respond with equal count and trick resolves by matching-type strength.',
+      },
+      {
+        id: 'resolution',
+        label: 'Count Captured Pieces',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Count captured pieces and determine winner or draw for highest capture total.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Base game is typically four players, with adapted procedures for three and two.',
+        deck: '32 Xiangqi pieces (16 red, 16 black) ranked from red general down to black pawn in base Giog.',
+        equipment: 'Xiangqi pieces and optional racks for concealed hand management.',
+        dealing: 'Pieces are mixed face down into paired stacks. Players reveal selected bottom pieces to establish priority order, then draft stacks around the layout to form hands (8 pieces each in four-player game).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: null,
+        mustFollowSuit: false,
+        canTrumpFirstTrick: false,
+        mustOvertrump: false,
+        leadRestrictions: 'Leader chooses combination count and valid type; same count required from all players.',
+        trickWinCondition: 'specific_card_wins',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: null,
+          maxBid: null,
+          passAllowed: false,
+          doubling: false,
+        },
+        pointValues: {
+          defaultPerSuit: {},
+          specificCards: [],
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'Model hidden stack-draft distribution and tie-break priority order setup.',
+        'Implement distinct combination-family ranking tables and type-matching trick resolution.',
+        'Enforce first/last trick marshal-general prohibition with capture reset penalty.',
+      ],
+    },
+    progression: [
+      'distribution',
+      'trick_play',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

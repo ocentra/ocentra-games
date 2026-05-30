@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '322e79cc-e623-4950-930d-3ff64a347430',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/fifty-six/fifty-sixValidationFixtures.asset',
+    gameId: 'fifty-six',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'fifty-six',
+    familyVariant: 'Point-Trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'fifty-six.core-runtime-contracts',
+        title: 'Fifty-Six (Ambathiyaaru) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'fifty-six.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 8,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 96,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Fifty-Six (Ambathiyaaru) must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'fifty-six.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'fifty-six.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_56_batches',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'bid',
+              'deal_56_batches',
+              'double_bid',
+              'redouble_bid',
+            ],
+            explanation: 'Fifty-Six (Ambathiyaaru) must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'fifty-six.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'fifty-six.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '9': '2',
+              '10': '1',
+              J: '3',
+              A: '1',
+            },
+            explanation: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+            linkedRuleIds: [
+              'fifty-six.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'fifty-six.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

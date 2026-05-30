@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '7f3cfb7a-4be1-40eb-8203-f8e5e2a4f984',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/dappen-black-forest-tapp-tarock/dappen-black-forest-tapp-tarockValidationFixtures.asset',
+    gameId: 'dappen-black-forest-tapp-tarock',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'dappen-black-forest-tapp-tarock',
+    familyVariant: 'Tarot',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'dappen-black-forest-tapp-tarock.core-runtime-contracts',
+        title: 'Dappen Black Forest Tapp Tarock Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'dappen-black-forest-tapp-tarock.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 6,
+              max: 7,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 49,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Dappen Black Forest Tapp Tarock must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'dappen-black-forest-tapp-tarock.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'dappen-black-forest-tapp-tarock.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'trick_play',
+            supportedActionIds: [
+              'deal',
+              'award_pot',
+              'play_card',
+            ],
+            explanation: 'Dappen Black Forest Tapp Tarock must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'dappen-black-forest-tapp-tarock.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'dappen-black-forest-tapp-tarock.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {
+              Gstieß: '5',
+              '21_Mund': '5',
+              '1_Geiß': '5',
+              Kings: '5',
+              Queens: '4',
+              Knights: '3',
+              Jacks: '2',
+              other: '1',
+            },
+            explanation: 'Score by total card points captured in tricks by lone player versus team. Points in the Dapp count for the lone player unless they take no tricks.',
+            linkedRuleIds: [
+              'dappen-black-forest-tapp-tarock.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'dappen-black-forest-tapp-tarock.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 6,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

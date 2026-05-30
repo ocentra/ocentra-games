@@ -1,0 +1,86 @@
+{
+  system: {
+    guid: '81e39657-8e75-46c0-a56a-381a7c50c9ff',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/commerce/forty-one-exchange/forty-one-exchangePhaseFlowModel.asset',
+    gameId: 'forty-one-exchange',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'forty-one-exchange',
+    familyVariant: 'Melding / Pay-Card Gambling',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'player_turn',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Dealer deals 4 cards each; rest forms stock; discard pile starts empty.',
+      },
+      {
+        id: 'player_turn',
+        label: 'Player turn',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'draw',
+          'discard',
+        ],
+        nextPhase: 'player_turn',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Draw one from stock or discard, then discard one. Game ends on 41 or when stock empties.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 to 6 players. Optimal with 4.',
+        deck: 'Standard 52-card deck.',
+        equipment: '',
+        dealing: 'Each player is dealt 4 cards. The remaining deck is placed in the center as a draw pile.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'player_turn',
+    ],
+    examples: [],
+  },
+}

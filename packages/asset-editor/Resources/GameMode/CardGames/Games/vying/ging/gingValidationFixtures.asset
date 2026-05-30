@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '9077b617-e05b-43ae-9bdb-66197f154e1f',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/ging/gingValidationFixtures.asset',
+    gameId: 'ging',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ging',
+    familyVariant: 'Gambling',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ging.core-runtime-contracts',
+        title: 'Ging Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ging.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Ging must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ging.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ging.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'stake',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'ante',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'ante',
+              'deal',
+              'declare',
+              'reveal_hand',
+              'award_pot',
+            ],
+            explanation: 'Ging must enter stake first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'ging.flow.stake',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'ging.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Session winner is determined by agreed endpoint, typically player with remaining or highest counters after agreed stop condition.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {
+              '7': '7',
+              '8': '8',
+              '9': '9',
+              '10': '10',
+              K: '10',
+              Q: '10',
+              J: '10',
+            },
+            explanation: 'Counters are won from a central layout either by highest declarations (most and second-most suit points) or by a full sweep combination.',
+            linkedRuleIds: [
+              'ging.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ging.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

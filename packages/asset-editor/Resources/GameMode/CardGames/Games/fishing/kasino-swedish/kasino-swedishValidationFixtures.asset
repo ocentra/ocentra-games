@@ -1,0 +1,113 @@
+{
+  system: {
+    guid: 'a83ecf95-4146-4e3a-ba3c-423c4e686e72',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/kasino-swedish/kasino-swedishValidationFixtures.asset',
+    gameId: 'kasino-swedish',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kasino-swedish',
+    familyVariant: 'Nordic Casino',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'kasino-swedish.core-runtime-contracts',
+        title: 'Kasino (Swedish) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'kasino-swedish.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Kasino (Swedish) must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'kasino-swedish.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'kasino-swedish.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'deal',
+              'play_card',
+            ],
+            explanation: 'Kasino (Swedish) must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'kasino-swedish.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'kasino-swedish.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '16',
+            scoringDirection: 'high_wins',
+            targetScore: 16,
+            cardValues: {
+              Ace: '1 point each',
+              '10_of_diamonds': '2 points (Storan)',
+              '2_of_spades': '1 point (Lillan)',
+            },
+            explanation: 'Most spades 2, most cards 1, each Ace 1, 10 of Diamonds (Storan) 2, 2 of Spades (Lillan) 1, last capture (sistan) 1, each tabbe 1. First to 16 points wins.',
+            linkedRuleIds: [
+              'kasino-swedish.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'kasino-swedish.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

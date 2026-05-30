@@ -1,0 +1,68 @@
+{
+  system: {
+    guid: '3ba46fea-d10a-4aec-b9fb-38dbcf1ab051',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/bluff/bluffStateEventModel.asset',
+    gameId: 'bluff',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bluff',
+    familyVariant: 'Bluffing',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'custom:pile',
+          type: 'area',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_down',
+      },
+      constants: {
+        hand_size: 13,
+      },
+    },
+    eventModel: {
+      phases: [
+        'dealing',
+        'play_loop',
+        'resolution',
+      ],
+      actions: [
+        'declare',
+        'play_card',
+        'pass',
+        'play_facedown',
+        'challenge_previous',
+        'deal_all',
+        'reveal_cards',
+        'award_pile_to_loser',
+      ],
+    },
+    examples: [],
+  },
+}

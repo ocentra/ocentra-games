@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: '37b72168-6cb0-40f1-82c8-a1a897969a0e',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/cucumber/cucumberPhaseFlowModel.asset',
+    gameId: 'cucumber',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'cucumber',
+    familyVariant: 'Lose Last Trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'trick_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal seven cards each.',
+      },
+      {
+        id: 'trick_play',
+        label: 'Trick Play',
+        actor: 'active_players_clockwise',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: 'trick_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'trick_count == 7',
+            nextPhase: 'resolution',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Beat highest or play lowest; trick winner leads next.',
+      },
+      {
+        id: 'resolution',
+        label: 'Last Trick Penalty',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Final trick winner receives penalty points.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'From 2 to 7 players in the baseline Danish form (Agurk); the Swedish variant Gurka allows 3 to 8, and some regional forms use extra decks for more. The game was popular with students across Nordic countries; this build uses the common 2–7 player range with seven cards each.',
+        deck: 'Standard 52-card deck.',
+        equipment: 'Deck and score tracking for penalty totals.',
+        dealing: 'Deal 7 cards each in Danish Agurk baseline; undealt cards are set aside unseen.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 7,
+        mustFollowSuit: false,
+        mustOvertrump: null,
+        leadRestrictions: 'beat_highest_or_play_lowest',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: false,
+        bidding: null,
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'beat_or_lowest_move_filter',
+        'last_trick_penalty_resolution',
+      ],
+    },
+    progression: [
+      'deal',
+      'trick_play',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

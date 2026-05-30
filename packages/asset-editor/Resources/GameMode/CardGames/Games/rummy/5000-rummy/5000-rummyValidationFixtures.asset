@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: 'ce4f5c2d-c6a6-447c-aed2-a52e446731e0',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/5000-rummy/5000-rummyValidationFixtures.asset',
+    gameId: '5000-rummy',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '5000-rummy',
+    familyVariant: 'Rummy / Set-Collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '5000-rummy.core-runtime-contracts',
+        title: '5000 Rummy Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '5000-rummy.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '5000 Rummy must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '5000-rummy.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '5000-rummy.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: '5000 Rummy must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              '5000-rummy.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: '5000-rummy.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Be the first player to reach the target score (often 5000) by melding sets and runs and going out; opponents add deadwood to your score.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {
+              '2': '5',
+              '3': '5',
+              '4': '5',
+              '5': '5',
+              '6': '5',
+              '7': '5',
+              '8': '5',
+              '9': '5',
+              '10': '10',
+              A: '100',
+              K: '10',
+              Q: '10',
+              J: '10',
+            },
+            explanation: 'Melded cards score points: aces and wild cards are typically worth 100 points each (or 200 when aces are wild); other picture cards and tens are 10 points; numeral cards 2–9 are 5 points. Unmelded cards left in hand at the end of a hand count against the player, and going out may award a bonus. Target score is often 5000, but many groups use 1500, 2000, 2200, 2500, 2800 or 10000.',
+            linkedRuleIds: [
+              '5000-rummy.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '5000-rummy.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

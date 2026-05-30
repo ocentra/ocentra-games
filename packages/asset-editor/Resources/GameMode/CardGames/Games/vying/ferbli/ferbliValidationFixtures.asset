@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '9c82271a-f503-42ce-8c13-082dfa56366d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/ferbli/ferbliValidationFixtures.asset',
+    gameId: 'ferbli',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ferbli',
+    familyVariant: 'Vying',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ferbli.core-runtime-contracts',
+        title: 'Ferbli Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ferbli.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 7,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 35,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Ferbli must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ferbli.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ferbli.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'bet',
+              'call',
+              'raise',
+              'fold',
+              'check',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'play_card',
+            ],
+            explanation: 'Ferbli must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'ferbli.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'ferbli.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win the pot either by having the best fourndcard hand or by bluffing opponents into folding.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win the pot either by having the best fourndcard hand or by bluffing opponents into folding.',
+            linkedRuleIds: [
+              'ferbli.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ferbli.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

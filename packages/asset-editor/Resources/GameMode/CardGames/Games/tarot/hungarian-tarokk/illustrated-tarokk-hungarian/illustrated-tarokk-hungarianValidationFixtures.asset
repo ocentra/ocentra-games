@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: 'bcbe0931-20c1-465b-a4c5-20d043025f27',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/hungarian-tarokk/illustrated-tarokk-hungarian/illustrated-tarokk-hungarianValidationFixtures.asset',
+    gameId: 'illustrated-tarokk-hungarian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'illustrated-tarokk-hungarian',
+    familyVariant: 'Tarot',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'illustrated-tarokk-hungarian.core-runtime-contracts',
+        title: 'Illustrated Hungarian Tarokk Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'illustrated-tarokk-hungarian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Illustrated Hungarian Tarokk must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'illustrated-tarokk-hungarian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'illustrated-tarokk-hungarian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Illustrated Hungarian Tarokk must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'illustrated-tarokk-hungarian.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'illustrated-tarokk-hungarian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win at least 48 points and fulfill declared bonuses for maximum points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win at least 48 points and fulfill declared bonuses for maximum points.',
+            linkedRuleIds: [
+              'illustrated-tarokk-hungarian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'illustrated-tarokk-hungarian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

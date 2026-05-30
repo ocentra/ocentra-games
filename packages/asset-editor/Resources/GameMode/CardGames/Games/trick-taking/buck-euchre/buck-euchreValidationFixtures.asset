@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '0dd45fe6-79e1-4792-bf36-cddf7e70bbec',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/buck-euchre/buck-euchreValidationFixtures.asset',
+    gameId: 'buck-euchre',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'buck-euchre',
+    familyVariant: 'Euchre Family / Individual',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'buck-euchre.core-runtime-contracts',
+        title: 'Buck Euchre Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'buck-euchre.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Buck Euchre must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'buck-euchre.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'buck-euchre.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_5_turn_kitty',
+            ],
+            expectedNextPhase: 'trump_selection',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'deal_5_turn_kitty',
+              'order_up',
+              'name_suit',
+            ],
+            explanation: 'Buck Euchre must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'buck-euchre.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'buck-euchre.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '10',
+            scoringDirection: 'high_wins',
+            targetScore: 10,
+            cardValues: {},
+            explanation: 'Points for making/missing contract.',
+            linkedRuleIds: [
+              'buck-euchre.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'buck-euchre.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

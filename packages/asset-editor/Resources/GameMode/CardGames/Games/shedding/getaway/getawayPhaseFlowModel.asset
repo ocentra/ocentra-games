@@ -1,0 +1,136 @@
+{
+  system: {
+    guid: 'e546f768-226b-4d45-896b-b08817bf6b17',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/getaway/getawayPhaseFlowModel.asset',
+    gameId: 'getaway',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'getaway',
+    familyVariant: 'Inflation / Follow-Suit Shedding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal Cards',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'trick_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal full deck as equally as possible.',
+      },
+      {
+        id: 'trick_play',
+        label: 'Trick Loop',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+          'go_out',
+        ],
+        nextPhase: 'trick_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'only_one_player_has_cards',
+            nextPhase: 'resolution',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Use normal trick flow or interrupted tochoo flow after opening trick.',
+      },
+      {
+        id: 'resolution',
+        label: 'Resolve Loser',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Last player with cards loses the hand.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3 to 8 players.',
+        deck: 'Standard 52-card pack with rank order A K Q J 10 9 8 7 6 5 4 3 2.',
+        equipment: 'No additional equipment required.',
+        dealing: 'Deal all cards as evenly as possible clockwise; some players may have one extra card.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: null,
+        mustFollowSuit: true,
+        canTrumpFirstTrick: false,
+        mustOvertrump: false,
+        leadRestrictions: 'Ace of Spades holder leads opening trick.',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: null,
+          maxBid: null,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'random_select',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'Interrupt trick immediately when valid off-suit break occurs after first trick.',
+        'Implement pickup assignment to highest led-suit card holder.',
+        'Optional pre-trick action to take all cards from immediate-left active player.',
+      ],
+    },
+    progression: [
+      'deal',
+      'trick_play',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

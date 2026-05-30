@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'a7424774-408c-49bc-acff-59d5bc92c1ef',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/go-fish/literature/literatureValidationFixtures.asset',
+    gameId: 'literature',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'literature',
+    familyVariant: 'Memory / Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'literature.core-runtime-contracts',
+        title: 'Literature Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'literature.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 6,
+              max: 8,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 64,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Literature must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'literature.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'literature.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'ask',
+            supportedActionIds: [
+              'deal',
+              'ask_for_card',
+              'claim_half_suit',
+              'give_card',
+              'deny',
+              'resolve_claim',
+              'continue',
+              'tally_score',
+            ],
+            explanation: 'Literature must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'literature.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'literature.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Team with the most claimed half-suits (out of 8) wins. In case of tie (4-4), the game is a draw.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Each claimed half-suit scores 1 point for the claiming team.',
+            linkedRuleIds: [
+              'literature.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'literature.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 6,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

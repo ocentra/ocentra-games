@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: 'f5f58650-57a2-4e3b-8cf9-f8a78f54864c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/l-hombre/l-hombreValidationFixtures.asset',
+    gameId: 'l-hombre',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'l-hombre',
+    familyVariant: 'Solo vs Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'l-hombre.core-runtime-contracts',
+        title: "L'Hombre Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'l-hombre.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 27,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "L'Hombre must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'l-hombre.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'l-hombre.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'auction',
+            expectedActor: 'each_player_counterclockwise',
+            expectedLegalActions: [
+              'pass',
+              'bid',
+              'self',
+            ],
+            expectedNextPhase: 'exchange',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'bid',
+              'self',
+              'exchange_talon',
+            ],
+            explanation: "L'Hombre must enter auction first and expose exactly the legal actions authored for that phase.",
+            linkedRuleIds: [
+              'l-hombre.flow.auction',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'l-hombre.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win more tricks than either of the other two players individually.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win more tricks than either of the other two players individually.',
+            linkedRuleIds: [
+              'l-hombre.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'l-hombre.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

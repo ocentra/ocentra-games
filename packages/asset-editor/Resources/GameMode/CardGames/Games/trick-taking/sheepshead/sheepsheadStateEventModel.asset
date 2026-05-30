@@ -1,0 +1,76 @@
+{
+  system: {
+    guid: '0bc8ddf5-368b-4d36-b8e1-79f99809a580',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/sheepshead/sheepsheadStateEventModel.asset',
+    gameId: 'sheepshead',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sheepshead',
+    familyVariant: 'Schafkopf Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 32,
+        },
+        {
+          id: 'custom:blind',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 2,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 5,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        target_score: 30,
+        min_players: 2,
+        max_players: 8,
+        optimal_players: 5,
+        hand_size: 6,
+        trick_count: 6,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'pick_or_pass',
+        'play_tricks',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'pass',
+        'bid',
+      ],
+    },
+    examples: [],
+  },
+}

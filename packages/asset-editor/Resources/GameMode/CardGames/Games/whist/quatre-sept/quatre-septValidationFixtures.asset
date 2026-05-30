@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: '3ced1e21-6a68-4bde-889f-7673f88f3d07',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/quatre-sept/quatre-septValidationFixtures.asset',
+    gameId: 'quatre-sept',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'quatre-sept',
+    familyVariant: 'Point-trick / No Trump',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'quatre-sept.core-runtime-contracts',
+        title: 'Quatre Sept Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'quatre-sept.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Quatre Sept must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'quatre-sept.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'quatre-sept.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'check_four_sevens',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'declare_four_sevens',
+              'announce_politaine',
+              'count_points',
+              'award_politaine',
+            ],
+            explanation: 'Quatre Sept must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'quatre-sept.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'quatre-sept.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '31',
+            scoringDirection: 'high_wins',
+            targetScore: 31,
+            cardValues: {
+              '7': '0',
+              '8': '0',
+              '9': '1/3',
+              '10': '1/3',
+              Ace: '1',
+              King: '1/3',
+              Queen: '1/3',
+              Jack: '1/3',
+              last_trick: '1',
+            },
+            explanation: 'Point-trick scoring. Aces 1 each; 10, 9, K, Q, J 1/3 each; 8 and 7 no value; last trick 1. La Politaine bonus 11. Total 11 points per hand (fractions ignored).',
+            linkedRuleIds: [
+              'quatre-sept.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'quatre-sept.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'fd4dc361-d9c5-4d03-87e4-1e4250204bcd',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/money/moneyPhaseFlowModel.asset',
+    gameId: 'money',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'money',
+    familyVariant: 'Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Two players. The game is normally played with a standard 52-card pack; some variants add two Jokers. Before dealing, all picture cards (Kings, Queens, Jacks) are removed. Each player receives two Kings, two Queens, and two Jacks as their starting money, stored face up in a money area or bank. The remaining 40 numeral cards (Aces count as 1s) are shuffled and dealt equally, 20 cards each, as face-down stacks that players must not look at or reorder.',
+        deck: 'Standard 52-card pack. Optional: 2 Jokers can be added. Suits are irrelevant.',
+        equipment: "Standard deck, space for 'money area' (bank) and 'floor' (play pile).",
+        dealing: "Before dealing, all picture cards (Kings, Queens, Jacks) are removed and each player receives 2 Kings, 2 Queens, and 2 Jacks as their starting 'money'. The remaining 40 numeral cards are shuffled and dealt equally (20 each) as face-down stacks.",
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

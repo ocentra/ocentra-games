@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '46f969d5-f32b-49d1-ab74-fcb4a08e3d88',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/saat-aath/saat-aathValidationFixtures.asset',
+    gameId: 'saat-aath',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'saat-aath',
+    familyVariant: 'Quota Whist',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'saat-aath.core-runtime-contracts',
+        title: 'Saat-Aath Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'saat-aath.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 10,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Saat-Aath must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'saat-aath.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'saat-aath.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal_initial',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_initial_hand',
+            ],
+            expectedNextPhase: 'call_trump',
+            supportedActionIds: [
+              'deal_initial_hand',
+              'choose_trump',
+              'deal_face_down_rows',
+              'reveal_table_tops',
+              'lead_card',
+              'follow_or_cut',
+              'reveal_under_card',
+              'compare_quotas',
+            ],
+            explanation: 'Saat-Aath must enter deal_initial first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'saat-aath.flow.deal_initial',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'saat-aath.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Dealer wins by taking more than 7 tricks; non-dealer wins by taking more than 8; exactly 7-8 is tied.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Each deal is resolved by trick totals versus asymmetric quotas (dealer 7, non-dealer 8).',
+            linkedRuleIds: [
+              'saat-aath.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'saat-aath.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

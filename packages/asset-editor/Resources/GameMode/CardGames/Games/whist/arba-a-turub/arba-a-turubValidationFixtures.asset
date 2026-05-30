@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '3c238a8e-d701-4e72-ab8f-36afcd6b14e9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/arba-a-turub/arba-a-turubValidationFixtures.asset',
+    gameId: 'arba-a-turub',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'arba-a-turub',
+    familyVariant: 'Whist Family (Somali)',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'arba-a-turub.core-runtime-contracts',
+        title: "Arba'a Turub Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'arba-a-turub.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 36,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 144,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "Arba'a Turub must start by giving each active player 36 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'arba-a-turub.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'arba-a-turub.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'trump_init',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_three_to_eldest',
+              'call_trump',
+            ],
+            expectedNextPhase: 'deal_completion',
+            supportedActionIds: [
+              'play_card',
+              'deal_three_to_eldest',
+              'call_trump',
+              'complete_deal_36',
+              'signal_partner',
+              'validate_match_win',
+            ],
+            explanation: "Arba'a Turub must enter trump_init first and expose exactly the legal actions authored for that phase.",
+            linkedRuleIds: [
+              'arba-a-turub.flow.trump_init',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'arba-a-turub.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Progressive Consecutive Wins: Win Hand A (Tricks > 18), then Win Hand B (Tricks > Hand A's count).",
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Scoring is binary (Hand won or Hand lost/drawn).',
+            linkedRuleIds: [
+              'arba-a-turub.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'arba-a-turub.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 36,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

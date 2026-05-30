@@ -1,0 +1,107 @@
+{
+  system: {
+    guid: '817f24d9-2a9e-40f6-bc85-526d2aaebc08',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/madrasso/madrassoPhaseFlowModel.asset',
+    gameId: 'madrasso',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'madrasso',
+    familyVariant: 'Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'trump_exchange',
+        label: 'Trump Exchange',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: 'play',
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Players with the 7 of trumps may exchange it for the indicator card.',
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Must follow suit, must overtake if possible.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '4 players in two partnerships (North-South vs East-West).',
+        deck: '40 cards: Ace (11), 3 (10), King (4), Knight (3), Jack (2), and 7-6-5-4-2 (0). Total points = 120 + 10 for last trick.',
+        equipment: '40-card Italian deck, score sheet.',
+        dealing: 'Each player is dealt 10 cards. The 21st card is turned face-up as the Trump Indicator.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 10,
+        mustFollowSuit: true,
+        mustOvertrump: false,
+        leadRestrictions: 'none',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'trump_exchange',
+      ],
+    },
+    progression: [
+      'trump_exchange',
+      'play',
+    ],
+    examples: [],
+  },
+}

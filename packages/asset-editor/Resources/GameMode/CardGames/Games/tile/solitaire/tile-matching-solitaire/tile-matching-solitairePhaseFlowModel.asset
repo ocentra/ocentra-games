@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '54d71be3-4482-4b08-8576-778fbb93c67c',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tile/solitaire/tile-matching-solitaire/tile-matching-solitairePhaseFlowModel.asset',
+    gameId: 'tile-matching-solitaire',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tile-matching-solitaire',
+    familyVariant: 'Solitaire',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup',
+        label: 'Setup',
+        actor: 'system',
+        legalActions: [
+          'layout_tiles',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          layout_tiles: 'face_up',
+        },
+        notes: 'All tiles are arranged in a layered layout on the tableau.',
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'remove_matching_pair',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'moves_available',
+            nextPhase: 'play',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Player removes two exposed matching tiles at a time; a tile is exposed when at end of row and not covered.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Single player. This solitaire is played by one person, who clears the layout by removing matching pairs of exposed tiles (tiles at the end of a row and not covered).',
+        deck: 'Set of around 144 tiles (Mah Jong traditionally).',
+        equipment: 'Cards or tiles',
+        dealing: 'Tiles are stacked in layers; each layer has horizontal rows. Tiles in a row rest on the row below. Remove pairs of exposed (uncovered) matching tiles until the layout is clear.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'exposed_tile_detection',
+        'matching_pair_removal',
+      ],
+    },
+    progression: [
+      'setup',
+      'play',
+    ],
+    examples: [],
+  },
+}

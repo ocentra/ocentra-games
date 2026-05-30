@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: 'e71a9bb6-00b1-4dc7-b9b3-f0228c771b2c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/krypkasino/krypkasinoValidationFixtures.asset',
+    gameId: 'krypkasino',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'krypkasino',
+    familyVariant: 'Nordic Casino',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'krypkasino.core-runtime-contracts',
+        title: 'Krypkasino Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'krypkasino.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Krypkasino must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'krypkasino.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'krypkasino.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+              'reveal_market',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'deal',
+              'reveal_market',
+              'play_card',
+              'draw',
+              'count_points',
+            ],
+            explanation: 'Krypkasino must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'krypkasino.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'krypkasino.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '13',
+            scoringDirection: 'low_wins',
+            targetScore: 13,
+            cardValues: {
+              tenDiamonds: '2',
+              twoSpades: '1',
+              eachAce: '1',
+              mostCards: '1',
+              mostSpades: '1',
+              tabbe: '0',
+            },
+            explanation: 'Score as few points as possible. Game ends when a player reaches 13 or 21 penalty points.',
+            linkedRuleIds: [
+              'krypkasino.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'krypkasino.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

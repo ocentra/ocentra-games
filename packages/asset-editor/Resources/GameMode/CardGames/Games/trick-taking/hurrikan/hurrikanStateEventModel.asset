@@ -1,0 +1,73 @@
+{
+  system: {
+    guid: '6b649066-bd22-4cc1-be11-16caaf5353bd',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/hurrikan/hurrikanStateEventModel.asset',
+    gameId: 'hurrikan',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hurrikan',
+    familyVariant: 'Scopa-variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: null,
+        discardTop: 'NA',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        target_score: 16,
+        hand_size: 3,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'main_play',
+        'scoring',
+      ],
+      actions: [
+        'deal',
+        'reveal_market',
+        'award_pot',
+        'play_card',
+        'discard',
+      ],
+    },
+    examples: [],
+  },
+}

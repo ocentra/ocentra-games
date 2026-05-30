@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '365c238b-2ecf-4eb8-a59f-6c75cf478856',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/kwajongen/kwajongenValidationFixtures.asset',
+    gameId: 'kwajongen',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kwajongen',
+    familyVariant: 'Jass / Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'kwajongen.core-runtime-contracts',
+        title: 'Kwajongen (Troeven) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'kwajongen.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Kwajongen (Troeven) must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'kwajongen.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'kwajongen.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+              'reveal_trump',
+            ],
+            expectedNextPhase: 'trump_decision',
+            supportedActionIds: [
+              'deal',
+              'call',
+              'play_card',
+              'pass',
+              'reveal_trump',
+              'count_points',
+            ],
+            explanation: 'Kwajongen (Troeven) must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'kwajongen.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'kwajongen.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '10',
+            scoringDirection: 'low_wins',
+            targetScore: 10,
+            cardValues: {
+              ace: '4',
+              king: '3',
+              queen: '2',
+              jack: '1',
+              ten: '0',
+              nine: '0',
+            },
+            explanation: 'Win 21+ of 40 points to erase a branch. First team to erase all branches wins.',
+            linkedRuleIds: [
+              'kwajongen.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'kwajongen.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

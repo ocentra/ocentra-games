@@ -1,0 +1,140 @@
+{
+  system: {
+    guid: '75a02b71-df01-459d-b40f-0fd0a67e3ae9',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/seven-toed-pete-race-horse/seven-toed-pete-race-horsePhaseFlowModel.asset',
+    gameId: 'seven-toed-pete-race-horse',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'seven-toed-pete-race-horse',
+    familyVariant: 'Fives and Threes Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'system',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play_tiles',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Wash and deal all tiles: each player receives 7; no boneyard.',
+      },
+      {
+        id: 'play_tiles',
+        label: 'Play Tiles',
+        actor: 'active_players_clockwise',
+        legalActions: [
+          'play_card',
+          'pass',
+        ],
+        nextPhase: 'play_tiles',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'all_tiles_played == true',
+            nextPhase: 'hand_summary',
+          },
+          {
+            condition: 'all_players_blocked == true',
+            nextPhase: 'hand_summary',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Place matching tile on an open end; if no legal play exists, pass.',
+      },
+      {
+        id: 'hand_summary',
+        label: 'Settlement',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: "Apply end-of-hand bonus from opponents' pips rounded to nearest five.",
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Four players in the standard game; some groups also use partnership or 2-3 player variants.',
+        deck: 'Standard 28-tile double-six set, from 0-0 to 6-6.',
+        equipment: 'Domino set and score tracker (chips or score sheet).',
+        dealing: 'Each player receives 7 tiles; all tiles are dealt, so there is no boneyard.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'opening_lead_tile_validation',
+        'single_spinner_or_all_spinner_variant_toggle',
+        'multiple_of_five_end_scoring',
+        'extra_turn_chaining_and_washed_up_resolution',
+      ],
+    },
+    progression: [
+      'deal',
+      'play_tiles',
+      'hand_summary',
+    ],
+    examples: [],
+  },
+}

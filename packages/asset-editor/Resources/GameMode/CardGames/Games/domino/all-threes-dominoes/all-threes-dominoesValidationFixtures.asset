@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: 'fc1a59ff-1a2f-4b1b-ab9b-ee1287462d9f',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/all-threes-dominoes/all-threes-dominoesValidationFixtures.asset',
+    gameId: 'all-threes-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'all-threes-dominoes',
+    familyVariant: 'Fives and Threes Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'all-threes-dominoes.core-runtime-contracts',
+        title: 'All Threes (Dominoes) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'all-threes-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'All Threes (Dominoes) must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'all-threes-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'all-threes-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'opening_play',
+            supportedActionIds: [
+              'deal',
+              'award_pot',
+              'play_card',
+              'draw',
+              'pass',
+            ],
+            explanation: 'All Threes (Dominoes) must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'all-threes-dominoes.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'all-threes-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '250',
+            scoringDirection: 'high_wins',
+            targetScore: 250,
+            cardValues: {},
+            explanation: 'Scoring is done incrementally during play and a bonus is given at the end of each hand.',
+            linkedRuleIds: [
+              'all-threes-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'all-threes-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

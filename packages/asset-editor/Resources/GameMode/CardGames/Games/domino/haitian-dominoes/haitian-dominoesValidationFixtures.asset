@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '01515d95-e48b-44e3-b77b-c7ecb51b418d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/haitian-dominoes/haitian-dominoesValidationFixtures.asset',
+    gameId: 'haitian-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'haitian-dominoes',
+    familyVariant: 'Partnership Line Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'haitian-dominoes.core-runtime-contracts',
+        title: 'Haitian Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'haitian-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Haitian Dominoes must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'haitian-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'haitian-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal_round',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'play_loop',
+            supportedActionIds: [
+              'deal',
+              'declare',
+              'award_pot',
+              'play_card',
+              'pass',
+              'evaluate_round_end',
+            ],
+            explanation: 'Haitian Dominoes must enter deal_round first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'haitian-dominoes.flow.deal_round',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'haitian-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '4',
+            scoringDirection: 'high_wins',
+            targetScore: 4,
+            cardValues: {
+              normal_round_win: '1 point',
+              dekabes_win: '2 points',
+              post_tied_block_round_win: '2 points',
+              post_tied_block_round_dekabes_win: '4 points',
+            },
+            explanation: 'Streak scoring by team. Normal win gives 1 point; Dekabes gives 2. After a tied blocked round, next winner gets 2 (or 4 with Dekabes). Losing team resets to 0 each round.',
+            linkedRuleIds: [
+              'haitian-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'haitian-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '64db4e5d-abe7-4787-8349-30820d7fe7a8',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/domino-loo/domino-looStateEventModel.asset',
+    gameId: 'domino-loo',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'domino-loo',
+    familyVariant: 'Trick-taking / Chinese Dominoes',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 5,
+        },
+        {
+          id: 'trick',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+        {
+          id: 'widow',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 5,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: null,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'NA',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 4,
+        hand_size: 5,
+        trick_count: 5,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'miss_option',
+        'trick_play',
+        'resolution',
+      ],
+      actions: [
+        'deal',
+        'award_pot',
+        'play_card',
+        'draw',
+        'pass',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,77 @@
+{
+  system: {
+    guid: 'ae7fbf3a-f70a-4b2b-91e1-ee11dce9a2af',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/basra/basraStateEventModel.asset',
+    gameId: 'basra',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'basra',
+    familyVariant: 'Casino Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'tableau',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 52,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        target_score: 101,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal_round',
+        'play_turn',
+        'check_end_hand',
+      ],
+      actions: [
+        'play_card',
+        'deal_4_cards',
+        'capture_card_match',
+        'capture_card_sum',
+        'play_jack_sweep',
+        'play_7_diamond_sweep',
+        'discard_card',
+        'continue_round',
+        'redeal_hands',
+        'end_game_scoring',
+      ],
+    },
+    examples: [],
+  },
+}

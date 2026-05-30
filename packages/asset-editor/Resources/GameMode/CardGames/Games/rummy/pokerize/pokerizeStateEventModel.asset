@@ -1,0 +1,72 @@
+{
+  system: {
+    guid: 'eed349c2-e669-456b-b9ad-e572e4cfefe3',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/pokerize/pokerizeStateEventModel.asset',
+    gameId: 'pokerize',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pokerize',
+    familyVariant: 'Draw-and-Discard / Basic Rummy',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 52,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: 'face_down',
+        discardTop: 'face_up',
+        tableauCards: 'face_up',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'play',
+        'score',
+      ],
+      actions: [
+        'deal',
+        'draw',
+        'discard',
+        'meld',
+        'lay_off',
+        'count_deadwood',
+        'add_to_winner',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,84 @@
+{
+  system: {
+    guid: 'e9f07993-8bf2-48d5-8439-4567c5d93e38',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/egyptian-ratscrew/egyptian-ratscrewPhaseFlowModel.asset',
+    gameId: 'egyptian-ratscrew',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'egyptian-ratscrew',
+    familyVariant: 'War / Accumulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal Full Deck',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'play_loop',
+        label: 'Play Card / Slap',
+        actor: 'all_simultaneous',
+        legalActions: [
+          'play_card',
+          'slap',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: "Two or more players; typically 2 to 7. The number of players is limited only by each participant's ability to reach the central pile. Cards are dealt as evenly as possible.",
+        deck: '52 standard cards.',
+        equipment: 'Cards. Flat surface. Fast reflexes.',
+        dealing: 'Deal entire deck evenly. Players do not look at their cards; hold them face-down.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'play_loop',
+    ],
+    examples: [],
+  },
+}

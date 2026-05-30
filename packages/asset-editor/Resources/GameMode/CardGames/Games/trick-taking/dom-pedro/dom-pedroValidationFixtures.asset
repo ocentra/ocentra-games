@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '049e40f7-0ce6-45c1-987f-2e41fb65aa6c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/dom-pedro/dom-pedroValidationFixtures.asset',
+    gameId: 'dom-pedro',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'dom-pedro',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'dom-pedro.core-runtime-contracts',
+        title: 'Dom Pedro Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'dom-pedro.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 7,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 35,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Dom Pedro must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'dom-pedro.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'dom-pedro.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'deal',
+              'declare',
+              'play_card',
+              'discard',
+              'bid',
+            ],
+            explanation: 'Dom Pedro must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'dom-pedro.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'dom-pedro.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First team/player to 100 points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '2': '1',
+              '10': '1',
+              Ace: '1',
+              Jack: '1',
+              '5 of trumps (Right Pedro)': '5',
+              '5 same color (Left Pedro)': '5',
+            },
+            explanation: 'Right Pedro=5, Left Pedro=5, High=1, Low=1, Jack=1, Game=1. Total=14. Failed bid = -bid amount.',
+            linkedRuleIds: [
+              'dom-pedro.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'dom-pedro.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

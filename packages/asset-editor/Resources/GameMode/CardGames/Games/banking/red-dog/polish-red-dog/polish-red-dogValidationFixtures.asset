@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: 'a6d004cd-a077-4e66-86ba-9ed8e55e187a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/red-dog/polish-red-dog/polish-red-dogValidationFixtures.asset',
+    gameId: 'polish-red-dog',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'polish-red-dog',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'polish-red-dog.core-runtime-contracts',
+        title: 'Polish Red Dog Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'polish-red-dog.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Polish Red Dog must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'polish-red-dog.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'polish-red-dog.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'perform_deal',
+            ],
+            expectedNextPhase: 'bet',
+            supportedActionIds: [
+              'bet',
+              'perform_deal',
+              'burn_and_reveal',
+              'resolve_bet',
+            ],
+            explanation: 'Polish Red Dog must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'polish-red-dog.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'polish-red-dog.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Player wins twice the bet from pot if hand contains a same-suit card higher than dealer's upcard; otherwise bet is added to pot.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Player wins 2× bet if same-suit higher card; else bet to pot. Stitch: when pot ≥ 3× initial, dealer may declare final round and keep remainder.',
+            linkedRuleIds: [
+              'polish-red-dog.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'polish-red-dog.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

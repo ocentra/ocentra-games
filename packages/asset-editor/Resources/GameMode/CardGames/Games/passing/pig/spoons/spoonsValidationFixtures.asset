@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: 'd3f6c5cc-1750-4029-8694-4cf8d247e204',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/passing/pig/spoons/spoonsValidationFixtures.asset',
+    gameId: 'spoons',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'spoons',
+    familyVariant: "Children's",
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'spoons.core-runtime-contracts',
+        title: 'Spoons (Pig) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'spoons.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 13,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 52,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Spoons (Pig) must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'spoons.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'spoons.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'pass',
+            supportedActionIds: [
+              'deal',
+              'draw',
+              'pass',
+              'grab_spoon',
+            ],
+            explanation: 'Spoons (Pig) must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'spoons.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'spoons.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Collect 4 of a kind. Don't be the last to grab a spoon.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Collect 4 of a kind. Don't be the last to grab a spoon.",
+            linkedRuleIds: [
+              'spoons.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'spoons.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 13,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

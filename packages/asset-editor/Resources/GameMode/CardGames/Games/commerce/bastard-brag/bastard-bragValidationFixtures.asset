@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: 'ee4498dd-2c17-411e-896b-f808ac72b580',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/commerce/bastard-brag/bastard-bragValidationFixtures.asset',
+    gameId: 'bastard-brag',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bastard-brag',
+    familyVariant: 'Brag Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bastard-brag.core-runtime-contracts',
+        title: 'Bastard Brag Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bastard-brag.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 10,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Bastard Brag must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bastard-brag.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bastard-brag.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_3_each',
+              'deal_widow',
+            ],
+            expectedNextPhase: 'swap_loop',
+            supportedActionIds: [
+              'pass',
+              'deal_3_each',
+              'deal_widow',
+              'swap_one',
+              'swap_all',
+              'knock',
+              'evaluate_brag_hands',
+              'remove_life',
+            ],
+            explanation: 'Bastard Brag must enter setup first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'bastard-brag.flow.setup',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'bastard-brag.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Be the last player with lives remaining.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Lives-based elimination or Pot winner.',
+            linkedRuleIds: [
+              'bastard-brag.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bastard-brag.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 10,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

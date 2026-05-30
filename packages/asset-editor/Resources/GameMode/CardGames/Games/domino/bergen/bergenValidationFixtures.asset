@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: 'fc419ef4-0fdf-4601-960d-aa70fd5a5457',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/bergen/bergenValidationFixtures.asset',
+    gameId: 'bergen',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bergen',
+    familyVariant: 'Line / Scoring',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bergen.core-runtime-contracts',
+        title: 'Bergen Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bergen.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bergen must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bergen.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bergen.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'dealing',
+            expectedActor: 'all_simultaneous',
+            expectedLegalActions: [
+              'draw_from_stock',
+            ],
+            expectedNextPhase: 'play_loop',
+            supportedActionIds: [
+              'draw',
+              'pass',
+              'draw_from_stock',
+              'pass_turn',
+              'start_new_round',
+              'place_tile_left',
+              'place_tile_right',
+              'draw_from_boneyard',
+              'award_points',
+            ],
+            explanation: 'Bergen must enter dealing first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'bergen.flow.dealing',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'bergen.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '15',
+            scoringDirection: 'high_wins',
+            targetScore: 15,
+            cardValues: {},
+            explanation: 'Double header (both ends match) = 2 pts. Triple header (both ends match, one is a double tile) = 3 pts. Going domino = 2 pts. Blocked game = 2 pts to lightest hand.',
+            linkedRuleIds: [
+              'bergen.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bergen.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

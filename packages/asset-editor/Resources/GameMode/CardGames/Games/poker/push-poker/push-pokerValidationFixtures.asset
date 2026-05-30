@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '518bbc2a-ecf0-45aa-a066-d039eb450444',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/push-poker/push-pokerValidationFixtures.asset',
+    gameId: 'push-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'push-poker',
+    familyVariant: 'Stud Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'push-poker.core-runtime-contracts',
+        title: 'Push Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'push-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 1,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 9,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 9,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Push Poker must start by giving each active player 1 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'push-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'push-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal_hole',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_hole',
+            ],
+            expectedNextPhase: 'receive_1',
+            supportedActionIds: [
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'deal_hole',
+              'accept_card',
+              'push_card',
+            ],
+            explanation: 'Push Poker must enter deal_hole first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'push-poker.flow.deal_hole',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'push-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest five-card hand at showdown wins the pot; standard poker hand ranking.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Pot is won by the highest five-card poker hand at showdown, or by the last player remaining after all others fold.',
+            linkedRuleIds: [
+              'push-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'push-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 1,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 9,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

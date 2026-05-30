@@ -1,0 +1,110 @@
+{
+  system: {
+    guid: 'c1df9fa3-faba-4f7c-a7a2-e900023467b3',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/ruff-and-honours/ruff-and-honoursValidationFixtures.asset',
+    gameId: 'ruff-and-honours',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ruff-and-honours',
+    familyVariant: 'Whist / Ancestor',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ruff-and-honours.core-runtime-contracts',
+        title: 'Ruff and Honours Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ruff-and-honours.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 72,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Ruff and Honours must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ruff-and-honours.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ruff-and-honours.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'lead',
+            ],
+            explanation: 'Ruff and Honours must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'ruff-and-honours.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'ruff-and-honours.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '9',
+            scoringDirection: 'high_wins',
+            targetScore: 9,
+            cardValues: {},
+            explanation: 'One point per trick in excess of six for the partnership. Honours (AKQJ of trumps): two points for three honours, four points for all four. Honours may be declared to end the deal (except on eight points).',
+            linkedRuleIds: [
+              'ruff-and-honours.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ruff-and-honours.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

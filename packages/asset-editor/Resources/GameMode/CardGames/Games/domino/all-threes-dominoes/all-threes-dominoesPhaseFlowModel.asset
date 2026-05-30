@@ -1,0 +1,143 @@
+{
+  system: {
+    guid: '1da63fab-4b21-4852-9e53-dda0969e48ac',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/all-threes-dominoes/all-threes-dominoesPhaseFlowModel.asset',
+    gameId: 'all-threes-dominoes',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'all-threes-dominoes',
+    familyVariant: 'Fives and Threes Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal Tiles',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'opening_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal 7 each in 2-player game, 5 each in 3/4-player game; remainder is boneyard.',
+      },
+      {
+        id: 'opening_play',
+        label: 'Opening Tile',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Opening player places first tile on empty layout.',
+      },
+      {
+        id: 'play_loop',
+        label: 'Play, Draw, Pass',
+        actor: 'active_players_clockwise',
+        legalActions: [
+          'play_card',
+          'draw',
+          'pass',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_hand_empty == true',
+            nextPhase: 'settlement',
+          },
+          {
+            condition: 'no_player_can_play && stock_empty',
+            nextPhase: 'settlement',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'If unable to play, draw from boneyard until playable or stock exhausted, then pass.',
+      },
+      {
+        id: 'settlement',
+        label: 'Score Hand',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Apply in-play multiple-of-three scoring plus hand-end bonus/residue.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 (7 tiles each), 3 (5 tiles each), or 4 (5 tiles each).',
+        deck: 'Standard Double-six set of 28 tiles.',
+        equipment: 'Domino tiles, cribbage board or score sheet.',
+        dealing: "Tiles are 'shuffled' face down (the 'wash'). Players draw their hand; remainders go to the 'Boneyard'.",
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+        'draw',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'end_sum_multiple_of_three_scoring',
+        'double_end_value_logic',
+        'blocked_hand_resolution',
+        'domino_bonus_scoring',
+      ],
+    },
+    progression: [
+      'deal',
+      'opening_play',
+      'play_loop',
+      'settlement',
+    ],
+    examples: [],
+  },
+}

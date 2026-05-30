@@ -1,0 +1,91 @@
+{
+  system: {
+    guid: '11e0b7b4-593b-4907-8cc4-80b2e7d79f07',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/la-belle-lucie/la-belle-luciePhaseFlowModel.asset',
+    gameId: 'la-belle-lucie',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'la-belle-lucie',
+    familyVariant: 'One-Deck',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Move top card of a fan to a foundation (build up by suit) or to another fan (build down by suit). Two redeals allowed when stuck.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'One player only. La Belle Lucie is a patience (solitaire) game played by a single player, who moves cards from the tableau fans to the four foundations. There are no partners or opponents.',
+        deck: 'Standard 52-card deck.',
+        equipment: 'Table space for 18 fan piles and four foundation piles.',
+        dealing: 'Deal all 52 cards face-up into 17 fans of three cards each and one single card as the 18th fan. When redealing, reshuffle and redeal in the same pattern (fans of three with remainder as last fan).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'fan_top_card_move',
+        'foundation_build_same_suit',
+        'tableau_build_down_same_suit',
+      ],
+    },
+    progression: [],
+    examples: [],
+  },
+}

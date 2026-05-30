@@ -1,0 +1,73 @@
+{
+  system: {
+    guid: 'b682f5e7-43a8-4946-b064-5aeabb8a9229',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/machiavelli/machiavelliPhaseFlowModel.asset',
+    gameId: 'machiavelli',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'machiavelli',
+    familyVariant: 'Manipulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+          'meld',
+          'draw',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Player must play at least one new card or draw from stock.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2-5 players individually.',
+        deck: '104 cards (Two standard decks).',
+        equipment: 'Two standard decks, playing surface for melds.',
+        dealing: 'Each player receives 13 cards (variants range from 11 to 15).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'meld_manipulation',
+      ],
+    },
+    progression: [],
+    examples: [],
+  },
+}

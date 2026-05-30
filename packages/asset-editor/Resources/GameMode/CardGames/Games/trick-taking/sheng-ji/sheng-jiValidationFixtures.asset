@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '96e5b63f-32d7-422d-82e5-834cc8f46877',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/sheng-ji/sheng-jiValidationFixtures.asset',
+    gameId: 'sheng-ji',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sheng-ji',
+    familyVariant: 'Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sheng-ji.core-runtime-contracts',
+        title: 'Sheng Ji Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sheng-ji.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 25,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 150,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Sheng Ji must start by giving each active player 25 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sheng-ji.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sheng-ji.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'deal',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Sheng Ji must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'sheng-ji.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'sheng-ji.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Advance your partnership rank above the agreed target (commonly from 2 toward Ace) before opponents do.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {
+              '5': '5',
+              '10': '10',
+              K: '10',
+            },
+            explanation: "Only point cards score in tricks: 5s, 10s, and Kings. Round outcomes and level advancement depend on opponents' total captured points and variant thresholds.",
+            linkedRuleIds: [
+              'sheng-ji.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sheng-ji.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 25,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

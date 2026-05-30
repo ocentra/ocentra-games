@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'a79c3352-79a9-43e3-a9d8-e9811b593324',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/clubs-mens/clubs-mensPhaseFlowModel.asset',
+    gameId: 'clubs-mens',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'clubs-mens',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Three players. A standard 52-card pack without jokers is used. Cards in each suit rank from high to low A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2. Clubs are always trumps; hearts, diamonds and spades are plain suits. Deal and play are clockwise; the turn to deal passes to the left after each hand.',
+        deck: 'Standard 52-card pack without jokers.',
+        equipment: 'Cards only.',
+        dealing: 'Dealer deals all 52 cards one at a time into four hands of 13: one for each player and one spare bid hand face down in the center. Each player may in turn (left of dealer to dealer) exchange their hand for the bid hand; last exchanger leads to the first trick, otherwise left of dealer leads.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 13,
+        mustFollowSuit: true,
+        mustOvertrump: true,
+        leadRestrictions: 'Cannot lead a club until clubs are broken or the player has only clubs in hand.',
+        trickWinCondition: 'highest_trump_if_played_else_highest_led',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

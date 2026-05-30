@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'afcb5d8d-8fe8-4282-8c5a-94800bea58f6',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/two-hundred/two-hundredValidationFixtures.asset',
+    gameId: 'two-hundred',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'two-hundred',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'two-hundred.core-runtime-contracts',
+        title: 'Two Hundred Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'two-hundred.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Two Hundred must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'two-hundred.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'two-hundred.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Two Hundred must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'two-hundred.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'two-hundred.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First partnership to reach 200 points wins. Bid for the right to name trump; make your bid to score, or lose the amount.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '5': '5',
+              '7': '0',
+              '8': '0',
+              '9': '0',
+              '10': '10',
+              A: '10',
+              K: '0',
+              Q: '0',
+              J: '0',
+            },
+            explanation: '100 points per deal (Aces and 10s = 10 each, 5s = 5). Bidderâ€™s side scores if they make bid, else loses bid amount. First team to 200 (or 300/500 in some areas) wins.',
+            linkedRuleIds: [
+              'two-hundred.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'two-hundred.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

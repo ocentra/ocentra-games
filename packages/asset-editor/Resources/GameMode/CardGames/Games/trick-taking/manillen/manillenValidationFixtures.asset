@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'fb7e5252-cecd-4a49-b2ea-a2b8cac4f76e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/manillen/manillenValidationFixtures.asset',
+    gameId: 'manillen',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'manillen',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'manillen.core-runtime-contracts',
+        title: 'Manillen Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'manillen.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Manillen must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'manillen.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'manillen.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'choose_trump',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'declare_trump',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'play_card',
+              'declare_trump',
+            ],
+            explanation: 'Manillen must enter choose_trump first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'manillen.flow.choose_trump',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'manillen.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '101',
+            scoringDirection: 'high_wins',
+            targetScore: 101,
+            cardValues: {
+              '7': '0',
+              '8': '0',
+              '9': '0',
+              '10': '5',
+              A: '4',
+              K: '3',
+              Q: '2',
+              J: '1',
+            },
+            explanation: 'Each team counts card points in tricks won. Team with more points scores (their total minus 30); doubles apply (no trump, Ik ga mee, Ik ga tegen, tie, or all tricks). First team to 101 or more wins the boam.',
+            linkedRuleIds: [
+              'manillen.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'manillen.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '1648c3e2-16f9-4b8b-af4e-e660bde21789',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/chicken-foot/chicken-footPhaseFlowModel.asset',
+    gameId: 'chicken-foot',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'chicken-foot',
+    familyVariant: 'Domino / Adding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Minimum Players: 2\nMaximum Players: 8\nOptimal Players: 4-6\nPartnerships: Optional in some variants',
+        deck: 'Type: Double-9 domino set (55 tiles)\nAlternative: Double-12 (91 tiles) for more players\nTiles: Each player draws specific number based on player count',
+        equipment: 'Double-9 or double-12 domino set\nScore sheet\nTable space for layout',
+        dealing: "Tiles per Player varies by number of players:\n2 players: 12-15 tiles each\n3 players: 10-11 tiles each\n4 players: 9-10 tiles each\n5-6 players: 7-8 tiles each\n7-8 players: 6-7 tiles each\nRemaining tiles form the 'chicken yard' (boneyard)",
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [],
+    examples: [],
+  },
+}

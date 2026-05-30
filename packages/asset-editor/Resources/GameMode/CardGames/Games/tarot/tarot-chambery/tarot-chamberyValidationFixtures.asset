@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: 'ff14802a-bc26-4128-8a1f-c5c9751a9daa',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/tarot-chambery/tarot-chamberyValidationFixtures.asset',
+    gameId: 'tarot-chambery',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tarot-chambery',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tarot-chambery.core-runtime-contracts',
+        title: 'Chambéry Tarot Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tarot-chambery.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 15,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 75,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Chambéry Tarot must start by giving each active player 15 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tarot-chambery.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tarot-chambery.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'bidding',
+            expectedActor: 'each_player_counterclockwise',
+            expectedLegalActions: [
+              'bid',
+              'pass',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Chambéry Tarot must enter bidding first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'tarot-chambery.flow.bidding',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'tarot-chambery.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Team or player with more than half of the card points wins; tie at half. Losers pay the difference with possible multipliers (Solo, low score).',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: '68 card points in five-player (52 counting cards, 15 tricks, 1 discard); tie at 34. Team with fewer than 34 pays the difference; doubled if losers have fewer than 17, doubled for 1-Card Solo, quadrupled for Hand Solo (max 8× for Hand Solo with losers under 17).',
+            linkedRuleIds: [
+              'tarot-chambery.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tarot-chambery.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 15,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,111 @@
+{
+  system: {
+    guid: '6fbc02a3-f16e-4729-8123-238f0d8d7387',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/billitonnen/billitonnenValidationFixtures.asset',
+    gameId: 'billitonnen',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'billitonnen',
+    familyVariant: 'Block / Blind',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'billitonnen.core-runtime-contracts',
+        title: 'Billitonnen Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'billitonnen.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Billitonnen must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'billitonnen.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'billitonnen.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'dealing',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal_tiles_facedown',
+            ],
+            expectedNextPhase: 'play_loop',
+            supportedActionIds: [
+              'deal_tiles_facedown',
+              'flip_leftmost_tile',
+              'place_on_line',
+              'return_facedown',
+            ],
+            explanation: 'Billitonnen must enter dealing first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'billitonnen.flow.dealing',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'billitonnen.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Emptying the player's row or having the fewest tiles at a block.",
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'The player who empties their hand first wins the round. In a blocked game, the player with the fewest remaining tiles wins.',
+            linkedRuleIds: [
+              'billitonnen.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'billitonnen.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

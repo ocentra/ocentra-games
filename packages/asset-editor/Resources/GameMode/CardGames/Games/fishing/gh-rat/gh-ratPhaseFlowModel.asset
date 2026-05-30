@@ -1,0 +1,135 @@
+{
+  system: {
+    guid: 'a210b632-af56-46b8-96c8-264ebd346806',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/gh-rat/gh-ratPhaseFlowModel.asset',
+    gameId: 'gh-rat',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'gh-rat',
+    familyVariant: 'Casino / Capture',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Initial Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Create stacked play pile and deal four cards to each player.',
+      },
+      {
+        id: 'play_loop',
+        label: 'Play and Capture',
+        actor: 'each_player_counterclockwise',
+        legalActions: [
+          'play_card',
+          'deal',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'all_hands_empty_and_stock_empty',
+            nextPhase: 'resolution',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'On hand exhaustion, dealer redeals four cards each if stock remains.',
+      },
+      {
+        id: 'resolution',
+        label: 'Score Round',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Apply card-value scoring and update cumulative totals.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'right_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2, 3, or 4 players, with optional partnerships at 4.',
+        deck: 'Standard 52-card international deck, rank-only comparisons.',
+        equipment: 'Score sheet for cumulative target race.',
+        dealing: 'Start play pile with four face-up stacked cards (only top visible), deal four cards to each player, and keep remainder as face-down stock for future 4-card redeals.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'right_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'Capture operation must include immediate hidden run of equal ranks beneath matched top.',
+        "Support stealing from any player's capture pile top, including own pile.",
+        'Redeal exactly four cards per player when all current hands are empty and stock remains.',
+      ],
+    },
+    progression: [
+      'deal',
+      'play_loop',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

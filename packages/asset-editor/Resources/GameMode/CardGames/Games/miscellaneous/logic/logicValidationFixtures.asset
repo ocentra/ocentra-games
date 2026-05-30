@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'd5db4b6b-b293-4f18-8a22-0abac56c80e2',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/miscellaneous/logic/logicValidationFixtures.asset',
+    gameId: 'logic',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'logic',
+    familyVariant: 'Memory / Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'logic.core-runtime-contracts',
+        title: 'Logic Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'logic.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Logic must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'logic.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'logic.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal',
+              'arrange',
+            ],
+            expectedNextPhase: 'show',
+            supportedActionIds: [
+              'deal',
+              'declare',
+              'pass',
+              'arrange',
+              'show_partner',
+              'guess',
+              'reveal_opponent',
+              'self_reveal',
+              'win',
+              'lose',
+            ],
+            explanation: 'Logic must enter setup first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'logic.flow.setup',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'logic.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player to correctly declare all remaining face-down cards wins for their team.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win/loss based on correct declaration. No point scoring.',
+            linkedRuleIds: [
+              'logic.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'logic.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: 'b7c781e4-3dcb-4246-841f-87628cd86384',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/climbing/commercial/the-great-dalmuti/the-great-dalmutiValidationFixtures.asset',
+    gameId: 'the-great-dalmuti',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'the-great-dalmuti',
+    familyVariant: 'Climbing',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'the-great-dalmuti.core-runtime-contracts',
+        title: 'The Great Dalmuti Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'the-great-dalmuti.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 8,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'The Great Dalmuti must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'the-great-dalmuti.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'the-great-dalmuti.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'The Great Dalmuti must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'the-great-dalmuti.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'the-great-dalmuti.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '3',
+            scoringDirection: 'low_wins',
+            targetScore: 3,
+            cardValues: {
+              '1': '0',
+              '2': '1',
+              '3': '2',
+              '4': '3',
+              '5': '4',
+              '6': '5',
+              '7': '6',
+              '8': '7',
+              '9': '8',
+              '10': '9',
+              '11': '10',
+              '12': '11',
+              '13': '12',
+            },
+            explanation: 'first card is dealt to the President, the second to the Vice President, and so on down.',
+            linkedRuleIds: [
+              'the-great-dalmuti.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'the-great-dalmuti.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 8,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

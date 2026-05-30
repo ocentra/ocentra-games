@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '27d6c4e5-fa19-4aa4-a33b-4af634d4785b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/bagchen/bagchenValidationFixtures.asset',
+    gameId: 'bagchen',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bagchen',
+    familyVariant: 'Trick-taking / Chinese Dominoes',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bagchen.core-runtime-contracts',
+        title: 'Bagchen Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bagchen.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 16,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 64,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Bagchen must start by giving each active player 16 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bagchen.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bagchen.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'shuffle_and_stack',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'create_wood_wall',
+            ],
+            expectedNextPhase: 'dealing',
+            supportedActionIds: [
+              'play_card',
+              'create_wood_wall',
+              'draw_stack',
+              'lead_single',
+              'lead_pair',
+              'lead_set',
+              'follow_or_bury',
+              'play_final_tile',
+              'assign_final_point',
+              'check_session_win',
+            ],
+            explanation: 'Bagchen must enter shuffle_and_stack first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'bagchen.flow.shuffle_and_stack',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'bagchen.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '11',
+            scoringDirection: 'high_wins',
+            targetScore: 11,
+            cardValues: {},
+            explanation: 'Scoring is binary for the final trick, but cumulative for the session.',
+            linkedRuleIds: [
+              'bagchen.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bagchen.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 16,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

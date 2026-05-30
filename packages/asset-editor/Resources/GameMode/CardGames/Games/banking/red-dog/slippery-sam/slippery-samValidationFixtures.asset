@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '2e701033-1e2d-4c8b-9425-5049d9ac8f0a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/red-dog/slippery-sam/slippery-samValidationFixtures.asset',
+    gameId: 'slippery-sam',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'slippery-sam',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'slippery-sam.core-runtime-contracts',
+        title: 'Slippery Sam Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'slippery-sam.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 18,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Slippery Sam must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'slippery-sam.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'slippery-sam.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'deal_three_each',
+            ],
+            expectedNextPhase: 'reveal_spot',
+            supportedActionIds: [
+              'bet',
+              'deal_three_each',
+              'turn_until_six_or_lower',
+              'reveal_hand_and_settle',
+              'dealer_keeps_remainder',
+            ],
+            explanation: 'Slippery Sam must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'slippery-sam.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'slippery-sam.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Player wins stake from pot if hand contains a higher card of the same suit as the spot card; otherwise bet is added to pot. Dealer keeps remainder at end of hand.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Paytable',
+            linkedRuleIds: [
+              'slippery-sam.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'slippery-sam.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

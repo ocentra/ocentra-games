@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: 'acb33dce-d89d-4698-9258-a11acddafe73',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/draw-and-discard/stop-the-bus/stop-the-busValidationFixtures.asset',
+    gameId: 'stop-the-bus',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'stop-the-bus',
+    familyVariant: 'Brag Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'stop-the-bus.core-runtime-contracts',
+        title: 'Stop the Bus Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'stop-the-bus.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 9,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 27,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Stop the Bus must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'stop-the-bus.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'stop-the-bus.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'perform_initial_deal',
+            ],
+            expectedNextPhase: 'swap',
+            supportedActionIds: [
+              'reveal_hand',
+              'draw',
+              'pass',
+              'perform_initial_deal',
+              'call_stop_the_bus',
+            ],
+            explanation: 'Stop the Bus must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'stop-the-bus.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'stop-the-bus.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Form the best three-card Brag hand. Do not have the worst hand when Stop the Bus is called; last player with tokens wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Form the best three-card Brag hand. The player with the worst hand when someone calls Stop the Bus loses a life; last player remaining wins.',
+            linkedRuleIds: [
+              'stop-the-bus.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'stop-the-bus.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 9,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

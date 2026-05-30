@@ -1,0 +1,82 @@
+{
+  system: {
+    guid: '6473975e-67e3-4b10-bf13-5d0b45fd8e94',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/domino-poker/domino-pokerStateEventModel.asset',
+    gameId: 'domino-poker',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'domino-poker',
+    familyVariant: 'Line / Draw',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 5,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: null,
+        },
+        {
+          id: 'discard',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: null,
+        },
+        {
+          id: 'custom:show_area',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: null,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'face_up',
+        tableauCards: 'NA',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 4,
+        hand_size: 5,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'draw_phase',
+        'showdown',
+        'resolution',
+      ],
+      actions: [
+        'deal',
+        'reveal_hand',
+        'award_pot',
+        'draw',
+        'discard',
+      ],
+    },
+    examples: [],
+  },
+}

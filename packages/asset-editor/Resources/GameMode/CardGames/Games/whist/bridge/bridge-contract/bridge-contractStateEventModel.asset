@@ -1,0 +1,77 @@
+{
+  system: {
+    guid: 'dca79799-6e14-401e-a9e8-b13d90fa4f26',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/bridge/bridge-contract/bridge-contractStateEventModel.asset',
+    gameId: 'bridge-contract',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bridge-contract',
+    familyVariant: 'Bridge Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 13,
+        },
+        {
+          id: 'custom:dummy',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'player',
+          capacity: 13,
+        },
+        {
+          id: 'trick',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        hand_size: 13,
+        trick_count: 13,
+      },
+    },
+    eventModel: {
+      phases: [
+        'dealing',
+        'auction',
+        'play_loop',
+        'scoring',
+      ],
+      actions: [
+        'play_card',
+        'pass',
+        'bid',
+        'deal_13_each',
+        'bid_contract',
+        'double',
+        'redouble',
+        'calculate_match_points',
+      ],
+    },
+    examples: [],
+  },
+}

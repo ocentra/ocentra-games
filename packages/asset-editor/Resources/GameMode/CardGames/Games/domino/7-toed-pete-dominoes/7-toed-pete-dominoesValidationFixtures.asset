@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: '444a7b36-0f1b-4440-98d2-331395d4d24e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/7-toed-pete-dominoes/7-toed-pete-dominoesValidationFixtures.asset',
+    gameId: '7-toed-pete-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '7-toed-pete-dominoes',
+    familyVariant: 'Fives and Threes Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '7-toed-pete-dominoes.core-runtime-contracts',
+        title: '7-Toed Pete (Dominoes Variant) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '7-toed-pete-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '7-Toed Pete (Dominoes Variant) must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '7-toed-pete-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '7-toed-pete-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: '7-Toed Pete (Dominoes Variant) must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              '7-toed-pete-dominoes.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: '7-toed-pete-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Play continues over multiple hands, and the first player to reach the agreed total of points or chips wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Whenever a player makes the open ends of the layout total a multiple of five, they score that total; the winner of the hand (the player who dominoes or has the fewest pips when the game blocks) scores the total pip value of opponents' remaining tiles, often divided by five into points or chips.",
+            linkedRuleIds: [
+              '7-toed-pete-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '7-toed-pete-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '16a5b91e-0b80-4105-8a32-9afebfe1945e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/gambling/spanish-21/spanish-21ValidationFixtures.asset',
+    gameId: 'spanish-21',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'spanish-21',
+    familyVariant: '21 / Blackjack Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'spanish-21.core-runtime-contracts',
+        title: 'Spanish 21 Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'spanish-21.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 2,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 7,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 14,
+            expectedDeckCount: 6,
+            expectedVisibility: 'face_down',
+            explanation: 'Spanish 21 must start by giving each active player 2 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'spanish-21.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'spanish-21.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'place_bet',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'bet',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'bet',
+              'draw',
+              'pass',
+              'deal_2_each',
+              'reveal_hole_card',
+              'dealer_play_to_17',
+              'compare_hands',
+              'award_bets',
+              'double_down',
+              'split',
+              'surrender',
+            ],
+            explanation: 'Spanish 21 must enter place_bet first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'spanish-21.flow.place_bet',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'spanish-21.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Beat dealer's total without busting. 21 is best.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Beat dealer's total without busting. 21 is best.",
+            linkedRuleIds: [
+              'spanish-21.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'spanish-21.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 2,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

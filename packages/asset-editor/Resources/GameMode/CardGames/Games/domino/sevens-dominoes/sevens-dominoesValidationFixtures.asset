@@ -1,0 +1,112 @@
+{
+  system: {
+    guid: '7f961eae-f598-4a5e-9e87-315fcf7469aa',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/sevens-dominoes/sevens-dominoesValidationFixtures.asset',
+    gameId: 'sevens-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sevens-dominoes',
+    familyVariant: 'Cross / Block Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sevens-dominoes.core-runtime-contracts',
+        title: 'Sevens Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sevens-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 21,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sevens Dominoes must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sevens-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sevens-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal',
+            ],
+            expectedNextPhase: 'play_tiles',
+            supportedActionIds: [
+              'deal',
+              'award_pot',
+              'play_card',
+              'draw',
+              'pass',
+            ],
+            explanation: 'Sevens Dominoes must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'sevens-dominoes.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'sevens-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Be first to play all tiles.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'No running points are required in the core rules; the hand winner is the first player to domino.',
+            linkedRuleIds: [
+              'sevens-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sevens-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

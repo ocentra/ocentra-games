@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: '8a2d33ec-578b-47ea-be8a-7611024d64f4',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/sebastopol/sebastopolValidationFixtures.asset',
+    gameId: 'sebastopol',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sebastopol',
+    familyVariant: 'Cross',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sebastopol.core-runtime-contracts',
+        title: 'Sebastopol Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sebastopol.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 42,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sebastopol must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sebastopol.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sebastopol.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'play',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'play_card',
+            ],
+            expectedNextPhase: null,
+            supportedActionIds: [
+              'play_card',
+            ],
+            explanation: 'Sebastopol must enter play first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'sebastopol.flow.play',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'sebastopol.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '60',
+            scoringDirection: 'high_wins',
+            targetScore: 60,
+            cardValues: {},
+            explanation: "When a player dominoes, they score the total pips in the other players' hands. If the game blocks, the player with the lowest pip total wins and scores (sum of others' pips minus own). Tie for lowest in blocked game: no one scores. Game is played to 60 points.",
+            linkedRuleIds: [
+              'sebastopol.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sebastopol.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

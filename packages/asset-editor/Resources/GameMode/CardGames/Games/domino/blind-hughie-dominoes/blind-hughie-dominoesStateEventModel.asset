@@ -1,0 +1,64 @@
+{
+  system: {
+    guid: '86af206a-3c91-4fbc-9492-1178fbeb39fe',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/blind-hughie-dominoes/blind-hughie-dominoesStateEventModel.asset',
+    gameId: 'blind-hughie-dominoes',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'blind-hughie-dominoes',
+    familyVariant: 'Block / Line Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'hidden',
+          owner: 'player',
+          capacity: 7,
+        },
+        {
+          id: 'custom:line',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 28,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        hand_size: 7,
+      },
+    },
+    eventModel: {
+      phases: [
+        'dealing',
+        'play_loop',
+        'resolution',
+      ],
+      actions: [
+        'deal_tiles_facedown',
+        'flip_rightmost_tile',
+        'place_on_line',
+        'cycle_to_left',
+      ],
+    },
+    examples: [],
+  },
+}

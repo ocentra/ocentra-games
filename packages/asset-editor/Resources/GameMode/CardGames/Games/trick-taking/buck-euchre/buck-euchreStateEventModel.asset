@@ -1,0 +1,72 @@
+{
+  system: {
+    guid: '204d6688-ab59-4fa0-8c39-7e146d944439',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/buck-euchre/buck-euchreStateEventModel.asset',
+    gameId: 'buck-euchre',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'buck-euchre',
+    familyVariant: 'Euchre Family / Individual',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_up',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: null,
+        discardTop: 'NA',
+        tableauCards: null,
+      },
+      constants: {
+        target_score: 10,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'trump_selection',
+        'play_loop',
+      ],
+      actions: [
+        'play_card',
+        'pass',
+        'deal_5_turn_kitty',
+        'order_up',
+        'name_suit',
+      ],
+    },
+    examples: [],
+  },
+}

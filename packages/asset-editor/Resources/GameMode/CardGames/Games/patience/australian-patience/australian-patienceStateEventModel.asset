@@ -1,0 +1,78 @@
+{
+  system: {
+    guid: '58fa1eea-5a6d-4bd5-8474-36a168681d69',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/australian-patience/australian-patienceStateEventModel.asset',
+    gameId: 'australian-patience',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'australian-patience',
+    familyVariant: 'Solitaire',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 24,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: null,
+        },
+        {
+          id: 'tableau',
+          type: 'grid',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 28,
+        },
+        {
+          id: 'foundation',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 52,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_up',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: 'face_down',
+        discardTop: 'face_up',
+        tableauCards: 'face_up',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'solve_loop',
+        'completion_check',
+      ],
+      actions: [
+        'setup_7x4',
+        'move_tableau_group',
+        'move_to_foundation',
+        'flip_stock',
+        'move_waste_to_tableau',
+        'verify_win',
+      ],
+    },
+    examples: [],
+  },
+}

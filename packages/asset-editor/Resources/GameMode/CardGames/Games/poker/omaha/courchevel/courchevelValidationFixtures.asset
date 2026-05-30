@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'a0cd2951-8787-4ec3-8b36-60c5c6b8d28c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/omaha/courchevel/courchevelValidationFixtures.asset',
+    gameId: 'courchevel',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'courchevel',
+    familyVariant: 'Shared Card / Omaha Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'courchevel.core-runtime-contracts',
+        title: 'Courchevel Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'courchevel.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 9,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 45,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Courchevel must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'courchevel.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'courchevel.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'initial_deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'complete_initial_deal',
+            ],
+            expectedNextPhase: 'preflop_bet',
+            supportedActionIds: [
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'complete_initial_deal',
+              'complete_flop',
+              'complete_turn',
+              'complete_river',
+            ],
+            explanation: 'Courchevel must enter initial_deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'courchevel.flow.initial_deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'courchevel.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Pot to best hand at showdown.',
+            linkedRuleIds: [
+              'courchevel.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'courchevel.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 9,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

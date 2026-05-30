@@ -1,0 +1,74 @@
+{
+  system: {
+    guid: 'af086ae6-cc18-4c2b-bcc7-915cdc3735d8',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/nap/napStateEventModel.asset',
+    gameId: 'nap',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'nap',
+    familyVariant: 'Bidding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'NA',
+        tableauCards: 'NA',
+      },
+      constants: {
+        min_players: 3,
+        max_players: 8,
+      },
+    },
+    eventModel: {
+      phases: [
+        'deal',
+        'bidding',
+        'play',
+        'scoring',
+      ],
+      actions: [
+        'deal',
+        'play_card',
+        'pass',
+        'bid',
+        'settle_stakes',
+      ],
+    },
+    examples: [],
+  },
+}

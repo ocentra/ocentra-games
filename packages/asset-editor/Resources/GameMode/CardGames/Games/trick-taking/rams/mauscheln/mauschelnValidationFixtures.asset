@@ -1,0 +1,113 @@
+{
+  system: {
+    guid: '9da823c2-fe4e-4b6f-b409-01c84bb321aa',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/rams/mauscheln/mauschelnValidationFixtures.asset',
+    gameId: 'mauscheln',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mauscheln',
+    familyVariant: 'Rams / Gambling',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mauscheln.core-runtime-contracts',
+        title: 'Mauscheln Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mauscheln.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Mauscheln must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mauscheln.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mauscheln.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'declare',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'mauscheln_sneak',
+              'pass',
+              'mauscheln_mitgehen',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'play_card',
+              'pass',
+              'mauscheln_sneak',
+              'mauscheln_mitgehen',
+            ],
+            explanation: 'Mauscheln must enter declare first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'mauscheln.flow.declare',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'mauscheln.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'.",
+            linkedRuleIds: [
+              'mauscheln.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mauscheln.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

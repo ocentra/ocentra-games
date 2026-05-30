@@ -1,0 +1,75 @@
+{
+  system: {
+    guid: 'e91bcb52-3c02-4fed-beaf-87eee3c41a7c',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/guts/gutsStateEventModel.asset',
+    gameId: 'guts',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'guts',
+    familyVariant: 'Vying',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'pot',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 9999,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        ante: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'ante',
+        'deal',
+        'declare',
+        'reveal_hand',
+        'award_pot',
+      ],
+      actions: [
+        'ante',
+        'deal',
+        'fold',
+        'declare',
+        'reveal_hand',
+        'award_pot',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'fda742e6-10d4-440d-8c6e-6b4543063f2d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/brag-9-card/brag-9-cardValidationFixtures.asset',
+    gameId: 'brag-9-card',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'brag-9-card',
+    familyVariant: 'Brag Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'brag-9-card.core-runtime-contracts',
+        title: 'Nine Card Brag Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'brag-9-card.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 45,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Nine Card Brag must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'brag-9-card.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'brag-9-card.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'dealing',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'deal_9_each',
+            ],
+            expectedNextPhase: 'partition',
+            supportedActionIds: [
+              'deal_9_each',
+              'split_9_into_three_hands',
+              'bet_blind',
+              'see_cards',
+              'bet_seeing',
+              'request_showdown',
+              'compare_hands_1',
+              'compare_hands_2',
+              'compare_hands_3',
+              'award_points',
+            ],
+            explanation: 'Nine Card Brag must enter dealing first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'brag-9-card.flow.dealing',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'brag-9-card.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win the majority of hand comparisons in the round.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Points are awarded for each winning hand comparison. Bonus points for winning all three (the Crash).',
+            linkedRuleIds: [
+              'brag-9-card.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'brag-9-card.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '3823e0b3-17a3-420b-9814-5f44b741d372',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/stovkahra/stovkahraValidationFixtures.asset',
+    gameId: 'stovkahra',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'stovkahra',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'stovkahra.core-runtime-contracts',
+        title: 'Stovkahra Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'stovkahra.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Stovkahra must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'stovkahra.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'stovkahra.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'declare',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'declare',
+              'pass',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'declare',
+              'play_card',
+              'pass',
+              'announce_dost',
+            ],
+            explanation: 'Stovkahra must enter declare first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'stovkahra.flow.declare',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'stovkahra.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'high_wins',
+            targetScore: 100,
+            cardValues: {
+              '7': '0',
+              '8': '0',
+              '9': '0',
+              '10': '0',
+              A: '6',
+              K: '5',
+              Ober: '4',
+              Unter: '3',
+            },
+            explanation: 'First team to 100 points wins the deal. Points from declared combinations, card points in tricks (Ace 6, King 5, Ober 4, Unter 3; tens and below 0), and bonuses: last trick 6, middle trick with seven 10, last trick with seven 26, first trick with seven 52. First to 10 brček wins the series.',
+            linkedRuleIds: [
+              'stovkahra.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'stovkahra.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,142 @@
+{
+  system: {
+    guid: 'a41fd2ed-30a8-4bb2-b1b2-6ab6de8888e8',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/solo-crazy/solo-crazyPhaseFlowModel.asset',
+    gameId: 'solo-crazy',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'solo-crazy',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal_all_clockwise',
+        ],
+        nextPhase: 'bid',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'bid',
+        label: 'Bidding',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'pass',
+          'bid',
+        ],
+        nextPhase: 'play',
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Starting with player on the lead; each bids once in turn or passes. If all pass, redeal.',
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: "Player to dealer's left leads; follow suit, trump if unable; trick winner leads next.",
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Three to twelve players; four or more is standard.',
+        deck: '36 cards (standard); 30, 32, 33 or 35 depending on player count.',
+        equipment: '',
+        dealing: "All cards distributed one at a time starting with the player to the left of the dealer. With 4, 6, 9 or 12 players use full 36-card deck; with 5 or 7 remove six of spades (35); with 8 remove all sixes (32); with 10 remove all sixes plus seven of spades and seven of clubs (30); with 11 remove sixes of spades, clubs and diamonds (33). Player to dealer's left is on the lead.",
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: null,
+        mustFollowSuit: true,
+        mustOvertrump: true,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_trump_if_played_else_highest_led',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: true,
+          biddingSystem: 'solo_bidding',
+          minBid: null,
+          maxBid: null,
+          passAllowed: true,
+          doubling: false,
+        },
+        pointValues: {
+          specificCards: [
+            {
+              card: 'Ace',
+              points: 11,
+            },
+            {
+              card: 'Ten',
+              points: 10,
+            },
+            {
+              card: 'King',
+              points: 4,
+            },
+            {
+              card: 'Queen',
+              points: 3,
+            },
+            {
+              card: 'Jack',
+              points: 2,
+            },
+          ],
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'deal',
+      'bid',
+      'play',
+    ],
+    examples: [],
+  },
+}

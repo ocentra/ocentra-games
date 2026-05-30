@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'c8e59353-0a4e-47b9-9c0f-af3a3ca455ff',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/commerce/whisky-poker/whisky-pokerValidationFixtures.asset',
+    gameId: 'whisky-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'whisky-poker',
+    familyVariant: 'Casino Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'whisky-poker.core-runtime-contracts',
+        title: 'Whisky Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'whisky-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 9,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 45,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Whisky Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'whisky-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'whisky-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'phase1_widow_down',
+            expectedActor: 'each_player_clockwise',
+            expectedLegalActions: [
+              'pass',
+              'exchange_full_widow',
+              'knock',
+            ],
+            expectedNextPhase: 'phase2_widow_up',
+            supportedActionIds: [
+              'reveal_hand',
+              'pass',
+              'exchange_full_widow',
+              'exchange_one_widow',
+              'exchange_five_widow',
+              'knock',
+            ],
+            explanation: 'Whisky Poker must enter phase1_widow_down first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'whisky-poker.flow.phase1_widow_down',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'whisky-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Best 5-card poker hand. Don't be worst.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Standard poker rankings. Worst pays chip.',
+            linkedRuleIds: [
+              'whisky-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'whisky-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 9,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

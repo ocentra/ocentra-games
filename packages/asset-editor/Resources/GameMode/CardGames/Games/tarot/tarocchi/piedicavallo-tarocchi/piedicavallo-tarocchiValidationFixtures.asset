@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: 'b79c0b06-2a17-408f-8358-bf8f54881767',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/tarocchi/piedicavallo-tarocchi/piedicavallo-tarocchiValidationFixtures.asset',
+    gameId: 'piedicavallo-tarocchi',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'piedicavallo-tarocchi',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'piedicavallo-tarocchi.core-runtime-contracts',
+        title: 'Piedicavallo Tarocchi Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'piedicavallo-tarocchi.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 15,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 60,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Piedicavallo Tarocchi must start by giving each active player 15 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'piedicavallo-tarocchi.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'piedicavallo-tarocchi.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'deal',
+            expectedActor: 'dealer',
+            expectedLegalActions: [
+              'perform_deal',
+            ],
+            expectedNextPhase: 'scarto',
+            supportedActionIds: [
+              'play_card',
+              'perform_deal',
+              'discard_scarto',
+            ],
+            explanation: 'Piedicavallo Tarocchi must enter deal first and expose exactly the legal actions authored for that phase.',
+            linkedRuleIds: [
+              'piedicavallo-tarocchi.flow.deal',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'piedicavallo-tarocchi.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Score 57 or more points from a pool of 114 available points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              'Trump 21': '5',
+              'Trump 1': '5',
+              Fool: '5',
+              King: '5',
+              Queen: '4',
+              Horse: '3',
+              Jack: '2',
+              Other: '1',
+            },
+            explanation: 'Score 57 or more points from a pool of 114 available points.',
+            linkedRuleIds: [
+              'piedicavallo-tarocchi.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'piedicavallo-tarocchi.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 15,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

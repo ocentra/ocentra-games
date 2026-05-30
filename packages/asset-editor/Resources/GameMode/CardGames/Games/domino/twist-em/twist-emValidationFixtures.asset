@@ -1,0 +1,114 @@
+{
+  system: {
+    guid: '18dc1d87-a51e-48a3-b88b-e07cfd76274c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/twist-em/twist-emValidationFixtures.asset',
+    gameId: 'twist-em',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'twist-em',
+    familyVariant: 'Pai Gow / Casino Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'twist-em.core-runtime-contracts',
+        title: "Twist'em Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'twist-em.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 9,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 27,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "Twist'em must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'twist-em.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'twist-em.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'wagering',
+            expectedActor: 'current_player',
+            expectedLegalActions: [
+              'bet',
+            ],
+            expectedNextPhase: 'dealing',
+            supportedActionIds: [
+              'bet',
+              'deal_three_tiles',
+              'arrange_tiles',
+              'banker_arrange',
+              'compare_hands',
+              'payout_bets',
+              'rotate_banker',
+            ],
+            explanation: "Twist'em must enter wagering first and expose exactly the legal actions authored for that phase.",
+            linkedRuleIds: [
+              'twist-em.flow.wagering',
+            ],
+            sourceFields: [
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+          },
+          {
+            id: 'twist-em.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Both player hands beat banker's two hands = win even money; one win one tie = win; one win one lose = push; otherwise lose. Banker wins ties.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Baccarat-style: total each hand (top and bottom), drop tens digit; nine high, zero low.',
+            linkedRuleIds: [
+              'twist-em.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'twist-em.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 9,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}
