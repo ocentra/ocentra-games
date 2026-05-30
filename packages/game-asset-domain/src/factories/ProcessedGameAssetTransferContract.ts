@@ -111,7 +111,7 @@ const REQUIRED_LINKED_ASSET_KEYS = [
   'stateEventModel',
   'validationFixtures',
 ] as const;
-const PUBLIC_JUNK_TEXT_PATTERN = /\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
+const PUBLIC_JUNK_TEXT_PATTERN = /\[.{1,120}\]|\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
 
 export function validateProcessedGameTransferCoverage(
   game: Game,

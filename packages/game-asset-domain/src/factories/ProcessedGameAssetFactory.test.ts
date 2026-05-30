@@ -1,4 +1,6 @@
 import path from 'node:path';
+import fs from 'node:fs';
+import os from 'node:os';
 import { describe, expect, it } from 'vitest';
 import {
   buildCreateGameModeOptionsFromProcessedGame,
@@ -102,5 +104,29 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
 
     expect(report.ok).toBe(true);
     expect(report.issues).toEqual([]);
+  });
+
+  it('normalizes generated-only prompt and phase values without changing source truth fields', () => {
+    const source = JSON.parse(fs.readFileSync(sampleGamePath, 'utf8')) as {
+      prompts: { ai: string; human: string };
+      rules: { gameplay: string };
+      engine: { phases: Array<{ notes?: string | null }> };
+    };
+    source.prompts.ai = '[see source]';
+    source.prompts.human = '[see source]';
+    source.engine.phases[0].notes = null;
+
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'processed-game-factory-'));
+    const tempPath = path.join(tempDir, 'buta-no-shippo.json');
+    fs.writeFileSync(tempPath, `${JSON.stringify(source, null, 2)}\n`, 'utf8');
+
+    const options = buildCreateGameModeOptionsFromProcessedGame({ processedGamePath: tempPath });
+
+    expect(options.assetDataOverrides.rules.LLM).not.toContain('[');
+    expect(options.assetDataOverrides.rules.Player).not.toContain('[');
+    expect(options.assetDataOverrides.rules.LLM).toBe(source.rules.gameplay);
+    expect(options.assetDataOverrides.rules.Player).toBe(source.rules.gameplay);
+    expect(options.assetDataOverrides.mechanics.phases[0]).not.toHaveProperty('notes');
+    expect(options.mechanicsModelDataOverrides?.phaseFlow.phases[0]).not.toHaveProperty('notes');
   });
 });

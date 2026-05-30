@@ -23,7 +23,7 @@ const FALLBACK_CAROUSEL_RESOURCE_PATHS = [
   'AppAssets/PlaceHolders/image1.jpg',
   'AppAssets/PlaceHolders/image2.jpg',
 ] as const;
-const PUBLIC_JUNK_TEXT_PATTERN = /\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
+const PUBLIC_JUNK_TEXT_PATTERN = /\[.{1,120}\]|\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
 
 interface AssetEnvelope {
   system: {
@@ -360,6 +360,10 @@ function buildAiConsiderations(game: Game): string[] {
     .slice(0, 4);
 }
 
+function buildRulesAudienceText(game: Game, prompt: unknown): string {
+  return firstPublicText(prompt, game.rules.gameplay, game.rules.objective, game.overview.description);
+}
+
 function buildStrategySummary(game: Game): string {
   const authored = [game.strategy.basic, game.strategy.intermediate, game.strategy.advanced]
     .map(publicText)
@@ -528,7 +532,7 @@ function normalizePhaseFlowPhases(value: unknown): Record<string, unknown>[] {
     .filter((phase): phase is Record<string, unknown> => !!phase && typeof phase === 'object' && !Array.isArray(phase))
     .map((phase) => {
       const next = { ...phase };
-      if (typeof next.notes === 'string' && next.notes.trim().length === 0) {
+      if (typeof next.notes !== 'string' || next.notes.trim().length === 0) {
         delete next.notes;
       }
       if (!Array.isArray(next.conditionalNext)) {
@@ -792,6 +796,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
   const scoringRules = buildScoringRulesSourceCardValues(game.scoring.cardValues, numericCardValues);
   const playerActions = normalizePlayerActionRecord(game.engine.playerActions);
   const customActions = normalizeCustomActions(game.engine.customActions);
+  const phases = normalizePhaseFlowPhases(game.engine.phases);
 
   const createOptions: CreateGameModeOptions = {
     gameId: slug,
@@ -801,8 +806,8 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
     mechanicsModelDataOverrides: buildMechanicsModelDataOverrides(game, slug, linkedDeckAsset, rankingAsset),
     assetDataOverrides: {
       rules: {
-        LLM: game.prompts.ai || game.rules.gameplay,
-        Player: game.prompts.human || game.rules.gameplay,
+        LLM: buildRulesAudienceText(game, game.prompts.ai),
+        Player: buildRulesAudienceText(game, game.prompts.human),
         objective: game.rules.objective,
         gameplay: game.rules.gameplay,
         keyRules: game.rules.keyRules,
@@ -909,7 +914,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
           optimalPlayers: game.engine.playerConfig.optimalPlayers,
           dealerRotates: game.engine.turnOrder.dealerRotates,
         },
-        phases: game.engine.phases,
+        phases,
         actions: playerActions,
         customActions,
         zones: game.engine.zones,
