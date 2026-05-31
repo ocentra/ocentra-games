@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'current_player',
@@ -85,7 +100,10 @@
         'tableau_build_down_same_suit',
       ],
     },
-    progression: [],
+    progression: [
+      'setup_round',
+      'play',
+    ],
     examples: [],
   },
 }

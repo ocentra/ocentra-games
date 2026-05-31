@@ -50,26 +50,33 @@
             id: 'tres-y-dos.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'draw',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'draw',
+              'setup_round',
             ],
-            expectedNextPhase: 'discard',
+            expectedNextPhase: 'draw',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'draw',
               'discard',
               'go_out',
             ],
-            explanation: 'Tres y Dos must enter draw first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tres y Dos must run setup_round first, then enter draw with the processed legal actions.',
             linkedRuleIds: [
+              'tres-y-dos.setup.initial-deal',
               'tres-y-dos.flow.draw',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'draw',
+            firstPlayableLegalActions: [
+              'draw',
             ],
           },
           {

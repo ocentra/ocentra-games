@@ -50,13 +50,14 @@
             id: 'prostoy-durak.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'attack',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'draw',
               'attack_1',
@@ -65,14 +66,20 @@
               'beat',
               'pick_up',
             ],
-            explanation: 'Prostoy Durak must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Prostoy Durak must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'prostoy-durak.setup.initial-deal',
               'prostoy-durak.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'play_card',
         'flip_top_card',
       ],
@@ -45,9 +46,24 @@
         meld: false,
         go_out: false,
         flip_top_card: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -246,6 +262,19 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
+      },
+      flip_top_card: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action flip_top_card is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'flip_top_card',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

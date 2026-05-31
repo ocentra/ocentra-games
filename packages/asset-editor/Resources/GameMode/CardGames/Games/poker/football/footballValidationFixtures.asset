@@ -50,13 +50,14 @@
             id: 'football.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'post_ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal_initial',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'fold',
               'check',
@@ -67,14 +68,20 @@
               'post_ante',
               'show_hand',
             ],
-            explanation: 'Football must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Football must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'football.setup.initial-deal',
               'football.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'post_ante',
             ],
           },
           {

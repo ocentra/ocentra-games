@@ -52,28 +52,36 @@
         guid: 'd569904e-8d00-4b9e-a8ca-506d8c44b257',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '3d539760036f607b1804df8eec0d6e5c83388ad7e0d1d16b5d40f9ead374ad14',
+        checksum: '721818fa665b4fdb1e4cb03af3a79c3197251a672f7bb187e17b87b772519c2e',
+        fileSize: 2733,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/brusquembille/brusquembilleActionSet.asset',
         guid: '0654efd2-1240-4a7e-9525-d3d30fe06b5c',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'f37e547c2649d9037481c8f05741a5ae833b52ea3de036eff1d60886f588e57d',
+        checksum: '9738c40d80e07b0c14b9f59eaa603408379e5617f53ec7de56398d698d7200c9',
+        fileSize: 7269,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/brusquembille/brusquembilleStateEventModel.asset',
         guid: 'c6f3d019-7c06-4be0-9d26-a5bccc25bb06',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '2bf63db039f36a4c53a4b27b94b2fc63b72b34e28ebb830771d4b2e0c0f5c3cb',
+        checksum: '23c5d756e664df796358dfb01277ea34566366632af74a9c0cb5ec287e0c3e70',
+        fileSize: 1411,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/brusquembille/brusquembilleValidationFixtures.asset',
         guid: '562aea0f-ec39-4599-9919-11a70d24506c',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'd62725688c327aaaf40f1b40c7beba857696f9b3bbe0f2ce277c322db408db38',
+        checksum: '097eaeeb84296234adfb7936ca3ae2eb4fc0c07a968b8fe5c367b5e249231095',
+        fileSize: 3847,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -368,8 +405,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'discard',
+        'pass',
+        'bid',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

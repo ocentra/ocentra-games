@@ -50,13 +50,14 @@
             id: 'panjpar.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'trump_guess',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'guess_trump_colour',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'trump_guess',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'guess_trump_colour',
               'attack',
@@ -64,14 +65,20 @@
               'pick_up',
               'draw_to_five',
             ],
-            explanation: 'Panjpar must enter trump_guess first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Panjpar must run setup_round first, then enter trump_guess with the processed legal actions.',
             linkedRuleIds: [
+              'panjpar.setup.initial-deal',
               'panjpar.flow.trump_guess',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'trump_guess',
+            firstPlayableLegalActions: [
+              'guess_trump_colour',
             ],
           },
           {

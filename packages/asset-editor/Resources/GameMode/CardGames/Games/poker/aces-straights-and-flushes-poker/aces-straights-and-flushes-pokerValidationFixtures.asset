@@ -50,13 +50,14 @@
             id: 'aces-straights-and-flushes-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'joker_setup',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'reveal_market',
@@ -68,14 +69,20 @@
               'reveal_hand',
               'award_pot',
             ],
-            explanation: 'Aces, Straights and Flushes Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Aces, Straights and Flushes Poker must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'aces-straights-and-flushes-poker.setup.initial-deal',
               'aces-straights-and-flushes-poker.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

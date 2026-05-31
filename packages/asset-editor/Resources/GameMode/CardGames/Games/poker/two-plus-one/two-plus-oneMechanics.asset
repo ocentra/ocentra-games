@@ -52,28 +52,36 @@
         guid: '63171f17-8b90-4df4-b485-5728ac11d386',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '21b24024852f082e17f7ceaa3b8d94994f2ffdc6efe1177b42fa72c9adf3ffbf',
+        checksum: 'de56c874bb361347c064f12b6af0dfeb8d2c078ded69cbb7e6246cf4dee58488',
+        fileSize: 4906,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/poker/two-plus-one/two-plus-oneActionSet.asset',
         guid: '2793be65-ae6c-4723-ac2c-1f6d122c14b4',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'f574850cdac811407170775856870c4d3abdc5010bee1832dd9915383f5c5de1',
+        checksum: '9805259de7157eda637a634fb8b5ebd7670330e1f72a405b6470ea8e37429e0b',
+        fileSize: 8737,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/poker/two-plus-one/two-plus-oneStateEventModel.asset',
         guid: '6d88578a-a36e-44ae-a7b8-e1b93d4bb0d8',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '03dfbdc38415a7ebb080a86a222b0cc1ebc27d6df9edbcb2610118df39a8a42e',
+        checksum: 'dd305d42071c104086f69ec50452b470e68f0cff0514e30328b2a1a713d87816',
+        fileSize: 1748,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/poker/two-plus-one/two-plus-oneValidationFixtures.asset',
         guid: '536e8c4e-9bfc-4874-89fc-540d4714a521',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '02de555a72348917ffc6723d5a8166cee9382d30a063916660ea0ff81b31b1c5',
+        checksum: 'c4150320df768324bc74a424cf068c889df76e192ab0aaf6fc984dd76ab79bd8',
+        fileSize: 4010,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -103,6 +111,21 @@
       dealerRotates: false,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'ante',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 2 card(s) to each active player before player action begins.',
+      },
       {
         id: 'ante',
         label: 'Ante',
@@ -196,6 +219,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 2 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 2,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: true,
         description: 'Pay the agreed ante into the pot when the pot is empty at the start of a deal.',
@@ -393,6 +430,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      deal_third_to_ins: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_third_to_ins is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_third_to_ins',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -465,8 +515,23 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'ante',
+        'deal',
+        'declare',
+        'fold',
+        'deal_third_to_ins',
+        'reveal_hand',
+        'award_pot',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'ante',
       'deal',
       'declare',

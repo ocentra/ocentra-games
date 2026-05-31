@@ -50,14 +50,14 @@
             id: 'piquet.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'exchange',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'discard',
-              'draw',
+              'setup_round',
             ],
-            expectedNextPhase: 'declare',
+            expectedNextPhase: 'exchange',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'draw',
               'discard',
@@ -66,14 +66,21 @@
               'declare_set',
               'lead',
             ],
-            explanation: 'Piquet must enter exchange first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Piquet must run setup_round first, then enter exchange with the processed legal actions.',
             linkedRuleIds: [
+              'piquet.setup.initial-deal',
               'piquet.flow.exchange',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'exchange',
+            firstPlayableLegalActions: [
+              'discard',
+              'draw',
             ],
           },
           {

@@ -50,14 +50,14 @@
             id: 'clabber.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_6_per_player',
-              'turn_up_trump_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'pass',
               'deal_6_per_player',
               'turn_up_trump_card',
@@ -68,14 +68,21 @@
               'overtrump',
               'announce_meld',
             ],
-            explanation: 'Clabber must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Clabber must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'clabber.setup.initial-deal',
               'clabber.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_6_per_player',
+              'turn_up_trump_card',
             ],
           },
           {

@@ -50,25 +50,32 @@
             id: 'carousel.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'draw',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'draw',
+              'setup_round',
             ],
-            expectedNextPhase: 'meld',
+            expectedNextPhase: 'draw',
             supportedActionIds: [
+              'setup_round',
               'draw',
               'discard',
               'meld',
             ],
-            explanation: 'Carousel must enter draw first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Carousel must run setup_round first, then enter draw with the processed legal actions.',
             linkedRuleIds: [
+              'carousel.setup.initial-deal',
               'carousel.flow.draw',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'draw',
+            firstPlayableLegalActions: [
+              'draw',
             ],
           },
           {

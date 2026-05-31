@@ -50,13 +50,14 @@
             id: 'baccarat-deux-tableaux-baccarat-banque.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'auction',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bid',
+              'setup_round',
             ],
-            expectedNextPhase: 'betting',
+            expectedNextPhase: 'auction',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'bet',
               'reveal_hand',
@@ -75,14 +76,20 @@
               'settle_tableau_1',
               'settle_tableau_2',
             ],
-            explanation: 'Baccarat Banque must enter auction first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Baccarat Banque must run setup_round first, then enter auction with the processed legal actions.',
             linkedRuleIds: [
+              'baccarat-deux-tableaux-baccarat-banque.setup.initial-deal',
               'baccarat-deux-tableaux-baccarat-banque.flow.auction',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'auction',
+            firstPlayableLegalActions: [
+              'bid',
             ],
           },
           {

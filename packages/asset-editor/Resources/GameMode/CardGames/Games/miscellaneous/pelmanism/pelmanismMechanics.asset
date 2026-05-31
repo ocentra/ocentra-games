@@ -52,28 +52,36 @@
         guid: '900dbeea-27c2-485b-b03d-7d2054ffbf60',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '0fe2a03c07eb0c98fd200d3bc1ab76b3c9fd50a789847fcf0afbe2a5dd9174ce',
+        checksum: '44d0502699968fe4b7f62f4c7cca7407157377c9ee0176c76b0cbd1626e9d605',
+        fileSize: 3038,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/miscellaneous/pelmanism/pelmanismActionSet.asset',
         guid: '619abea0-cdb1-4c77-b7d9-d1f1c499dd37',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '601ab207f873476a81d4f7d5c9cf7a48c8ef080d67c5bc11aaa10076b8001b8f',
+        checksum: '2763999a0d404ef8831416a33316a9604f3bf6f49e7eeb05726af684105a6800',
+        fileSize: 8044,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/miscellaneous/pelmanism/pelmanismStateEventModel.asset',
         guid: '039ec310-5298-4d53-8d5a-6d8fd72ea270',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'b2ed8a2a04a6bfffa59c8a8b5913863b277774a5a2d7fd688d34a44898c4275c',
+        checksum: '0f0554dddea4073e27e7016ba02b8dce4f136cc63e154382aa6d750b9eb4d7e3',
+        fileSize: 1506,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/miscellaneous/pelmanism/pelmanismValidationFixtures.asset',
         guid: '3f4c57be-4738-4125-bfa0-5d99155d00f4',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '9094788263d58fb17b1782444f5b350fa3b0d991e96558f28273b8bdbb75462a',
+        checksum: '0a7f69df795c2b8d73edd2f2172c47d3c83b6e3729c77ac751b2c48e8cc968bc',
+        fileSize: 3824,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'flip',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'flip',
         label: 'Flip two cards',
         actor: 'each_player_clockwise',
@@ -118,6 +141,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -318,6 +355,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      flip_two_cards: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action flip_two_cards is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'flip_two_cards',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -390,8 +440,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'flip_two_cards',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'flip',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

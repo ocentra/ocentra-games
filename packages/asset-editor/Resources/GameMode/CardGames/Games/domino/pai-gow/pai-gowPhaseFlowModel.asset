@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'bank_selection',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'bank_selection',
         label: 'Bank Selection',
         actor: 'dealer',
@@ -115,6 +130,7 @@
       ],
     },
     progression: [
+      'setup_round',
       'bank_selection',
       'dealing',
       'partitioning',

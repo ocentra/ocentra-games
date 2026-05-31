@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'trump_init',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 36 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'trump_init',
         label: 'Dealing & Calling',
         actor: 'dealer',
@@ -122,6 +137,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'trump_init',
       'deal_completion',
       'trick_play',

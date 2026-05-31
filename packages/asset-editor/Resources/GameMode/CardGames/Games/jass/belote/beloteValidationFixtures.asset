@@ -50,13 +50,14 @@
             id: 'belote.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing_1',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_5_turn_1',
+              'setup_round',
             ],
-            expectedNextPhase: 'auction',
+            expectedNextPhase: 'dealing_1',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'pass',
@@ -67,14 +68,20 @@
               'play_card_announce_meld',
               'calculate_total_points',
             ],
-            explanation: 'Belote must enter dealing_1 first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Belote must run setup_round first, then enter dealing_1 with the processed legal actions.',
             linkedRuleIds: [
+              'belote.setup.initial-deal',
               'belote.flow.dealing_1',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing_1',
+            firstPlayableLegalActions: [
+              'deal_5_turn_1',
             ],
           },
           {

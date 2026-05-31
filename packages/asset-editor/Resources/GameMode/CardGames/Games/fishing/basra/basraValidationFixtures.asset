@@ -50,13 +50,14 @@
             id: 'basra.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_round',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_4_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_turn',
+            expectedNextPhase: 'deal_round',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_4_cards',
               'capture_card_match',
@@ -68,14 +69,20 @@
               'redeal_hands',
               'end_game_scoring',
             ],
-            explanation: 'Basra must enter deal_round first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Basra must run setup_round first, then enter deal_round with the processed legal actions.',
             linkedRuleIds: [
+              'basra.setup.initial-deal',
               'basra.flow.deal_round',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_round',
+            firstPlayableLegalActions: [
+              'deal_4_cards',
             ],
           },
           {

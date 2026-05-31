@@ -52,28 +52,36 @@
         guid: '68727f95-1540-44f0-abe9-eb9ef35c6ef9',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '1d5ddfe9c6059575c150323c44273930c8207342ea4d32b6d3d62760287eea03',
+        checksum: '638019bcd783f91f4bfcd0310fe980cf7fa2bbcdd76e6d8e43a90eef842cc2cf',
+        fileSize: 2552,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/fishing/casino/cassino/cassinoActionSet.asset',
         guid: '1f6ad4bd-f302-4f6b-bbd3-f89bb16122d2',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '384d3d2c2f07421fbf063621ede89c276ffb6b72ab11fb01e5879e83426a89f0',
+        checksum: '3e765de10e8830928884fb064610bd1e3c5bb85f0b0abc8f12919e5258fe2a2d',
+        fileSize: 7229,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/fishing/casino/cassino/cassinoStateEventModel.asset',
         guid: '69a8f53a-8f79-4139-b879-65746ab6d245',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'e3e031e4e9cccaf30fb44032563b479cb2dcc8bf5b5ec29cccc057734f6ae7b5',
+        checksum: 'a3f080a1fb9f1185944684fcf0e42e309d602400d7f3862018fcb41a92d883a8',
+        fileSize: 1501,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/fishing/casino/cassino/cassinoValidationFixtures.asset',
         guid: '6dc2fa86-2fa8-4347-ae41-0c92960db168',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'c80065cc09bff77da00276b5f30bba08901bcc8f79c405f7c75a2994fd229a99',
+        checksum: '43ea945ed461583392443683dc53ad632713d3153e88d533831cfec8eac575e8',
+        fileSize: 3652,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -103,6 +111,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -134,6 +157,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 4 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 4,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -390,8 +427,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'play',
     ],

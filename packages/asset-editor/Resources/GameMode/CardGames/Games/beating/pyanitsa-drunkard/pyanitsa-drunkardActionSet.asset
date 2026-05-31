@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'reveal_top',
         'award_trick',
         'add_face_down',
@@ -50,9 +51,24 @@
         award_trick: false,
         add_face_down: false,
         add_face_up: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -252,6 +268,58 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'This game has no go-out action.',
+      },
+      reveal_top: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action reveal_top is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'reveal_top',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      award_trick: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action award_trick is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'award_trick',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      add_face_down: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action add_face_down is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'add_face_down',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      add_face_up: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action add_face_up is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'add_face_up',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

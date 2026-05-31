@@ -50,25 +50,32 @@
             id: 'polish-bank-gambling.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'perform_deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'bet_round',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'perform_deal',
               'resolve_round',
             ],
-            explanation: 'Polish Bank must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Polish Bank must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'polish-bank-gambling.setup.initial-deal',
               'polish-bank-gambling.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'perform_deal',
             ],
           },
           {

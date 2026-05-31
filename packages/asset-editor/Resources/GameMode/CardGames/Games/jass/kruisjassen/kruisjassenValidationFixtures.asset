@@ -50,14 +50,14 @@
             id: 'kruisjassen.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
-              'reveal_trump',
+              'setup_round',
             ],
-            expectedNextPhase: 'trick_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'award_pot',
               'play_card',
@@ -69,14 +69,21 @@
               'check_threshold',
               'end_game',
             ],
-            explanation: 'Kruisjassen must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Kruisjassen must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'kruisjassen.setup.initial-deal',
               'kruisjassen.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+              'reveal_trump',
             ],
           },
           {

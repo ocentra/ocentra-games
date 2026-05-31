@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'deal',
         'discard',
         'form_combinations',
@@ -50,9 +51,24 @@
         form_combinations: false,
         play_combo: false,
         collect_chips: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 17 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 17,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -250,6 +266,45 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'This game has no go-out action.',
+      },
+      form_combinations: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action form_combinations is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'form_combinations',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      play_combo: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action play_combo is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'play_combo',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      collect_chips: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action collect_chips is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'collect_chips',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

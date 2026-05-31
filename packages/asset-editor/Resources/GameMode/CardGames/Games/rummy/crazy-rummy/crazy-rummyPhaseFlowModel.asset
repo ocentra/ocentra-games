@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'initial_deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 7 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'initial_deal',
         label: 'Initial Deal',
         actor: 'dealer',
@@ -116,6 +131,7 @@
       ],
     },
     progression: [
+      'setup_round',
       'initial_deal',
       'turn',
       'scoring',

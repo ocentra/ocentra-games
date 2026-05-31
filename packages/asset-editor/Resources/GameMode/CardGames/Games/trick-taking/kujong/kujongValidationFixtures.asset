@@ -50,14 +50,14 @@
             id: 'kujong.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
-              'reveal_trump',
+              'setup_round',
             ],
-            expectedNextPhase: 'trump_decision',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'call',
               'play_card',
@@ -65,14 +65,21 @@
               'reveal_trump',
               'count_points',
             ],
-            explanation: 'Kujong (Couillon) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Kujong (Couillon) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'kujong.setup.initial-deal',
               'kujong.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+              'reveal_trump',
             ],
           },
           {

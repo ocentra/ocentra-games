@@ -52,28 +52,36 @@
         guid: 'dc0f5497-cda2-4776-a40c-d6be95bbc3d8',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '7069c2974d2eda7c7bda7e8610ee64d776c909e45acfae08d684c50e6d211166',
+        checksum: '192de9321567270349c1821ed7527f2ce21f8351d2ee0d16cc496afe74ed242c',
+        fileSize: 4958,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/fishing/p-sur/p-surActionSet.asset',
         guid: 'e9dfe697-d5e4-4d42-8e08-d0510219f25d',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '7a5874286d4716ab2583de2fb0dc14b1bd73bc8a2c93fbc999a959fda4f190f4',
+        checksum: '49a0aac798b4a2fdbcc68d1558091d47d64b581011e344cf07253d8de38c7e7b',
+        fileSize: 8550,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/fishing/p-sur/p-surStateEventModel.asset',
         guid: 'e5a22107-6cd8-49b0-b4ee-754fedc5a2dd',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '93d4d863983bfaba1f404a0fb58171ca1fee0e4745a2ba1e4b84aacb303113e4',
+        checksum: '6b6f67e374033887432633f0053b5cb61071436c5bbcebcd2f70cad494619afa',
+        fileSize: 2154,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/fishing/p-sur/p-surValidationFixtures.asset',
         guid: '6f748f97-d881-478c-88df-2ac0091ffa3c',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '0a0b7e52dc57a009c8acc05e604707a14f145d0233bb1aba27299ea44eec1fbe',
+        checksum: 'eff91b129d50b35d01a13c0fc9cd0ec0dc3e343e480155f1c27333be65127959',
+        fileSize: 4120,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -116,6 +124,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal_batch',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal_batch',
         label: 'Deal Batch of Four',
@@ -197,6 +220,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 4 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 4,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -402,6 +439,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      advance_phase: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action advance_phase is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'advance_phase',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -482,8 +532,21 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'reveal_market',
+        'play_card',
+        'advance_phase',
+        'award_pot',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal_batch',
       'play_loop',
       'round_transition',

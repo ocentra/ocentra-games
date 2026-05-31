@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'deal',
         'play_card',
         'draw',
@@ -48,9 +49,24 @@
         meld: false,
         go_out: true,
         finish_game: true,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 7 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 7,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -249,6 +265,19 @@
         isTerminating: true,
         effectType: 'play',
         effectHints: {},
+      },
+      finish_game: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action finish_game is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'finish_game',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

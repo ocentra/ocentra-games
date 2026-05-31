@@ -50,13 +50,14 @@
             id: 'idiots.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'card_swap',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
@@ -65,14 +66,20 @@
               'pick_up',
               'finish_game',
             ],
-            explanation: 'Idiots must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Idiots must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'idiots.setup.initial-deal',
               'idiots.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

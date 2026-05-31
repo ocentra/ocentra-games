@@ -50,13 +50,14 @@
             id: 'ofcp-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_initial',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'set_initial',
+            expectedNextPhase: 'deal_initial',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'place_cards',
               'draw_card',
@@ -64,14 +65,20 @@
               'compare_hands',
               'score_round',
             ],
-            explanation: 'Open Face Chinese Poker (OFCP) must enter deal_initial first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Open Face Chinese Poker (OFCP) must run setup_round first, then enter deal_initial with the processed legal actions.',
             linkedRuleIds: [
+              'ofcp-poker.setup.initial-deal',
               'ofcp-poker.flow.deal_initial',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_initial',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

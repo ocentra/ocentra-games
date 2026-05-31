@@ -50,23 +50,30 @@
             id: 'memory.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'reveal_two_tiles',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'reveal_two_tiles',
             ],
-            explanation: 'Memory must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Memory must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'memory.setup.initial-deal',
               'memory.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'reveal_two_tiles',
             ],
           },
           {

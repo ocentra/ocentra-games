@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'flip',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'flip',
         label: 'Flip two cards',
         actor: 'each_player_clockwise',
@@ -78,7 +93,10 @@
       authoritativeServer: false,
       customLogicNeeded: [],
     },
-    progression: [],
+    progression: [
+      'setup_round',
+      'flip',
+    ],
     examples: [],
   },
 }

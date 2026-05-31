@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'ante',
         'deal',
         'fold',
@@ -54,9 +55,24 @@
         go_out: false,
         bring_in: false,
         reveal: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 3 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 3,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: true,
         description: 'Post mandatory ante',
@@ -257,6 +273,32 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'This game has no go-out action.',
+      },
+      bring_in: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action bring_in is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'bring_in',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      reveal: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action reveal is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'reveal',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

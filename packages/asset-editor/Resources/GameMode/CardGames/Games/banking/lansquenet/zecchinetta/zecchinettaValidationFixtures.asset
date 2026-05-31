@@ -50,26 +50,33 @@
             id: 'zecchinetta.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_initial',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'dealer_reveal_initial',
+              'setup_round',
             ],
-            expectedNextPhase: 'place_bets',
+            expectedNextPhase: 'deal_initial',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'dealer_reveal_initial',
               'dealer_reveal_next',
               'system_settle',
             ],
-            explanation: 'Zecchinetta must enter deal_initial first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Zecchinetta must run setup_round first, then enter deal_initial with the processed legal actions.',
             linkedRuleIds: [
+              'zecchinetta.setup.initial-deal',
               'zecchinetta.flow.deal_initial',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_initial',
+            firstPlayableLegalActions: [
+              'dealer_reveal_initial',
             ],
           },
           {

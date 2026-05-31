@@ -52,28 +52,36 @@
         guid: 'b600a082-7faa-4af0-8c51-5e48baccd142',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '947e5547620c4e5f1c3e88faa9dae206312fa42d0b7b6d9cf3110a5ad61b506d',
+        checksum: 'a8c8a393a4817997511c340426d3708c801d3b52b67e28fdeba6caddda1dc0f5',
+        fileSize: 2760,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/abstract-strategy/petteia-greek/petteia-greekActionSet.asset',
         guid: '831ed214-5242-4dc2-a208-7f3b44e9ec32',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'a8ce14f4caf276f66d4b1c55b48f17b626010461ae371ebc1e3acf9b5639ed13',
+        checksum: '969633a74351b04368c1fff35083e766aae7f7b7b68aad4f73bb26845d6d461c',
+        fileSize: 7964,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/abstract-strategy/petteia-greek/petteia-greekStateEventModel.asset',
         guid: '9e624be2-4f06-43be-994a-fb423ea8f7a0',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '43fb612fc4ed3ddc89e7cdfb9a78cae89da5891a320a6489c774cc39463a88fd',
+        checksum: '385d07f4190ff5591d1efee83f37540a2cbf7a5325df241223a570e30ee6e966',
+        fileSize: 1532,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/abstract-strategy/petteia-greek/petteia-greekValidationFixtures.asset',
         guid: '3a1db4f3-c8ad-424f-ba89-e4a7f6c0157f',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'e5dbd1049e4982432663efd45ce767ad76130b6ac3fae77a4b9e920bc3f650dd',
+        checksum: '3f05698db4b5a5ada6f497f61f3c640c6fa344b25a118d9af0785b94ea9ac818',
+        fileSize: 3802,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'each_player_clockwise',
@@ -118,6 +141,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -318,6 +355,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      move_stone: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action move_stone is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'move_stone',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -390,8 +440,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'move_stone',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

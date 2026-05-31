@@ -50,13 +50,14 @@
             id: 'freeze-out-dominoes.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'round_start',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'reveal_lead',
               'reveal_tile',
@@ -64,14 +65,20 @@
               'system_determine_winner',
               'system_check_game_end',
             ],
-            explanation: 'Freeze Out Dominoes must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Freeze Out Dominoes must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'freeze-out-dominoes.setup.initial-deal',
               'freeze-out-dominoes.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

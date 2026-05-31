@@ -50,13 +50,14 @@
             id: 'gleek.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'stock_bid',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'buy_stock',
@@ -71,14 +72,20 @@
               'pass',
               'bid',
             ],
-            explanation: 'Gleek must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Gleek must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'gleek.setup.initial-deal',
               'gleek.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

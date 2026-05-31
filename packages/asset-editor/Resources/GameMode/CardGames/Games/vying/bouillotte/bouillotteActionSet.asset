@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'ante',
         'fold',
         'check',
@@ -53,9 +54,24 @@
         go_out: false,
         deal_3_plus_turn: false,
         evaluate_hand: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 3 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 3,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: true,
         description: 'Contribute a fixed amount to the central pot.',
@@ -256,6 +272,32 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'The round concludes automatically after the final showdown and pot distribution are completed.',
+      },
+      deal_3_plus_turn: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_3_plus_turn is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_3_plus_turn',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      evaluate_hand: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action evaluate_hand is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'evaluate_hand',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

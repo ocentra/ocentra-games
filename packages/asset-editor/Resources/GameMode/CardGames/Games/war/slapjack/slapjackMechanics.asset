@@ -52,28 +52,36 @@
         guid: 'f3383311-9b5e-41d7-a3f1-b4a09d159e1a',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '1b3ad226e329ccedb12a8eada9c693dffdf9202bf165edf813d462c086773c31',
+        checksum: '1e4154436e38d3c770a2b9841101f7a9b3683554e89762b3a536914f28f39123',
+        fileSize: 3033,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/war/slapjack/slapjackActionSet.asset',
         guid: '4f5989a6-e549-4df4-b195-3ece66a68bda',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '09454555210228e26f5d0b6e1ff0ddddaa05f1af49d8c47af420df5865689140',
+        checksum: 'fd859d90111172c5912ed0753e22035500da6b808d8c64a38f25508fd766b7d8',
+        fileSize: 8185,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/war/slapjack/slapjackStateEventModel.asset',
         guid: 'b416948d-96fe-42c9-8a31-d8b323339b25',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '0819af8584e47e1959612bda5e26a363a5fe0d5c81fa1d3ff65ad8c3561d16f4',
+        checksum: '2e3eb348e1e04d63ea45a0522939ebf562f4ba5586930b32327e5f82007b9687',
+        fileSize: 1515,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/war/slapjack/slapjackValidationFixtures.asset',
         guid: '6ee8bf86-b9ce-4de2-ac0d-8186c12312d2',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '844fa2cadee30dbfd3cd17049fa77ed672326dfde56b0c69c60cc23af6fcd2e1',
+        checksum: '821f1c9cbc2a5dbdf21e4de4db1b4087527fa497302c757bacbc9c7613321639',
+        fileSize: 3655,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 26 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'each_player_clockwise',
@@ -119,6 +142,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 26 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 26,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -318,6 +355,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      slap: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action slap is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'slap',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -390,8 +440,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'slap',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

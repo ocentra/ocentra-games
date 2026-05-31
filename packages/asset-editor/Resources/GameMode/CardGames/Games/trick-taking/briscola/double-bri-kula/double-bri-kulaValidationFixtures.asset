@@ -50,13 +50,14 @@
             id: 'double-bri-kula.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'main_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'play_card',
@@ -64,14 +65,20 @@
               'discard',
               'meld',
             ],
-            explanation: 'Double Briškula must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Double Briškula must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'double-bri-kula.setup.initial-deal',
               'double-bri-kula.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

@@ -50,14 +50,14 @@
             id: 'algerian.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_tableau',
-              'deal_reserve',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'deal_tableau',
               'deal_reserve',
               'move_to_foundation',
@@ -65,14 +65,21 @@
               'deal_from_stock',
               'evaluate_completion',
             ],
-            explanation: 'Algerian must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Algerian must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'algerian.setup.initial-deal',
               'algerian.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal_tableau',
+              'deal_reserve',
             ],
           },
           {

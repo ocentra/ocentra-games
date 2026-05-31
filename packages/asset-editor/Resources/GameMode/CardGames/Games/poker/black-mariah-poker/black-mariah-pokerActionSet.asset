@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'ante',
         'fold',
         'check',
@@ -56,9 +57,24 @@
         evaluate_hands: false,
         evaluate_highest_spade: false,
         award_or_carryover: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 7 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 7,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: true,
         description: 'Pay the ante required to participate.',
@@ -252,6 +268,58 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'This game has no go-out action.',
+      },
+      deal_stud: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_stud is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_stud',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      evaluate_hands: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action evaluate_hands is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'evaluate_hands',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      evaluate_highest_spade: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action evaluate_highest_spade is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'evaluate_highest_spade',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      award_or_carryover: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action award_or_carryover is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'award_or_carryover',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

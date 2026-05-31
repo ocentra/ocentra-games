@@ -50,13 +50,14 @@
             id: 'ace-to-five-lowball.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'initial_deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -69,14 +70,20 @@
               'draw',
               'discard',
             ],
-            explanation: 'Ace-To-Five Lowball must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Ace-To-Five Lowball must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'ace-to-five-lowball.setup.initial-deal',
               'ace-to-five-lowball.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

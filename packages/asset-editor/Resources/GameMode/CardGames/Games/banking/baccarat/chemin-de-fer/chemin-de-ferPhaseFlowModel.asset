@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'auction_bank',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 2 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'auction_bank',
         label: 'Setting the Bank',
         actor: 'system',
@@ -152,6 +167,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'auction_bank',
       'punting',
       'deal',

@@ -50,25 +50,32 @@
             id: 'minette.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_12_each_8_talon',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'deal_12_each_8_talon',
             ],
-            explanation: 'Minette (Minet) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Minette (Minet) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'minette.setup.initial-deal',
               'minette.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_12_each_8_talon',
             ],
           },
           {

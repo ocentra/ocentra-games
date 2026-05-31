@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'auction',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 2 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'auction',
         label: 'Auctioning the Shoe',
         actor: 'all_simultaneous',
@@ -167,6 +182,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'auction',
       'betting',
       'deal',

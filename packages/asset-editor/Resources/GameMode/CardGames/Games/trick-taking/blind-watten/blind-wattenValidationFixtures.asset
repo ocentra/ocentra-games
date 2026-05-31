@@ -50,13 +50,14 @@
             id: 'blind-watten.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_5_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'secret_selection',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'raise',
               'play_card',
               'pass',
@@ -66,14 +67,20 @@
               'calculate_match_points',
               'propose_raise',
             ],
-            explanation: 'Blind Watten must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Blind Watten must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'blind-watten.setup.initial-deal',
               'blind-watten.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_5_each',
             ],
           },
           {

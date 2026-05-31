@@ -50,13 +50,14 @@
             id: 'auction-draw-dominoes.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'place_initial_chip',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'check',
               'place_initial_chip',
               'distribute_tiles',
@@ -65,14 +66,20 @@
               'bid_chips',
               'assign_pool_to_winner',
             ],
-            explanation: 'Auction Draw Dominoes must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Auction Draw Dominoes must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'auction-draw-dominoes.setup.initial-deal',
               'auction-draw-dominoes.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'place_initial_chip',
             ],
           },
           {

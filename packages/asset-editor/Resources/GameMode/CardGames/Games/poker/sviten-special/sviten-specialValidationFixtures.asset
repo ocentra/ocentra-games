@@ -50,13 +50,14 @@
             id: 'sviten-special.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'preflop_bet',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'fold',
               'check',
@@ -70,14 +71,20 @@
               'deal_turn',
               'deal_river',
             ],
-            explanation: 'Sviten Special must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Sviten Special must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'sviten-special.setup.initial-deal',
               'sviten-special.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

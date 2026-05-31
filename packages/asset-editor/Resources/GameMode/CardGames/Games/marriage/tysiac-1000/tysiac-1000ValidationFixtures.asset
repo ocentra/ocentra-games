@@ -50,13 +50,14 @@
             id: 'tysiac-1000.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_7_each_3_talon',
+              'setup_round',
             ],
-            expectedNextPhase: 'bid',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'bid',
@@ -64,14 +65,20 @@
               'deal_7_each_3_talon',
               'take_talon_discard_2',
             ],
-            explanation: '1000 (Tysiąc) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: '1000 (Tysiąc) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'tysiac-1000.setup.initial-deal',
               'tysiac-1000.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_7_each_3_talon',
             ],
           },
           {

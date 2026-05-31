@@ -50,13 +50,14 @@
             id: 'pitch-oklahoma.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'bid',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'discard',
@@ -65,14 +66,20 @@
               'draw_from_widow',
               'award_points',
             ],
-            explanation: 'Oklahoma 10-point Pitch must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Oklahoma 10-point Pitch must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'pitch-oklahoma.setup.initial-deal',
               'pitch-oklahoma.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

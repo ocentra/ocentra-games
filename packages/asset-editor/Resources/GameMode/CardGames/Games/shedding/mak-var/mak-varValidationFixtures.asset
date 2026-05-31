@@ -50,26 +50,33 @@
             id: 'mak-var.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'starter_card',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
               'reveal_starter',
             ],
-            explanation: 'MakaÃ³ (Hungarian Shedding) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'MakaÃ³ (Hungarian Shedding) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'mak-var.setup.initial-deal',
               'mak-var.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

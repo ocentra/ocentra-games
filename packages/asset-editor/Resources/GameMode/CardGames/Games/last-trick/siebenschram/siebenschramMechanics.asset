@@ -52,28 +52,36 @@
         guid: 'eb8cdde6-918f-4602-88af-2923849d4f5e',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '0c3baf7876b45a053393bd119e6da0092219524be906ae4193a5366da11373ef',
+        checksum: '511393579c6bd327b2f8fdae9c3c1dba668145b00580937643a68da1e99b256b',
+        fileSize: 2773,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/last-trick/siebenschram/siebenschramActionSet.asset',
         guid: '40763930-7e69-4f07-bca9-7deee76b620b',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '5ff65c6501025b6001b64f385960c85bb1d7525024ec47cbcc6eb73b86cdbe64',
+        checksum: 'edfd08efa423138492b9baeca43521b8785dadd22d72ae1685c6171727896ff9',
+        fileSize: 7255,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/last-trick/siebenschram/siebenschramStateEventModel.asset',
         guid: 'cd5b6df8-8114-4107-a62a-ac81c1db5627',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '591f55e0eef2926a2c6e466cbebb2c4e9d4c9a98d903ff37bdc51ee4405028ef',
+        checksum: 'f19f38756e9742fff100260d6a2a4658e50103b4c030d47d77b68afe9610b965',
+        fileSize: 1397,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/last-trick/siebenschram/siebenschramValidationFixtures.asset',
         guid: '3cb795d4-0eb4-4121-a34e-da2e06cdfa8a',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'eb0d16f0121f8b2dd6b8526d81438d91cde10da50db4e16ac538807c8d09a547',
+        checksum: '0ec3f8e8e433768273df05a2f75db9b2941ee90858335d8da4d729012c9970a1',
+        fileSize: 3890,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -368,8 +405,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'discard',
+        'pass',
+        'bid',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

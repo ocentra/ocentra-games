@@ -50,24 +50,31 @@
             id: 'casita-robada.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
             ],
-            explanation: 'Casita Robada must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Casita Robada must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'casita-robada.setup.initial-deal',
               'casita-robada.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

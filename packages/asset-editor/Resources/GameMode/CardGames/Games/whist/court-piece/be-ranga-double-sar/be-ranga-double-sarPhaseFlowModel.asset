@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal_first_5',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'deal_first_5',
         label: 'First Deal',
         actor: 'dealer',
@@ -120,6 +135,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'deal_first_5',
       'trump_call',
       'deal_remaining_8',

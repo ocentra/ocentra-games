@@ -50,25 +50,32 @@
             id: 'piedicavallo-tarocchi.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'perform_deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'scarto',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'perform_deal',
               'discard_scarto',
             ],
-            explanation: 'Piedicavallo Tarocchi must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Piedicavallo Tarocchi must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'piedicavallo-tarocchi.setup.initial-deal',
               'piedicavallo-tarocchi.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'perform_deal',
             ],
           },
           {

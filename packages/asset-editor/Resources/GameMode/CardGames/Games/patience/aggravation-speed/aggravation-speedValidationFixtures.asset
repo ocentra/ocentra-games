@@ -50,26 +50,33 @@
             id: 'aggravation-speed.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'race',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'award_pot',
               'play_card',
               'go_out',
             ],
-            explanation: 'Aggravation Speed must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Aggravation Speed must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'aggravation-speed.setup.initial-deal',
               'aggravation-speed.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

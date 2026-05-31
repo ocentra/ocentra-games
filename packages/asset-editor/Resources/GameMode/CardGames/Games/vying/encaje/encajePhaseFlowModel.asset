@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'grande_betting',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'grande_betting',
         label: 'Grande Betting Phase',
         actor: 'current_player',
@@ -166,6 +181,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'grande_betting',
       'chica_betting',
       'pares_declaration',

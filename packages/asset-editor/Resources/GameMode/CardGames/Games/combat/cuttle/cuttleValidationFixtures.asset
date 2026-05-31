@@ -50,13 +50,14 @@
             id: 'cuttle.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_5',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'draw',
               'pass',
               'deal_5',
@@ -65,14 +66,20 @@
               'play_effect_one_shot',
               'play_effect_permanent',
             ],
-            explanation: 'Cuttle must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Cuttle must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'cuttle.setup.initial-deal',
               'cuttle.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_5',
             ],
           },
           {

@@ -50,13 +50,14 @@
             id: 'staekske-rape.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_7_stock_4',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'discard',
@@ -66,14 +67,20 @@
               'take_stock_discard_4',
               'skip_stock',
             ],
-            explanation: 'Staekske Rape must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Staekske Rape must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'staekske-rape.setup.initial-deal',
               'staekske-rape.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_7_stock_4',
             ],
           },
           {

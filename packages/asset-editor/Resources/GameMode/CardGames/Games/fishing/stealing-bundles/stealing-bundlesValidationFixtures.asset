@@ -50,24 +50,31 @@
             id: 'stealing-bundles.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_initial',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_initial',
             ],
-            explanation: 'Stealing Bundles must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Stealing Bundles must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'stealing-bundles.setup.initial-deal',
               'stealing-bundles.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_initial',
             ],
           },
           {

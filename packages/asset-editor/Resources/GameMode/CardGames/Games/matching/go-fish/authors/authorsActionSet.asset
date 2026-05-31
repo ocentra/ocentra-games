@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'deal_all_even',
         'ask_specific_card',
         'count_books',
@@ -48,9 +49,24 @@
         deal_all_even: false,
         ask_specific_card: false,
         count_books: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -250,6 +266,45 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'Game ends when all cards are in books; winner has most books.',
+      },
+      deal_all_even: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_all_even is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_all_even',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      ask_specific_card: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action ask_specific_card is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'ask_specific_card',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      count_books: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action count_books is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'count_books',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

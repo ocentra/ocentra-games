@@ -50,23 +50,30 @@
             id: 'race-for-the-galaxy.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: 'Race for the Galaxy must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Race for the Galaxy must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'race-for-the-galaxy.setup.initial-deal',
               'race-for-the-galaxy.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

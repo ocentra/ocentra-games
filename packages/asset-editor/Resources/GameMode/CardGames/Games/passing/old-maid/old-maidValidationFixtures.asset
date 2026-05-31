@@ -50,24 +50,31 @@
             id: 'old-maid.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'initial_discard',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'discard',
+              'setup_round',
             ],
-            expectedNextPhase: 'draw_round',
+            expectedNextPhase: 'initial_discard',
             supportedActionIds: [
+              'setup_round',
               'draw',
               'discard',
             ],
-            explanation: 'Old Maid must enter initial_discard first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Old Maid must run setup_round first, then enter initial_discard with the processed legal actions.',
             linkedRuleIds: [
+              'old-maid.setup.initial-deal',
               'old-maid.flow.initial_discard',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'initial_discard',
+            firstPlayableLegalActions: [
+              'discard',
             ],
           },
           {

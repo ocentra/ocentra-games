@@ -50,13 +50,14 @@
             id: 'crazy-rummy.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'initial_deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'turn',
+            expectedNextPhase: 'initial_deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'reveal_hand',
               'award_pot',
@@ -66,14 +67,20 @@
               'meld',
               'go_out',
             ],
-            explanation: 'Crazy Rummy must enter initial_deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Crazy Rummy must run setup_round first, then enter initial_deal with the processed legal actions.',
             linkedRuleIds: [
+              'crazy-rummy.setup.initial-deal',
               'crazy-rummy.flow.initial_deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'initial_deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

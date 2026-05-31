@@ -50,26 +50,33 @@
             id: 'dudak.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'main_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'play_card',
               'go_out',
             ],
-            explanation: 'Dudák must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Dudák must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'dudak.setup.initial-deal',
               'dudak.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

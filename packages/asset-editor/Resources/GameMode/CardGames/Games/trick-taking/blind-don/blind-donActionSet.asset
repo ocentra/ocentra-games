@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'play_card',
         'deal_13_each',
         'deal_remaining_26',
@@ -49,9 +50,24 @@
         deal_13_each: false,
         deal_remaining_26: false,
         calculate_don_points: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 13 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 13,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -250,6 +266,45 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'The game ends automatically once all 26 tricks have been played by both participants.',
+      },
+      deal_13_each: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_13_each is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_13_each',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      deal_remaining_26: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_remaining_26 is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_remaining_26',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      calculate_don_points: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action calculate_don_points is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'calculate_don_points',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

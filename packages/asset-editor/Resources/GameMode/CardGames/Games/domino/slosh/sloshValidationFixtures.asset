@@ -50,24 +50,31 @@
             id: 'slosh.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'place_engine',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
             ],
-            explanation: 'Slosh must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Slosh must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'slosh.setup.initial-deal',
               'slosh.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

@@ -50,26 +50,33 @@
             id: 'gaps.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
-              'discard',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'discard',
             ],
-            explanation: 'Gaps must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Gaps must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'gaps.setup.initial-deal',
               'gaps.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal',
+              'discard',
             ],
           },
           {

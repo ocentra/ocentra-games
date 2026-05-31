@@ -50,26 +50,33 @@
             id: 'avinas.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_batches_4',
+              'setup_round',
             ],
-            expectedNextPhase: 'trump_declaration',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_batches_4',
               'declare_suit',
               'calculate_120_and_assign_horns',
             ],
-            explanation: 'Avinas must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Avinas must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'avinas.setup.initial-deal',
               'avinas.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_batches_4',
             ],
           },
           {

@@ -50,25 +50,32 @@
             id: 'koi-koi.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_oya_8_8_8',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'draw',
               'deal_oya_8_8_8',
             ],
-            explanation: 'Koi-Koi must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Koi-Koi must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'koi-koi.setup.initial-deal',
               'koi-koi.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_oya_8_8_8',
             ],
           },
           {

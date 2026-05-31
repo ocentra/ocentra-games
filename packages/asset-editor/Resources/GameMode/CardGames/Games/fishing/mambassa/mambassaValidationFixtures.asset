@@ -50,14 +50,14 @@
             id: 'mambassa.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealer_choice',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'set_monte',
-              'take_monte_and_knock',
+              'setup_round',
             ],
-            expectedNextPhase: 'exchange_round',
+            expectedNextPhase: 'dealer_choice',
             supportedActionIds: [
+              'setup_round',
               'draw',
               'discard',
               'set_monte',
@@ -66,14 +66,21 @@
               'knock',
               'compare_hands',
             ],
-            explanation: 'Mambassa must enter dealer_choice first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Mambassa must run setup_round first, then enter dealer_choice with the processed legal actions.',
             linkedRuleIds: [
+              'mambassa.setup.initial-deal',
               'mambassa.flow.dealer_choice',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealer_choice',
+            firstPlayableLegalActions: [
+              'set_monte',
+              'take_monte_and_knock',
             ],
           },
           {

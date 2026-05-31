@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'ante',
         'fold',
         'check',
@@ -51,9 +52,24 @@
         bid: false,
         meld: false,
         go_out: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 5 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 5,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: true,
         description: 'Place chips on the board before the deal: one chip on each of the nine labelled spaces (ace of hearts, king, queen, jack, ten of hearts, king-queen, 8-9-10, kitty, pot).',

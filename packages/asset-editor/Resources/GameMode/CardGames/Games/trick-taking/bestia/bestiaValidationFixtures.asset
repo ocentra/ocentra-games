@@ -50,13 +50,14 @@
             id: 'bestia.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante_phase',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'dealing',
+            expectedNextPhase: 'ante_phase',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'play_card',
@@ -65,14 +66,20 @@
               'calculate_trick_shares',
               'apply_beast_penalty',
             ],
-            explanation: 'Bestia must enter ante_phase first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bestia must run setup_round first, then enter ante_phase with the processed legal actions.',
             linkedRuleIds: [
+              'bestia.setup.initial-deal',
               'bestia.flow.ante_phase',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante_phase',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

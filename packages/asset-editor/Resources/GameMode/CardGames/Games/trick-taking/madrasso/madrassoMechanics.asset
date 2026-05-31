@@ -52,28 +52,36 @@
         guid: '817f24d9-2a9e-40f6-bc85-526d2aaebc08',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '5a51c93e9d102691603b2c246f31ca80dc3a83af172bdfd238a6c434c50d76e8',
+        checksum: 'b33fe434d1b38b97b1e5e8a4589eb45f28cc852982501adf93521ea27368ac3b',
+        fileSize: 3335,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/madrasso/madrassoActionSet.asset',
         guid: 'b1f1cbf8-bfba-4486-85fb-9732b0ccc137',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'adb63d4048f02b21a6ac28c985a212b41601ce391967012cee914c734e12783d',
+        checksum: '84359d7e39a305174cc0d0b47e9cc80eaff5401cd65a2e2c8267b200bd0a30a8',
+        fileSize: 7052,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/madrasso/madrassoStateEventModel.asset',
         guid: '2b8c725b-9447-4f7b-a71d-f279c001fb57',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'aeb32b476926f53951ba2380f3cf6011e50188495b430379225f1734aea2babe',
+        checksum: '1021be4afd8dd3d55f42ada61a4f7d665ac377470c593be065c4aeba127d7649',
+        fileSize: 1556,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/madrasso/madrassoValidationFixtures.asset',
         guid: '3bd102f6-52ff-419c-a29c-690070d95d34',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'ea85d0181108cbd3843f25e778c5b9d66e459c13da6b9eb624fd1cd36e063491',
+        checksum: '38209eb8423d0d4c86c043be8bb35490a8593a9c27c8cbc55662fb2e8280e336',
+        fileSize: 4000,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -109,6 +117,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'trump_exchange',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'trump_exchange',
         label: 'Trump Exchange',
         actor: 'current_player',
@@ -140,6 +163,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -400,8 +437,17 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'trump_exchange',
       'play',
     ],

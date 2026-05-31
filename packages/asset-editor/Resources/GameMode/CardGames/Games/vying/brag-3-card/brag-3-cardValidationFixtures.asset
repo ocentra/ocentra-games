@@ -50,13 +50,14 @@
             id: 'brag-3-card.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'dealing',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'call',
@@ -70,14 +71,20 @@
               'request_showdown',
               'evaluate_brag_hands',
             ],
-            explanation: '3-Card Brag must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: '3-Card Brag must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'brag-3-card.setup.initial-deal',
               'brag-3-card.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

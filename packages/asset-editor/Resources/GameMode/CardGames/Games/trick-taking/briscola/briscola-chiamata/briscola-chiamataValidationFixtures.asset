@@ -50,26 +50,33 @@
             id: 'briscola-chiamata.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_8_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'auction',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'pass',
               'bid',
               'deal_8_each',
               'play_any_card',
             ],
-            explanation: 'Briscola Chiamata must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Briscola Chiamata must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'briscola-chiamata.setup.initial-deal',
               'briscola-chiamata.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_8_each',
             ],
           },
           {

@@ -52,28 +52,36 @@
         guid: 'd42e464c-4be6-4864-8751-9d57e5f727b2',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'c60bacbe524d2e3b9f5e444544627c11e16464045c2bac2d43de5aec89a43f28',
+        checksum: '6c0cb7b35e53b023eedc04871e67dbe8b748864de9b6e0e3b455ab2bc1ff1465',
+        fileSize: 2787,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/vying/perudo-bluff/perudo-bluffActionSet.asset',
         guid: '71636d2c-1aea-45f3-9c64-add99dae3a0f',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '7100a4f2c07f26422040f084ea14cd59ab764fb581fad1a00f997f39da862b0d',
+        checksum: '231ed09a935a822686fd7226e073aed01f2bed13900916cb680fdd8a142cb652',
+        fileSize: 8257,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/vying/perudo-bluff/perudo-bluffStateEventModel.asset',
         guid: '4316bfc7-578c-42bc-b2a4-32697155ffc1',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '40fc7296f6cbd27443f1d20dc3d1ee17fa51ca5fc6a6671e2b76d8b5e125c466',
+        checksum: 'e96d5e532040dbf4eda317b99dc5b3b0001eda64ba1c612cb0af35e5f597bc10',
+        fileSize: 1525,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/vying/perudo-bluff/perudo-bluffValidationFixtures.asset',
         guid: '415102a3-7444-4241-b1e5-ae6db4538165',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '3f88a04b00a8196bdbe4faafe771dd0a3b256f253b2655d0d8da21f48c4ec555',
+        checksum: '5317dd5f41e090420e64bf1b37b34cfad09a25c36922f325b13ae6dd10bbe802',
+        fileSize: 3814,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'bidding',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'bidding',
         label: 'Bid or challenge',
         actor: 'each_player_clockwise',
@@ -119,6 +142,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 5 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 5,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -318,6 +355,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      call_dudo: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action call_dudo is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'call_dudo',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -390,8 +440,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'bid',
+        'call_dudo',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'bidding',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'dealer_choice',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'dealer_choice',
         label: 'Dealer choice',
         actor: 'dealer',
@@ -136,6 +151,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'dealer_choice',
       'exchange_round',
       'one_more_round',

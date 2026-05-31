@@ -50,13 +50,14 @@
             id: 'sweet-chariot.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'first_bet',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -67,14 +68,20 @@
               'reveal_hand',
               'choose_hole_board',
             ],
-            explanation: 'Sweet Chariot Poker must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Sweet Chariot Poker must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'sweet-chariot.setup.initial-deal',
               'sweet-chariot.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'hakem_selection',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'hakem_selection',
         label: 'Select Hâkem',
         actor: 'system',
@@ -166,6 +181,7 @@
       ],
     },
     progression: [
+      'setup_round',
       'hakem_selection',
       'initial_deal',
       'trump_declaration',

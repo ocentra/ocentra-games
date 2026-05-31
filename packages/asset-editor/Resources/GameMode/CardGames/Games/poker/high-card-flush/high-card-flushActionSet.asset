@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'ante',
         'fold',
         'raise',
@@ -49,9 +50,24 @@
         go_out: false,
         deal_7_cards: false,
         settle_showdown: true,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 7 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 7,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: true,
         description: 'Place a mandatory ante wager before the deal to receive seven cards. Required to participate in the hand.',
@@ -252,6 +268,32 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'This game has no go-out action.',
+      },
+      deal_7_cards: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_7_cards is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_7_cards',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      settle_showdown: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action settle_showdown is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'settle_showdown',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

@@ -50,24 +50,31 @@
             id: 'tile-matching-solitaire.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'layout_tiles',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'layout_tiles',
               'remove_matching_pair',
             ],
-            explanation: 'Tile Matching Solitaire must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tile Matching Solitaire must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'tile-matching-solitaire.setup.initial-deal',
               'tile-matching-solitaire.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'layout_tiles',
             ],
           },
           {

@@ -50,25 +50,32 @@
             id: 'whot-british.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_six_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'draw',
               'deal_six_each',
             ],
-            explanation: 'Whot British must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Whot British must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'whot-british.setup.initial-deal',
               'whot-british.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_six_each',
             ],
           },
           {

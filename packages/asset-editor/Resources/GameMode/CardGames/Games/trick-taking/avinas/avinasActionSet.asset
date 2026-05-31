@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'play_card',
         'deal_batches_4',
         'declare_suit',
@@ -49,9 +50,24 @@
         deal_batches_4: false,
         declare_suit: false,
         calculate_120_and_assign_horns: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 8 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 8,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -250,6 +266,45 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'Round ends after eight tricks; horns assigned by system.',
+      },
+      deal_batches_4: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_batches_4 is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_batches_4',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      declare_suit: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action declare_suit is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'declare_suit',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      calculate_120_and_assign_horns: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action calculate_120_and_assign_horns is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'calculate_120_and_assign_horns',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

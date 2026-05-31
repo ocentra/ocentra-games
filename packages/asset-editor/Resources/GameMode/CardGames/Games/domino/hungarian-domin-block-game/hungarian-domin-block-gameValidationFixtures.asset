@@ -50,26 +50,33 @@
             id: 'hungarian-domin-block-game.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'first_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'pass',
               'play_tile',
               'score_round',
             ],
-            explanation: 'Hungarian DominÃ³ (Block) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Hungarian DominÃ³ (Block) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'hungarian-domin-block-game.setup.initial-deal',
               'hungarian-domin-block-game.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

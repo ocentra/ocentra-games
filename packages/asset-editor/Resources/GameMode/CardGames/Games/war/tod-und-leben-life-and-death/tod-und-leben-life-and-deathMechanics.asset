@@ -52,28 +52,36 @@
         guid: '17f66ea3-b443-4039-a4d5-de0cf24a8a6e',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '8c3b2915870bbc7e493a741ae474dc321894c96d00cb21d4ab96705c2f4ec262',
+        checksum: 'ebdf3b3454084512419f61f184dc1a617d6ac22ff4cd0e98ee0e1d65b0b20db7',
+        fileSize: 3197,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/war/tod-und-leben-life-and-death/tod-und-leben-life-and-deathActionSet.asset',
         guid: '0c8a4e69-ab2d-40a1-bb4f-c09d97766ff3',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'b957d17f2a66add6d756fd4d65dd71b078bb5c7faa9a8b8ecdfa764c6fed43bf',
+        checksum: 'bf0106968608b958c0e177ac260d85ba68a357d86e621eb4a23482413cc55630',
+        fileSize: 8190,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/war/tod-und-leben-life-and-death/tod-und-leben-life-and-deathStateEventModel.asset',
         guid: '885ef7b3-24de-4fe2-a15a-bf5b0a58b8c7',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '97c4ce7b684415e211d87a07641c39f446610a1173798f6780e20baf746de5d3',
+        checksum: '363081ac9d2e39a812e2a1e5a510771eb468e1ce4f38041fc54093489387608f',
+        fileSize: 1621,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/war/tod-und-leben-life-and-death/tod-und-leben-life-and-deathValidationFixtures.asset',
         guid: 'adf34234-ae4d-422e-9590-f438948a13a2',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '338353159cd26be24ed0db500eb822d74708b8e12e75eeff0fa2092277914ff5',
+        checksum: 'c7e2595f72a443c55269fc20f9bbbd8c44a6843e5779eea69de1eda987e21dda',
+        fileSize: 3924,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -101,6 +109,21 @@
       dealerRotates: false,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 16 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -137,6 +160,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 16 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 16,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -336,6 +373,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      deal_initial: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_initial is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_initial',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -408,8 +458,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal_initial',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'battle',
     ],

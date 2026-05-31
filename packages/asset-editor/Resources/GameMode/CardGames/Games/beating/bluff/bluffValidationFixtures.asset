@@ -50,13 +50,14 @@
             id: 'bluff.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_all',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'pass',
@@ -66,14 +67,20 @@
               'reveal_cards',
               'award_pile_to_loser',
             ],
-            explanation: 'Bluff must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bluff must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'bluff.setup.initial-deal',
               'bluff.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_all',
             ],
           },
           {

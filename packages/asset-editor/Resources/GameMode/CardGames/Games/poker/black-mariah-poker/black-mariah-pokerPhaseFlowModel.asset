@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'ante',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 7 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'ante',
         label: 'Ante Up',
         actor: 'current_player',
@@ -126,6 +141,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'ante',
       'deal',
       'betting',

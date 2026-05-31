@@ -50,13 +50,14 @@
             id: 'arlington.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_thirteen',
+              'setup_round',
             ],
-            expectedNextPhase: 'turn_start',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal_thirteen',
               'draw_stock',
               'draw_discard',
@@ -68,14 +69,20 @@
               'check_rummy',
               'final_scoring',
             ],
-            explanation: 'Arlington must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Arlington must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'arlington.setup.initial-deal',
               'arlington.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_thirteen',
             ],
           },
           {

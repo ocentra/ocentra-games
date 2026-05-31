@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'ante',
         'fold',
         'award_pot',
@@ -56,9 +57,24 @@
         play: false,
         apply_bourre_penalty: false,
         draw_from_stock: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 5 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 5,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: true,
         description: 'Contribute a fixed amount to the central pot.',
@@ -254,6 +270,58 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'The hand terminates for all active players simultaneously after the fifth trick is finished.',
+      },
+      deal_5_turn_trump: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_5_turn_trump is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_5_turn_trump',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      play: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action play is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'play',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      draw_from_stock: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action draw_from_stock is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'draw_from_stock',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      apply_bourre_penalty: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action apply_bourre_penalty is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'apply_bourre_penalty',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

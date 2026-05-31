@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'preflop_bet',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'preflop_bet',
         label: 'Pre-flop betting',
         actor: 'each_player_clockwise',
@@ -198,6 +213,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'preflop_bet',
       'flop_deal',
       'flop_bet',

@@ -50,26 +50,33 @@
             id: 'blind-hughie-dominoes.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_tiles_facedown',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'deal_tiles_facedown',
               'flip_rightmost_tile',
               'place_on_line',
               'cycle_to_left',
             ],
-            explanation: 'Blind Hughie must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Blind Hughie must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'blind-hughie-dominoes.setup.initial-deal',
               'blind-hughie-dominoes.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_tiles_facedown',
             ],
           },
           {

@@ -50,14 +50,14 @@
             id: 'lansquenet.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'place_bets',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bet_player',
-              'bet_banker',
+              'setup_round',
             ],
-            expectedNextPhase: 'reveal_banker_card',
+            expectedNextPhase: 'place_bets',
             supportedActionIds: [
+              'setup_round',
               'bet_player',
               'bet_banker',
               'reveal',
@@ -67,14 +67,21 @@
               'pay_winners',
               'collect_losers',
             ],
-            explanation: 'Lansquenet must enter place_bets first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Lansquenet must run setup_round first, then enter place_bets with the processed legal actions.',
             linkedRuleIds: [
+              'lansquenet.setup.initial-deal',
               'lansquenet.flow.place_bets',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'place_bets',
+            firstPlayableLegalActions: [
+              'bet_player',
+              'bet_banker',
             ],
           },
           {

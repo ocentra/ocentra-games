@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'die_roll',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'die_roll',
         label: 'Format Determination',
         actor: 'dealer',
@@ -205,6 +220,7 @@
       ],
     },
     progression: [
+      'setup_round',
       'die_roll',
       'dealing',
       'preflop_betting',

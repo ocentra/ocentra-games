@@ -50,13 +50,14 @@
             id: 'boston.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_13_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'auction',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'bid',
@@ -64,14 +65,20 @@
               'bid_contract',
               'calculate_boston_score',
             ],
-            explanation: 'Boston must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Boston must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'boston.setup.initial-deal',
               'boston.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_13_each',
             ],
           },
           {

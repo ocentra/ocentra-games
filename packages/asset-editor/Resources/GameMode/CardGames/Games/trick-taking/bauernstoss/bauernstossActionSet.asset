@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'play_card',
         'pass',
         'deal_8_each',
@@ -50,9 +51,24 @@
         deal_8_each: false,
         knock: false,
         calculate_trick_points: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 8 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 8,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -250,6 +266,45 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'The deal ends automatically once all eight tricks have been played by all participants at the table.',
+      },
+      deal_8_each: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_8_each is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_8_each',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      knock: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action knock is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'knock',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      calculate_trick_points: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action calculate_trick_points is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'calculate_trick_points',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

@@ -50,26 +50,33 @@
             id: 'fool-mb.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play_declare',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_declare',
+              'setup_round',
             ],
-            expectedNextPhase: 'challenge',
+            expectedNextPhase: 'play_declare',
             supportedActionIds: [
+              'setup_round',
               'play_declare',
               'call_fool',
               'accept_declaration',
               'end_game',
             ],
-            explanation: 'Fool (Milton Bradley) must enter play_declare first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Fool (Milton Bradley) must run setup_round first, then enter play_declare with the processed legal actions.',
             linkedRuleIds: [
+              'fool-mb.setup.initial-deal',
               'fool-mb.flow.play_declare',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play_declare',
+            firstPlayableLegalActions: [
+              'play_declare',
             ],
           },
           {

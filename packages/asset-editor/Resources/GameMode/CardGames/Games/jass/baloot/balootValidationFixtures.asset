@@ -50,13 +50,14 @@
             id: 'baloot.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'init_deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_3_then_2',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'init_deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'bid',
@@ -74,14 +75,20 @@
               'apply_multipliers',
               'check_khosara',
             ],
-            explanation: 'Baloot must enter init_deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Baloot must run setup_round first, then enter init_deal with the processed legal actions.',
             linkedRuleIds: [
+              'baloot.setup.initial-deal',
               'baloot.flow.init_deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'init_deal',
+            firstPlayableLegalActions: [
+              'deal_3_then_2',
             ],
           },
           {

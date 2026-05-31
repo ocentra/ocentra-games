@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'setup_wall',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'setup_wall',
         label: 'Setup Wall',
         actor: 'dealer',
@@ -129,6 +144,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'setup_wall',
       'deal',
       'regular_play',

@@ -50,25 +50,32 @@
             id: 'pas-seul.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'turn_stock_to_waste',
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'turn_stock_to_waste',
             ],
-            explanation: 'Pas Seul must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Pas Seul must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'pas-seul.setup.initial-deal',
               'pas-seul.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'turn_stock_to_waste',
+              'play_card',
             ],
           },
           {

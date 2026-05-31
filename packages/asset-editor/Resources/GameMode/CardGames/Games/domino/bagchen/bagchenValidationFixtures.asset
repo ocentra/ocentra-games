@@ -50,13 +50,14 @@
             id: 'bagchen.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'shuffle_and_stack',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'create_wood_wall',
+              'setup_round',
             ],
-            expectedNextPhase: 'dealing',
+            expectedNextPhase: 'shuffle_and_stack',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'create_wood_wall',
               'draw_stack',
@@ -68,14 +69,20 @@
               'assign_final_point',
               'check_session_win',
             ],
-            explanation: 'Bagchen must enter shuffle_and_stack first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bagchen must run setup_round first, then enter shuffle_and_stack with the processed legal actions.',
             linkedRuleIds: [
+              'bagchen.setup.initial-deal',
               'bagchen.flow.shuffle_and_stack',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'shuffle_and_stack',
+            firstPlayableLegalActions: [
+              'create_wood_wall',
             ],
           },
           {

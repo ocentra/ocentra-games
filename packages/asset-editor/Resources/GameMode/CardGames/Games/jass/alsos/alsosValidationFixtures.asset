@@ -50,14 +50,14 @@
             id: 'alsos.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'initial_deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
-              'reveal_market',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'initial_deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'reveal_market',
               'declare',
@@ -67,14 +67,21 @@
               'bid',
               'meld',
             ],
-            explanation: 'Alsos must enter initial_deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Alsos must run setup_round first, then enter initial_deal with the processed legal actions.',
             linkedRuleIds: [
+              'alsos.setup.initial-deal',
               'alsos.flow.initial_deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'initial_deal',
+            firstPlayableLegalActions: [
+              'deal',
+              'reveal_market',
             ],
           },
           {

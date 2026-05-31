@@ -50,13 +50,14 @@
             id: 'matgo-hwatu.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_round',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw_stock',
@@ -65,14 +66,20 @@
               'system_compute_score',
               'system_end_hand',
             ],
-            explanation: 'Matgo (Korean Go-Stop) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Matgo (Korean Go-Stop) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'matgo-hwatu.setup.initial-deal',
               'matgo-hwatu.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

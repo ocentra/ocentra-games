@@ -50,13 +50,14 @@
             id: 'horse.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'betting_round',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'check',
@@ -66,14 +67,20 @@
               'reveal_hand',
               'award_pot',
             ],
-            explanation: 'HORSE must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'HORSE must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'horse.setup.initial-deal',
               'horse.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

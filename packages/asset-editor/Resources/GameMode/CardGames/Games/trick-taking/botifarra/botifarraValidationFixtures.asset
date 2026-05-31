@@ -50,13 +50,14 @@
             id: 'botifarra.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_12_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'trump_selection',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'raise',
               'declare',
               'play_card',
@@ -69,14 +70,20 @@
               'recontrar',
               'calculate_trick_points',
             ],
-            explanation: 'Botifarra must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Botifarra must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'botifarra.setup.initial-deal',
               'botifarra.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_12_each',
             ],
           },
           {

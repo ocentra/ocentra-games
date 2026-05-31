@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'dealing_1',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'dealing_1',
         label: 'Part One Deal',
         actor: 'system',
@@ -154,6 +169,7 @@
       ],
     },
     progression: [
+      'setup_round',
       'dealing_1',
       'pitch',
       'trick_play_1',

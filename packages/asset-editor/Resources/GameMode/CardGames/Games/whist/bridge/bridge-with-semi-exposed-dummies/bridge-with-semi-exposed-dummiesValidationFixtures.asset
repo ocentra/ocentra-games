@@ -50,13 +50,14 @@
             id: 'bridge-with-semi-exposed-dummies.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_13_hand_13_dummy',
+              'setup_round',
             ],
-            expectedNextPhase: 'auction',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'bid',
@@ -66,14 +67,20 @@
               'bid_contract',
               'calculate_match_points',
             ],
-            explanation: 'Bridge with Semi-Exposed Dummies must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bridge with Semi-Exposed Dummies must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'bridge-with-semi-exposed-dummies.setup.initial-deal',
               'bridge-with-semi-exposed-dummies.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_13_hand_13_dummy',
             ],
           },
           {

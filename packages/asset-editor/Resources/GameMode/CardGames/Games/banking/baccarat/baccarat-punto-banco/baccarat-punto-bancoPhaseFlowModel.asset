@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'betting',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 2 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'betting',
         label: 'Place Your Wagers',
         actor: 'current_player',
@@ -135,6 +150,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'betting',
       'initial_deal',
       'natural_resolution',

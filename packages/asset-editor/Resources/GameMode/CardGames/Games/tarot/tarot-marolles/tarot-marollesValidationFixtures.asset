@@ -50,25 +50,32 @@
             id: 'tarot-marolles.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'declarations',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'play_card',
             ],
-            explanation: 'Tarot of the Abbé de Marolles 1637 must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tarot of the Abbé de Marolles 1637 must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'tarot-marolles.setup.initial-deal',
               'tarot-marolles.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

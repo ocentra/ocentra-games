@@ -50,24 +50,31 @@
             id: 'rangoon.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup_layout',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'lay_rows',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'setup_layout',
             supportedActionIds: [
+              'setup_round',
               'lay_rows',
               'move_to_gap',
             ],
-            explanation: 'Rangoon must enter setup_layout first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Rangoon must run setup_round first, then enter setup_layout with the processed legal actions.',
             linkedRuleIds: [
+              'rangoon.setup.initial-deal',
               'rangoon.flow.setup_layout',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup_layout',
+            firstPlayableLegalActions: [
+              'lay_rows',
             ],
           },
           {

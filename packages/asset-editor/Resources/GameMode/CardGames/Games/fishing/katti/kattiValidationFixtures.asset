@@ -50,24 +50,31 @@
             id: 'katti.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'bet',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bet',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'bet',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'bet',
             ],
-            explanation: 'Katti must enter bet first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Katti must run setup_round first, then enter bet with the processed legal actions.',
             linkedRuleIds: [
+              'katti.setup.initial-deal',
               'katti.flow.bet',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'bet',
+            firstPlayableLegalActions: [
+              'bet',
             ],
           },
           {

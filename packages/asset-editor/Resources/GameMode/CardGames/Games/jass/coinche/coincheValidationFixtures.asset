@@ -50,13 +50,14 @@
             id: 'coinche.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_8_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'auction',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'pass',
@@ -68,14 +69,20 @@
               'announce_meld',
               'calculate_total_points',
             ],
-            explanation: 'Coinche must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Coinche must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'coinche.setup.initial-deal',
               'coinche.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_8_each',
             ],
           },
           {

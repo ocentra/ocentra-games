@@ -50,13 +50,14 @@
             id: 'z-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_hole_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'preflop_bet',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'fold',
               'check',
               'call',
@@ -69,14 +70,20 @@
               'deal_turn',
               'deal_river',
             ],
-            explanation: 'Z Poker must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Z Poker must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'z-poker.setup.initial-deal',
               'z-poker.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_hole_cards',
             ],
           },
           {

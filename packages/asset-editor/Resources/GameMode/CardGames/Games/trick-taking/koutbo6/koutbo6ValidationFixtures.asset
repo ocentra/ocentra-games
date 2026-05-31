@@ -50,26 +50,33 @@
             id: 'koutbo6.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_9_counterclockwise',
+              'setup_round',
             ],
-            expectedNextPhase: 'bid',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'bid',
               'deal_9_counterclockwise',
             ],
-            explanation: 'Kout Bo 6 must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Kout Bo 6 must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'koutbo6.setup.initial-deal',
               'koutbo6.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_9_counterclockwise',
             ],
           },
           {

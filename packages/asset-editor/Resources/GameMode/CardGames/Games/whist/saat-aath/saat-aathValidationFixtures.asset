@@ -50,13 +50,14 @@
             id: 'saat-aath.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_initial',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_initial_hand',
+              'setup_round',
             ],
-            expectedNextPhase: 'call_trump',
+            expectedNextPhase: 'deal_initial',
             supportedActionIds: [
+              'setup_round',
               'deal_initial_hand',
               'choose_trump',
               'deal_face_down_rows',
@@ -66,14 +67,20 @@
               'reveal_under_card',
               'compare_quotas',
             ],
-            explanation: 'Saat-Aath must enter deal_initial first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Saat-Aath must run setup_round first, then enter deal_initial with the processed legal actions.',
             linkedRuleIds: [
+              'saat-aath.setup.initial-deal',
               'saat-aath.flow.deal_initial',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_initial',
+            firstPlayableLegalActions: [
+              'deal_initial_hand',
             ],
           },
           {

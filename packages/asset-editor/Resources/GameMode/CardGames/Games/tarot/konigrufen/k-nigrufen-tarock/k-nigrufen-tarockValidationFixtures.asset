@@ -50,14 +50,14 @@
             id: 'k-nigrufen-tarock.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
-              'form_talon',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'pass',
@@ -72,14 +72,21 @@
               'count_points',
               'calculate_payments',
             ],
-            explanation: 'Königrufen Tarock must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Königrufen Tarock must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'k-nigrufen-tarock.setup.initial-deal',
               'k-nigrufen-tarock.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+              'form_talon',
             ],
           },
           {

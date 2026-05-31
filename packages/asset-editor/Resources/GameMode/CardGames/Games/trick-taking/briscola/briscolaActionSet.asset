@@ -23,6 +23,8 @@
         'score_trick',
         'score_round',
         'end_hand',
+        'deal_3_each_turn_trump',
+        'play_any_card',
       ],
       payloadSchemas: {
         play_card: {
@@ -32,7 +34,7 @@
         },
       },
       actionEndsTurn: {
-        setup_round: false,
+        setup_round: true,
         play_card: true,
         draw_after_trick: false,
         score_trick: false,
@@ -43,15 +45,17 @@
     actions: {
       setup_round: {
         supported: true,
-        description: 'Deal three cards to each player and reveal one trump indicator card.',
-        constraints: 'System setup action.',
+        system: true,
+        description: 'Deal 3 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
         effectType: 'setup_round',
-        cost: '0',
         effectHints: {
-          dealCountPerPlayer: 3,
-          trumpSource: 'revealed_upcard',
+          initialHandSize: 3,
+          deckCount: 1,
+          visibility: 'face_down',
         },
-        isTerminating: false,
       },
       play_card: {
         supported: true,
@@ -111,6 +115,32 @@
           winningThreshold: 61,
         },
         isTerminating: true,
+      },
+      deal_3_each_turn_trump: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_3_each_turn_trump is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_3_each_turn_trump',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      play_any_card: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action play_any_card is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'play_any_card',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

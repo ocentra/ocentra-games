@@ -52,28 +52,36 @@
         guid: '90feadf8-c5ef-4161-9918-43ccaae300e3',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '3fc09db8fb512ed88803ba65f171e430477a776bc46a2e328493e47c591dd41d',
+        checksum: '89548d4e8f8d65a415bde65b113949ca42381a6f808e25a0ea9b9d0fc64b725e',
+        fileSize: 2744,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/oma-skat/oma-skatActionSet.asset',
         guid: 'd9e1424f-5628-4e04-af0e-b2ea860f800c',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '7b1b7e6187c00477637f409cf345dbaa98266f2506bf9f99fe024585395b052d',
+        checksum: '1defdf6c1b8f818b56210dfd46bdec3d6a88d61e81e9da9a01599f254650b022',
+        fileSize: 7242,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/oma-skat/oma-skatStateEventModel.asset',
         guid: 'd43a1403-7bad-421f-b543-0816044f0f9a',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'a5b0a255055a9ed312dd4b399dc47b06feb8dcb0cf01f817f88d9e98049354e4',
+        checksum: 'be8ee8e23cffd6fe577e1f221eaf04459399ed597f0fe18581d7574e78f330b1',
+        fileSize: 1384,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/oma-skat/oma-skatValidationFixtures.asset',
         guid: '4d1cbd1e-ae7e-4130-9ca5-1dc702c806fa',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '50a87ec3fc05ff542fe3dd91bc3c77b4d403051d71f28decd71beac939433705',
+        checksum: '328ace83df6c5ed180a50431abf5bed6ad13fb34c77a6a68717581a9465d45fa',
+        fileSize: 3793,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -368,8 +405,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'discard',
+        'pass',
+        'bid',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

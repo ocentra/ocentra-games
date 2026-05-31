@@ -50,13 +50,14 @@
             id: 'swingo.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'blinds',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'blinds',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -69,14 +70,20 @@
               'choose_hole_and_board',
               'expose_board',
             ],
-            explanation: 'Swingo Poker must enter blinds first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Swingo Poker must run setup_round first, then enter blinds with the processed legal actions.',
             linkedRuleIds: [
+              'swingo.setup.initial-deal',
               'swingo.flow.blinds',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'blinds',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

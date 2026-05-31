@@ -50,25 +50,32 @@
             id: 'spades.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'bid',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'bid',
               'deal_cards',
             ],
-            explanation: 'Spades (Standard) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Spades (Standard) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'spades.setup.initial-deal',
               'spades.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_cards',
             ],
           },
           {

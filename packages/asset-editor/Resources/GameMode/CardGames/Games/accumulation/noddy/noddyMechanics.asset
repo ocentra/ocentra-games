@@ -52,28 +52,36 @@
         guid: 'dcfc1a39-5027-4c7c-8afb-ff8ab4bf7e7c',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'da4cf51e16855547617e4e0d967091ca9075d6dcae57299fdb8a28634ad45411',
+        checksum: 'a4ef9ae7633b0abba667c99e223c88b9b1169930f2b5bf28f195610439fb55e3',
+        fileSize: 3562,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/accumulation/noddy/noddyActionSet.asset',
         guid: '23847080-22dc-45cd-b2ac-cb8c85dbec34',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'e9230250ed1b0689a2a5f1966df1c2907f959825e4cf09cab3b637d93c344217',
+        checksum: 'c7a232ee5dcd864797a455a47928c0b6f2f9908c4ebeef52de25a6532f464123',
+        fileSize: 8613,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/accumulation/noddy/noddyStateEventModel.asset',
         guid: '4599609d-c25a-4924-835e-ecd8a4879b56',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '3bf5072e2fa188aa2f192f5d97a62bfbbdce1e45c23f17eb416ed8c69accc949',
+        checksum: '78b99f33287e21ceca94c3b7b045fc3ca82d09f61557da33b18a9f99105b1784',
+        fileSize: 1688,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/accumulation/noddy/noddyValidationFixtures.asset',
         guid: '31d05dbc-ff7a-4fe6-9a3c-457c7b2bed40',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '2066a9220381869098bea6a03e4aa147b256dbb88f040fd25a442a95037db5cd',
+        checksum: '2ea8c9490fd118f6bef992b80ffa13d915c9c2dff9c97f5e9f6505a4bdb7efd1',
+        fileSize: 3677,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -105,6 +113,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -167,6 +190,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 4 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 4,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -365,6 +402,32 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      cut: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action cut is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'cut',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      count_hand: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action count_hand is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'count_hand',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -447,8 +510,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'cut',
+        'play_card',
+        'count_hand',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'cut',
       'pegging',

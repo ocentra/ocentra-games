@@ -50,23 +50,30 @@
             id: 'skitgubbe.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'phase_1',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'phase_2',
+            expectedNextPhase: 'phase_1',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: 'Skitgubbe must enter phase_1 first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Skitgubbe must run setup_round first, then enter phase_1 with the processed legal actions.',
             linkedRuleIds: [
+              'skitgubbe.setup.initial-deal',
               'skitgubbe.flow.phase_1',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'phase_1',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

@@ -50,26 +50,33 @@
             id: 'skin.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'case_card',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'issue_case_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'reveal',
+            expectedNextPhase: 'case_card',
             supportedActionIds: [
+              'setup_round',
               'call',
               'bet',
               'raise',
               'issue_case_cards',
             ],
-            explanation: 'Skin must enter case_card first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Skin must run setup_round first, then enter case_card with the processed legal actions.',
             linkedRuleIds: [
+              'skin.setup.initial-deal',
               'skin.flow.case_card',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'case_card',
+            firstPlayableLegalActions: [
+              'issue_case_cards',
             ],
           },
           {

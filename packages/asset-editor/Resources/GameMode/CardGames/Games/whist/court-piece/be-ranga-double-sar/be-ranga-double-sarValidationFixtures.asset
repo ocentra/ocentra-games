@@ -50,26 +50,33 @@
             id: 'be-ranga-double-sar.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_first_5',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_5_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'trump_call',
+            expectedNextPhase: 'deal_first_5',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_5_each',
               'call_trump_suit',
               'deal_8_each',
             ],
-            explanation: 'Be-Ranga Double Sar must enter deal_first_5 first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Be-Ranga Double Sar must run setup_round first, then enter deal_first_5 with the processed legal actions.',
             linkedRuleIds: [
+              'be-ranga-double-sar.setup.initial-deal',
               'be-ranga-double-sar.flow.deal_first_5',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_first_5',
+            firstPlayableLegalActions: [
+              'deal_5_each',
             ],
           },
           {

@@ -50,13 +50,14 @@
             id: 'courchevel.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'initial_deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'complete_initial_deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'preflop_bet',
+            expectedNextPhase: 'initial_deal',
             supportedActionIds: [
+              'setup_round',
               'fold',
               'check',
               'call',
@@ -68,14 +69,20 @@
               'complete_turn',
               'complete_river',
             ],
-            explanation: 'Courchevel must enter initial_deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Courchevel must run setup_round first, then enter initial_deal with the processed legal actions.',
             linkedRuleIds: [
+              'courchevel.setup.initial-deal',
               'courchevel.flow.initial_deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'initial_deal',
+            firstPlayableLegalActions: [
+              'complete_initial_deal',
             ],
           },
           {

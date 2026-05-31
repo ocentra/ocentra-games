@@ -50,14 +50,14 @@
             id: 'logic.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
-              'arrange',
+              'setup_round',
             ],
-            expectedNextPhase: 'show',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'pass',
@@ -69,14 +69,21 @@
               'win',
               'lose',
             ],
-            explanation: 'Logic must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Logic must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'logic.setup.initial-deal',
               'logic.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal',
+              'arrange',
             ],
           },
           {

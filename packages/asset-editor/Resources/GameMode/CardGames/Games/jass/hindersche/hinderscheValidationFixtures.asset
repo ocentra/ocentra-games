@@ -50,25 +50,32 @@
             id: 'hindersche.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'trick_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'score_round',
             ],
-            explanation: 'Hindersche must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Hindersche must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'hindersche.setup.initial-deal',
               'hindersche.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

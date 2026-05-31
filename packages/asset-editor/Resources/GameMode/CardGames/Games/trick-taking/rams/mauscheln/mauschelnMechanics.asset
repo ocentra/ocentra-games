@@ -52,28 +52,36 @@
         guid: '8abb1152-1eea-4fbc-90f8-34d2c566e48d',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'd476d5e9fde7bc66eae4d48fa09b428b24d711fb90906e64c5fb557b73f1d263',
+        checksum: 'c2b14ea648c28092bfc9d6721585ee2c846f300ddc649c95839e5e8535caa83f',
+        fileSize: 3733,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/rams/mauscheln/mauschelnActionSet.asset',
         guid: '63611a1e-414c-4357-85cb-8319bbdff84a',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '3c8ac0b5465ca92366a949e9c28b8dd8aa54210a44ddfe3ebb89c5d54864f06c',
+        checksum: '6b8ecd5fd02b5f5540e26e470aeacc065d082723517473118a9674e552247062',
+        fileSize: 9599,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/rams/mauscheln/mauschelnStateEventModel.asset',
         guid: '7c2d3bca-957d-42e2-bee1-f8da1ea09c15',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'd9ed034b7e7ffb36c4bbab0f58f227288fd18d9f8e89f6a63ccca7a810148e80',
+        checksum: '759d676e464671d9480cc108961a9310abbef34ff63704a8bfd6696e5f8182fb',
+        fileSize: 1637,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/rams/mauscheln/mauschelnValidationFixtures.asset',
         guid: '9da823c2-fe4e-4b6f-b409-01c84bb321aa',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'f4387f19771ed8841f57af404fb2fb308b2cdf9d87f928b56fada41082698011',
+        checksum: 'fc92aa06c7b55b3c2e21082f705bd471553f4761bab3a1ecd167c5435d2a7ce3',
+        fileSize: 3977,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -103,6 +111,21 @@
       dealerRotates: false,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'declare',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
       {
         id: 'declare',
         label: 'Declare (Sneak or Pass)',
@@ -137,6 +160,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 4 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 4,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -335,6 +372,32 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      mauscheln_sneak: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action mauscheln_sneak is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'mauscheln_sneak',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      mauscheln_mitgehen: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action mauscheln_mitgehen is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'mauscheln_mitgehen',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -417,8 +480,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'mauscheln_sneak',
+        'pass',
+        'mauscheln_mitgehen',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'declare',
       'play',
     ],

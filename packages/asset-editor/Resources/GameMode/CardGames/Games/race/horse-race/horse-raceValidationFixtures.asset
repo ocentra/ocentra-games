@@ -50,25 +50,32 @@
             id: 'horse-race.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'lay_course',
+              'setup_round',
             ],
-            expectedNextPhase: 'bet',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'lay_course',
               'turn_card',
             ],
-            explanation: 'Calcutta Horse Race must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Calcutta Horse Race must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'horse-race.setup.initial-deal',
               'horse-race.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'lay_course',
             ],
           },
           {

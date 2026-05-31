@@ -50,13 +50,14 @@
             id: 'ba-ka.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_2_2',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'deal_2_2',
@@ -66,14 +67,20 @@
               'zolo',
               'evaluate_104_points',
             ],
-            explanation: 'Baśka must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Baśka must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'ba-ka.setup.initial-deal',
               'ba-ka.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_2_2',
             ],
           },
           {

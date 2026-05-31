@@ -50,13 +50,14 @@
             id: 'one-eyed-jack.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
@@ -64,14 +65,20 @@
               'check_row',
               'award_win',
             ],
-            explanation: 'One-Eyed Jack must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'One-Eyed Jack must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'one-eyed-jack.setup.initial-deal',
               'one-eyed-jack.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

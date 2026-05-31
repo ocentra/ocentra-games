@@ -50,13 +50,14 @@
             id: 'tripoli.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'check',
@@ -67,14 +68,20 @@
               'award_pot',
               'play_card',
             ],
-            explanation: 'Tripoli must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tripoli must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'tripoli.setup.initial-deal',
               'tripoli.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

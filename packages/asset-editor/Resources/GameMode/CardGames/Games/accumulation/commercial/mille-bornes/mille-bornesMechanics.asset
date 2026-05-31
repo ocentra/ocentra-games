@@ -52,28 +52,36 @@
         guid: 'c2791912-209e-4bff-bd8d-fe2af81b8cce',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '324af60a64385aaaccfbf712ae594c6d5625d061eba92743c48653cc4b8ade60',
+        checksum: 'f9578d632f34d0f8f4c44903b60a25fa8e76a6908f4e89ecb1f9a2121b67efcf',
+        fileSize: 3080,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/accumulation/commercial/mille-bornes/mille-bornesActionSet.asset',
         guid: 'd0fbd33c-73f8-4160-9a2c-dce8623f819c',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '709ab2b5e0eade89ca12d5dcc36719ee468f4873ea8de02281dc6309092e6e2d',
+        checksum: '33e49c67e7c601ad1a9c0c2c738eace9ba39be721046c56b190f0315ee7449d4',
+        fileSize: 7696,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/accumulation/commercial/mille-bornes/mille-bornesStateEventModel.asset',
         guid: '949186a7-3638-4233-b9f7-7d13da8a1865',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '111f4530b7d48afba939cf4f44a4bbdb1f79a92230c1e3acd9990bbad8239817',
+        checksum: '3a2cf7bed6d9ca26b8d0d70f949e3fa1ae4b260f3ae24f33ed2c4cda1195c036',
+        fileSize: 1758,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/accumulation/commercial/mille-bornes/mille-bornesValidationFixtures.asset',
         guid: '1847743a-c0f4-4805-aedc-ec3c9c0d534a',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '8231ddc63199c8efb48e558e4d9b4d02f150b79e031759acae653af7e4d64208',
+        checksum: '1b34a50945b0605ae27c8c16293b27ea228576a145d03bfd4db166b338894886',
+        fileSize: 4140,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 6 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'each_player_clockwise',
@@ -122,6 +145,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 6 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 6,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -387,8 +424,21 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'draw',
+        'play_card',
+        'discard',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

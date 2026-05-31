@@ -52,28 +52,36 @@
         guid: 'd5042660-9cfd-428a-849b-29e67a838df0',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'fdb7a8566c02b0d2d2d2e84ced2c7b6803c207aa3c6de66817954c87edef91fb',
+        checksum: '56c1aa7b364cbdd97fca6271272d4efbd2e0e8fa3655892ad7214b9d478c4242',
+        fileSize: 2785,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/domino/flower-scorpion/flower-scorpionActionSet.asset',
         guid: 'd464e1c8-3c59-4ef3-93f0-c4055445a439',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '7410b53b200049c5d5b9dca17e281fe438540d5d10b6ec84e380721efdbff631',
+        checksum: 'f927b997c9c0e47e9d34eb5d75c3f37d9fe54a61957c97a9959faf69cc3d9ed1',
+        fileSize: 7855,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/domino/flower-scorpion/flower-scorpionStateEventModel.asset',
         guid: '14c924b4-6344-4160-9853-1e89a5615185',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '52d3dc29ea86e625b910bb0c58b644dd575436ef1a8eb49eb6bcfb1f59e745df',
+        checksum: '929f75811a58ef9b3473b5a25e7a9dca501c255359a8c66151bedf72b4999593',
+        fileSize: 1343,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/domino/flower-scorpion/flower-scorpionValidationFixtures.asset',
         guid: '254b0b80-a7c9-463c-bb52-f5ada8cc5f0c',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'e89d86d6433c0bd42f87070ce1b564c5eda52441db56d17f5367c43d9fcb52ee',
+        checksum: '81050a38b6d4aceb2ab3c48879b6e0803e71eed01f8c3c64bebec45a27971df7',
+        fileSize: 3947,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -118,6 +141,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 5 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 5,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -318,6 +355,19 @@
         effectHints: {},
         reason: 'Game has no going out mechanic.',
       },
+      roll_flower_scorpion_dice: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action roll_flower_scorpion_dice is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'roll_flower_scorpion_dice',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -381,8 +431,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'roll_flower_scorpion_dice',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

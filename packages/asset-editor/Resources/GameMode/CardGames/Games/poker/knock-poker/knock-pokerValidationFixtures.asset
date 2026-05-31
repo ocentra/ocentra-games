@@ -50,13 +50,14 @@
             id: 'knock-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -66,14 +67,20 @@
               'draw',
               'discard',
             ],
-            explanation: 'Knock Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Knock Poker must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'knock-poker.setup.initial-deal',
               'knock-poker.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

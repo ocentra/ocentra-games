@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'tax_exchange',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'tax_exchange',
         label: 'Tax Exchange',
         actor: 'all_simultaneous',
@@ -99,6 +114,7 @@
       ],
     },
     progression: [
+      'setup_round',
       'tax_exchange',
       'play',
       'ranking',

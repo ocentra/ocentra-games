@@ -50,14 +50,14 @@
             id: 'rollyourown.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
-              'deal_3_down',
+              'setup_round',
             ],
-            expectedNextPhase: 'reveal_1',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'check',
@@ -71,14 +71,21 @@
               'deal_7th_down',
               'showdown_reveal',
             ],
-            explanation: 'Roll Your Own Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Roll Your Own Poker must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'rollyourown.setup.initial-deal',
               'rollyourown.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
+              'deal_3_down',
             ],
           },
           {

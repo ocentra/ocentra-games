@@ -52,28 +52,36 @@
         guid: '6d99a6cf-7b95-4e31-ba30-62122a38d449',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '4839c8ca51a555e7a638e8510f216a2029c8b1ae1e695a5a55ed33f8bcb69c2c',
+        checksum: 'fd5e635ddc6460db67e6716afb45158fa377c52784b6cf7f83dcd854bb23bb69',
+        fileSize: 2862,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/marriage/marjapussi/marjapussiActionSet.asset',
         guid: '6d6d6afa-9d8c-4506-a035-ccf119f9978b',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'd6e9f6ca561a96008e12c64f77a30e5bd6d9c0db76380e4d98841d5d86a875a1',
+        checksum: '8de1f6e7d3fc3c788b4bc40737c0c64bf63cdfd9f6c8e325e0355d44a5d160bb',
+        fileSize: 8455,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/marriage/marjapussi/marjapussiStateEventModel.asset',
         guid: '93d53d96-981f-4311-81a2-0d43d238f0fd',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '5793c692dbf1d0b3ea0c60926b87554749bc98fc59509474debebf2dcaffe22d',
+        checksum: '3a8f1ec5bdbc71c1f7b472f8aa2b989029ead1214fbed32a2f275e3dce6dfb93',
+        fileSize: 1539,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/marriage/marjapussi/marjapussiValidationFixtures.asset',
         guid: 'a6603223-8798-4b36-a555-7dd2168fba0b',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'a2cbb05b23313d839c9e76680021011d1517e9c0dc115ef43ef5536ef62ad9d6',
+        checksum: '5c0d11a207b695ba4757062826215275bee309d6c05294c099f6acf3dabe107d',
+        fileSize: 4293,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 9 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'current_player',
@@ -118,6 +141,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 9 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 9,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -317,6 +354,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      declare_marriage: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action declare_marriage is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'declare_marriage',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -389,8 +439,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'declare_marriage',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

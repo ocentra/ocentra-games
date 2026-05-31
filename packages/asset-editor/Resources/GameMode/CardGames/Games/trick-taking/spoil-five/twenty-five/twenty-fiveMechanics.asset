@@ -52,28 +52,36 @@
         guid: 'dfaf461d-4816-4686-a488-cb8f962875c4',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'a4a92d7eb47f5f83eb126f8310c26640184f9602a73d5280840641c52350df96',
+        checksum: '1975ef2597b5fd5f68ca2c8ddc3e2107db921487845f8afa171b70647b71bf5a',
+        fileSize: 3499,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spoil-five/twenty-five/twenty-fiveActionSet.asset',
         guid: 'a5581465-3437-47c1-8be8-cde4d780d917',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '76133cb6bf34f948e5ba722c87b6b6a0376a848a440b5bac6990207cc3d9217a',
+        checksum: '96a0cfe85be487ae73465a2d68fa8f05d092b06095ac91fe560d952ea547898e',
+        fileSize: 8271,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spoil-five/twenty-five/twenty-fiveStateEventModel.asset',
         guid: 'a35ee031-7e8e-4b0a-b91c-e4324312c495',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '8b31c1fe77073ddd1a14c022aae19318311dbb2a7e894e8606c63e69a3299784',
+        checksum: '92ce55670d0020c7f1f631abd5b8492ef2905d438da66a6949757bfe67a6aff0',
+        fileSize: 1605,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spoil-five/twenty-five/twenty-fiveValidationFixtures.asset',
         guid: 'cd786361-cc66-4433-a8e7-ff4e2a4fd3de',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'de11f0a277c8fc7ab90bcebe1e89c7948241f2040d4078b1e9db76c91d42ef58',
+        checksum: '887df75aed031824be0db969116bc4fc7c3e5cc938c4f23b97b71b3152cece61',
+        fileSize: 3722,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -103,6 +111,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal and turn trump',
@@ -135,6 +158,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 5 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 5,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -334,6 +371,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      deal_5_turn_trump: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_5_turn_trump is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_5_turn_trump',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -406,8 +456,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal_5_turn_trump',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'play',
     ],

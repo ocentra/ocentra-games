@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'deal',
         'play_card',
         'draw',
@@ -51,9 +52,24 @@
         go_out: true,
         claim_discard_to_win: true,
         claim_discard_for_dui: false,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 15 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 15,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -257,6 +273,32 @@
         isTerminating: true,
         effectType: 'declare',
         effectHints: {},
+      },
+      claim_discard_to_win: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action claim_discard_to_win is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'claim_discard_to_win',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      claim_discard_for_dui: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action claim_discard_for_dui is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'claim_discard_for_dui',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

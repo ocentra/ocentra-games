@@ -52,28 +52,36 @@
         guid: '22a6d259-ff9b-4105-b95e-7f8c0b8edf91',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '0e5113e55e0ec7e72f5c058d5c302c29a46e5c304fcfac3d5e75b1bd1589eb5e',
+        checksum: '516a1fafb517c7d0437270d50277da54b797a3ef39027117da0e83b90ccd34d8',
+        fileSize: 3556,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spizzichino/spizzichinoActionSet.asset',
         guid: '6ccfc247-cede-4809-b3c8-f929c2e5126d',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '03acb96f2c95ef1b1a07fcd04441ae273d2b699c747467be91bd67baf5c789ac',
+        checksum: 'fcda9be0edc396a11c1547625c8ac0dbbaaaa05e82c5738fd9516c4499230c72',
+        fileSize: 8334,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spizzichino/spizzichinoStateEventModel.asset',
         guid: 'f39bc942-a760-4089-bd57-21c0cb26a6c8',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'b61cf725f8cde29f425259ca9aac445a427ec54672b01f4cb702fe443aec8ae3',
+        checksum: 'e4264d0cea7ed4d4bbdee0328252ecddb4d9b88424fd86987f6c7a311fdb3300',
+        fileSize: 1634,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spizzichino/spizzichinoValidationFixtures.asset',
         guid: '41f33a16-e06c-490e-8668-e3be692591fc',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '2f085856ee87362ebf37129fd7e5eede0a993e3b762d870d4ef23cd4c27b3744',
+        checksum: '7845741b95b010ea4eac0c3982f6ad091663c36b634a4c2633f52f9e85f0648f',
+        fileSize: 4019,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
       dealerRotates: false,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -136,6 +159,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -334,6 +371,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      deal_pizzichino: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_pizzichino is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_pizzichino',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -406,8 +456,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal_pizzichino',
+        'play_card',
+        'meld',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'play',
     ],

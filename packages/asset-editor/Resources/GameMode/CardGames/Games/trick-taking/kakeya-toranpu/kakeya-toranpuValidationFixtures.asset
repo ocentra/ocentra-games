@@ -50,13 +50,14 @@
             id: 'kakeya-toranpu.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'partnership_draw',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'draw_sticks',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'partnership_draw',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw_sticks',
@@ -65,14 +66,20 @@
               'count_face_cards',
               'exchange_stones',
             ],
-            explanation: 'Kakeya Toranpu must enter partnership_draw first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Kakeya Toranpu must run setup_round first, then enter partnership_draw with the processed legal actions.',
             linkedRuleIds: [
+              'kakeya-toranpu.setup.initial-deal',
               'kakeya-toranpu.flow.partnership_draw',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'partnership_draw',
+            firstPlayableLegalActions: [
+              'draw_sticks',
             ],
           },
           {

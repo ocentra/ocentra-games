@@ -50,13 +50,14 @@
             id: 'baifen.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_individual_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'trump_declaration',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'deal_individual_cards',
               'declare_trump_suit',
               'lead_card',
@@ -65,14 +66,20 @@
               'sum_points',
               'check_threshold',
             ],
-            explanation: 'Bai Fen must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bai Fen must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'baifen.setup.initial-deal',
               'baifen.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_individual_cards',
             ],
           },
           {

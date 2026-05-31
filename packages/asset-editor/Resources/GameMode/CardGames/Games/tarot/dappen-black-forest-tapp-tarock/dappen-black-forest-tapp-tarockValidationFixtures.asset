@@ -50,25 +50,32 @@
             id: 'dappen-black-forest-tapp-tarock.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'trick_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'award_pot',
               'play_card',
             ],
-            explanation: 'Dappen Black Forest Tapp Tarock must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Dappen Black Forest Tapp Tarock must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'dappen-black-forest-tapp-tarock.setup.initial-deal',
               'dappen-black-forest-tapp-tarock.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

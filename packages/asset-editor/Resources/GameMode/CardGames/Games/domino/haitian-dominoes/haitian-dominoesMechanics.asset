@@ -52,28 +52,36 @@
         guid: '2f9e8f53-6f2b-48b4-b953-e8cfcb78f85e',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'fe6a9e202cb3f5da8d0c357aaeb8f65561537c730efb3f4a256d450d8afceb5f',
+        checksum: '36b8cc0d2dd091f7707ec6c03533e82d0ff1427f480d711fc746b612264ea23a',
+        fileSize: 4848,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/domino/haitian-dominoes/haitian-dominoesActionSet.asset',
         guid: '06c066da-b0fc-4fe7-87e1-847e2c3ab8d0',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '604e484ef542d5e3c32dc76fbeb22065464c83421e19185730b1c300860e2493',
+        checksum: 'a7d12f9e12306fd377065ad50c8bc6a29a94e549d47864eb19b9b66b8e8f7660',
+        fileSize: 8998,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/domino/haitian-dominoes/haitian-dominoesStateEventModel.asset',
         guid: '7be0e152-fca3-40c4-ae51-619af756612c',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'e88e7278e5967e643714b080995dd89c8c187d68827242216fd67c8620f0eecc',
+        checksum: 'f7cc9a0c448a10448ec35165934b2f43f7ec3dcc93c16d0176ba2808ea29a7d3',
+        fileSize: 1856,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/domino/haitian-dominoes/haitian-dominoesValidationFixtures.asset',
         guid: '01515d95-e48b-44e3-b77b-c7ecb51b418d',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '7f1dae98fb9fc105a42ec84c9f97d46b14074a8846bbc0c77713c18665d84cbc',
+        checksum: 'a700dc3ce0b0d2c2e3e9adcd2e8d94643716402c27e54c996d39092046729d1f',
+        fileSize: 4240,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -115,6 +123,21 @@
       dealerRotates: false,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 7 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal_round',
         label: 'Deal 7 Tiles',
@@ -205,6 +228,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 7 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 7,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -406,6 +443,19 @@
         effectHints: {},
         reason: 'Round ends when a player empties hand or line is blocked; no explicit go-out.',
       },
+      evaluate_round_end: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action evaluate_round_end is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'evaluate_round_end',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -472,8 +522,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'play_card',
+        'pass',
+        'declare',
+        'evaluate_round_end',
+        'award_pot',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal_round',
       'play_loop',
       'round_check',

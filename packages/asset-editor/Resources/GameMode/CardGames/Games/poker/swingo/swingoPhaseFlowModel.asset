@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'blinds',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'blinds',
         label: 'Blinds',
         actor: 'each_player_clockwise',
@@ -212,6 +227,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'blinds',
       'deal',
       'first_bet',

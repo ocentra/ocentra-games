@@ -36,6 +36,9 @@ const NON_BLOCKING_WARNING_CODES = new Set([
   'deck-card-image-missing',
   'deck-card-image-unknown',
   'deck-card-image-placeholder',
+  'deck-too-small-for-initial-deal',
+  'game-info-incomplete-flag',
+  'game-info-not-complete',
 ]);
 
 function findAssetFiles(dir: string, fileList: string[] = []): string[] {
@@ -123,6 +126,11 @@ function relativeResourcePath(filePath: string): string {
 
 function issue(severity: 'error' | 'warning', code: string, path: string, message: string): SelectedGameReadinessIssue {
   return { severity, code, path, message };
+}
+
+function releaseBlockingSeverity(bundle: LoadedGameBundle): 'error' | 'warning' {
+  const releaseStatus = asText(dataOf(bundle.gameMode).releaseStatus);
+  return PUBLIC_RELEASE_STATUSES.has(releaseStatus) ? 'error' : 'warning';
 }
 
 function sha256File(filePath: string): string {
@@ -306,17 +314,13 @@ interface LoadedGameBundle {
   gameTreePath: string;
 }
 
-function validatePublicGameAssetContract(bundle: LoadedGameBundle): SelectedGameReadinessIssue[] {
+function validateGameAssetContract(bundle: LoadedGameBundle): SelectedGameReadinessIssue[] {
   const gameModeData = dataOf(bundle.gameMode);
   const releaseStatus = asText(gameModeData.releaseStatus);
   const issues: SelectedGameReadinessIssue[] = [];
 
   if (!releaseStatus) {
     issues.push(issue('error', 'missing-release-status', `${bundle.gameTreePath}.data.releaseStatus`, 'CardGameMode must declare releaseStatus.'));
-    return issues;
-  }
-
-  if (!PUBLIC_RELEASE_STATUSES.has(releaseStatus)) {
     return issues;
   }
 
@@ -339,7 +343,7 @@ function validateImageContract(bundle: LoadedGameBundle): SelectedGameReadinessI
   requireKnownImageHash(issues, iconHash, `${bundle.gameTreePath}.data.gameIcon`, 'gameIcon');
 
   if (!bundle.images) {
-    issues.push(issue('error', 'missing-carousel-asset', `${bundle.gameTreePath}.data.carouselImagesAsset`, 'Public game must resolve an ImageCarousel asset.'));
+    issues.push(issue('error', 'missing-carousel-asset', `${bundle.gameTreePath}.data.carouselImagesAsset`, 'CardGameMode must resolve an ImageCarousel asset.'));
     return issues;
   }
 
@@ -352,7 +356,7 @@ function validateImageContract(bundle: LoadedGameBundle): SelectedGameReadinessI
   }
 
   if (slides.length < 3) {
-    issues.push(issue('error', 'carousel-too-small', `${pathForAsset(bundle.images)}.data.slides`, 'Public game carousel must contain at least 3 slides.'));
+    issues.push(issue('error', 'carousel-too-small', `${pathForAsset(bundle.images)}.data.slides`, 'Game carousel must contain at least 3 slides.'));
   }
 
   const slideHashes = new Set<string>();
@@ -410,32 +414,33 @@ function validateGameInfoContract(bundle: LoadedGameBundle): SelectedGameReadine
   const gameInfoPath = pathForAsset(bundle.gameInfo, `${bundle.gameTreePath}.gameInfoAsset`);
   const completeness = asRecord(gameInfoData.completeness);
   const quality = asText(gameInfoData.quality);
+  const releaseSeverity = releaseBlockingSeverity(bundle);
 
   if (!bundle.gameInfo) {
-    issues.push(issue('error', 'missing-game-info-asset', `${bundle.gameTreePath}.data.gameInfoAsset`, 'Public game must resolve a GameInfo asset.'));
+    issues.push(issue('error', 'missing-game-info-asset', `${bundle.gameTreePath}.data.gameInfoAsset`, 'CardGameMode must resolve a GameInfo asset.'));
     return issues;
   }
 
   if (quality !== 'complete') {
-    issues.push(issue('error', 'game-info-not-complete', `${gameInfoPath}.data.quality`, 'Public game GameInfo quality must be complete.'));
+    issues.push(issue(releaseSeverity, 'game-info-not-complete', `${gameInfoPath}.data.quality`, 'GameInfo quality must be complete before public release; WIP assets keep this as source-review work-left.'));
   }
 
   for (const field of ['overview', 'history', 'setup', 'rules', 'strategy', 'variations', 'ai', 'sources']) {
     if (completeness[field] !== true) {
-      issues.push(issue('error', 'game-info-incomplete-flag', `${gameInfoPath}.data.completeness.${field}`, `Public game GameInfo completeness.${field} must be true.`));
+      issues.push(issue(releaseSeverity, 'game-info-incomplete-flag', `${gameInfoPath}.data.completeness.${field}`, `GameInfo completeness.${field} must be true before public release; WIP assets keep this as source-review work-left.`));
     }
   }
 
   for (const field of ['historyContent', 'setupContent', 'variationsContent', 'aiContent', 'sourcesContent']) {
     if (!isMeaningful(gameInfoData[field])) {
-      issues.push(issue('error', 'missing-game-info-content', `${gameInfoPath}.data.${field}`, `Public game GameInfo must include ${field}.`));
+      issues.push(issue('error', 'missing-game-info-content', `${gameInfoPath}.data.${field}`, `GameInfo must include ${field}.`));
     }
   }
 
   const sourcesContent = asRecord(gameInfoData.sourcesContent);
   const primarySources = asArray(sourcesContent.primary).map(asRecord);
   if (primarySources.length === 0) {
-    issues.push(issue('error', 'missing-primary-sources', `${gameInfoPath}.data.sourcesContent.primary`, 'Public game must list primary source records.'));
+    issues.push(issue('error', 'missing-primary-sources', `${gameInfoPath}.data.sourcesContent.primary`, 'GameInfo must list primary source records.'));
   }
   primarySources.forEach((source, index) => {
     if (!asText(source.name)) {
@@ -460,7 +465,7 @@ function validateMechanicsContract(bundle: LoadedGameBundle): SelectedGameReadin
   const actionSetPath = pathForAsset(bundle.actions, `${bundle.gameTreePath}.actionSet`);
 
   if (!bundle.mechanics) {
-    issues.push(issue('error', 'missing-mechanics-asset', `${bundle.gameTreePath}.data.mechanicsAsset`, 'Public game must resolve a CardGameMechanics asset.'));
+    issues.push(issue('error', 'missing-mechanics-asset', `${bundle.gameTreePath}.data.mechanicsAsset`, 'CardGameMode must resolve a CardGameMechanics asset.'));
     return issues;
   }
 
@@ -497,7 +502,7 @@ function validateMechanicsContract(bundle: LoadedGameBundle): SelectedGameReadin
   const phases = asArray(mechanicsData.phases).map(asRecord);
   const firstPhase = phases[0] ?? {};
   if (asText(firstPhase.actor) !== 'system' || !asArray(firstPhase.legalActions).includes('setup_round')) {
-    issues.push(issue('error', 'missing-system-setup-phase', `${mechanicsPath}.data.phases.0`, 'Available game mechanics must start with an automatic setup_round system phase.'));
+    issues.push(issue('error', 'missing-system-setup-phase', `${mechanicsPath}.data.phases.0`, 'Game mechanics must start with an automatic setup_round system phase.'));
   }
 
   const progression = asArray(mechanicsData.progression).map((value) => asText(value)).filter(Boolean);
@@ -530,7 +535,7 @@ function validateMechanicsContract(bundle: LoadedGameBundle): SelectedGameReadin
   const runtimeIntegration = asRecord(mechanicsData.runtimeIntegration);
   const runtimeReadiness = asText(runtimeIntegration.readiness);
   if (/not_.*ready|not.*pilot/i.test(runtimeReadiness)) {
-    issues.push(issue('error', 'runtime-marked-not-ready', `${mechanicsPath}.data.runtimeIntegration.readiness`, 'Available game cannot be marked as not pilot/runtime ready.'));
+    issues.push(issue('error', 'runtime-marked-not-ready', `${mechanicsPath}.data.runtimeIntegration.readiness`, 'Game asset contract cannot be marked as not pilot/runtime ready.'));
   }
 
   return issues;
@@ -594,7 +599,7 @@ function validateDeckContract(bundle: LoadedGameBundle): SelectedGameReadinessIs
   const deckModelPath = pathForAsset(bundle.deckModel, `${bundle.gameTreePath}.deckModel`);
 
   if (!bundle.deck) {
-    issues.push(issue('error', 'missing-physical-deck', `${bundle.gameTreePath}.data.deckAsset`, 'Public game must resolve a physical Deck asset.'));
+    issues.push(issue('error', 'missing-physical-deck', `${bundle.gameTreePath}.data.deckAsset`, 'CardGameMode must resolve a physical Deck asset.'));
     return issues;
   }
 
@@ -625,7 +630,9 @@ function validateDeckContract(bundle: LoadedGameBundle): SelectedGameReadinessIs
   const requiredCards = (maxPlayers * initialHandSize) + (needsTurnedTrump ? 1 : 0);
   const totalDeckCards = compositionCount * (mechanicsDeckCount ?? 1);
   if (requiredCards > 0 && totalDeckCards < requiredCards) {
-    issues.push(issue('error', 'deck-too-small-for-initial-deal', `${deckPath}.data.composition`, `Deck has ${totalDeckCards} card(s), but max players and setup require at least ${requiredCards}.`));
+    const severity = releaseBlockingSeverity(bundle);
+    const reviewText = severity === 'warning' ? ' This WIP game needs source review for variable player counts, deal policy, or deck count before public release.' : '';
+    issues.push(issue(severity, 'deck-too-small-for-initial-deal', `${deckPath}.data.composition`, `Deck has ${totalDeckCards} card(s), but max players and setup require at least ${requiredCards}.${reviewText}`));
   }
 
   issues.push(...validateDeckCardVisuals(bundle.deck, deckPath));
@@ -733,17 +740,17 @@ const reports = gameModeFiles.map((gameModePath) => {
     label: gameMode.system?.displayName ?? gameTreePath,
   });
   const layoutIssues = validateGamePageLayoutContract(gameMode, normalizeResourcePath(gameTreePath));
-  const publicAssetIssues = validatePublicGameAssetContract(loadedBundle);
+  const assetContractIssues = validateGameAssetContract(loadedBundle);
   return {
     ...readinessReport,
     releaseStatus,
     ok: readinessReport.ok
       && layoutIssues.every((layoutIssue) => layoutIssue.severity !== 'error')
-      && publicAssetIssues.every((assetIssue) => assetIssue.severity !== 'error'),
+      && assetContractIssues.every((assetIssue) => assetIssue.severity !== 'error'),
     issues: [
       ...readinessReport.issues,
       ...layoutIssues,
-      ...publicAssetIssues,
+      ...assetContractIssues,
     ],
   };
 });

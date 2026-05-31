@@ -52,28 +52,36 @@
         guid: '531230c9-4dc1-4611-8c60-e02c17480c5a',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '98f211113819e039175d2251b54c2d56934dd0a5c27646345c1b3a0717334272',
+        checksum: 'e3205890d6be06ca12434796123088eeda21d030c9cdc9388c30e14b9eb1b109',
+        fileSize: 3973,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/domino/tien-gow/tien-gowActionSet.asset',
         guid: 'd44d7836-d312-4302-8cb7-61a476ecf367',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '7c5402c83f506327527f89cf44e1411205a7d01aa89a657b64760ead737209ef',
+        checksum: '9c26ae379943402cd090af09402f5fa7b83b3bd254a0b1b0942b6567be53b761',
+        fileSize: 8233,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/domino/tien-gow/tien-gowStateEventModel.asset',
         guid: '8e7fff6a-32ce-4f3b-8e85-bf10dff4f6df',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'edba7d15b0f0c34848dee0d2954291a589f38b8df3201c601058da4df53e78e8',
+        checksum: '461a90b75b5f6c8d9b2a6f41a173388500bd5672c59b8ec52d1b5693e6a98eda',
+        fileSize: 1736,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/domino/tien-gow/tien-gowValidationFixtures.asset',
         guid: '2ba64d42-68e8-42c1-8d6b-c4fee5632a85',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '0fb31dec2db9743adc43e1a4daed233a33be21fa3623b7003d3f8ae4b1b17e48',
+        checksum: 'ee722e20f243991d20f83be6d1d701e17860d013dae982bade26cfaed144f350',
+        fileSize: 3860,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -111,6 +119,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'setup',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 8 card(s) to each active player before player action begins.',
+      },
       {
         id: 'setup',
         label: 'Dealing',
@@ -167,6 +190,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 8 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 8,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -373,6 +410,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      resolve_trick_winner: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action resolve_trick_winner is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'resolve_trick_winner',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -442,8 +492,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'play_card',
+        'resolve_trick_winner',
+        'discard',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'setup',
       'play',
       'resolve_trick',

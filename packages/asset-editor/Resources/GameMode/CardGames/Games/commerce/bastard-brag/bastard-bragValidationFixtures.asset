@@ -50,14 +50,14 @@
             id: 'bastard-brag.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_3_each',
-              'deal_widow',
+              'setup_round',
             ],
-            expectedNextPhase: 'swap_loop',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'pass',
               'deal_3_each',
               'deal_widow',
@@ -67,14 +67,21 @@
               'evaluate_brag_hands',
               'remove_life',
             ],
-            explanation: 'Bastard Brag must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bastard Brag must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'bastard-brag.setup.initial-deal',
               'bastard-brag.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal_3_each',
+              'deal_widow',
             ],
           },
           {

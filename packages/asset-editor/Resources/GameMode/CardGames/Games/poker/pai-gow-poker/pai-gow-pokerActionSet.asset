@@ -19,6 +19,7 @@
     assetRefs: {},
     actionModel: {
       actionIds: [
+        'setup_round',
         'bet',
         'deal_seven_cards',
         'partition_into_two_hands',
@@ -51,9 +52,24 @@
         partition_into_two_hands: true,
         reveal_hands: false,
         settle_bets: true,
+        setup_round: true,
       },
     },
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 7 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 7,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -252,6 +268,58 @@
         effectType: 'NA',
         effectHints: {},
         reason: 'The game deal ends when all players have compared their hands with the banker.',
+      },
+      deal_seven_cards: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_seven_cards is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_seven_cards',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      partition_into_two_hands: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action partition_into_two_hands is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'partition_into_two_hands',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      reveal_hands: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action reveal_hands is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'reveal_hands',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
+      settle_bets: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action settle_bets is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'settle_bets',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
       },
     },
     customActions: [

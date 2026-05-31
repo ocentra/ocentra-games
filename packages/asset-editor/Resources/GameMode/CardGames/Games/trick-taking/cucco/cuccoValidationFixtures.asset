@@ -50,24 +50,31 @@
             id: 'cucco.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_10_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_10_each',
             ],
-            explanation: 'Cöch must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Cöch must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'cucco.setup.initial-deal',
               'cucco.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_10_each',
             ],
           },
           {

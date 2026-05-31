@@ -50,25 +50,32 @@
             id: 'fourteen-out.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
             ],
-            explanation: 'Fourteen Out must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Fourteen Out must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'fourteen-out.setup.initial-deal',
               'fourteen-out.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

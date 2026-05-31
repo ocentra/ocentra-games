@@ -50,23 +50,30 @@
             id: 'escoba-de-15.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play_round',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play_round',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: 'Escoba must enter play_round first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Escoba must run setup_round first, then enter play_round with the processed legal actions.',
             linkedRuleIds: [
+              'escoba-de-15.setup.initial-deal',
               'escoba-de-15.flow.play_round',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play_round',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

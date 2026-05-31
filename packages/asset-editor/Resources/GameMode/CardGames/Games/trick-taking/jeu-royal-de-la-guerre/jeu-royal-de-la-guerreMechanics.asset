@@ -52,28 +52,36 @@
         guid: 'c3610403-66e9-4a6b-9ccb-fd74c0cd6ff1',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '983e14d735b1621a9a9ecc9b1b59755ad5330af6f9b9fa0034faa1348b7f944f',
+        checksum: '8a9e91555895e6dc1dba953d5818f4414f0e7f04b09ec704e90c73fa7385ecbb',
+        fileSize: 2886,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/jeu-royal-de-la-guerre/jeu-royal-de-la-guerreActionSet.asset',
         guid: '3ad823b7-a3ea-4a59-92fd-7695c3770fc8',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '329ff81e57b13ff79f6899cc5d61359de22bfc18488f2663bf0d552a1795b640',
+        checksum: '88942ed717e1d09c5b8b184f557c468097938e9084903e3c0061317e41903e9a',
+        fileSize: 7299,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/jeu-royal-de-la-guerre/jeu-royal-de-la-guerreStateEventModel.asset',
         guid: '065ef0d8-3e52-4780-af4f-90b3151a1d49',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '5eb1e3577104c7eb65b7225048b60ed6b7b8ec21952434db61735178aa3b8c59',
+        checksum: '884fbf1680d119916d0ebf56200bc56b1870ac2526445768bf6bdeccba8dbab3',
+        fileSize: 1441,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/jeu-royal-de-la-guerre/jeu-royal-de-la-guerreValidationFixtures.asset',
         guid: '1ed14171-59de-41fa-8ae1-c200a8c87a45',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'ccaa0a09377b36f4ba2c0f06d803bf37ae6efec92e728f5f56595704577d67e8',
+        checksum: '962b1b4c49aa4900de716b3eb1f3b92f60094b4d4f1f7af9b874467594f3991d',
+        fileSize: 4057,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -368,8 +405,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'discard',
+        'pass',
+        'bid',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

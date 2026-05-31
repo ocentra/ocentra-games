@@ -50,13 +50,14 @@
             id: 'huutopussi.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'award_pot',
@@ -65,14 +66,20 @@
               'bid',
               'exchange_cards',
             ],
-            explanation: 'Huutopussi must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Huutopussi must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'huutopussi.setup.initial-deal',
               'huutopussi.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

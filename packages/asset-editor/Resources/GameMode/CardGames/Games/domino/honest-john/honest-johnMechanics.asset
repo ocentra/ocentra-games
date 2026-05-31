@@ -52,28 +52,36 @@
         guid: '73c6bd01-24a3-4668-bfa2-62d4f69fbae3',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'f682294724b9436733b8b4d52cdc7efb0fdf5b690da0ce0c62d821d9461515f5',
+        checksum: 'b69b795f34a923cd086eea98c08551ebd486c671c9e9f232f4bb67a9000950dc',
+        fileSize: 2983,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/domino/honest-john/honest-johnActionSet.asset',
         guid: '92276e66-22ef-4b42-969e-53c14be6e48e',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'b10d0914d2ed83dfc07e8a7d716f4059a63f6c2031a5c5b505a6b6daa7260385',
+        checksum: '88abe7ae172b3af2fa180aee4ed7e99217716bf3cbab82b016418d359be5daed',
+        fileSize: 8863,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/domino/honest-john/honest-johnStateEventModel.asset',
         guid: 'ae7c1265-b7fe-4a1a-96a2-26d1e5bc548f',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '6abd10c7c97fb44b44f0617f48f6c534e87670858aabfea3f9f81abf6d874805',
+        checksum: '43ac598a2e9012285b86b96050b904c7bc8fa6e9485473d3bf039be87c3002f0',
+        fileSize: 1598,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/domino/honest-john/honest-johnValidationFixtures.asset',
         guid: 'ac83eeb6-5f46-4ca9-8b0c-fdd735e4bcce',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '8f6a915e622e98656bd951c49ef7653f35acde900ca5d92fa3613baaafd03d35',
+        checksum: '8af407c69b958d7089e66f4de6dabc23315918f150bbcbf2229aea0422357199',
+        fileSize: 3915,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 6 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'each_player_clockwise',
@@ -122,6 +145,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 6 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 6,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -320,6 +357,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      buy_tile_from_neighbor: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action buy_tile_from_neighbor is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'buy_tile_from_neighbor',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -395,8 +445,21 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'buy_tile_from_neighbor',
+        'pass',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

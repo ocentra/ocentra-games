@@ -50,26 +50,33 @@
             id: 'tarok-danish.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'dealer_deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'discard_skat',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'dealer_deal',
               'dealer_discard_skat',
             ],
-            explanation: 'Tarok Danish must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tarok Danish must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'tarok-danish.setup.initial-deal',
               'tarok-danish.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'dealer_deal',
             ],
           },
           {

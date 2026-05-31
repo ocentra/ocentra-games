@@ -50,25 +50,32 @@
             id: 'hope-deferred.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
             ],
-            explanation: 'Hope Deferred must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Hope Deferred must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'hope-deferred.setup.initial-deal',
               'hope-deferred.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

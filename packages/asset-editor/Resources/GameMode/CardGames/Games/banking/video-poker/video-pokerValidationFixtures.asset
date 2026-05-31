@@ -50,13 +50,14 @@
             id: 'video-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'hold_select',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
@@ -64,14 +65,20 @@
               'evaluate_payout',
               'end_round',
             ],
-            explanation: 'Video Poker must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Video Poker must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'video-poker.setup.initial-deal',
               'video-poker.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

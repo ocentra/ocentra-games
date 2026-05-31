@@ -36,6 +36,14 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
     expect(overrides.strategy.Player).toContain('Watch suits and ranks');
     expect(overrides.scoring.winCondition).toContain('fewer penalty cards');
     expect(overrides.gameInfo.sections.map((section) => section.type)).toEqual(['about']);
+    expect(overrides.gameInfo.sourcesContent).toMatchObject({
+      primary: [
+        expect.objectContaining({
+          name: 'Wikipedia - Buta no Shippo',
+          url: 'https://en.wikipedia.org/wiki/Buta_no_shippo',
+        }),
+      ],
+    });
     expect(overrides.gameInfo.editorOnly).toMatchObject({
       processedSource: expect.objectContaining({
         filename: 'buta-no-shippo.json',
@@ -73,7 +81,7 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
     });
     expect(options.mechanicsModelDataOverrides?.actions).toMatchObject({
       actionModel: {
-        actionIds: expect.arrayContaining(['play_card']),
+        actionIds: expect.arrayContaining(['setup_round', 'play_card']),
       },
     });
     expect(options.mechanicsModelDataOverrides?.validation).toMatchObject({
@@ -92,8 +100,10 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
             }),
             expect.objectContaining({
               purpose: 'flow',
-              expectedFirstPhase: 'play',
-              expectedLegalActions: expect.arrayContaining(['play_card']),
+              expectedFirstPhase: 'setup_round',
+              expectedLegalActions: ['setup_round'],
+              firstPlayablePhase: 'play',
+              firstPlayableLegalActions: expect.arrayContaining(['play_card']),
             }),
             expect.objectContaining({
               purpose: 'scoring',
@@ -147,8 +157,8 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
     expect(options.assetDataOverrides.rules.Player).not.toContain('[');
     expect(options.assetDataOverrides.rules.LLM).toBe(source.rules.gameplay);
     expect(options.assetDataOverrides.rules.Player).toBe(source.rules.gameplay);
-    expect(options.assetDataOverrides.mechanics.phases[0]).not.toHaveProperty('notes');
-    expect(options.mechanicsModelDataOverrides?.phaseFlow.phases[0]).not.toHaveProperty('notes');
+    expect(options.assetDataOverrides.mechanics.phases.find((phase: { id?: string }) => phase.id === 'play')).not.toHaveProperty('notes');
+    expect(options.mechanicsModelDataOverrides?.phaseFlow.phases.find((phase: { id?: string }) => phase.id === 'play')).not.toHaveProperty('notes');
   });
 
   it('uses rotated shared fallback art when no per-game image folder exists', () => {

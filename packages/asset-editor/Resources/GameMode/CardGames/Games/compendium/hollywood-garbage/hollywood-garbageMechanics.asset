@@ -52,28 +52,36 @@
         guid: '67c67efe-0eca-4453-b8fe-c5a136920572',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '886458cb4107d3072bfd9d6b42ea40dc195f6bfde354b66ad38b6a13ea70d4b9',
+        checksum: '53eb94cb6dc99c0e2f3eab5fad075378c54ead056205325600a219df36c3f5e6',
+        fileSize: 2600,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/compendium/hollywood-garbage/hollywood-garbageActionSet.asset',
         guid: '840d3a60-57ba-43b3-b803-cd426b06c406',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '8b9300510390fc58c1acc4dce544053bf3fc161a39c8fd7f1c4994e7c426f1d2',
+        checksum: '6f484e49562b292369642a7d7af0e5d20682b3f54b250848ce5a2d43fd1ee734',
+        fileSize: 8756,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/compendium/hollywood-garbage/hollywood-garbageStateEventModel.asset',
         guid: '277d1718-3a49-4742-8f75-6eede3186219',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'd9bc94be9886919f0867fee1f962e2634ccac281a0ba98592d3fa42388e2b294',
+        checksum: 'c05c88072ca77ab1a611b691596b60fe7c0396962532fd490809606a5c7ce517',
+        fileSize: 1584,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/compendium/hollywood-garbage/hollywood-garbageValidationFixtures.asset',
         guid: 'e35f820d-a470-4d2e-9bd4-82e0011c8cfd',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '3e7356389d6e6ec4cd8705f8feeddc4760834eddcd3e996a0117e7734d3cfe65',
+        checksum: 'fb48d3f957dd7ea1ee9896b7f9635c6488b22af5865a846895e32c682039beb2',
+        fileSize: 3824,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Poker/Bingo',
         actor: 'all_simultaneous',
@@ -117,6 +140,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 5 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 5,
+          deckCount: 2,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: true,
         description: 'Each player places an agreed number of coins (e.g. 5) into the central pot before the deal in Phase 1.',
@@ -317,6 +354,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      play: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action play is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'play',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -389,8 +439,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play',
+        'ante',
+        'deal',
+        'award_pot',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

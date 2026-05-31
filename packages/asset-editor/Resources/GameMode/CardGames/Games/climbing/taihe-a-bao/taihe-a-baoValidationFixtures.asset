@@ -50,13 +50,14 @@
             id: 'taihe-a-bao.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'take_cards',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_10_counterclockwise',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding_1',
+            expectedNextPhase: 'take_cards',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'pass',
@@ -64,14 +65,20 @@
               'deal_10_counterclockwise',
               'play_combination',
             ],
-            explanation: 'Tàihé A Bāo 泰和A包 must enter take_cards first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tàihé A Bāo 泰和A包 must run setup_round first, then enter take_cards with the processed legal actions.',
             linkedRuleIds: [
+              'taihe-a-bao.setup.initial-deal',
               'taihe-a-bao.flow.take_cards',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'take_cards',
+            firstPlayableLegalActions: [
+              'deal_10_counterclockwise',
             ],
           },
           {

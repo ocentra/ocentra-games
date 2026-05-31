@@ -50,13 +50,14 @@
             id: 'let-it-ride.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'place_bets',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bet',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'place_bets',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'bet',
               'let_it_ride',
@@ -64,14 +65,20 @@
               'reveal',
               'pay',
             ],
-            explanation: 'Let It Ride must enter place_bets first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Let It Ride must run setup_round first, then enter place_bets with the processed legal actions.',
             linkedRuleIds: [
+              'let-it-ride.setup.initial-deal',
               'let-it-ride.flow.place_bets',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'place_bets',
+            firstPlayableLegalActions: [
+              'bet',
             ],
           },
           {

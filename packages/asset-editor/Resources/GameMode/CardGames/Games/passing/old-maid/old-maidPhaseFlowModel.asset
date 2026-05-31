@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'initial_discard',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 17 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'initial_discard',
         label: 'Initial discard pairs',
         actor: 'all_simultaneous',
@@ -95,6 +110,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'initial_discard',
       'draw_round',
     ],

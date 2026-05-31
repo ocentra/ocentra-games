@@ -50,13 +50,14 @@
             id: 'brag-9-card.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_9_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'partition',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'deal_9_each',
               'split_9_into_three_hands',
               'bet_blind',
@@ -68,14 +69,20 @@
               'compare_hands_3',
               'award_points',
             ],
-            explanation: 'Nine Card Brag must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Nine Card Brag must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'brag-9-card.setup.initial-deal',
               'brag-9-card.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_9_each',
             ],
           },
           {

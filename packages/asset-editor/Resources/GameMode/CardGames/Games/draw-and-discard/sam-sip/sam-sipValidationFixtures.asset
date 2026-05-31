@@ -50,25 +50,32 @@
             id: 'sam-sip.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'draw_discard',
-            expectedActor: 'each_player_counterclockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'draw',
-              'discard',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'draw_discard',
             supportedActionIds: [
+              'setup_round',
               'draw',
               'discard',
             ],
-            explanation: 'Sam Sip must enter draw_discard first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Sam Sip must run setup_round first, then enter draw_discard with the processed legal actions.',
             linkedRuleIds: [
+              'sam-sip.setup.initial-deal',
               'sam-sip.flow.draw_discard',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'draw_discard',
+            firstPlayableLegalActions: [
+              'draw',
+              'discard',
             ],
           },
           {

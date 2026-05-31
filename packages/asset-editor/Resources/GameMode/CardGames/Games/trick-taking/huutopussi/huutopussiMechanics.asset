@@ -52,28 +52,36 @@
         guid: '6ed24693-297f-4fd2-9e91-df858a318f3a',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '3534768c80ae9ddec45d7db4222b12d6fd2f816e875b50779778913396c72bde',
+        checksum: '7e15e5bf260d2835fba4e9e04308108e631c06682e13ed611e578115fc789839',
+        fileSize: 4751,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/huutopussi/huutopussiActionSet.asset',
         guid: 'd2059325-266f-48bd-8752-76c3aa2eaddb',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'c74d3c9bd228f795e6269f308912be400bb0f26a3452b6b401db1b2961a441ef',
+        checksum: '5b5dda440979d1679a2c622e8db9c765ba0f5560ee9ebb881bdf2aa7a0130bae',
+        fileSize: 8070,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/huutopussi/huutopussiStateEventModel.asset',
         guid: 'f843ff6c-3db8-4b28-bf78-dbc4164ef170',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '12acd41b9c446e1a23b88fe2c5e6cd0f91d7ed1c8cf7ac3214afadfd613edb0f',
+        checksum: '5efdd9191cd2d0bfc55cfae499a24c4dda044365923a49427d5f43778b03ceb1',
+        fileSize: 1761,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/huutopussi/huutopussiValidationFixtures.asset',
         guid: 'de9760b9-b031-4491-b898-45b325fea1ab',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '9c9cec614305853baf100b354b9020a73d71e3798d0bd8b514811c2fc5d01f9f',
+        checksum: 'da21425300c8b188ce00d3613156e359200cb7d1996f41e86325271a9bea04dc',
+        fileSize: 4372,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -110,6 +118,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -192,6 +215,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 13 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 13,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -386,6 +423,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      exchange_cards: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action exchange_cards is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'exchange_cards',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -452,8 +502,23 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'bid',
+        'pass',
+        'exchange_cards',
+        'play_card',
+        'award_pot',
+        'declare',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'bidding',
       'card_exchange',

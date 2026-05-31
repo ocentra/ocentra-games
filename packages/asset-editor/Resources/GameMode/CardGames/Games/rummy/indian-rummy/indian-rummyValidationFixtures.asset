@@ -50,13 +50,14 @@
             id: 'indian-rummy.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
@@ -64,14 +65,20 @@
               'meld',
               'go_out',
             ],
-            explanation: 'Indian Rummy must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Indian Rummy must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'indian-rummy.setup.initial-deal',
               'indian-rummy.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

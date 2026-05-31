@@ -50,13 +50,14 @@
             id: 'indian-poker-red-dog-high-card.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'forehead',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'check',
@@ -67,14 +68,20 @@
               'place_on_forehead',
               'resolve_showdown',
             ],
-            explanation: 'Red Dog High Card Pool must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Red Dog High Card Pool must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'indian-poker-red-dog-high-card.setup.initial-deal',
               'indian-poker-red-dog-high-card.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_cards',
             ],
           },
           {

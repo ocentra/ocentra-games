@@ -50,25 +50,32 @@
             id: 'razboi-romanian-war.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'flip',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'flip',
+              'setup_round',
             ],
-            expectedNextPhase: 'resolve',
+            expectedNextPhase: 'flip',
             supportedActionIds: [
+              'setup_round',
               'flip',
               'take',
               'war',
             ],
-            explanation: 'RÄƒzboi must enter flip first and expose exactly the legal actions authored for that phase.',
+            explanation: 'RÄƒzboi must run setup_round first, then enter flip with the processed legal actions.',
             linkedRuleIds: [
+              'razboi-romanian-war.setup.initial-deal',
               'razboi-romanian-war.flow.flip',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'flip',
+            firstPlayableLegalActions: [
+              'flip',
             ],
           },
           {

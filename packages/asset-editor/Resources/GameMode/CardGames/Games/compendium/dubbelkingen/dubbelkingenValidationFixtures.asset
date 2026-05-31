@@ -50,26 +50,33 @@
             id: 'dubbelkingen.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'main_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'play_card',
               'bid',
             ],
-            explanation: 'Dubbelkingen must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Dubbelkingen must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'dubbelkingen.setup.initial-deal',
               'dubbelkingen.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

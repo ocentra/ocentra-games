@@ -50,23 +50,30 @@
             id: 'flower-scorpion.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'roll_flower_scorpion_dice',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'roll_flower_scorpion_dice',
             ],
-            explanation: 'Flower and Scorpion must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Flower and Scorpion must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'flower-scorpion.setup.initial-deal',
               'flower-scorpion.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'roll_flower_scorpion_dice',
             ],
           },
           {

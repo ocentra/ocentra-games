@@ -50,26 +50,33 @@
             id: 'high-card-pool.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'contribute_ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'contribute_ante',
               'place_bet',
               'resolve_round',
             ],
-            explanation: 'High Card Pool must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'High Card Pool must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'high-card-pool.setup.initial-deal',
               'high-card-pool.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'contribute_ante',
             ],
           },
           {

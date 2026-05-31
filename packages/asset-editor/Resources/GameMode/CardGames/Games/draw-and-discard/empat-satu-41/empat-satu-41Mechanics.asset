@@ -52,28 +52,36 @@
         guid: '24c6787b-ad0c-4c0e-ac2d-400d2494d29f',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'ec579dfd3c2e90be51240fd7e3588e2743554d05750283d84658fbed160be760',
+        checksum: '96b280db3f1a07c6c12dfb21424f0f9da3710cd85bf26356b8979546c6aa1a6e',
+        fileSize: 2717,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/draw-and-discard/empat-satu-41/empat-satu-41ActionSet.asset',
         guid: '4a318cbc-c3f7-4b50-ab91-d1afdd6dfdd6',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '0c1449cd2e2079418e59533c0e764f9b7a4a04a2dcc60a29230527aa426b89fa',
+        checksum: '27d6944e887965230a690faddbcdd6827166417c51bb7056de5614c0e197f178',
+        fileSize: 8031,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/draw-and-discard/empat-satu-41/empat-satu-41StateEventModel.asset',
         guid: '64ec5f18-5cfb-4891-8c15-b46af461ee8d',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '0c6d533bf0741abe3722d5b9950d58e3dd1260f22e96d7a06e7d7e406772894b',
+        checksum: '736028d5935a9030012420a48c3bbd593f7a3bc676e41461e269a87498b9f7d6',
+        fileSize: 1500,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/draw-and-discard/empat-satu-41/empat-satu-41ValidationFixtures.asset',
         guid: '0cb843ec-ef0f-4ca1-b0b4-198204c85649',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '5c07d4460cb159de34d426bbf78c500fb4e7c7b7d6bb85a47536be692f515891',
+        checksum: 'b58811bc2aba4b1a83f237125d7bb7dba5d3c63759f0de29ab20516b443b684c',
+        fileSize: 4317,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'current_player',
@@ -119,6 +142,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 4 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 4,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -317,6 +354,19 @@
         effectHints: {},
         reason: 'Use declare_stop custom action to end the hand.',
       },
+      declare_stop: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action declare_stop is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'declare_stop',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -386,8 +436,21 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'draw',
+        'discard',
+        'declare_stop',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

@@ -50,13 +50,14 @@
             id: 'indian-poker-no-peek.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'position_cards',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'fold',
               'check',
@@ -67,14 +68,20 @@
               'place_on_forehead',
               'reveal',
             ],
-            explanation: 'No Peek Poker must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'No Peek Poker must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'indian-poker-no-peek.setup.initial-deal',
               'indian-poker-no-peek.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

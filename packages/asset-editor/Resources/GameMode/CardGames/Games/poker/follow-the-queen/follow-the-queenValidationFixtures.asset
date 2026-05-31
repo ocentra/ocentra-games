@@ -50,13 +50,14 @@
             id: 'follow-the-queen.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'post_ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal_initial',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'fold',
               'check',
@@ -66,14 +67,20 @@
               'post_ante',
               'show_hand',
             ],
-            explanation: 'Follow the Queen must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Follow the Queen must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'follow-the-queen.setup.initial-deal',
               'follow-the-queen.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'post_ante',
             ],
           },
           {

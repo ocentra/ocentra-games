@@ -52,28 +52,36 @@
         guid: '30c008ad-5f72-46ea-9ba1-e532b40ea4c4',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '9190241d8b5e6a2c0718917f72b170cd1fd0480f7dc7b4228fc774e4f8d4c08f',
+        checksum: '3983721456ecd58041333472be09bd5c2f69ab034d61b85a1c13a6f87e5092c7',
+        fileSize: 2695,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/domino/xiang-shi-fu/xiang-shi-fuActionSet.asset',
         guid: '2bbf9e2d-e879-4bf3-8d47-e416f69dcee0',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '8d0978fbee026fb33d4591b65db05851e4dbac7b58e8453896f610999c7db315',
+        checksum: 'a1ca98ea949cdb099be073011ad21743f0e5b76e74c4611d60fba850bc7f4eb7',
+        fileSize: 8248,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/domino/xiang-shi-fu/xiang-shi-fuStateEventModel.asset',
         guid: 'd2b58eaf-dde8-4be5-aadb-74529653d305',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '487591bdb90d23f737bcde6ff62d4ce652843c18f2ededeeb3cd91cc127843ab',
+        checksum: 'a2b4f14cee167c80445da19a4e9a44b22d5085584b0e99221760f2a50fabdd88',
+        fileSize: 1203,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/domino/xiang-shi-fu/xiang-shi-fuValidationFixtures.asset',
         guid: '8cd90011-33db-4330-8ef3-2bbdd4d5c0fe',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'da6092c7a926bcf2a75055b600f50dd5e28f7ae97524f85b1ac8e188af46c79e',
+        checksum: '0b73f5ae00f4b790b5754bf34c0623de4591a86d1d42a3912b9781664980d5ed',
+        fileSize: 3779,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'current_player',
@@ -118,6 +141,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -318,6 +355,19 @@
         effectHints: {},
         reason: 'Win when all sets valid; no explicit go-out action.',
       },
+      exchange_tiles: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action exchange_tiles is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'exchange_tiles',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -375,8 +425,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'exchange_tiles',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

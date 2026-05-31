@@ -50,13 +50,14 @@
             id: 'chemin-de-fer.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'auction_bank',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'declare_bank_amount',
+              'setup_round',
             ],
-            expectedNextPhase: 'punting',
+            expectedNextPhase: 'auction_bank',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'bet',
               'reveal_hand',
@@ -79,14 +80,20 @@
               'resolve_bets',
               'shift_shoe_if_lost',
             ],
-            explanation: 'Chemin de Fer must enter auction_bank first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Chemin de Fer must run setup_round first, then enter auction_bank with the processed legal actions.',
             linkedRuleIds: [
+              'chemin-de-fer.setup.initial-deal',
               'chemin-de-fer.flow.auction_bank',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'auction_bank',
+            firstPlayableLegalActions: [
+              'declare_bank_amount',
             ],
           },
           {

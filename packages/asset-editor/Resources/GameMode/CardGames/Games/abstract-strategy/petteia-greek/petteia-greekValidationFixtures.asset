@@ -50,23 +50,30 @@
             id: 'petteia-greek.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'move_stone',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'move_stone',
             ],
-            explanation: 'Petteia must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Petteia must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'petteia-greek.setup.initial-deal',
               'petteia-greek.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'move_stone',
             ],
           },
           {

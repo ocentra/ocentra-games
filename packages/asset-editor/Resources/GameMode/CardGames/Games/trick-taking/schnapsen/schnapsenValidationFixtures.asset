@@ -50,13 +50,14 @@
             id: 'schnapsen.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_3_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'trump_calling',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'bid',
@@ -70,14 +71,20 @@
               'declare_bauern',
               'calculate_game_points',
             ],
-            explanation: 'Schnapsen must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Schnapsen must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'schnapsen.setup.initial-deal',
               'schnapsen.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_3_cards',
             ],
           },
           {

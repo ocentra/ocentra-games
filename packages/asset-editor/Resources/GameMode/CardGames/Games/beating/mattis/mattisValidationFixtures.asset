@@ -50,23 +50,30 @@
             id: 'mattis.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'phase_1_tricks',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'phase_2_shedding',
+            expectedNextPhase: 'phase_1_tricks',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: 'Mattis must enter phase_1_tricks first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Mattis must run setup_round first, then enter phase_1_tricks with the processed legal actions.',
             linkedRuleIds: [
+              'mattis.setup.initial-deal',
               'mattis.flow.phase_1_tricks',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'phase_1_tricks',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

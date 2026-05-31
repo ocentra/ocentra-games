@@ -50,13 +50,14 @@
             id: 'pai-gow.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'bank_selection',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'assign_bank',
+              'setup_round',
             ],
-            expectedNextPhase: 'dealing',
+            expectedNextPhase: 'bank_selection',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'deal_tiles',
               'assign_bank',
@@ -64,14 +65,20 @@
               'reveal_hands',
               'settle_bets',
             ],
-            explanation: 'Pai Gow must enter bank_selection first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Pai Gow must run setup_round first, then enter bank_selection with the processed legal actions.',
             linkedRuleIds: [
+              'pai-gow.setup.initial-deal',
               'pai-gow.flow.bank_selection',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'bank_selection',
+            firstPlayableLegalActions: [
+              'assign_bank',
             ],
           },
           {

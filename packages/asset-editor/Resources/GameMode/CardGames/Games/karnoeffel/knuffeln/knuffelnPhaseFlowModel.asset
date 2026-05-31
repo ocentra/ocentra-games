@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 9 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'current_player',
@@ -77,7 +92,10 @@
       authoritativeServer: false,
       customLogicNeeded: [],
     },
-    progression: [],
+    progression: [
+      'setup_round',
+      'play',
+    ],
     examples: [],
   },
 }

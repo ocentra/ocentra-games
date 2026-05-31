@@ -52,28 +52,36 @@
         guid: 'd0229eed-572d-4913-9c33-64b2d106a325',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'a8f7ff8afceaa346fe55cd9f02331dd96f10890d50c524e36573fd37ae3d17f5',
+        checksum: '212503c24b07e1300a32a2bbdf84dbafaac94534dc2eea17604cffb97d1f9187',
+        fileSize: 2771,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/marriage/tatteln/tattelnActionSet.asset',
         guid: '4a216e67-24e0-4268-a0b2-187bd84dfa81',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '524a2d9250bd8e038624deaca2bf3a2a732abef6f1078a75c9244033a42c6d17',
+        checksum: '3d6248491338f8667d6a9f1144b581a958eabb2a98c64760efa9ba671b20eaaf',
+        fileSize: 7241,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/marriage/tatteln/tattelnStateEventModel.asset',
         guid: '59487dcc-c5c4-4cee-8114-73d426159a6c',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '0b200dc0ac80f0dcc1e3017ef8dfd1d50ae7a58c35a0a0ef10f1b3f0de340ea8',
+        checksum: 'd2b2ecbe97c7fc95e542c095d713f15f5f0d26f87f69a7e374d0e764cc6a15ce',
+        fileSize: 1383,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/marriage/tatteln/tattelnValidationFixtures.asset',
         guid: '7e4f7556-58c7-4206-a8e4-9d318bace632',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '4ee35e2e5112859bfe275dc38664e07d62c349ca51849e86eacc158c377061f3',
+        checksum: 'af04661ffee8b2d8127ec8dd34b0c44c387bf84d5bfeab4ac1bec5a96bf5363d',
+        fileSize: 3816,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -368,8 +405,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'discard',
+        'pass',
+        'bid',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

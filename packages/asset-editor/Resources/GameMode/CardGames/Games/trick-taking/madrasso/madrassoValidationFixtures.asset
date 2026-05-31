@@ -50,23 +50,30 @@
             id: 'madrasso.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'trump_exchange',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'trump_exchange',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: 'Madrasso must enter trump_exchange first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Madrasso must run setup_round first, then enter trump_exchange with the processed legal actions.',
             linkedRuleIds: [
+              'madrasso.setup.initial-deal',
               'madrasso.flow.trump_exchange',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'trump_exchange',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

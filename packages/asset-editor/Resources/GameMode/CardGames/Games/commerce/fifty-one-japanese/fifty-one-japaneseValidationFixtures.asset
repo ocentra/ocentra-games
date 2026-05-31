@@ -50,26 +50,33 @@
             id: 'fifty-one-japanese.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'exchange_one_market',
               'exchange_all_market',
               'call_stop',
             ],
-            explanation: 'Fifty-one Japanese (Gojūichi) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Fifty-one Japanese (Gojūichi) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'fifty-one-japanese.setup.initial-deal',
               'fifty-one-japanese.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

@@ -65,4 +65,4 @@ runStep('Validating selected-game readiness for every CardGameMode asset', [
   '--strict',
 ]);
 
-console.log('\n[game-assets] Gate passed. All editor game assets are schema-valid and selected-game ready.');
+console.log('\n[game-assets] Gate passed. All editor game assets are schema-valid and card-game asset contracts are valid. WorkInProgress assets are not release-ready.');

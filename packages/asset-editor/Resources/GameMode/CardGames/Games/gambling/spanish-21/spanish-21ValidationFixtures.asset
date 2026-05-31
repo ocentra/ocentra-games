@@ -50,13 +50,14 @@
             id: 'spanish-21.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'place_bet',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bet',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'place_bet',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'draw',
               'pass',
@@ -69,14 +70,20 @@
               'split',
               'surrender',
             ],
-            explanation: 'Spanish 21 must enter place_bet first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Spanish 21 must run setup_round first, then enter place_bet with the processed legal actions.',
             linkedRuleIds: [
+              'spanish-21.setup.initial-deal',
               'spanish-21.flow.place_bet',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'place_bet',
+            firstPlayableLegalActions: [
+              'bet',
             ],
           },
           {

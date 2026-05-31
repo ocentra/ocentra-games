@@ -50,13 +50,14 @@
             id: 'kaluki-south-africa.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'turn_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
@@ -68,14 +69,20 @@
               'build',
               'calculate_penalties',
             ],
-            explanation: 'Kaluki (South Africa) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Kaluki (South Africa) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'kaluki-south-africa.setup.initial-deal',
               'kaluki-south-africa.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_cards',
             ],
           },
           {

@@ -50,26 +50,33 @@
             id: 'blind-don.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing_1',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_13_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'pitch',
+            expectedNextPhase: 'dealing_1',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_13_each',
               'deal_remaining_26',
               'calculate_don_points',
             ],
-            explanation: 'Blind Don must enter dealing_1 first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Blind Don must run setup_round first, then enter dealing_1 with the processed legal actions.',
             linkedRuleIds: [
+              'blind-don.setup.initial-deal',
               'blind-don.flow.dealing_1',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing_1',
+            firstPlayableLegalActions: [
+              'deal_13_each',
             ],
           },
           {

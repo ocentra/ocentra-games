@@ -52,28 +52,36 @@
         guid: 'd4fa2b27-ea62-4c63-9e4d-6d408b3bec9e',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'f9d186f654dfa71f4d713aa070ce4e7321ed872de59a4d79999f45ede5e98678',
+        checksum: '3377ab08ec067bcef09f29e63e6ad75b8a1e6f5b9316605d2a01d2962d472e00',
+        fileSize: 3854,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/jass/sidi-barrani/sidi-barraniActionSet.asset',
         guid: 'c90e3f0d-01b7-4944-8eea-ccfd943a5ba7',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'b25cf1f2e9073434ee8d765e7649f1bd277bb865110b2ba891a94edddd61d590',
+        checksum: '4942aaddd886ff775ea73e11d2de329e979a266093cdece2c649aed6ebe7d2db',
+        fileSize: 8674,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/jass/sidi-barrani/sidi-barraniStateEventModel.asset',
         guid: '0d6315c7-4839-4103-8ec2-273855b7ede8',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'a8f58a18c566899394b2621d10e8be35528a3b15df6d1405a7a809cafcdcb36e',
+        checksum: '2addaa72337fa3a8c4778985429767b053692f80e4248ec226187420e302ab72',
+        fileSize: 1661,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/jass/sidi-barrani/sidi-barraniValidationFixtures.asset',
         guid: '044150cf-04b8-46cc-945f-f2e88ff5f588',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '094432fca31922c8d752a890a9458b09abd31fc243c25f3c6c13c230dd4312ef',
+        checksum: 'c261555174455ff80a1bf0865ce7285cbf14788f0873eb4bba4c4f8a5d5c0c52',
+        fileSize: 4027,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -103,6 +111,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 9 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -151,6 +174,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 9 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 9,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -347,6 +384,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      deal_9_each_3_batches: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_9_each_3_batches is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_9_each_3_batches',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -419,8 +469,21 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal_9_each_3_batches',
+        'bid',
+        'pass',
+        'play_card',
+        'declare',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'bid',
       'play',

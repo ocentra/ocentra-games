@@ -50,13 +50,14 @@
             id: 'australian-patience.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'setup_7x4',
+              'setup_round',
             ],
-            expectedNextPhase: 'solve_loop',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'setup_7x4',
               'move_tableau_group',
               'move_to_foundation',
@@ -64,14 +65,20 @@
               'move_waste_to_tableau',
               'verify_win',
             ],
-            explanation: 'Australian Patience must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Australian Patience must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'australian-patience.setup.initial-deal',
               'australian-patience.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'setup_7x4',
             ],
           },
           {

@@ -50,23 +50,30 @@
             id: 'hol-s-der-geier.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: "Hol's der Geier must enter play first and expose exactly the legal actions authored for that phase.",
+            explanation: "Hol's der Geier must run setup_round first, then enter play with the processed legal actions.",
             linkedRuleIds: [
+              'hol-s-der-geier.setup.initial-deal',
               'hol-s-der-geier.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

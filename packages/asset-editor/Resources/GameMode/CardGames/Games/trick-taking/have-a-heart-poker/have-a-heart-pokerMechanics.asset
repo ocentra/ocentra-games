@@ -52,28 +52,36 @@
         guid: '5a4ac1a4-5aab-4695-be98-01213b2bdf92',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '31562572a1d90de1567f0113fed146785d98643bb6776540a5ffae33afa9dc27',
+        checksum: '1959a1fbb88b63d7d0b42c77d303b8ae341813d704dfcf081697f939a449c561',
+        fileSize: 4074,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/have-a-heart-poker/have-a-heart-pokerActionSet.asset',
         guid: '7a7bd6c1-2c2f-44ef-9f23-bc542151a4b7',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '92c1716d945a837c49169b15bb746cb24b97c494986b333a2b082447b1f7d00d',
+        checksum: '3631b28c8c8db8f4f85a70446ea97668c112f746d865a45900982d1a138ef388',
+        fileSize: 7924,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/have-a-heart-poker/have-a-heart-pokerStateEventModel.asset',
         guid: '2d159201-0d14-40ed-ab65-46e49818c0e8',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'b2d012f38ff4d0072018d54a72c03ee8fb17063638161ac796503332b99d7d84',
+        checksum: '2ba154306cfa66373082acb1b16b71f223566708c8048711f35bc274054b5688',
+        fileSize: 1523,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/have-a-heart-poker/have-a-heart-pokerValidationFixtures.asset',
         guid: 'e491c3a6-4948-4d7d-b98d-7b360282bce9',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'a644327372d58d0eb398dda9db62cd6b4fb2d748a2c14debe3b372ed06c10bab',
+        checksum: '82690caa7fc11f989f2bd3a631d4f91bec2bcf6b79eb74611ea5c19b685dcd26',
+        fileSize: 3919,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -114,6 +122,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Dealing',
@@ -180,6 +203,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 13 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 13,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -377,6 +414,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      score_hand: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action score_hand is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'score_hand',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -436,8 +486,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'pass',
+        'play_card',
+        'score_hand',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'passing',
       'play',

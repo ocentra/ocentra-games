@@ -50,13 +50,14 @@
             id: 'bourr.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'dealing',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'award_pot',
@@ -68,14 +69,20 @@
               'apply_bourre_penalty',
               'draw_from_stock',
             ],
-            explanation: 'Bourré must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bourré must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'bourr.setup.initial-deal',
               'bourr.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

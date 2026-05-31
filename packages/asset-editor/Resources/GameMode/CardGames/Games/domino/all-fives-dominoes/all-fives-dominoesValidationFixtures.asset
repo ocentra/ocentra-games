@@ -50,27 +50,34 @@
             id: 'all-fives-dominoes.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_tiles',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'award_pot',
               'play_card',
               'draw',
               'pass',
             ],
-            explanation: 'All Fives (Dominoes) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'All Fives (Dominoes) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'all-fives-dominoes.setup.initial-deal',
               'all-fives-dominoes.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

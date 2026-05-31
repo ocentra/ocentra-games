@@ -50,13 +50,14 @@
             id: 'irish-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'round_1',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'guess_color',
@@ -65,14 +66,20 @@
               'guess_suit',
               'finish_game',
             ],
-            explanation: 'Irish Poker must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Irish Poker must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'irish-poker.setup.initial-deal',
               'irish-poker.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

@@ -50,26 +50,33 @@
             id: 'hokm.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'hakem_selection',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'initial_deal',
+            expectedNextPhase: 'hakem_selection',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'play_card',
               'complete_scoring',
             ],
-            explanation: 'Hokm must enter hakem_selection first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Hokm must run setup_round first, then enter hakem_selection with the processed legal actions.',
             linkedRuleIds: [
+              'hokm.setup.initial-deal',
               'hokm.flow.hakem_selection',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'hakem_selection',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

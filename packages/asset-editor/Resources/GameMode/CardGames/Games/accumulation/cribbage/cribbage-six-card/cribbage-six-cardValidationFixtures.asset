@@ -50,23 +50,30 @@
             id: 'cribbage-six-card.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: 'Cribbage six-card must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Cribbage six-card must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'cribbage-six-card.setup.initial-deal',
               'cribbage-six-card.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

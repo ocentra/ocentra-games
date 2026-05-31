@@ -50,13 +50,14 @@
             id: 'san-francisco-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante_round',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'third_street_bet',
+            expectedNextPhase: 'ante_round',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'check',
@@ -66,14 +67,20 @@
               'reveal_hand',
               'award_pot',
             ],
-            explanation: 'San Francisco Poker must enter ante_round first and expose exactly the legal actions authored for that phase.',
+            explanation: 'San Francisco Poker must run setup_round first, then enter ante_round with the processed legal actions.',
             linkedRuleIds: [
+              'san-francisco-poker.setup.initial-deal',
               'san-francisco-poker.flow.ante_round',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante_round',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

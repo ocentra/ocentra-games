@@ -50,23 +50,30 @@
             id: 'correlativa.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: 'Correlativa must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Correlativa must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'correlativa.setup.initial-deal',
               'correlativa.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

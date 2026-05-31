@@ -50,14 +50,14 @@
             id: 'golf-nine-card.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'arrange_9_cards',
-              'select_3_faceup',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'arrange_9_cards',
               'select_3_faceup',
               'draw_stock',
@@ -66,14 +66,21 @@
               'replace_faceup_card',
               'check_round_end_action',
             ],
-            explanation: 'Golf (Nine Card) must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Golf (Nine Card) must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'golf-nine-card.setup.initial-deal',
               'golf-nine-card.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'arrange_9_cards',
+              'select_3_faceup',
             ],
           },
           {

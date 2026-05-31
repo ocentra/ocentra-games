@@ -50,26 +50,33 @@
             id: 'skat.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'skat_deal_3_4_3',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'bid',
               'skat_deal_3_4_3',
             ],
-            explanation: 'Skat must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Skat must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'skat.setup.initial-deal',
               'skat.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'skat_deal_3_4_3',
             ],
           },
           {

@@ -50,26 +50,33 @@
             id: 'hollywood-garbage.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'award_pot',
               'play',
             ],
-            explanation: 'Hollywood Garbage must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Hollywood Garbage must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'hollywood-garbage.setup.initial-deal',
               'hollywood-garbage.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play',
             ],
           },
           {

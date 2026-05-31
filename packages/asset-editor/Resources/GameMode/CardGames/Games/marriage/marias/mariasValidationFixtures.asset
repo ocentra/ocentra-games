@@ -50,24 +50,31 @@
             id: 'marias.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'contract',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bid',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'contract',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'bid',
             ],
-            explanation: 'Mariáš must enter contract first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Mariáš must run setup_round first, then enter contract with the processed legal actions.',
             linkedRuleIds: [
+              'marias.setup.initial-deal',
               'marias.flow.contract',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'contract',
+            firstPlayableLegalActions: [
+              'bid',
             ],
           },
           {

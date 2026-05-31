@@ -50,14 +50,14 @@
             id: 'game-flip-flop.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'stakes_and_deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'claim_flip_flop',
+            expectedNextPhase: 'stakes_and_deal',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'declare',
@@ -67,14 +67,21 @@
               'meld',
               'go_out',
             ],
-            explanation: 'Game, Flip, Flop must enter stakes_and_deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Game, Flip, Flop must run setup_round first, then enter stakes_and_deal with the processed legal actions.',
             linkedRuleIds: [
+              'game-flip-flop.setup.initial-deal',
               'game-flip-flop.flow.stakes_and_deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'stakes_and_deal',
+            firstPlayableLegalActions: [
+              'ante',
+              'deal',
             ],
           },
           {

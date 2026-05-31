@@ -50,13 +50,14 @@
             id: 'all-for-one-and-one-for-all-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'initial_deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -70,14 +71,20 @@
               'discard',
               'pass',
             ],
-            explanation: 'All for One and One for All Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'All for One and One for All Poker must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'all-for-one-and-one-for-all-poker.setup.initial-deal',
               'all-for-one-and-one-for-all-poker.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

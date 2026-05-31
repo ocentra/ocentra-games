@@ -52,28 +52,36 @@
         guid: '4c5eeafa-d26e-4a63-8c4c-f275e55ac0b1',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '39634940dcb9f683e602a39665fc55f482c135bc6a587b86b8d8862f064c0776',
+        checksum: '91db1e8889443d1eabd82052d8b4e5c42f176f5d73ae35c258cd2f799ec5dd60',
+        fileSize: 3216,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/beating/koira/koiraActionSet.asset',
         guid: 'f213a4dc-9d24-40f3-b513-2bd63031c96c',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '2f26944d9d9dc4b06f56bcf41428438bf2c7845155ea10f47577a273ede99eb6',
+        checksum: '15df5e4f1789984645ad3d8e9d4f5ee95ec088a6df522bff8ba87ebbcae10bbc',
+        fileSize: 7948,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/beating/koira/koiraStateEventModel.asset',
         guid: '01f99c3d-cb0b-46b2-b2f8-2ac67ebb0081',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '8e7fa73717af4a1a025f4d56ca35c82a0a228c884591bb7607e200efd6ce9a98',
+        checksum: '71576258da3216fe87ec59e2d7e7483277590e5c3963095635dea5957a6bd1f9',
+        fileSize: 1525,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/beating/koira/koiraValidationFixtures.asset',
         guid: 'c1308467-2113-4564-a03f-1a58e26a68c2',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '67cd528b6f665ed57d846d06ed84f8f3c0b0b966b70527da18b1770143957642',
+        checksum: 'd692c16b95b50108bd8d3bb03724a159f385dd4f87531112e596dd6c46219e71',
+        fileSize: 3581,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -101,6 +109,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'phase1',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 3 card(s) to each active player before player action begins.',
+      },
       {
         id: 'phase1',
         label: 'Collection',
@@ -134,6 +157,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 3 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 3,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -333,6 +370,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      pick_up: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action pick_up is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'pick_up',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -405,8 +455,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'pick_up',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'phase1',
       'phase2',
     ],

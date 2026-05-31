@@ -50,27 +50,34 @@
             id: 'tichu.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_13_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'climbing',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'deal_13_each',
               'play_combination',
               'calculate_penalties',
             ],
-            explanation: 'Tichu must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tichu must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'tichu.setup.initial-deal',
               'tichu.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_13_each',
             ],
           },
           {

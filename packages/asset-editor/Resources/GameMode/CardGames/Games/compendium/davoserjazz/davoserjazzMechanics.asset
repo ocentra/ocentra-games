@@ -52,28 +52,36 @@
         guid: '4579246f-456f-4651-9337-6e2bc9df6390',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'd8b3c2d05a27de7cc66cd26643863199d6c1b3bed7470ca730b4eedb9c89d0e7',
+        checksum: '8bfa8316fed5a90ad21aeba14777e957b9b483889638bd80411b016675a6ab76',
+        fileSize: 2705,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/compendium/davoserjazz/davoserjazzActionSet.asset',
         guid: 'ec16b0cd-5418-4bc5-aec1-04decb457abb',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '370534a957719c672c0033fd2aa3ff0541f576df21f9ba4927cf655696752eb9',
+        checksum: 'ce2caac49a68f7626fc2537eea04d7801736743f07d36ea2409153ba4861261b',
+        fileSize: 7266,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/compendium/davoserjazz/davoserjazzStateEventModel.asset',
         guid: '8d5d79b6-e77b-4da4-8817-35ed9810426c',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '7c1cc4d6c45975d996961f414877df111b55996c58290d65a15b3bdd532f3606',
+        checksum: '51ed4258baa0746d4ca05337b9a71b65fe211c177a2dabe79ad68c62f7885425',
+        fileSize: 1408,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/compendium/davoserjazz/davoserjazzValidationFixtures.asset',
         guid: '7e6658b2-8a17-4a2a-9c59-e2549a4edc83',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '536d8bc6dd4350d952e666ab12623982d1935ea0ca73da503e9d3ebe57839194',
+        checksum: '81373bceb34239e3d24c8e670938298f9e6893b4492e727dec7d757b545de39d',
+        fileSize: 3879,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -368,8 +405,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'discard',
+        'pass',
+        'bid',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

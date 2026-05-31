@@ -50,14 +50,14 @@
             id: 'golf-power.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
-              'peek_2',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'draw',
               'discard',
@@ -66,14 +66,21 @@
               'replace',
               'call_dacz',
             ],
-            explanation: 'Dacz Golf must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Dacz Golf must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'golf-power.setup.initial-deal',
               'golf-power.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal',
+              'peek_2',
             ],
           },
           {

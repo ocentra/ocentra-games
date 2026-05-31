@@ -50,13 +50,14 @@
             id: 'push-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_hole',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_hole',
+              'setup_round',
             ],
-            expectedNextPhase: 'receive_1',
+            expectedNextPhase: 'deal_hole',
             supportedActionIds: [
+              'setup_round',
               'fold',
               'check',
               'call',
@@ -67,14 +68,20 @@
               'accept_card',
               'push_card',
             ],
-            explanation: 'Push Poker must enter deal_hole first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Push Poker must run setup_round first, then enter deal_hole with the processed legal actions.',
             linkedRuleIds: [
+              'push-poker.setup.initial-deal',
               'push-poker.flow.deal_hole',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_hole',
+            firstPlayableLegalActions: [
+              'deal_hole',
             ],
           },
           {

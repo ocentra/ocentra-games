@@ -50,14 +50,14 @@
             id: 'boonaken.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_6_each',
-              'deal_widow',
+              'setup_round',
             ],
-            expectedNextPhase: 'auction',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'discard',
@@ -76,14 +76,21 @@
               'calculate_total_points',
               'update_loser_marks',
             ],
-            explanation: 'Boonaken must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Boonaken must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'boonaken.setup.initial-deal',
               'boonaken.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_6_each',
+              'deal_widow',
             ],
           },
           {

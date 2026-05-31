@@ -52,28 +52,36 @@
         guid: 'f9006fc6-85a3-4fc9-af27-0c9570500c14',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '63b23fd7b76a13645a5c026b69ba1f060b6a6f942360f7813e3ac1224b845af8',
+        checksum: 'dcbfa7391a215bb8788b563bea6b269553fdc563f8757e6f84bbf0a3a9388a7e',
+        fileSize: 3373,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/manillen/manillenActionSet.asset',
         guid: '9d8fa1c9-ae8d-45cc-b781-bf11490cb15b',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '74ce23f8953b2ecdeed64316efc75180195b0b65ca9c0aa9e3bb53808dc02e0d',
+        checksum: '386b95c1e3d7ee3c3d4e1b18329c6aab7c5ff54cdd31bb033b5aedcbb5e57f9c',
+        fileSize: 8456,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/manillen/manillenStateEventModel.asset',
         guid: 'e07d5b6c-75c2-4489-9274-d8484277c8b2',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'e62ad1fc8bdfd77db5aa823e3f980a3fb78e6b8463d34410a5701fbd8edcd078',
+        checksum: '5985f1c75826d85ed2d42152599d3cce945fe67955f72278f5c245fff60028f0',
+        fileSize: 1556,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/manillen/manillenValidationFixtures.asset',
         guid: 'fb7e5252-cecd-4a49-b2ea-a2b8cac4f76e',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '1f5c975eefe9610366d7bf5526e43a4fdfe8b8857ed7c211627b5ed733bdef92',
+        checksum: 'c30c976d93b4cba74e079c444e725807737d999351b9d442c1ceb269b44c0717',
+        fileSize: 4055,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -101,6 +109,21 @@
       dealerRotates: false,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'choose_trump',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 8 card(s) to each active player before player action begins.',
+      },
       {
         id: 'choose_trump',
         label: 'Choose Trump',
@@ -131,6 +154,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 8 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 8,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -330,6 +367,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      declare_trump: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action declare_trump is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'declare_trump',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -402,8 +452,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'declare_trump',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'choose_trump',
       'play',
     ],

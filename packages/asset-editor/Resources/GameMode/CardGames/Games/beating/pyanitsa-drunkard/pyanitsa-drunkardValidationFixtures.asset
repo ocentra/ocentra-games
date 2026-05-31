@@ -50,26 +50,33 @@
             id: 'pyanitsa-drunkard.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'reveal',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'reveal_top',
+              'setup_round',
             ],
-            expectedNextPhase: 'capture',
+            expectedNextPhase: 'reveal',
             supportedActionIds: [
+              'setup_round',
               'reveal_top',
               'award_trick',
               'add_face_down',
               'add_face_up',
             ],
-            explanation: "P'yanitsa (Russian Drunkard) must enter reveal first and expose exactly the legal actions authored for that phase.",
+            explanation: "P'yanitsa (Russian Drunkard) must run setup_round first, then enter reveal with the processed legal actions.",
             linkedRuleIds: [
+              'pyanitsa-drunkard.setup.initial-deal',
               'pyanitsa-drunkard.flow.reveal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'reveal',
+            firstPlayableLegalActions: [
+              'reveal_top',
             ],
           },
           {

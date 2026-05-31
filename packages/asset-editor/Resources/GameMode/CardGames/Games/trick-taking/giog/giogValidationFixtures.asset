@@ -50,26 +50,33 @@
             id: 'giog.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'distribution',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'trick_play',
+            expectedNextPhase: 'distribution',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'award_pot',
               'play_card',
             ],
-            explanation: 'Giog must enter distribution first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Giog must run setup_round first, then enter distribution with the processed legal actions.',
             linkedRuleIds: [
+              'giog.setup.initial-deal',
               'giog.flow.distribution',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'distribution',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

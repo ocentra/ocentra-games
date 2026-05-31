@@ -50,23 +50,30 @@
             id: '3-2-5.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: 'Teen Do Panch (3-2-5) must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Teen Do Panch (3-2-5) must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              '3-2-5.setup.initial-deal',
               '3-2-5.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

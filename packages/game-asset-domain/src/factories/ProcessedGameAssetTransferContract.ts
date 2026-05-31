@@ -50,6 +50,7 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
   { sourcePath: 'variations.list', targetPath: 'assetDataOverrides.gameInfo.variationsContent.list', match: 'publicVariationList', message: 'Public variations must land in GameInfo variationsContent without editor-only override metadata.' },
   { sourcePath: 'ai.difficulty', targetPath: 'assetDataOverrides.gameInfo.aiContent.difficulty', match: 'exact', message: 'AI difficulty notes must land in GameInfo aiContent.' },
   { sourcePath: 'ai.considerations', targetPath: 'assetDataOverrides.gameInfo.aiContent.considerations', match: 'exact', message: 'AI considerations must land in GameInfo aiContent.' },
+  { sourcePath: 'sources.primary', targetPath: 'assetDataOverrides.gameInfo.sourcesContent.primary', message: 'Primary source records must land in GameInfo sourcesContent.' },
   { sourcePath: 'rules.objective', targetPath: 'assetDataOverrides.rules.objective', match: 'exact', message: 'Rule objective must land in CardGameRules.' },
   { sourcePath: 'rules.gameplay', targetPath: 'assetDataOverrides.rules.gameplay', match: 'exact', message: 'Gameplay rules must land in CardGameRules.' },
   { sourcePath: 'rules.keyRules', targetPath: 'assetDataOverrides.rules.keyRules', match: 'exact', message: 'Key rules must land in CardGameRules.' },

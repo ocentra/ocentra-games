@@ -52,28 +52,36 @@
         guid: '7a951b64-cad4-4e51-bb8f-fe1b6b284185',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'e92ff329d88f2283fe215010798b033c5881061e315077b3848935f8b1030909',
+        checksum: '8b37159825f673f82f7614a9d580c7eb25efbb72c89022f4fb4aae0368424c61',
+        fileSize: 3748,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/whist/spades/spadesActionSet.asset',
         guid: 'e98f12e8-aef4-458b-9aa6-caab0065d3d6',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '6a053609f50972f228a41ed8f36cd4200bcd97e788e6e5559f091b79c6c599c7',
+        checksum: '85025eae3ee917cb8796a0d231bfbfb02ad40b9bce7688b809c877eef79bd511',
+        fileSize: 8151,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/whist/spades/spadesStateEventModel.asset',
         guid: '9f5b73e6-c399-4202-8c32-804ecc8dd140',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '25fb4d1e4546801ab8e019f0227e8aaebb18cb8219242ec7e1a1aa9c2b8aae0d',
+        checksum: '9b989265e2da38e8be3b1d33499ce4bf6d612bd5c558f320efef675afcc4168f',
+        fileSize: 1617,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/whist/spades/spadesValidationFixtures.asset',
         guid: 'dcd3b34d-4edc-4680-842e-eedf32bd4446',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '5e15b335f75badc3b6bc3cb008a7b4ac7ff695841103d352e46b7e376300d4fd',
+        checksum: 'daddab63c8f51dae6ba0e8744aff83d445101c178e73996e6bb4589f8d2b716b',
+        fileSize: 3759,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -151,6 +174,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 13 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 13,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -349,6 +386,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      deal_cards: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_cards is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_cards',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -421,8 +471,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal_cards',
+        'bid',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'bid',
       'play',

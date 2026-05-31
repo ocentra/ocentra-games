@@ -50,13 +50,14 @@
             id: 'kalookie-british.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'turn_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
@@ -66,14 +67,20 @@
               'tack',
               'calculate_penalties',
             ],
-            explanation: 'Kalookie (British-European) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Kalookie (British-European) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'kalookie-british.setup.initial-deal',
               'kalookie-british.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_cards',
             ],
           },
           {

@@ -50,23 +50,30 @@
             id: '4-2-3.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'play_card',
             ],
-            explanation: '4-2-3 (Four-Two-Three) must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: '4-2-3 (Four-Two-Three) must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              '4-2-3.setup.initial-deal',
               '4-2-3.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

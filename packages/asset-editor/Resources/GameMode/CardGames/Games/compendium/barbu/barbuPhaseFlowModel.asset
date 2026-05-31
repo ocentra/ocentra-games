@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'setup_game',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'setup_game',
         label: 'Session Start',
         actor: 'system',
@@ -138,6 +153,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'setup_game',
       'choosing_contract',
       'doubling_phase',

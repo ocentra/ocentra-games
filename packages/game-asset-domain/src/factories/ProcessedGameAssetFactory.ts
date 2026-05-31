@@ -34,6 +34,7 @@ const DECKS_ROOT = path.resolve(RESOURCES_ROOT, 'GameMode/CardGames/Decks');
 const PROCESSED_GAMES_ROOT = path.resolve(REPO_ROOT, 'packages/card-games/src/processed-games');
 const PLACEHOLDER_CAROUSEL_RESOURCE_ROOT = 'AppAssets/PlaceHolders';
 const FALLBACK_CAROUSEL_SLIDE_COUNT = 3;
+const SETUP_ROUND_ACTION_ID = 'setup_round';
 const PUBLIC_JUNK_TEXT_PATTERN = /\[.{1,120}\]|\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
 const CAROUSEL_IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
@@ -473,6 +474,35 @@ function buildAiContent(game: Game): Record<string, unknown> {
   };
 }
 
+function buildSourcesContent(game: Game): Record<string, unknown> {
+  const normalizeSource = (source: unknown): Record<string, unknown>[] => {
+    if (!source || typeof source !== 'object' || Array.isArray(source)) {
+      return [];
+    }
+    const record = source as Record<string, unknown>;
+    const name = publicText(record.name);
+    const url = publicText(record.url);
+    if (!name || !url) {
+      return [];
+    }
+    return [{
+      id: publicText(record.id),
+      name,
+      url,
+      retrievedAt: publicText(record.retrievedAt),
+    }];
+  };
+
+  return {
+    primary: Array.isArray(game.sources.primary)
+      ? game.sources.primary.flatMap(normalizeSource)
+      : [],
+    additional: Array.isArray(game.sources.additional)
+      ? game.sources.additional.flatMap(normalizeSource)
+      : [],
+  };
+}
+
 function buildAiConsiderations(game: Game): string[] {
   return [game.rules.objective, game.rules.gameplay, ...game.rules.keyRules]
     .map(publicText)
@@ -550,7 +580,7 @@ function buildMechanicsContract(game: Game, slug: string): Record<string, unknow
 
 function buildActionModel(game: Game): Record<string, unknown> {
   const customActions = normalizeCustomActions(game.engine.customActions);
-  const playerActions = normalizePlayerActionRecord(game.engine.playerActions);
+  const playerActions = buildRuntimeActionRecords(game);
   const playerActionIds = Object.entries(playerActions)
     .filter(([, value]) => Boolean((value as { supported?: boolean }).supported))
     .map(([key]) => key);
@@ -572,9 +602,34 @@ function buildActionModel(game: Game): Record<string, unknown> {
   };
 }
 
+function buildRuntimeActionRecords(game: Game): Record<string, unknown> {
+  return {
+    [SETUP_ROUND_ACTION_ID]: buildSetupRoundAction(game),
+    ...normalizePlayerActionRecord(game.engine.playerActions),
+  };
+}
+
+function buildSetupRoundAction(game: Game): Record<string, unknown> {
+  return {
+    supported: true,
+    system: true,
+    description: `Deal ${game.engine.initialHandSize} card(s) to each active player and initialize the table before player actions begin.`,
+    cost: 'none',
+    constraints: 'System-only setup action before the first player phase.',
+    isTerminating: true,
+    effectType: SETUP_ROUND_ACTION_ID,
+    effectHints: {
+      initialHandSize: game.engine.initialHandSize,
+      deckCount: game.engine.deckCount,
+      visibility: game.engine.cardVisibility.initialDeal,
+    },
+  };
+}
+
 function buildValidationSuites(game: Game, slug: string): Record<string, unknown>[] {
-  const firstPhase = game.engine.phases[0];
+  const firstPlayablePhase = normalizePhaseFlowPhases(game.engine.phases)[0];
   const supportedActions = [
+    SETUP_ROUND_ACTION_ID,
     ...Object.entries(normalizePlayerActionRecord(game.engine.playerActions))
       .filter(([, action]) => Boolean((action as { supported?: boolean }).supported))
       .map(([id]) => id),
@@ -608,14 +663,16 @@ function buildValidationSuites(game: Game, slug: string): Record<string, unknown
           id: `${slug}.flow.first-phase`,
           title: 'Opening phase',
           purpose: 'flow',
-          expectedFirstPhase: firstPhase.id,
-          expectedActor: firstPhase.actor,
-          expectedLegalActions: firstPhase.legalActions,
-          expectedNextPhase: firstPhase.nextPhase,
+          expectedFirstPhase: SETUP_ROUND_ACTION_ID,
+          expectedActor: 'system',
+          expectedLegalActions: [SETUP_ROUND_ACTION_ID],
+          expectedNextPhase: firstPlayablePhase?.id ?? null,
           supportedActionIds: supportedActions,
-          explanation: `${game.name} must enter ${firstPhase.id} first and expose exactly the legal actions authored for that phase.`,
-          linkedRuleIds: [`${slug}.flow.${firstPhase.id}`],
-          sourceFields: ['engine.phases.0', 'engine.playerActions', 'engine.customActions'],
+          firstPlayablePhase: firstPlayablePhase?.id ?? null,
+          firstPlayableLegalActions: Array.isArray(firstPlayablePhase?.legalActions) ? firstPlayablePhase.legalActions : [],
+          explanation: `${game.name} must run setup_round first, then enter ${firstPlayablePhase?.id ?? 'the authored first phase'} with the processed legal actions.`,
+          linkedRuleIds: [`${slug}.setup.initial-deal`, `${slug}.flow.${firstPlayablePhase?.id ?? 'first-playable'}`],
+          sourceFields: ['setup.dealing', 'engine.phases.0', 'engine.playerActions', 'engine.customActions'],
         },
         {
           id: `${slug}.scoring.primary-outcome`,
@@ -650,11 +707,12 @@ function buildValidationExamples(game: Game, slug: string): Record<string, unkno
 }
 
 function buildRuleExampleHands(game: Game): string[] {
-  const firstPhase = game.engine.phases[0];
+  const firstPhase = normalizePhaseFlowPhases(game.engine.phases)[0];
   return [
     `Opening deal: ${game.engine.playerConfig.minPlayers}-${game.engine.playerConfig.maxPlayers} player(s), ${game.engine.initialHandSize} card(s) per player, ${game.engine.deckCount} deck(s), initial visibility ${game.engine.cardVisibility.initialDeal}.`,
+    `Opening setup: ${SETUP_ROUND_ACTION_ID} runs before player action so the initial deal can be asserted by playtests.`,
     firstPhase
-      ? `Opening flow: start in ${firstPhase.id}; ${firstPhase.actor} may use ${firstPhase.legalActions.join(', ')} before ${firstPhase.nextPhase ?? 'round end'}.`
+      ? `First playable flow: enter ${firstPhase.id}; ${firstPhase.actor} may use ${Array.isArray(firstPhase.legalActions) ? firstPhase.legalActions.join(', ') : ''} before ${firstPhase.nextPhase ?? 'round end'}.`
       : '',
     `Scoring check: ${game.scoring.description} Expected outcome: ${stringifyUnknown(game.scoring.targetScore ?? game.scoring.winCondition)}.`,
   ].map(publicText).filter(Boolean);
@@ -691,14 +749,38 @@ function normalizePhaseFlowPhases(value: unknown): Record<string, unknown>[] {
     });
 }
 
+function buildRuntimePhases(game: Game): Record<string, unknown>[] {
+  const playablePhases = normalizePhaseFlowPhases(game.engine.phases);
+  if (playablePhases[0]?.id === SETUP_ROUND_ACTION_ID) {
+    return playablePhases;
+  }
+  return [
+    {
+      id: SETUP_ROUND_ACTION_ID,
+      label: 'Setup Round',
+      actor: 'system',
+      legalActions: [SETUP_ROUND_ACTION_ID],
+      nextPhase: typeof playablePhases[0]?.id === 'string' ? playablePhases[0].id : null,
+      isMandatory: true,
+      loopIndex: null,
+      totalLoops: null,
+      conditionalNext: [],
+      cardVisibilityChanges: {},
+      notes: `Deal ${game.engine.initialHandSize} card(s) to each active player before player action begins.`,
+    },
+    ...playablePhases,
+  ];
+}
+
 function buildMechanicsModelDataOverrides(
   game: Game,
   slug: string,
   linkedDeckAsset: AssetResourceEntry<Deck>,
   rankingAsset: Record<string, unknown>,
 ): NonNullable<CreateGameModeOptions['mechanicsModelDataOverrides']> {
-  const playerActions = normalizePlayerActionRecord(game.engine.playerActions);
+  const playerActions = buildRuntimeActionRecords(game);
   const customActions = normalizeCustomActions(game.engine.customActions);
+  const runtimePhases = buildRuntimePhases(game);
   const shared = {
     familyKernel: slug,
     familyVariant: decodeGameSubCategory(game.overview.subCategory) || decodeGameCategory(game.overview.category),
@@ -768,7 +850,7 @@ function buildMechanicsModelDataOverrides(
     },
     phaseFlow: {
       ...shared,
-      phases: normalizePhaseFlowPhases(game.engine.phases),
+      phases: runtimePhases,
       turnPolicy: {
         direction: game.engine.turnOrder.direction,
         startsWith: game.engine.turnOrder.startsWith,
@@ -798,7 +880,7 @@ function buildMechanicsModelDataOverrides(
         constants: asMechanicsRecord(game.engine.constants, 'constants'),
       },
       eventModel: {
-        phases: game.engine.phases.map((phase) => phase.id),
+        phases: runtimePhases.map((phase) => phase.id),
         actions: buildActionModel(game).actionIds,
       },
     },
@@ -943,9 +1025,9 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
   const carouselData = buildFallbackCarouselData(game, slug, category);
   const numericCardValues = normalizeNumericRecord(game.scoring.cardValues);
   const scoringRules = buildScoringRulesSourceCardValues(game.scoring.cardValues, numericCardValues);
-  const playerActions = normalizePlayerActionRecord(game.engine.playerActions);
+  const playerActions = buildRuntimeActionRecords(game);
   const customActions = normalizeCustomActions(game.engine.customActions);
-  const phases = normalizePhaseFlowPhases(game.engine.phases);
+  const phases = buildRuntimePhases(game);
 
   const createOptions: CreateGameModeOptions = {
     gameId: slug,
@@ -1025,6 +1107,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         setupContent: buildSetupContent(game),
         variationsContent: buildVariationsContent(game),
         aiContent: buildAiContent(game),
+        sourcesContent: buildSourcesContent(game),
         mechanicsContract: buildMechanicsContract(game, slug),
         editorOnly: buildEditorOnlyMetadata(game),
         sections: buildGameInfoSections(game),

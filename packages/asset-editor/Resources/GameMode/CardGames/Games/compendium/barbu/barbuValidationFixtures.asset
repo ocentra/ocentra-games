@@ -50,13 +50,14 @@
             id: 'barbu.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup_game',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'initialize_28_hand_grid',
+              'setup_round',
             ],
-            expectedNextPhase: 'choosing_contract',
+            expectedNextPhase: 'setup_game',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'initialize_28_hand_grid',
               'select_contract_from_remaining',
@@ -68,14 +69,20 @@
               'apply_doubles',
               'update_compendium_grid',
             ],
-            explanation: 'Barbu must enter setup_game first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Barbu must run setup_round first, then enter setup_game with the processed legal actions.',
             linkedRuleIds: [
+              'barbu.setup.initial-deal',
               'barbu.flow.setup_game',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup_game',
+            firstPlayableLegalActions: [
+              'initialize_28_hand_grid',
             ],
           },
           {

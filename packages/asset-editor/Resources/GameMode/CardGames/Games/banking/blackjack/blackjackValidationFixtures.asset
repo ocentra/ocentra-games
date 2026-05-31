@@ -50,13 +50,14 @@
             id: 'blackjack.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'wagering',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'place_bet',
+              'setup_round',
             ],
-            expectedNextPhase: 'dealing',
+            expectedNextPhase: 'wagering',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'draw',
               'pass',
@@ -71,14 +72,20 @@
               'compare_hands',
               'award_bets',
             ],
-            explanation: 'Blackjack must enter wagering first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Blackjack must run setup_round first, then enter wagering with the processed legal actions.',
             linkedRuleIds: [
+              'blackjack.setup.initial-deal',
               'blackjack.flow.wagering',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'wagering',
+            firstPlayableLegalActions: [
+              'place_bet',
             ],
           },
           {

@@ -52,28 +52,36 @@
         guid: 'f3cdd644-1268-4fe9-9554-ef59f85e03f4',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'f0b97bde750aedfb623f4e063eb52e29cb5c7f2ae4f9e1b80d402e12e2a5b788',
+        checksum: 'ffb1fed7fb0a33dcfa35eef74d69e6c784c97d864f47f51646734424a180bd1e',
+        fileSize: 2764,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/matching/go-fish/omben/ombenActionSet.asset',
         guid: '04189313-b427-4630-ad28-3f5d756acde0',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'a70478e669030caffafac2f413a15cfdb4b577c7a873e35d6dfbb66698d39a4e',
+        checksum: '87614fc98cd491de50088e3487711118ddf793457aeea4e4db0556ccff367635',
+        fileSize: 8317,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/matching/go-fish/omben/ombenStateEventModel.asset',
         guid: '59e7a166-c64d-4043-bccd-cf4f7487ba1f',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '27560be2dc49a80f60e457e9c5f3ad9b68795d123484d7776c23bc9bb954efcf',
+        checksum: '42e8cf5b87e9bd3563128f2a2eda21db6727f9b597e2f7aef4660b026ade7b8d',
+        fileSize: 1541,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/matching/go-fish/omben/ombenValidationFixtures.asset',
         guid: '20d49841-7a44-4be5-8f72-7cc9a65493ce',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '48371964094cecd624e313b9d9aa74c35bf0991762627b9ac646ac6cacf3645e',
+        checksum: '73fb04b37ebffd4d5b9bf791e00217a250aa28b5f814684295d99cfcded1b189',
+        fileSize: 3769,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'current_player',
@@ -118,6 +141,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 4 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 4,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -316,6 +353,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      ask_rank: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action ask_rank is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'ask_rank',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -388,8 +438,21 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'ask_rank',
+        'discard',
+        'draw',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

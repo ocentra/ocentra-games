@@ -50,13 +50,14 @@
             id: 'big-a.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'draw',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'draw_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'partnership',
+            expectedNextPhase: 'draw',
             supportedActionIds: [
+              'setup_round',
               'pass',
               'draw_card',
               'expose_ace',
@@ -64,14 +65,20 @@
               'play_combination',
               'calculate_scores',
             ],
-            explanation: 'Big A (打大A) must enter draw first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Big A (打大A) must run setup_round first, then enter draw with the processed legal actions.',
             linkedRuleIds: [
+              'big-a.setup.initial-deal',
               'big-a.flow.draw',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'draw',
+            firstPlayableLegalActions: [
+              'draw_card',
             ],
           },
           {

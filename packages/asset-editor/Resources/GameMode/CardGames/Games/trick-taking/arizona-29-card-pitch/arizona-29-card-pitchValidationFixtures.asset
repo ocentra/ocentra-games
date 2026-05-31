@@ -50,13 +50,14 @@
             id: 'arizona-29-card-pitch.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_six_and_kitty',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'deal_six_and_kitty',
@@ -66,14 +67,20 @@
               'lead_trump_card',
               'calculate_setback_score',
             ],
-            explanation: 'Arizona 29-card Pitch must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Arizona 29-card Pitch must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'arizona-29-card-pitch.setup.initial-deal',
               'arizona-29-card-pitch.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_six_and_kitty',
             ],
           },
           {

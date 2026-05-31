@@ -50,14 +50,14 @@
             id: 'biriba.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_11_each',
-              'create_pots',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'draw',
               'discard',
@@ -73,14 +73,21 @@
               'pick_up_pot',
               'calculate_deal_points',
             ],
-            explanation: 'Biriba must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Biriba must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'biriba.setup.initial-deal',
               'biriba.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_11_each',
+              'create_pots',
             ],
           },
           {

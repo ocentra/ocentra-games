@@ -50,13 +50,14 @@
             id: 'clobyosh.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_6_turn',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_6_turn_1',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal_6_turn',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'deal_6_turn_1',
@@ -65,14 +66,20 @@
               'deal_3_each',
               'declare_meld',
             ],
-            explanation: 'Clobyosh must enter deal_6_turn first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Clobyosh must run setup_round first, then enter deal_6_turn with the processed legal actions.',
             linkedRuleIds: [
+              'clobyosh.setup.initial-deal',
               'clobyosh.flow.deal_6_turn',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_6_turn',
+            firstPlayableLegalActions: [
+              'deal_6_turn_1',
             ],
           },
           {

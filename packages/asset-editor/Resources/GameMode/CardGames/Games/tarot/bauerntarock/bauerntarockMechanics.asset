@@ -52,28 +52,36 @@
         guid: 'd1f6b7c8-f8e8-4b25-b7af-053f7ffd3f47',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '5312ebea864dc28d665128bc0771d5c4988ce2533af8d14b372afc710b0ecfb2',
+        checksum: 'dd9da3a3867f600900194bb03281dda4445776dd7de0b95e95a2b72ab729e256',
+        fileSize: 2766,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/tarot/bauerntarock/bauerntarockActionSet.asset',
         guid: 'b1e0cce8-2c84-4d54-8620-d1edcfbbb2df',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'db5e3bf8ac5c923642ae56812836ac89c8bb421f24e255e5b811bbe46d9c816d',
+        checksum: '58e211d6dd56468fa5205adac796049df83465ecb17efb8d324763b1c56a2044',
+        fileSize: 7245,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/tarot/bauerntarock/bauerntarockStateEventModel.asset',
         guid: '8195d9db-738b-415b-aedb-7f2b0228d299',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'eff163b7be6318ab7ef4923f673ad921bc624a492041df521e0f7ce7ae0e14cc',
+        checksum: 'ff5e86acb77fa8245d85136e5fdb2b461c94662442c9aafa9807282791126f7d',
+        fileSize: 1387,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/tarot/bauerntarock/bauerntarockValidationFixtures.asset',
         guid: '6e48b24a-34fc-44a4-9513-6509d318bf7a',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '3b04c371ccd24394beae81fb800f9e2ec0fa347613dd226c8c0e6d642b21804e',
+        checksum: '4d5a3db1d216ec4633bbdd556d929f8d40832a78d814528cce642be32b0078df',
+        fileSize: 3868,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -368,8 +405,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'discard',
+        'pass',
+        'bid',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

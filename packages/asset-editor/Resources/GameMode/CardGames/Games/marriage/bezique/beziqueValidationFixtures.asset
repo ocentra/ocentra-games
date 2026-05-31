@@ -50,13 +50,14 @@
             id: 'bezique.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_8_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'trick_draw_phase',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'draw',
@@ -68,14 +69,20 @@
               'play_card_strict',
               'calculate_total_score',
             ],
-            explanation: 'Bezique must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bezique must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'bezique.setup.initial-deal',
               'bezique.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_8_each',
             ],
           },
           {

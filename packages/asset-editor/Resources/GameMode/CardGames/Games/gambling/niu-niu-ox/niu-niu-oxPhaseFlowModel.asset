@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'bet_phase',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'bet_phase',
         label: 'Bet',
         actor: 'each_player_clockwise',
@@ -134,6 +149,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'bet_phase',
       'deal_phase',
       'split_phase',

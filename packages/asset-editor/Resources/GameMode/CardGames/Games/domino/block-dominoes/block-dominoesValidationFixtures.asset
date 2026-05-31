@@ -50,27 +50,34 @@
             id: 'block-dominoes.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_tiles',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'pass',
               'deal_tiles',
               'place_tile',
               'calculate_pips',
               'award_round_points',
             ],
-            explanation: 'Block Dominoes must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Block Dominoes must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'block-dominoes.setup.initial-deal',
               'block-dominoes.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_tiles',
             ],
           },
           {

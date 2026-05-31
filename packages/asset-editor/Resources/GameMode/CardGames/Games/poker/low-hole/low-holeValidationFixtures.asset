@@ -50,13 +50,14 @@
             id: 'low-hole.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal_initial',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -67,14 +68,20 @@
               'reveal_hand',
               'reveal',
             ],
-            explanation: 'Low Hole (Wild Card Stud) must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Low Hole (Wild Card Stud) must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'low-hole.setup.initial-deal',
               'low-hole.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

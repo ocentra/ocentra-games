@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal_batch',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 4 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'deal_batch',
         label: 'Deal Batch of Four',
         actor: 'dealer',
@@ -134,6 +149,7 @@
       ],
     },
     progression: [
+      'setup_round',
       'deal_batch',
       'play_loop',
       'round_transition',

@@ -50,13 +50,14 @@
             id: 'pei.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'draw',
@@ -65,14 +66,20 @@
               'claim_discard_to_win',
               'claim_discard_for_dui',
             ],
-            explanation: 'Pei must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Pei must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'pei.setup.initial-deal',
               'pei.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

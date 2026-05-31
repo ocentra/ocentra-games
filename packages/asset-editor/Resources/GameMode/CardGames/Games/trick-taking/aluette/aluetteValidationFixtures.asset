@@ -50,25 +50,32 @@
             id: 'aluette.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'trick_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'award_pot',
               'play_card',
             ],
-            explanation: 'Aluette must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Aluette must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'aluette.setup.initial-deal',
               'aluette.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

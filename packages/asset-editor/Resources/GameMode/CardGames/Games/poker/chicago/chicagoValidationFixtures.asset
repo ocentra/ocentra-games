@@ -50,13 +50,14 @@
             id: 'chicago.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal_initial',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -68,14 +69,20 @@
               'bring_in',
               'reveal',
             ],
-            explanation: 'Chicago Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Chicago Poker must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'chicago.setup.initial-deal',
               'chicago.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

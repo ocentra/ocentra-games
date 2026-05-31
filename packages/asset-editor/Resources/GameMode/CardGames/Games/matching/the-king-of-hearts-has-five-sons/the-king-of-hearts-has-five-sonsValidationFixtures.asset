@@ -50,25 +50,32 @@
             id: 'the-king-of-hearts-has-five-sons.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_round',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'pass',
             ],
-            explanation: 'The King of Hearts Has Five Sons must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'The King of Hearts Has Five Sons must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'the-king-of-hearts-has-five-sons.setup.initial-deal',
               'the-king-of-hearts-has-five-sons.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

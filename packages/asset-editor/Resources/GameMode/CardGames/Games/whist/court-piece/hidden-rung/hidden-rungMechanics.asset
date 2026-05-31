@@ -52,28 +52,36 @@
         guid: '0b49412e-0c63-4881-b6b3-34b48ea0c65d',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'abd9233dbb30a5c529fbd0706dfeb1b40ac4604bd1362f410ebda9a7e89ee3be',
+        checksum: '3d1cac4acf52ef23375e26cd083a94f554428bcc8478ecaaadfe8bed9a1c9d97',
+        fileSize: 4780,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/whist/court-piece/hidden-rung/hidden-rungActionSet.asset',
         guid: '60a02b1e-b02a-4ac1-a84d-fffae2062fe8',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '895b36ca7aa90d305465aff9f13ac04fa6254baaa2be495bc7d35d9f5ccb23a0',
+        checksum: '3528dd02b2060df9b8c8bf4c754da1e74ea0cf2e5cdbfe0f648f31cb8b420a86',
+        fileSize: 8412,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/whist/court-piece/hidden-rung/hidden-rungStateEventModel.asset',
         guid: 'efa596c0-2a75-49e9-a097-8dd589c4872b',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'a7c71e0303f0bab7a4041e95646dccd029bf491e04bdcf6d6ad575644c2b41b8',
+        checksum: '58b7030c596297d6694cb8613b8ecd2a8e5eed98b47b22e34436ca3baa109a3f',
+        fileSize: 1756,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/whist/court-piece/hidden-rung/hidden-rungValidationFixtures.asset',
         guid: 'aabf85ac-8dca-4c9f-9229-8e8f586c5d07',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '271ed609946876ae8cfc0845b3e0712e911d3742021bb3104d412fff68c6ac01',
+        checksum: 'd30475f826d998799adf168fe771e02a4111d34a3927fa6517da024827d9f86e',
+        fileSize: 3916,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -111,6 +119,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'initial_deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
       {
         id: 'initial_deal',
         label: 'First Deal',
@@ -188,6 +211,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 13 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 13,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -390,6 +427,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      tally_tricks: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action tally_tricks is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'tally_tricks',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -466,8 +516,21 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'declare',
+        'play_card',
+        'tally_tricks',
+        'reveal_trump',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'initial_deal',
       'trump_selection',
       'final_deal',

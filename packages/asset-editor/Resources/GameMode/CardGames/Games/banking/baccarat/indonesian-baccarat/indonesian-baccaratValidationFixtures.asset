@@ -50,25 +50,32 @@
             id: 'indonesian-baccarat.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'bet',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bet',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'bet',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'execute_deal',
               'execute_resolve',
             ],
-            explanation: 'Indonesian Baccarat must enter bet first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Indonesian Baccarat must run setup_round first, then enter bet with the processed legal actions.',
             linkedRuleIds: [
+              'indonesian-baccarat.setup.initial-deal',
               'indonesian-baccarat.flow.bet',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'bet',
+            firstPlayableLegalActions: [
+              'bet',
             ],
           },
           {

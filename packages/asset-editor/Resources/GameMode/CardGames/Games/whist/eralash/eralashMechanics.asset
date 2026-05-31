@@ -52,28 +52,36 @@
         guid: 'e88b8bbd-f1b0-4e2e-b152-3d571dc42107',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '111d2ee8a2c29bc649b5923ab8d3bac1c6e7aef285c8ed15b9aeb6c6e1366fa5',
+        checksum: '0d053df42037a8b0ba74243a1e7f5b98cb4bf8aff8a8d403ce1da2508193a659',
+        fileSize: 2726,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/whist/eralash/eralashActionSet.asset',
         guid: 'a1293abf-3955-401f-971b-15eda6c6a151',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '063aee4a18c2c16fbb8b14236d8118ff52cd96bb9e7418ee9d146a2394790b00',
+        checksum: 'd603d550706e14b08007ab43702517ccfb686407c188f6832a99c398d0307cf8',
+        fileSize: 7233,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/whist/eralash/eralashStateEventModel.asset',
         guid: '0591a7d8-f68d-4d9d-8faa-bb2766722f2a',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '766c8675d28849d1c89a758c1322e4f8f4915005d474de84402afb5456646c79',
+        checksum: 'a8772dcb1cb73860bdcfbbc573933d5c1b531c56e1e05b0861b18181d16dfa0a',
+        fileSize: 1375,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/whist/eralash/eralashValidationFixtures.asset',
         guid: 'ad8c7969-15e0-4c36-afb4-f470c53cb7cc',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'b2f1c6dd8d9879a698c12f17d04c599e2016b2c6e6d2ec406bb8b46c37577db9',
+        checksum: 'a24af08ace0ba31d59fb536fe77f7ae146d83297ac8233787e9c62f3f0d01a8b',
+        fileSize: 3785,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 10 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'system',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 10 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 10,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -368,8 +405,22 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'discard',
+        'pass',
+        'bid',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

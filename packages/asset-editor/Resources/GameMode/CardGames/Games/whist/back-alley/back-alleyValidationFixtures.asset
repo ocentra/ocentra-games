@@ -50,14 +50,14 @@
             id: 'back-alley.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_and_trump',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_by_schedule',
-              'flip_trump_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal_and_trump',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'pass',
@@ -73,14 +73,21 @@
               'calculate_team_score',
               'move_to_next_hand_size',
             ],
-            explanation: 'Back Alley must enter deal_and_trump first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Back Alley must run setup_round first, then enter deal_and_trump with the processed legal actions.',
             linkedRuleIds: [
+              'back-alley.setup.initial-deal',
               'back-alley.flow.deal_and_trump',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_and_trump',
+            firstPlayableLegalActions: [
+              'deal_by_schedule',
+              'flip_trump_card',
             ],
           },
           {

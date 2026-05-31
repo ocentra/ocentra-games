@@ -50,26 +50,33 @@
             id: 'petit-paquet-gambling.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'place_bets',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bet',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal_packets',
+            expectedNextPhase: 'place_bets',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'deal_packets',
               'reveal_top_cards',
               'pay_packet_wins',
             ],
-            explanation: 'Petit Paquet must enter place_bets first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Petit Paquet must run setup_round first, then enter place_bets with the processed legal actions.',
             linkedRuleIds: [
+              'petit-paquet-gambling.setup.initial-deal',
               'petit-paquet-gambling.flow.place_bets',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'place_bets',
+            firstPlayableLegalActions: [
+              'bet',
             ],
           },
           {

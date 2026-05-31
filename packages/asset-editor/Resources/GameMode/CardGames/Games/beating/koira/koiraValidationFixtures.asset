@@ -50,24 +50,31 @@
             id: 'koira.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'phase1',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'phase2',
+            expectedNextPhase: 'phase1',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pick_up',
             ],
-            explanation: 'Koira must enter phase1 first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Koira must run setup_round first, then enter phase1 with the processed legal actions.',
             linkedRuleIds: [
+              'koira.setup.initial-deal',
               'koira.flow.phase1',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'phase1',
+            firstPlayableLegalActions: [
+              'play_card',
             ],
           },
           {

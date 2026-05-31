@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'contract_bid',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'contract_bid',
         label: 'Contract bidding',
         actor: 'each_player_clockwise',
@@ -110,6 +125,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'contract_bid',
       'trick_bid',
       'play',

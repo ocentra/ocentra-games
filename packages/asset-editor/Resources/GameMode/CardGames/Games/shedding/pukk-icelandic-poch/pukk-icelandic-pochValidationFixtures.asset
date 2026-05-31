@@ -50,13 +50,14 @@
             id: 'pukk-icelandic-poch.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dress_board',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'collect_ante',
+            expectedNextPhase: 'dress_board',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'check',
@@ -67,14 +68,20 @@
               'play_card',
               'claim_pool',
             ],
-            explanation: 'Púkk must enter dress_board first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Púkk must run setup_round first, then enter dress_board with the processed legal actions.',
             linkedRuleIds: [
+              'pukk-icelandic-poch.setup.initial-deal',
               'pukk-icelandic-poch.flow.dress_board',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dress_board',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

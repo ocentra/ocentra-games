@@ -50,13 +50,14 @@
             id: 'bao-huang.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_34_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'uprising_check',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'deal_34_cards',
@@ -68,14 +69,20 @@
               'reveal_eunuch',
               'give_high_cards',
             ],
-            explanation: 'Băo Huáng 保皇 must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Băo Huáng 保皇 must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'bao-huang.setup.initial-deal',
               'bao-huang.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_34_cards',
             ],
           },
           {

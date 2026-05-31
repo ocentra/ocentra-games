@@ -50,25 +50,32 @@
             id: 'rummikub.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'draw',
-              'play_card',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'draw',
             ],
-            explanation: 'Rummikub must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Rummikub must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'rummikub.setup.initial-deal',
               'rummikub.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'draw',
+              'play_card',
             ],
           },
           {

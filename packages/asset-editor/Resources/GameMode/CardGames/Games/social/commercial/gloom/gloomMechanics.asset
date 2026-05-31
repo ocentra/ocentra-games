@@ -52,28 +52,36 @@
         guid: '6135830f-abd8-4da9-bb2d-7824871b7b2b',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '6edb3f17015d2c5c17a8922568b9cb379880e95e61f76304efee5537316a57b0',
+        checksum: 'f54e6895be72b68246735c50a5c11bb7251feb97338d3b0dccf9ad63bbf1dc9c',
+        fileSize: 2720,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/social/commercial/gloom/gloomActionSet.asset',
         guid: '90f077ef-7e64-4d56-a1dd-dcca2299ac99',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '13bae3661d1973ba8e59577c0ba93e18f9048654104d821766a7bc166eabd596',
+        checksum: '9cda7527e21f71ccf7202a81af1081c3beb8491dbce0d632ef9b365ceac35312',
+        fileSize: 9022,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/social/commercial/gloom/gloomStateEventModel.asset',
         guid: '420a59e6-7f10-4ce1-b0ca-0e1df31a26be',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'a25c56b276e9f3ed43719c7d5d00610252db3dc179bd38a90fe89584258c9e9c',
+        checksum: '73106c5108378de270ce2c5f82771c181e48da2d83adc48e92295978e2fe1b79',
+        fileSize: 1433,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/social/commercial/gloom/gloomValidationFixtures.asset',
         guid: '9bbaa662-f5a5-4e30-9695-c4cdc5de3a31',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'c66fe79d6845fb69a6387e8b9ba5cbfb3fa8fc2a1b456ebccc38d80d41d32674',
+        checksum: '50a360ca6d85bc088fbaa397d95dbc8ab6e7f3a9b047711cdcfaba7384d4339e',
+        fileSize: 3810,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'turning_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'turning_round',
         label: 'Card Turning',
         actor: 'current_player',
@@ -133,6 +156,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -332,6 +369,19 @@
         effectHints: {},
         reason: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
       },
+      flip_top_card: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action flip_top_card is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'flip_top_card',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -391,8 +441,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'flip_top_card',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'turning_round',
       'payment_round',
     ],

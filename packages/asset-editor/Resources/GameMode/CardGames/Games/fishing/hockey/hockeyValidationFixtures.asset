@@ -50,25 +50,32 @@
             id: 'hockey.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_period',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_period',
+            expectedNextPhase: 'deal_period',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'complete_period',
             ],
-            explanation: 'Hockey must enter deal_period first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Hockey must run setup_round first, then enter deal_period with the processed legal actions.',
             linkedRuleIds: [
+              'hockey.setup.initial-deal',
               'hockey.flow.deal_period',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_period',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

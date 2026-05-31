@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'setup',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 9 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'setup',
         label: 'Setup Grid',
         actor: 'all_simultaneous',
@@ -110,6 +125,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'setup',
       'draw_phase',
       'replace_phase',

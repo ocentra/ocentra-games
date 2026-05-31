@@ -50,14 +50,14 @@
             id: 'beleaguered-castle.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'extract_aces',
-              'deal_wings',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'extract_aces',
               'deal_wings',
@@ -65,14 +65,21 @@
               'move_tableau_to_tableau',
               'move_to_empty_wing',
             ],
-            explanation: 'Beleaguered Castle must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Beleaguered Castle must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'beleaguered-castle.setup.initial-deal',
               'beleaguered-castle.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'extract_aces',
+              'deal_wings',
             ],
           },
           {

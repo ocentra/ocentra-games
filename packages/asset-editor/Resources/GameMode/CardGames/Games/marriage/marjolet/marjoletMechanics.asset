@@ -52,28 +52,36 @@
         guid: '77586e28-ff0a-4582-99f6-f5cae13450d3',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '08e224d317c1d2dff165fd338eb5a63008c42d942c7086e025d464e62ec48f0d',
+        checksum: '8ae24fca8f16e96f4fa4e83b6cb92a4f52c95636d89f6213dd3ebbfae716ba9e',
+        fileSize: 2847,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/marriage/marjolet/marjoletActionSet.asset',
         guid: '9dffe4d2-3a0e-42d6-94db-c81bf8bfc6d0',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '3d4391e3104939bb075df91562d5359b4fa287378bac103a012b98451736351e',
+        checksum: 'f73d978f2a1d33a6447f15e25a76f6e832eb989025599656558c77a8fb1af99d',
+        fileSize: 7763,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/marriage/marjolet/marjoletStateEventModel.asset',
         guid: '02628c39-2663-4949-bd19-3a3a559e627e',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'dbe98985552ef1c6c4e61baf65fb697ac8c4df961a6a08cdb77d4c76d4c46a99',
+        checksum: '61113629737acc88d536c5e8b2406578fc4ca9da311772705bac0f3572ae66a5',
+        fileSize: 1597,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/marriage/marjolet/marjoletValidationFixtures.asset',
         guid: '29802c12-fa36-4285-8460-a255ba3505d6',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '2b94f34261a275b10bc1176edf1c01792bb12e6891063d34423a970154d6cc04',
+        checksum: '1789298752291f9f61b5720e6352b98353feacfb873947f0b474b75878623d83',
+        fileSize: 3771,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -105,6 +113,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 6 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'current_player',
@@ -122,6 +145,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 6 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 6,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -380,8 +417,21 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'meld',
+        'draw',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

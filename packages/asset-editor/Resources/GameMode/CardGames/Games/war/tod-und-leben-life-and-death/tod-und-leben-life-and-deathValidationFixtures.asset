@@ -50,24 +50,31 @@
             id: 'tod-und-leben-life-and-death.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_initial',
+              'setup_round',
             ],
-            expectedNextPhase: 'battle',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_initial',
             ],
-            explanation: 'Tod und Leben must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tod und Leben must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'tod-und-leben-life-and-death.setup.initial-deal',
               'tod-und-leben-life-and-death.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_initial',
             ],
           },
           {

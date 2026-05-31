@@ -50,24 +50,31 @@
             id: 'legends-of-the-three-kingdoms.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'turning_round',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'flip_top_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'payment_round',
+            expectedNextPhase: 'turning_round',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'flip_top_card',
             ],
-            explanation: 'Legends of the Three Kingdoms must enter turning_round first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Legends of the Three Kingdoms must run setup_round first, then enter turning_round with the processed legal actions.',
             linkedRuleIds: [
+              'legends-of-the-three-kingdoms.setup.initial-deal',
               'legends-of-the-three-kingdoms.flow.turning_round',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'turning_round',
+            firstPlayableLegalActions: [
+              'flip_top_card',
             ],
           },
           {

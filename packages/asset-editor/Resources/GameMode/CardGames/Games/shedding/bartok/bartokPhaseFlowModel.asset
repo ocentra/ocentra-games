@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'dealing',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 7 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'dealing',
         label: 'Dealing the Hand',
         actor: 'dealer',
@@ -105,6 +120,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'dealing',
       'play_loop',
       'rule_creation',

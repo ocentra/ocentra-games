@@ -50,24 +50,31 @@
             id: 'manillen.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'choose_trump',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'declare_trump',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'choose_trump',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'declare_trump',
             ],
-            explanation: 'Manillen must enter choose_trump first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Manillen must run setup_round first, then enter choose_trump with the processed legal actions.',
             linkedRuleIds: [
+              'manillen.setup.initial-deal',
               'manillen.flow.choose_trump',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'choose_trump',
+            firstPlayableLegalActions: [
+              'declare_trump',
             ],
           },
           {

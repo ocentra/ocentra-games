@@ -50,13 +50,14 @@
             id: '7-27.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'initial_deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'check',
@@ -70,14 +71,20 @@
               'award_split_pot',
               'award_whole_pot',
             ],
-            explanation: 'Seven Twenty-Seven must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Seven Twenty-Seven must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              '7-27.setup.initial-deal',
               '7-27.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

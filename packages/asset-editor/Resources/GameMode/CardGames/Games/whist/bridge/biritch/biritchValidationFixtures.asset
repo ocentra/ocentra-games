@@ -50,13 +50,14 @@
             id: 'biritch.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_13',
+              'setup_round',
             ],
-            expectedNextPhase: 'declaration',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_13',
               'declare_suit',
@@ -69,14 +70,20 @@
               'calculate_game_score',
               'calculate_honours',
             ],
-            explanation: 'Biritch must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Biritch must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'biritch.setup.initial-deal',
               'biritch.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_13',
             ],
           },
           {

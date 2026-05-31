@@ -50,14 +50,14 @@
             id: 'boerenbridge.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_n_cards',
-              'reveal_trump',
+              'setup_round',
             ],
-            expectedNextPhase: 'auction',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'bid',
               'deal_n_cards',
@@ -65,14 +65,21 @@
               'reveal_trump',
               'calculate_exact_bid_points',
             ],
-            explanation: 'Boerenbridge must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Boerenbridge must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'boerenbridge.setup.initial-deal',
               'boerenbridge.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_n_cards',
+              'reveal_trump',
             ],
           },
           {

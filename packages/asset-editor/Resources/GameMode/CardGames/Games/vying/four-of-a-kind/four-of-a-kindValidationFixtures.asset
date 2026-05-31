@@ -50,13 +50,14 @@
             id: 'four-of-a-kind.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'post_ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal_initial',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'fold',
               'check',
@@ -69,14 +70,20 @@
               'check_completion',
               'end_hand',
             ],
-            explanation: 'Four of a Kind must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Four of a Kind must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'four-of-a-kind.setup.initial-deal',
               'four-of-a-kind.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'post_ante',
             ],
           },
           {

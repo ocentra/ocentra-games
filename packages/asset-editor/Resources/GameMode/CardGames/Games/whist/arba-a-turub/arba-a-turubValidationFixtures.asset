@@ -50,14 +50,14 @@
             id: 'arba-a-turub.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'trump_init',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_three_to_eldest',
-              'call_trump',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal_completion',
+            expectedNextPhase: 'trump_init',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_three_to_eldest',
               'call_trump',
@@ -65,14 +65,21 @@
               'signal_partner',
               'validate_match_win',
             ],
-            explanation: "Arba'a Turub must enter trump_init first and expose exactly the legal actions authored for that phase.",
+            explanation: "Arba'a Turub must run setup_round first, then enter trump_init with the processed legal actions.",
             linkedRuleIds: [
+              'arba-a-turub.setup.initial-deal',
               'arba-a-turub.flow.trump_init',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'trump_init',
+            firstPlayableLegalActions: [
+              'deal_three_to_eldest',
+              'call_trump',
             ],
           },
           {

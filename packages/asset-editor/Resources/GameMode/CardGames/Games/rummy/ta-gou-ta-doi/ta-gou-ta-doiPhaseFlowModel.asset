@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'first_turn',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'first_turn',
         label: 'First turn',
         actor: 'each_player_clockwise',
@@ -123,6 +138,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'first_turn',
       'turn_draw',
       'after_draw',

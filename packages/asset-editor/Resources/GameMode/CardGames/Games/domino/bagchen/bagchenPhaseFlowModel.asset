@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'shuffle_and_stack',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 16 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'shuffle_and_stack',
         label: 'Stacking the Tiles',
         actor: 'system',
@@ -138,6 +153,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'shuffle_and_stack',
       'dealing',
       'trick_play_loop',

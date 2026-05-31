@@ -50,25 +50,32 @@
             id: 'forty-thieves.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'initial_deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'draw',
               'initial_deal',
             ],
-            explanation: 'Forty Thieves must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Forty Thieves must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'forty-thieves.setup.initial-deal',
               'forty-thieves.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'initial_deal',
             ],
           },
           {

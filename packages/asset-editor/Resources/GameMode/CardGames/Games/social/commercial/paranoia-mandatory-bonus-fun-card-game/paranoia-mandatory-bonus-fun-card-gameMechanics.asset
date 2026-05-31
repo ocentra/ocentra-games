@@ -52,28 +52,36 @@
         guid: '1e754b10-89eb-449b-b2f3-a96260b635ce',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '8d72fa0e9d2e9b45aeb6775ebeeb5abf9f04d0076cba3d368cf0eb582b3e184b',
+        checksum: 'cc8ce3866fd2aba5ffebf7475067515e4aae961220946ca2499835a112f229a7',
+        fileSize: 2873,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/social/commercial/paranoia-mandatory-bonus-fun-card-game/paranoia-mandatory-bonus-fun-card-gameActionSet.asset',
         guid: 'f811bfc8-7efd-471c-8da7-74a6693578ed',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '095e1e9faea6cf1be0bdeffb4cb7b48118bf499e624e14df11d6d8077de26563',
+        checksum: '6077cd2fc7deb2646f04638e9564353956cd3453df1da2769c2828e5fd273e21',
+        fileSize: 9154,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/social/commercial/paranoia-mandatory-bonus-fun-card-game/paranoia-mandatory-bonus-fun-card-gameStateEventModel.asset',
         guid: 'e7dc2b07-9e47-49fa-862c-7b0dfe2de3f8',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'c928d1cd3339349ab862a5a214f3f3a330ceb6e1b5bab2ae694882f4c4dc9547',
+        checksum: '267f4f8577b30796d49bbb9dd6f2bdb18d44d3da795eb0621b493b02298cc7d4',
+        fileSize: 1565,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/social/commercial/paranoia-mandatory-bonus-fun-card-game/paranoia-mandatory-bonus-fun-card-gameValidationFixtures.asset',
         guid: '6cf31e1a-cda4-4284-9c10-97e1e7188fac',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '8160bdead8cd52b19f3e957ef43522f98efbb76c70e3898dd67bf1ac6483e66f',
+        checksum: '4e7fec9ffbd22eb2ce409b6f57cbd1720b99539322893d375f5dd6ba46eb2f7f',
+        fileSize: 4295,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'turning_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'turning_round',
         label: 'Card Turning',
         actor: 'current_player',
@@ -133,6 +156,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -332,6 +369,19 @@
         effectHints: {},
         reason: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
       },
+      flip_top_card: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action flip_top_card is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'flip_top_card',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -391,8 +441,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'flip_top_card',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'turning_round',
       'payment_round',
     ],

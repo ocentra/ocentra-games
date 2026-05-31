@@ -50,13 +50,14 @@
             id: 'pyramide-french-drinking.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'perform_initial_deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'build_pyramid',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'pass',
               'perform_initial_deal',
               'build_pyramid_layout',
@@ -66,14 +67,20 @@
               'call_bluff',
               'acknowledge_end',
             ],
-            explanation: 'Pyramide must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Pyramide must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'pyramide-french-drinking.setup.initial-deal',
               'pyramide-french-drinking.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'perform_initial_deal',
             ],
           },
           {

@@ -50,26 +50,33 @@
             id: 'manni.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'contract',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'deal_cards',
               'exchange_manni',
             ],
-            explanation: 'Manni must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Manni must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'manni.setup.initial-deal',
               'manni.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_cards',
             ],
           },
           {

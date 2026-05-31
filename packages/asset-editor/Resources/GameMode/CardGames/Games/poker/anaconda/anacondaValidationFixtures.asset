@@ -50,13 +50,14 @@
             id: 'anaconda.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_seven_face_down',
+              'setup_round',
             ],
-            expectedNextPhase: 'betting_1',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'fold',
               'check',
               'call',
@@ -71,14 +72,20 @@
               'set_rollout_order',
               'reveal_card',
             ],
-            explanation: 'Anaconda must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Anaconda must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'anaconda.setup.initial-deal',
               'anaconda.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_seven_face_down',
             ],
           },
           {

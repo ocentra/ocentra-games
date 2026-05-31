@@ -52,28 +52,36 @@
         guid: 'db5b9708-8fcf-411c-8085-decb3e236c1c',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '72ad9f4c54ac9525ca0e7cfd46d2dd1ce1f43eee32af6680523b620ae3e8dde6',
+        checksum: 'a8ccd07b56722b39dd8b97144d1d2c839612f3e2a65cf5d627b9bd57dacbb5bf',
+        fileSize: 3429,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spitzer/spitzerActionSet.asset',
         guid: '0a4d1587-efff-4645-8a54-9f808c7bfbd9',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '13b0ad254ac3c2355783a0d32fa51ae5d03f1eea966cb781b01f12a464a0e773',
+        checksum: '0b5872037642d9c59f435e6a9b9c0a04997a820706d2a4569aac3c589a7a6a88',
+        fileSize: 8066,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spitzer/spitzerStateEventModel.asset',
         guid: '790296b7-07b0-4dfe-bebf-d094651da506',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '356d6900f7fa727aebe71938f605c7e66755c70e38502f829b1498bacbd7e7c5',
+        checksum: 'e10dedd77bb8ae255c851d2bbec17d527cbe7dd6f83ec3ccf353779a50b5ef07',
+        fileSize: 1542,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/trick-taking/spitzer/spitzerValidationFixtures.asset',
         guid: '7fe74471-4f22-4714-b5a0-b6c31a75a273',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '3af5ee7a26b9c8b017faa295d3ed6338c4ce4708e23f8fadab21d09950a2352c',
+        checksum: 'd76e9673de7b1e08837a03862776f4ff98015d5a6caae52ccd7ae2ac4c59132b',
+        fileSize: 3979,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -101,6 +109,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 8 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -133,6 +156,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 8 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 8,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -332,6 +369,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      deal_8_3_2_3: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_8_3_2_3 is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_8_3_2_3',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -404,8 +454,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal_8_3_2_3',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'play',
     ],

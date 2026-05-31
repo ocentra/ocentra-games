@@ -50,13 +50,14 @@
             id: 'indian-poker-one-arm-joe.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -68,14 +69,20 @@
               'place_card',
               'reveal',
             ],
-            explanation: 'One Arm Joe must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'One Arm Joe must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'indian-poker-one-arm-joe.setup.initial-deal',
               'indian-poker-one-arm-joe.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

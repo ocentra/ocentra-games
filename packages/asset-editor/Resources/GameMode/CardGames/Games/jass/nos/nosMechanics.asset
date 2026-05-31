@@ -52,28 +52,36 @@
         guid: '8cd4954b-a615-4353-863b-652069a39d6a',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '388b17f3944472a8fdbef146db01a63bdab3f2880cc96fd2d33434dcb5cce5a9',
+        checksum: '3a34ca65703c973ce369efd825b27737bd35bf9fcbd954d3f629b88e8475816f',
+        fileSize: 3491,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/jass/nos/nosActionSet.asset',
         guid: '3b17a0e6-d686-43b8-9238-6a57e716ab28',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '1f4b06b99056268b43d5e8051e60519f48061f309680825567598b854153f2f5',
+        checksum: 'f811e1663c9020731de6c0d231957959fcd25eb2aba147ddfb11a3a0324b7d23',
+        fileSize: 7783,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/jass/nos/nosStateEventModel.asset',
         guid: '82ade5eb-6c88-45aa-9117-c38815361f69',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '1795089c7c1903437e7153d5475a47fe592b7bad9a428da41ba91b1991fb4e91',
+        checksum: '96c19b2fefb0d114c791ec73de50fe5beabdb2786d702791d0d1e2448d4ee2f6',
+        fileSize: 1628,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/jass/nos/nosValidationFixtures.asset',
         guid: '316254ce-18b2-4a7b-a13d-c0b5b0cde645',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '009ed6df172a52cbfb82cb987d2796b379190334f2382a3e328f4a5182c73fbf',
+        checksum: '3a6f8a1938bc80f12d74f623f77c1a3af738a8d24660f006124913ab920db994',
+        fileSize: 3990,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -105,6 +113,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 12 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -152,6 +175,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 12 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 12,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -350,6 +387,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      count_points: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action count_points is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'count_points',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -422,8 +472,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'play_card',
+        'count_points',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'play',
       'scoring',

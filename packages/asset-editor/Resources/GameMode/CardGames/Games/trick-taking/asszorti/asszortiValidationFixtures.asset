@@ -50,13 +50,14 @@
             id: 'asszorti.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_asszorti',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'deal_asszorti',
@@ -69,14 +70,20 @@
               'double_arrivazs',
               'calculate_score',
             ],
-            explanation: 'Asszorti must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Asszorti must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'asszorti.setup.initial-deal',
               'asszorti.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_asszorti',
             ],
           },
           {

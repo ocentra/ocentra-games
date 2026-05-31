@@ -50,25 +50,32 @@
             id: 'black-maria.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_all',
+              'setup_round',
             ],
-            expectedNextPhase: 'passing',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'deal_all',
               'pass_3_right',
             ],
-            explanation: 'Black Maria must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Black Maria must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'black-maria.setup.initial-deal',
               'black-maria.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_all',
             ],
           },
           {

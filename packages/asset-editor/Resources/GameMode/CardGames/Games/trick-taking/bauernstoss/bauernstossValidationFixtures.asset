@@ -50,27 +50,34 @@
             id: 'bauernstoss.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_8_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'knocking_round',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'deal_8_each',
               'knock',
               'calculate_trick_points',
             ],
-            explanation: 'Bauernstoss must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bauernstoss must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'bauernstoss.setup.initial-deal',
               'bauernstoss.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_8_each',
             ],
           },
           {

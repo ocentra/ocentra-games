@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'phase_1_tricks',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 3 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'phase_1_tricks',
         label: 'Phase One - Tricks',
         actor: 'each_player_clockwise',
@@ -94,6 +109,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'phase_1_tricks',
       'phase_2_shedding',
     ],

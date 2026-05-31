@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal_hole',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 2 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'deal_hole',
         label: 'Deal Hole Cards',
         actor: 'dealer',
@@ -218,6 +233,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'deal_hole',
       'preflop_bet',
       'deal_flop',

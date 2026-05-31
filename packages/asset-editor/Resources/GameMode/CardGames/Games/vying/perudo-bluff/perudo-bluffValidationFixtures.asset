@@ -50,25 +50,32 @@
             id: 'perudo-bluff.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'bidding',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'bid',
-              'call_dudo',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'bidding',
             supportedActionIds: [
+              'setup_round',
               'bid',
               'call_dudo',
             ],
-            explanation: 'Perudo (Card Variant) must enter bidding first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Perudo (Card Variant) must run setup_round first, then enter bidding with the processed legal actions.',
             linkedRuleIds: [
+              'perudo-bluff.setup.initial-deal',
               'perudo-bluff.flow.bidding',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'bidding',
+            firstPlayableLegalActions: [
+              'bid',
+              'call_dudo',
             ],
           },
           {

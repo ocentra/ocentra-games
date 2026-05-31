@@ -52,28 +52,36 @@
         guid: 'f8774fb8-6379-41d9-a7e2-2aa5c46b7b91',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'dd0b791902610050cdc7ef6b52607218ef93771c071c34bc168e494d5ccf8a51',
+        checksum: '1fc8ef7a88246476ac3c83f222c78fe1192906eaafd08a9cce8002223dd8ff83',
+        fileSize: 2728,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/domino/memory/memoryActionSet.asset',
         guid: 'bfc1e8bf-a4f3-40d5-939f-5e86ffe6c8c3',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'be0fed63bcfcc3e00088b33621467b3e5bfacc8ec535a61b2baa9aa8747b1023',
+        checksum: '7249038c561100692acb39a4c857ccabd6d88f01a3e6bbc5bd886dfe80ec7665',
+        fileSize: 7967,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/domino/memory/memoryStateEventModel.asset',
         guid: 'dd84c856-b1fd-44a9-a428-3ff92ef80769',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '64c029701738b14133a6a6e2223bc864bf25d43484180cdb1016049ed8a20bd8',
+        checksum: 'c799b71db26eaa06944b04e1a225cda7abd32f5bc572e6b05fec762669fcdfbd',
+        fileSize: 1341,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/domino/memory/memoryValidationFixtures.asset',
         guid: '862f26bf-3c50-4658-b1a5-01195eec1329',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'cc062869584ff8fd0eb28359866c1f3101c5cb338b55aeb80340fad6011085cd',
+        checksum: '04f7f90624b9d50706505beda0d611414b18f41a4a600691e2667bc3cdd25006',
+        fileSize: 3683,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'current_player',
@@ -117,6 +140,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 0 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 0,
+          deckCount: 1,
+          visibility: 'face_up',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -317,6 +354,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      reveal_two_tiles: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action reveal_two_tiles is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'reveal_two_tiles',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -382,8 +432,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'reveal_two_tiles',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_up',
       initialDeal: 'face_up',

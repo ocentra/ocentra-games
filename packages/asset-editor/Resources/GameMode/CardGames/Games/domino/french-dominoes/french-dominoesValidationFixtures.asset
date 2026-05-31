@@ -50,13 +50,14 @@
             id: 'french-dominoes.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'initial_pose',
+            expectedNextPhase: 'setup',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'draw',
               'pass',
@@ -66,14 +67,20 @@
               'play_domino',
               'resolve_round',
             ],
-            explanation: 'French Dominoes must enter setup first and expose exactly the legal actions authored for that phase.',
+            explanation: 'French Dominoes must run setup_round first, then enter setup with the processed legal actions.',
             linkedRuleIds: [
+              'french-dominoes.setup.initial-deal',
               'french-dominoes.flow.setup',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

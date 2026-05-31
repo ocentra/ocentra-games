@@ -50,14 +50,14 @@
             id: 'baciga.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_3_cards',
-              'place_4_on_table',
+              'setup_round',
             ],
-            expectedNextPhase: 'declaration',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'play_card',
               'pass',
@@ -72,14 +72,21 @@
               'calculate_cartas_point',
               'calculate_setenta',
             ],
-            explanation: 'Báciga must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Báciga must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'baciga.setup.initial-deal',
               'baciga.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_3_cards',
+              'place_4_on_table',
             ],
           },
           {

@@ -50,13 +50,14 @@
             id: 'kap-tai-shap.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'setup_wall',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'build_wall',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'setup_wall',
             supportedActionIds: [
+              'setup_round',
               'reveal_hand',
               'discard',
               'build_wall',
@@ -67,14 +68,20 @@
               'call_kap',
               'collect_pot',
             ],
-            explanation: "K'ap Tai Shap must enter setup_wall first and expose exactly the legal actions authored for that phase.",
+            explanation: "K'ap Tai Shap must run setup_round first, then enter setup_wall with the processed legal actions.",
             linkedRuleIds: [
+              'kap-tai-shap.setup.initial-deal',
               'kap-tai-shap.flow.setup_wall',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup_wall',
+            firstPlayableLegalActions: [
+              'build_wall',
             ],
           },
           {

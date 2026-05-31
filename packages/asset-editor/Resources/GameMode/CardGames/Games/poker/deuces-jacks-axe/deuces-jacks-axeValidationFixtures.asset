@@ -50,13 +50,14 @@
             id: 'deuces-jacks-axe.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -67,14 +68,20 @@
               'reveal_hand',
               'award_pot',
             ],
-            explanation: 'Deuces and Jacks and the Man with the Axe must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Deuces and Jacks and the Man with the Axe must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'deuces-jacks-axe.setup.initial-deal',
               'deuces-jacks-axe.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

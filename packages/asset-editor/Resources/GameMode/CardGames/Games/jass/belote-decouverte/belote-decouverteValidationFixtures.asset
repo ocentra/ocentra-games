@@ -50,13 +50,14 @@
             id: 'belote-decouverte.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_tableau',
+              'setup_round',
             ],
-            expectedNextPhase: 'auction',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'pass',
@@ -67,14 +68,20 @@
               'play_from_tableau',
               'calculate_game_points',
             ],
-            explanation: 'Belote Découverte must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Belote Découverte must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'belote-decouverte.setup.initial-deal',
               'belote-decouverte.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_tableau',
             ],
           },
           {

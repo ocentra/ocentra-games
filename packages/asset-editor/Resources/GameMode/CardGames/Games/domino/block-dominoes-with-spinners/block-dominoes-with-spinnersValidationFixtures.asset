@@ -50,13 +50,14 @@
             id: 'block-dominoes-with-spinners.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_tiles',
+              'setup_round',
             ],
-            expectedNextPhase: 'lead_double',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'pass',
               'deal_tiles',
               'lead_spinner_double',
@@ -65,14 +66,20 @@
               'count_pips',
               'calculate_winner',
             ],
-            explanation: 'Block Dominoes with Spinners must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Block Dominoes with Spinners must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'block-dominoes-with-spinners.setup.initial-deal',
               'block-dominoes-with-spinners.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_tiles',
             ],
           },
           {

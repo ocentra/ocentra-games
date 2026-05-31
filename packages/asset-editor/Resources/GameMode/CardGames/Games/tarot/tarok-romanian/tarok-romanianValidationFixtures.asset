@@ -50,13 +50,14 @@
             id: 'tarok-romanian.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_6_talon_12_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'play_card',
               'pass',
@@ -65,14 +66,20 @@
               'call_king',
               'take_talon_discard',
             ],
-            explanation: 'Tarok Romanian must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Tarok Romanian must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'tarok-romanian.setup.initial-deal',
               'tarok-romanian.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_6_talon_12_each',
             ],
           },
           {

@@ -52,28 +52,36 @@
         guid: 'be6a5ff7-81e1-44e8-86e5-1912c8152806',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'f32bede43456a6ff18c0b24a7f181474f747cf773f6b7d4ee80e56ce5bc0ca91',
+        checksum: '2a5a1bbde1e2ee2731bb5e44b5db6022013192a01b1dea8e552147a3ef18c88c',
+        fileSize: 2910,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/fishing/tabli/tabliActionSet.asset',
         guid: '961c1fbb-fcaa-4a55-8139-690d95eba4e3',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '499e9a2276ebae35bc49a99f341b6ea424cf33a8499c183ead14cfa48091ef07',
+        checksum: 'c1588eb0f671d638261946412e45ecc3989a120ef922eab69c05b7dc905c5aee',
+        fileSize: 7175,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/fishing/tabli/tabliStateEventModel.asset',
         guid: '81fc4bbc-8095-4d9d-95f5-7f57f542f185',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'b2c0d766062d957d535d00d641112ed92af98e014b71003def708d5444213f15',
+        checksum: 'f7662a47a98f679fe43576f9407b68d930ed136cee318d714a70391be971484e',
+        fileSize: 1520,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/fishing/tabli/tabliValidationFixtures.asset',
         guid: 'e667de07-5cf3-4912-a0ee-13936cbf5879',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'b83ed842e89cea2f561d5e206e9263307d6128a550600fd17965b28823371865',
+        checksum: '61c766211873e8d71d564cf1e1afaae39503d4b0a8319d598980ae3d12460625',
+        fileSize: 3745,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -104,6 +112,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 6 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'each_player_clockwise',
@@ -120,6 +143,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 6 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 6,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -380,8 +417,19 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

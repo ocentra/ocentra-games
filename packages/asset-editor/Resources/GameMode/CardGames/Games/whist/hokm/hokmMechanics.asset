@@ -52,28 +52,36 @@
         guid: '72e96715-8aeb-4ca6-8a2a-cb6760fb4ca2',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: 'edb469977e06172a17a100abc8223582766d04d2fc9b0194285fd97c955a55f6',
+        checksum: '075a526d3892b4b6b6eb44805b471612009937c78bd1748ba12beb51ad39a0ee',
+        fileSize: 5839,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/whist/hokm/hokmActionSet.asset',
         guid: 'ec1dc9d0-30e4-4aea-a323-68cf69524859',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '9abe043a290b76df1873e78bee59a3efbfb9b9251c857cc2244cdc6bf21504c5',
+        checksum: '4e0cf045d45458ac36e7eee6638658ccc4a5b8961604a77c4606c68c3bf210a8',
+        fileSize: 8570,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/whist/hokm/hokmStateEventModel.asset',
         guid: 'c426c742-f5ed-487f-835d-e6b51786ba19',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '43e90449d51e026ce955295d75cf93e92af0e5e4ad3a2068e16595e40ce2bce0',
+        checksum: '2766c6fe9fd3ea22cec12c6740f75b8d6966bf552eb192d5dd303cc10bd39b54',
+        fileSize: 1835,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/whist/hokm/hokmValidationFixtures.asset',
         guid: 'ce85027d-87fb-4aed-a02c-63f3810f955b',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '49f530403913110256f5a8256ee342c50f9392a9b0df79e8a4e826e84d7a8ed1',
+        checksum: '0036acc8c3445ee7da433c3198c2603004b45d24cd75ccb9898b859fe2cb1b98',
+        fileSize: 3808,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -118,6 +126,21 @@
       dealerRotates: true,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'hakem_selection',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
       {
         id: 'hakem_selection',
         label: 'Select Hâkem',
@@ -218,6 +241,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 13 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 13,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -422,6 +459,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      complete_scoring: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action complete_scoring is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'complete_scoring',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -492,8 +542,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'declare',
+        'play_card',
+        'complete_scoring',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'hakem_selection',
       'initial_deal',
       'trump_declaration',

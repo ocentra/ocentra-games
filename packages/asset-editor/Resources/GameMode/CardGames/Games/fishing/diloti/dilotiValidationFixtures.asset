@@ -50,26 +50,33 @@
             id: 'diloti.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'capture_play',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'award_pot',
               'play_card',
             ],
-            explanation: 'Diloti must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Diloti must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'diloti.setup.initial-deal',
               'diloti.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

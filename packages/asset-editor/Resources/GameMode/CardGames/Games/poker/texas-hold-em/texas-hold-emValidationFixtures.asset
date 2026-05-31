@@ -50,13 +50,14 @@
             id: 'texas-hold-em.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_hole',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_hole_cards',
+              'setup_round',
             ],
-            expectedNextPhase: 'preflop_bet',
+            expectedNextPhase: 'deal_hole',
             supportedActionIds: [
+              'setup_round',
               'fold',
               'check',
               'call',
@@ -69,14 +70,20 @@
               'deal_turn',
               'deal_river',
             ],
-            explanation: "Texas Hold'em must enter deal_hole first and expose exactly the legal actions authored for that phase.",
+            explanation: "Texas Hold'em must run setup_round first, then enter deal_hole with the processed legal actions.",
             linkedRuleIds: [
+              'texas-hold-em.setup.initial-deal',
               'texas-hold-em.flow.deal_hole',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_hole',
+            firstPlayableLegalActions: [
+              'deal_hole_cards',
             ],
           },
           {

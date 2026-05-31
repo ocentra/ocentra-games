@@ -50,13 +50,14 @@
             id: 'three-card-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'each_player_clockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'bet',
@@ -64,14 +65,20 @@
               'deal_cards',
               'resolve_showdown',
             ],
-            explanation: 'Three Card Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Three Card Poker must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'three-card-poker.setup.initial-deal',
               'three-card-poker.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
             ],
           },
           {

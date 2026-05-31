@@ -52,28 +52,36 @@
         guid: '86b94612-69dc-488e-8f76-61117b832502',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '8fcdc80219164f167eb8bb84ce60d2e865f556a8b6a3f9437d9fb816594bcb6b',
+        checksum: '9d22c0018a0393e6dc79f9c09d33f8361223727eba6820cc7ddba602b633f05e',
+        fileSize: 2965,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/jass/thunee/thuni-nigerian/thuni-nigerianActionSet.asset',
         guid: 'aa28ea79-da7f-42b8-932f-114bea2f0662',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'ef346927f05cfde702c7f8ed69dde9661c0715658c32ab80531f27d7f0268d87',
+        checksum: '42eb9dd089224a6c2f5b4fcd358cd9b87846ee6aabd611e5eb77528e64f3ddb5',
+        fileSize: 8099,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/jass/thunee/thuni-nigerian/thuni-nigerianStateEventModel.asset',
         guid: '7bcf55cd-9dcf-45c5-af73-7289fe96e203',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: '358e26b69c5f8305006e6ddda83e60669bf4657508c4741164cff9ba08746831',
+        checksum: 'c4559b2efe505791151e45816cfbfc0356aad2ec181a13bde331586e38dba4d9',
+        fileSize: 1563,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/jass/thunee/thuni-nigerian/thuni-nigerianValidationFixtures.asset',
         guid: '85d57688-1b40-433d-bfaa-fa94d34731d9',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: '18e1e650e0fe638f85092fa74a8843201ced4c4b7555994b01491d71eab9b913',
+        checksum: '1150d742114823ad17dc69044c1ae2101f0519d7528ac20acdbd7da558ca81ba',
+        fileSize: 3744,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -101,6 +109,21 @@
       dealerRotates: false,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 8 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -131,6 +154,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 8 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 8,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -330,6 +367,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      deal_cards: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action deal_cards is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'deal_cards',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -402,8 +452,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal_cards',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'play',
     ],

@@ -50,13 +50,14 @@
             id: 'anrufen.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_six_batches',
+              'setup_round',
             ],
-            expectedNextPhase: 'bidding',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'pass',
               'deal_six_batches',
@@ -69,14 +70,20 @@
               'apply_marriage_bonuses',
               'calculate_gwisse',
             ],
-            explanation: 'Anrufen must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Anrufen must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'anrufen.setup.initial-deal',
               'anrufen.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_six_batches',
             ],
           },
           {

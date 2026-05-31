@@ -50,25 +50,32 @@
             id: 'magarac.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'passing',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'pass',
-              'declare',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'passing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'pass',
             ],
-            explanation: 'Magarac (Donkey) must enter passing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Magarac (Donkey) must run setup_round first, then enter passing with the processed legal actions.',
             linkedRuleIds: [
+              'magarac.setup.initial-deal',
               'magarac.flow.passing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'passing',
+            firstPlayableLegalActions: [
+              'pass',
+              'declare',
             ],
           },
           {

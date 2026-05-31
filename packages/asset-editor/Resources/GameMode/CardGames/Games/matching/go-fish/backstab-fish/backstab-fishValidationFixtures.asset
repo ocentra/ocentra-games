@@ -50,14 +50,14 @@
             id: 'backstab-fish.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_hand',
-              'create_stock',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'draw',
               'deal_hand',
@@ -67,14 +67,21 @@
               'draw_from_stock',
               'tally_points',
             ],
-            explanation: 'Backstab Fish must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Backstab Fish must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'backstab-fish.setup.initial-deal',
               'backstab-fish.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_hand',
+              'create_stock',
             ],
           },
           {

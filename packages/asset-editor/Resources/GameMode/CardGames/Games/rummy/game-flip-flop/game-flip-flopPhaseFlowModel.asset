@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'stakes_and_deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'stakes_and_deal',
         label: 'Stakes and Deal',
         actor: 'dealer',
@@ -136,6 +151,7 @@
       ],
     },
     progression: [
+      'setup_round',
       'stakes_and_deal',
       'claim_flip_flop',
       'draw_discard',

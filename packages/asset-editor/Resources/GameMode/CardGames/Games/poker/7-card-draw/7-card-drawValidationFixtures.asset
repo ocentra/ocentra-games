@@ -50,13 +50,14 @@
             id: '7-card-draw.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'pre_draw_bet',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'deal',
               'fold',
@@ -68,14 +69,20 @@
               'draw',
               'discard',
             ],
-            explanation: '7 Card Draw must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: '7 Card Draw must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              '7-card-draw.setup.initial-deal',
               '7-card-draw.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

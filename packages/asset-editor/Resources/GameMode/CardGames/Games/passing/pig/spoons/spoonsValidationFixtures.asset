@@ -50,26 +50,33 @@
             id: 'spoons.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'pass',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'draw',
               'pass',
               'grab_spoon',
             ],
-            explanation: 'Spoons (Pig) must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Spoons (Pig) must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'spoons.setup.initial-deal',
               'spoons.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

@@ -50,13 +50,14 @@
             id: 'haitian-dominoes.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal_round',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'deal_round',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'declare',
               'award_pot',
@@ -64,14 +65,20 @@
               'pass',
               'evaluate_round_end',
             ],
-            explanation: 'Haitian Dominoes must enter deal_round first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Haitian Dominoes must run setup_round first, then enter deal_round with the processed legal actions.',
             linkedRuleIds: [
+              'haitian-dominoes.setup.initial-deal',
               'haitian-dominoes.flow.deal_round',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal_round',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

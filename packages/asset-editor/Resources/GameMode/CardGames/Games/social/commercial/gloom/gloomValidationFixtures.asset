@@ -50,24 +50,31 @@
             id: 'gloom.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'turning_round',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'flip_top_card',
+              'setup_round',
             ],
-            expectedNextPhase: 'payment_round',
+            expectedNextPhase: 'turning_round',
             supportedActionIds: [
+              'setup_round',
               'play_card',
               'flip_top_card',
             ],
-            explanation: 'Gloom must enter turning_round first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Gloom must run setup_round first, then enter turning_round with the processed legal actions.',
             linkedRuleIds: [
+              'gloom.setup.initial-deal',
               'gloom.flow.turning_round',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'turning_round',
+            firstPlayableLegalActions: [
+              'flip_top_card',
             ],
           },
           {

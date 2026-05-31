@@ -50,13 +50,14 @@
             id: 'gin-rummy.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'turn_loop',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'deal',
               'reveal_hand',
               'award_pot',
@@ -67,14 +68,20 @@
               'go_gin',
               'layoff',
             ],
-            explanation: 'Gin Rummy must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Gin Rummy must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'gin-rummy.setup.initial-deal',
               'gin-rummy.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
             ],
           },
           {

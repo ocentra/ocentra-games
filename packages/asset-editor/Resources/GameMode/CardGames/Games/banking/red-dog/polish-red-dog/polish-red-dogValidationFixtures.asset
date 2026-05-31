@@ -50,26 +50,33 @@
             id: 'polish-red-dog.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'perform_deal',
+              'setup_round',
             ],
-            expectedNextPhase: 'bet',
+            expectedNextPhase: 'deal',
             supportedActionIds: [
+              'setup_round',
               'bet',
               'perform_deal',
               'burn_and_reveal',
               'resolve_bet',
             ],
-            explanation: 'Polish Red Dog must enter deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Polish Red Dog must run setup_round first, then enter deal with the processed legal actions.',
             linkedRuleIds: [
+              'polish-red-dog.setup.initial-deal',
               'polish-red-dog.flow.deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'perform_deal',
             ],
           },
           {

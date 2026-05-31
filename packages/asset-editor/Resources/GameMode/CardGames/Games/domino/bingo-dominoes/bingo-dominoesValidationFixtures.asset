@@ -50,13 +50,14 @@
             id: 'bingo-dominoes.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'draw_7',
+              'setup_round',
             ],
-            expectedNextPhase: 'play_loop',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'declare',
               'draw',
               'draw_7',
@@ -65,14 +66,20 @@
               'close_stock',
               'claim_victory',
             ],
-            explanation: 'Bingo (Dominoes) must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Bingo (Dominoes) must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'bingo-dominoes.setup.initial-deal',
               'bingo-dominoes.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'draw_7',
             ],
           },
           {

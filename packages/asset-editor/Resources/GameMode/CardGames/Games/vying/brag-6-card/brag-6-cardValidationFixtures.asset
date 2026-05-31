@@ -50,13 +50,14 @@
             id: 'brag-6-card.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'dealing',
+            expectedFirstPhase: 'setup_round',
             expectedActor: 'system',
             expectedLegalActions: [
-              'deal_6_each',
+              'setup_round',
             ],
-            expectedNextPhase: 'partition',
+            expectedNextPhase: 'dealing',
             supportedActionIds: [
+              'setup_round',
               'ante',
               'fold',
               'call',
@@ -71,14 +72,20 @@
               'request_showdown',
               'compare_partitions',
             ],
-            explanation: '6-Card Brag must enter dealing first and expose exactly the legal actions authored for that phase.',
+            explanation: '6-Card Brag must run setup_round first, then enter dealing with the processed legal actions.',
             linkedRuleIds: [
+              'brag-6-card.setup.initial-deal',
               'brag-6-card.flow.dealing',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_6_each',
             ],
           },
           {

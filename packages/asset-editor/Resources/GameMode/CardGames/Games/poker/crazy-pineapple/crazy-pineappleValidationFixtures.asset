@@ -50,13 +50,14 @@
             id: 'crazy-pineapple.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'initial_deal',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'deal_initial',
+              'setup_round',
             ],
-            expectedNextPhase: 'preflop_bet',
+            expectedNextPhase: 'initial_deal',
             supportedActionIds: [
+              'setup_round',
               'fold',
               'check',
               'call',
@@ -69,14 +70,20 @@
               'deal_turn',
               'deal_river',
             ],
-            explanation: 'Crazy Pineapple must enter initial_deal first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Crazy Pineapple must run setup_round first, then enter initial_deal with the processed legal actions.',
             linkedRuleIds: [
+              'crazy-pineapple.setup.initial-deal',
               'crazy-pineapple.flow.initial_deal',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'initial_deal',
+            firstPlayableLegalActions: [
+              'deal_initial',
             ],
           },
           {

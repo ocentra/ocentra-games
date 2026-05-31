@@ -50,13 +50,14 @@
             id: 'binglao-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'die_roll',
-            expectedActor: 'dealer',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'roll_die',
+              'setup_round',
             ],
-            expectedNextPhase: 'dealing',
+            expectedNextPhase: 'die_roll',
             supportedActionIds: [
+              'setup_round',
               'fold',
               'check',
               'call',
@@ -71,14 +72,20 @@
               'raise_pot_limit',
               'evaluate_hands',
             ],
-            explanation: 'Binglao Poker must enter die_roll first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Binglao Poker must run setup_round first, then enter die_roll with the processed legal actions.',
             linkedRuleIds: [
+              'binglao-poker.setup.initial-deal',
               'binglao-poker.flow.die_roll',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'die_roll',
+            firstPlayableLegalActions: [
+              'roll_die',
             ],
           },
           {

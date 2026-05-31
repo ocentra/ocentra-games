@@ -52,28 +52,36 @@
         guid: '23fada2a-9c69-4715-8716-121f3b865e4b',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '0b4d734c7b81aa6b003ac192a53285edc6570451b165c00430db9294e9a6361f',
+        checksum: '50cbd683f9692334c5c59ac6fdc3996a273b75270e71b30cc8bc96d1b7a4827b',
+        fileSize: 4078,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/domino/slosh/sloshActionSet.asset',
         guid: '73973d57-9714-4318-a64f-4afbb026b37c',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: 'c0caf42bb00096f0d502875c2c02d0f0ca789d4c9a26182963fe0ad775eb3b5f',
+        checksum: '02ceb45b9ae1a4c1afbdd02bfd7092aad57316ffbc3468cc632569faeb8e49ce',
+        fileSize: 7382,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/domino/slosh/sloshStateEventModel.asset',
         guid: 'fe85225b-ba9c-4412-81e3-eda9a5815898',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'a1a622d6468cb812ee66df75e3ff8b6b4ffbe700d0c14a7e3918efaa410f287c',
+        checksum: '574037e7a2e128a16c5ac548a8dd9114c9bf58d75287f1239db28ef685ee5782',
+        fileSize: 1573,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/domino/slosh/sloshValidationFixtures.asset',
         guid: '0d4cc405-1487-4efc-b99b-8472cc2e817d',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'e11fa666ea34c3c1b578c80c35e1e2eff97abc4ff56da7b3068aa6aa0802ceff',
+        checksum: 'af41ef875d215097277b695f72b041d381f90da1e5f81dd1693cd1fef701012d',
+        fileSize: 3846,
+        mimeType: 'application/json',
       },
     },
     constants: {
@@ -103,6 +111,21 @@
       dealerRotates: false,
     },
     phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 6 card(s) to each active player before player action begins.',
+      },
       {
         id: 'deal',
         label: 'Deal',
@@ -150,6 +173,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 6 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 6,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -409,8 +446,18 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'deal',
+        'play_card',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
     progression: [
+      'setup_round',
       'deal',
       'place_engine',
       'main_play',

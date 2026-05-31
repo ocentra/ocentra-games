@@ -50,13 +50,14 @@
             id: 'auction-poker.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'ante',
-            expectedActor: 'all_simultaneous',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'ante_up',
+              'setup_round',
             ],
-            expectedNextPhase: 'deal',
+            expectedNextPhase: 'ante',
             supportedActionIds: [
+              'setup_round',
               'fold',
               'check',
               'call',
@@ -69,14 +70,20 @@
               'buy_card',
               'evaluate_hands',
             ],
-            explanation: 'Auction Poker must enter ante first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Auction Poker must run setup_round first, then enter ante with the processed legal actions.',
             linkedRuleIds: [
+              'auction-poker.setup.initial-deal',
               'auction-poker.flow.ante',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante_up',
             ],
           },
           {

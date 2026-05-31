@@ -52,28 +52,36 @@
         guid: 'e6c30bc6-ae42-4bee-a52e-5c8d02b52556',
         assetType: 'GamePhaseFlowModel',
         displayName: 'Phase Flow Model',
-        checksum: '886ea234a7a511ba8df148a970098f698256705928a0845da71c8d5a7c042227',
+        checksum: 'bd5ffc588c32bb0f47139d2c66a178742f91175952c6e7ecd512e2e80b8d95ab',
+        fileSize: 2967,
+        mimeType: 'application/json',
       },
       actions: {
         path: 'Resources/GameMode/CardGames/Games/war/steal-war/steal-warActionSet.asset',
         guid: 'd5883bdc-89e9-43c7-b19d-bd043041f38c',
         assetType: 'GameActionSet',
         displayName: 'Action Set',
-        checksum: '01868b9a91af03367d1c9e858c21b5cf7ca4c12f693cdcc477c0c251d28220f5',
+        checksum: '8d03d786632428a5cf13ea65eb0d75ea4d80327e68cc352181c0dead5142f6bb',
+        fileSize: 8366,
+        mimeType: 'application/json',
       },
       stateEvents: {
         path: 'Resources/GameMode/CardGames/Games/war/steal-war/steal-warStateEventModel.asset',
         guid: '5760a4dc-9caa-44ad-9c1e-9f6901bd47ad',
         assetType: 'GameStateEventModel',
         displayName: 'State Event Model',
-        checksum: 'db8092c08cf68a2e05be4eb6898964582b1ed8fecd6db978d31419a02f8f76f2',
+        checksum: 'bb68c5e18607a68b1a999e4a436ca5b58a51429d8ca9cf1da457a1006a53aa7f',
+        fileSize: 1525,
+        mimeType: 'application/json',
       },
       validation: {
         path: 'Resources/GameMode/CardGames/Games/war/steal-war/steal-warValidationFixtures.asset',
         guid: 'bb9850d6-06a5-443c-bbda-029f09efb0f9',
         assetType: 'GameValidationFixtures',
         displayName: 'Validation Fixtures',
-        checksum: 'ba8b003cb1f8a1f9b541c1ae4c592b864fdb611be9272820e87103aafc86b4e4',
+        checksum: 'd749b1512b7df09021fbfef62b78dab86db6b14a8d3ee0d242ff95e34ee71ff9',
+        fileSize: 3835,
+        mimeType: 'application/json',
       },
     },
     constants: {},
@@ -102,6 +110,21 @@
     },
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 27 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'play',
         label: 'Play',
         actor: 'each_player_clockwise',
@@ -119,6 +142,20 @@
       },
     ],
     actions: {
+      setup_round: {
+        supported: true,
+        system: true,
+        description: 'Deal 27 card(s) to each active player and initialize the table before player actions begin.',
+        cost: 'none',
+        constraints: 'System-only setup action before the first player phase.',
+        isTerminating: true,
+        effectType: 'setup_round',
+        effectHints: {
+          initialHandSize: 27,
+          deckCount: 1,
+          visibility: 'face_down',
+        },
+      },
       ante: {
         supported: false,
         description: 'NA',
@@ -318,6 +355,19 @@
         effectHints: {},
         reason: 'This game has no go-out action.',
       },
+      steal_pile: {
+        supported: true,
+        generatedFromPhase: true,
+        implementationStatus: 'needs_executor_review',
+        description: 'Legal phase action steal_pile is authored in the phase flow and needs executor-specific handling before public release.',
+        cost: 'none',
+        constraints: 'See phase flow and rules asset.',
+        isTerminating: true,
+        effectType: 'steal_pile',
+        effectHints: {
+          requiresExecutorReview: true,
+        },
+      },
     },
     customActions: [
       {
@@ -390,8 +440,20 @@
     zoneModel: {},
     setupModel: {},
     turnModel: {},
-    actionModel: {},
-    progression: [],
+    actionModel: {
+      actionIds: [
+        'setup_round',
+        'play_card',
+        'steal_pile',
+      ],
+      actionEndsTurn: {
+        setup_round: true,
+      },
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
     cardVisibility: {
       handDefault: 'face_down',
       initialDeal: 'face_down',

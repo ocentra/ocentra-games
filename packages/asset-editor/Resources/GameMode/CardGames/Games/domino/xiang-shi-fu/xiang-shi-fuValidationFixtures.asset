@@ -50,23 +50,30 @@
             id: 'xiang-shi-fu.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'current_player',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'exchange_tiles',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'exchange_tiles',
             ],
-            explanation: 'Xiàng Shí Fù must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Xiàng Shí Fù must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'xiang-shi-fu.setup.initial-deal',
               'xiang-shi-fu.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'exchange_tiles',
             ],
           },
           {

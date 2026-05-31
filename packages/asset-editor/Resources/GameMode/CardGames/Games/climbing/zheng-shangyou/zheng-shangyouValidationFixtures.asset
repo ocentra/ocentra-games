@@ -50,25 +50,32 @@
             id: 'zheng-shangyou.flow.first-phase',
             title: 'Opening phase',
             purpose: 'flow',
-            expectedFirstPhase: 'play',
-            expectedActor: 'each_player_counterclockwise',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
             expectedLegalActions: [
-              'play_combination',
-              'pass',
+              'setup_round',
             ],
-            expectedNextPhase: null,
+            expectedNextPhase: 'play',
             supportedActionIds: [
+              'setup_round',
               'pass',
               'play_combination',
             ],
-            explanation: 'Zhēng Shàngyóu must enter play first and expose exactly the legal actions authored for that phase.',
+            explanation: 'Zhēng Shàngyóu must run setup_round first, then enter play with the processed legal actions.',
             linkedRuleIds: [
+              'zheng-shangyou.setup.initial-deal',
               'zheng-shangyou.flow.play',
             ],
             sourceFields: [
+              'setup.dealing',
               'engine.phases.0',
               'engine.playerActions',
               'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_combination',
+              'pass',
             ],
           },
           {

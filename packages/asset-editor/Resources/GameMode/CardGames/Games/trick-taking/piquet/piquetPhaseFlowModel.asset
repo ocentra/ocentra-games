@@ -19,6 +19,21 @@
     assetRefs: {},
     phases: [
       {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'exchange',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 12 card(s) to each active player before player action begins.',
+      },
+      {
         id: 'exchange',
         label: 'Exchange',
         actor: 'each_player_clockwise',
@@ -110,6 +125,7 @@
       customLogicNeeded: [],
     },
     progression: [
+      'setup_round',
       'exchange',
       'declare',
       'play',
