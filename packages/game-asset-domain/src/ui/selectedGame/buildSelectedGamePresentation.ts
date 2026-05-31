@@ -7,7 +7,7 @@ import {
   type SelectedGamePresentationTab,
   type SelectedGamePresentationVisualRef,
   type SelectedGameTabId,
-  selectedGameActionsForAuthoredState,
+  selectedGameActionsForReleaseStatus,
 } from '@/ui/selectedGame/SelectedGamePresentation';
 
 type LooseRecord = Record<string, unknown>;
@@ -54,6 +54,10 @@ const TAB_TIPS: Record<SelectedGameTabId, string> = {
   systems: 'These assets describe what the runtime can execute, validate, and explain.',
 };
 
+function formatReleaseStatusLabel(value: string): string {
+  return value.replace(/([a-z])([A-Z])/g, '$1 $2');
+}
+
 const EMPTY_PRESENTATION: SelectedGamePresentation = {
   hero: {
     title: 'Game',
@@ -76,7 +80,7 @@ const EMPTY_PRESENTATION: SelectedGamePresentation = {
     systems: [],
   },
   tip: TAB_TIPS,
-  actions: selectedGameActionsForAuthoredState(true),
+  actions: selectedGameActionsForReleaseStatus(),
 };
 
 export function buildSelectedGamePresentation(input: BuildSelectedGamePresentationInput): SelectedGamePresentation {
@@ -94,6 +98,7 @@ export function buildSelectedGamePresentation(input: BuildSelectedGamePresentati
   const actions = dataOf(input.actions);
   const validationFixtures = dataOf(input.validationFixtures);
   const images = dataOf(input.images);
+  const releaseStatus = firstText(gameMode.releaseStatus);
 
   const media = buildMedia(gameMode, gameInfo, images);
   const tabs = contentPlan.tabs
@@ -123,6 +128,7 @@ export function buildSelectedGamePresentation(input: BuildSelectedGamePresentati
       title: firstText(asRecord(gameInfo.hero).title, gameMode.displayName, gameInfo.title, 'Game'),
       taglineLines: splitSentences(firstText(gameInfo.tagline, asRecord(gameInfo.hero).subtitle, gameMode.tagline, gameInfo.description)).slice(0, 2),
       badges: [
+        releaseStatus ? formatReleaseStatusLabel(releaseStatus) : '',
         ...asArray(gameInfo.tags).map(asText),
         ...asArray(gameInfo.featuredTopBadges).map((badge) => asText(asRecord(badge).label)),
       ].filter(Boolean).slice(0, 4),
@@ -143,7 +149,7 @@ export function buildSelectedGamePresentation(input: BuildSelectedGamePresentati
       systems: quickInfoFor(tabs, 'systems'),
     },
     tip: TAB_TIPS,
-    actions: selectedGameActionsForAuthoredState(true),
+    actions: selectedGameActionsForReleaseStatus(releaseStatus),
   };
 }
 

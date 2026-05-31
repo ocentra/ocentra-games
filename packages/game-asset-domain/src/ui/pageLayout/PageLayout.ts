@@ -109,7 +109,7 @@ const DEFAULT_PAGE_LAYOUT_DOCUMENT: PageLayoutDocument = {
       enabled: true,
       order: 20,
       title: 'Featured Games',
-      sourceAssetPath: 'Resources/GameCatalog/index/home.json',
+      sourceAssetPath: 'Resources/Pages/HomePageLayout.asset#featured-games',
       controlsAssetPath: 'Resources/Pages/HomePageLayout.asset#featured',
     },
     {

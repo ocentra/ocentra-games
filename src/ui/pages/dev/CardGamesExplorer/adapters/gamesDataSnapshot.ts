@@ -5,34 +5,7 @@ import { clearGameCatalogCache, getGameCatalogEntries } from '@/adapters/assets/
 import { clearRawAssetDocumentCache } from '@/adapters/assets/rawAssetDocument';
 import { buildGameMetadata } from './gameCatalogToGameInfo';
 import { loadAssetExplorerContent } from './assetExplorerContent';
-import { authoredCatalogKeys, catalogEntryKeys } from './catalogIdentity';
-import { loadRemoteCatalogIndex } from '@/adapters/assets/GameCatalogRuntimeSource';
-
-type CatalogIndexEntry = {
-  slug: string;
-  name: string;
-  quality: string;
-  completeness: Record<string, boolean>;
-  description: string;
-  origin: string;
-  players: string;
-  deck: string;
-  difficulty: string;
-  duration: string;
-  category: string;
-  subcategory: string | null;
-  playerMode: string | null;
-  alsoKnownAs: string[];
-  tags: string[];
-  source: 'catalog';
-};
-
-type CatalogIndex = {
-  version: number;
-  generatedAt: string;
-  totalGames: number;
-  games: CatalogIndexEntry[];
-};
+import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
 
 export interface GamesDataSnapshot {
   games: Game[];
@@ -63,6 +36,7 @@ function mergeAssetSummary(game: Game, summary: Partial<Game> | undefined): Game
     quality: summary.quality || game.quality,
     completeness: summary.completeness && Object.keys(summary.completeness).length > 0 ? summary.completeness : game.completeness,
     alsoKnownAs: summary.alsoKnownAs && summary.alsoKnownAs.length > 0 ? [...summary.alsoKnownAs] : game.alsoKnownAs,
+    releaseStatus: summary.releaseStatus ?? game.releaseStatus,
   });
 }
 
@@ -77,16 +51,12 @@ function clearGamesDataSnapshotCache(): void {
 }
 
 async function buildGamesDataSnapshot(): Promise<GamesDataSnapshot> {
-  const [entries, catalogIndexRaw] = await Promise.all([
-    getGameCatalogEntries(),
-    loadRemoteCatalogIndex(),
-  ]);
+  const entries = await getGameCatalogEntries();
 
-  const madeGameKeys = new Set<string>();
   const loadedGames: Game[] = [];
 
   for (const entry of entries) {
-    if (entry.enabled === false || entry.releaseStatus === 'ComingSoon' || entry.releaseStatus === 'Deprecated') {
+    if (entry.releaseStatus === GameModeStatus.Deprecated) {
       continue;
     }
 
@@ -109,44 +79,14 @@ async function buildGamesDataSnapshot(): Promise<GamesDataSnapshot> {
       subcategory: entry.subcategory || null,
       player_mode: entry.playerMode || null,
       file_exists: true,
-      link_valid: entry.releaseStatus || 'asset',
+      link_valid: entry.releaseStatus || GameModeStatus.WorkInProgress,
       source: 'asset' as const,
+      releaseStatus: entry.releaseStatus ?? GameModeStatus.WorkInProgress,
     });
 
     const assetContent = await loadAssetExplorerContent(game).catch(() => null);
     const enrichedGame = mergeAssetSummary(game, assetContent?.summary);
-    authoredCatalogKeys(enrichedGame).forEach((key) => madeGameKeys.add(key));
     loadedGames.push(enrichedGame);
-  }
-
-  const catalogIndex = catalogIndexRaw as CatalogIndex | null;
-  if (catalogIndex?.games && Array.isArray(catalogIndex.games)) {
-    for (const catalogEntry of catalogIndex.games) {
-      if (catalogEntryKeys(catalogEntry).some((key) => madeGameKeys.has(key))) {
-        continue;
-      }
-      loadedGames.push(enrich({
-        slug: catalogEntry.slug,
-        guid: undefined,
-        file: `catalog/games/${catalogEntry.slug}.json`,
-        name: catalogEntry.name,
-        quality: catalogEntry.quality || 'placeholder',
-        completeness: catalogEntry.completeness || {},
-        description: catalogEntry.description || '',
-        origin: catalogEntry.origin || '',
-        players: catalogEntry.players || '',
-        deck: catalogEntry.deck || '',
-        difficulty: catalogEntry.difficulty || '',
-        duration: catalogEntry.duration || '',
-        alsoKnownAs: catalogEntry.alsoKnownAs || [],
-        category: catalogEntry.category || undefined,
-        subcategory: catalogEntry.subcategory || null,
-        player_mode: catalogEntry.playerMode || null,
-        file_exists: true,
-        link_valid: 'catalog',
-        source: 'catalog' as const,
-      }));
-    }
   }
 
   return {

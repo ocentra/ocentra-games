@@ -12,6 +12,7 @@ import { ensurePortFree, getPortOccupants } from './port-utils';
 import type { PortOccupant } from './port-utils';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
+import { AssetContentSlicePath } from '@ocentra/game-asset-domain/constants/content-slices';
 import { resolveWorkerBaseUrl, resolveWorkerPort } from './dev-port-config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,8 +38,9 @@ const PRODUCT_SEED_SOURCE_FILES = [
   path.join(GAME_WORKER_DIR, 'src/data/ai-catalog.ts'),
 ] as const;
 const ASSET_SEED_CRITICAL_KEYS = [
-  'catalog/index.json',
-  'GameCatalog/index.json',
+  AssetContentSlicePath.EntryIndex,
+  AssetContentSlicePath.Games,
+  AssetContentSlicePath.Home,
   'Pages/HomePageLayout.asset',
 ] as const;
 

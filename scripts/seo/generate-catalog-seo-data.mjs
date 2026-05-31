@@ -1,11 +1,12 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import JSON5 from 'json5';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(SCRIPT_DIR, '..', '..');
-const CATALOG_DIR = path.join(ROOT_DIR, 'packages', 'asset-editor', 'Resources', 'catalog');
-const GAMES_DIR = path.join(CATALOG_DIR, 'games');
+const RESOURCES_DIR = path.join(ROOT_DIR, 'packages', 'asset-editor', 'Resources');
+const AUTHORED_GAMES_DIR = path.join(RESOURCES_DIR, 'GameMode', 'CardGames', 'Games');
 const OUTPUT_PATH = path.join(ROOT_DIR, 'src', 'seo', 'generated', 'catalogSeoData.ts');
 const REPLACEMENTS_PATH = path.join(SCRIPT_DIR, 'catalog-replacements.json');
 const REPLACEMENTS_OUTPUT_PATH = path.join(ROOT_DIR, 'src', 'seo', 'generated', 'catalogSeoReplacements.ts');
@@ -14,6 +15,12 @@ const MAX_SECTION_LENGTH = 900;
 
 function asRecord(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+function dataOf(value) {
+  const record = asRecord(value);
+  const data = asRecord(record.data);
+  return Object.keys(data).length > 0 ? data : record;
 }
 
 function cleanText(value) {
@@ -100,82 +107,182 @@ function stringifyListItem(value) {
   if (name && description) {
     return `${name}: ${description}`;
   }
-  if (name) {
-    return name;
+  return name || description || stringifyValue(value);
+}
+
+function contentBlockText(value) {
+  const record = asRecord(value);
+  const direct = cleanText(record.text) || cleanText(record.description) || cleanText(record.body);
+  if (direct) {
+    return direct;
   }
-  if (description) {
-    return description;
+  if (Array.isArray(record.content)) {
+    return record.content.map(contentBlockText).filter(Boolean).join('\n');
   }
-  return stringifyValue(value);
+  if (Array.isArray(record.items)) {
+    return record.items.map(item => `- ${stringifyListItem(item)}`).filter(Boolean).join('\n');
+  }
+  return '';
+}
+
+function sectionText(gameInfo, sectionType) {
+  const sections = Array.isArray(gameInfo.sections) ? gameInfo.sections : [];
+  return sections
+    .filter(section => cleanText(asRecord(section).type).toLowerCase() === sectionType)
+    .flatMap(section => Array.isArray(asRecord(section).pages) ? asRecord(section).pages : [])
+    .map(page => {
+      const pageRecord = asRecord(page);
+      const content = Array.isArray(pageRecord.content) ? pageRecord.content.map(contentBlockText).filter(Boolean).join('\n') : '';
+      return joinParagraphs([pageRecord.title, pageRecord.subtitle, content]);
+    })
+    .filter(Boolean)
+    .join('\n\n');
+}
+
+function firstSectionParagraph(gameInfo) {
+  const sections = Array.isArray(gameInfo.sections) ? gameInfo.sections : [];
+  for (const section of sections) {
+    const pages = Array.isArray(asRecord(section).pages) ? asRecord(section).pages : [];
+    for (const page of pages) {
+      const blocks = Array.isArray(asRecord(page).content) ? asRecord(page).content : [];
+      for (const block of blocks) {
+        const text = contentBlockText(block);
+        if (text) {
+          return text;
+        }
+      }
+    }
+  }
+  return '';
 }
 
 function renderOverview(entry, source) {
-  const overview = asRecord(source.overview);
+  const gameInfo = source.gameInfo;
+  const history = asRecord(gameInfo.historyContent);
   return joinLines([
-    cleanText(overview.description) || cleanText(source.description) || cleanText(entry.description),
-    cleanText(overview.origin) || cleanText(source.origin) || cleanText(entry.origin) ? `Origin: ${cleanText(overview.origin) || cleanText(source.origin) || cleanText(entry.origin)}` : '',
-    cleanText(overview.players) || cleanText(source.players) || cleanText(entry.players) ? `Players: ${cleanText(overview.players) || cleanText(source.players) || cleanText(entry.players)}` : '',
-    cleanText(overview.deck) || cleanText(source.deck) || cleanText(entry.deck) ? `Deck: ${cleanText(overview.deck) || cleanText(source.deck) || cleanText(entry.deck)}` : '',
-    cleanText(overview.difficulty) || cleanText(source.difficulty) || cleanText(entry.difficulty) ? `Difficulty: ${cleanText(overview.difficulty) || cleanText(source.difficulty) || cleanText(entry.difficulty)}` : '',
-    cleanText(overview.duration) || cleanText(source.duration) || cleanText(entry.duration) ? `Duration: ${cleanText(overview.duration) || cleanText(source.duration) || cleanText(entry.duration)}` : '',
+    cleanText(gameInfo.description) || cleanText(entry.description),
+    cleanText(gameInfo.origin) || cleanText(history.origins) ? `Origin: ${cleanText(gameInfo.origin) || cleanText(history.origins)}` : '',
+    cleanText(entry.players) ? `Players: ${cleanText(entry.players)}` : '',
+    cleanText(entry.deck) ? `Deck: ${cleanText(entry.deck)}` : '',
+    cleanText(entry.difficulty) ? `Difficulty: ${cleanText(entry.difficulty)}` : '',
+    cleanText(entry.duration) ? `Duration: ${cleanText(entry.duration)}` : '',
   ]);
 }
 
 function renderHistory(source) {
-  const history = asRecord(source.history);
+  const history = asRecord(source.gameInfo.historyContent);
   return joinParagraphs([
-    cleanText(history.origins),
+    cleanText(history.origins) || cleanText(source.gameInfo.origin),
     Array.isArray(history.timeline) ? history.timeline.map(item => `- ${stringifyListItem(item)}`).join('\n') : '',
     cleanText(history.evolution),
     cleanText(history.cultural),
+    sectionText(source.gameInfo, 'history'),
   ]);
 }
 
 function renderSetup(entry, source) {
-  const setup = asRecord(source.setup);
+  const setup = asRecord(source.gameInfo.setupContent);
+  const rules = source.rules;
   return joinLines([
-    cleanText(setup.players) || cleanText(source.players) || cleanText(entry.players) ? `Players: ${cleanText(setup.players) || cleanText(source.players) || cleanText(entry.players)}` : '',
-    cleanText(setup.deck) || cleanText(source.deck) || cleanText(entry.deck) ? `Deck: ${cleanText(setup.deck) || cleanText(source.deck) || cleanText(entry.deck)}` : '',
+    cleanText(setup.players) || cleanText(entry.players) ? `Players: ${cleanText(setup.players) || cleanText(entry.players)}` : '',
+    cleanText(setup.deck) || cleanText(entry.deck) ? `Deck: ${cleanText(setup.deck) || cleanText(entry.deck)}` : '',
     cleanText(setup.equipment) ? `Equipment: ${cleanText(setup.equipment)}` : '',
     cleanText(setup.dealing) ? `Dealing: ${cleanText(setup.dealing)}` : '',
+    cleanText(rules.dealing) ? `Dealing: ${cleanText(rules.dealing)}` : '',
+    sectionText(source.gameInfo, 'setup'),
   ]);
 }
 
 function renderRules(source) {
-  const rules = asRecord(source.rules);
-  const scoring = asRecord(source.scoring);
+  const rules = source.rules;
+  const scoring = source.scoring;
   return joinParagraphs([
     cleanText(rules.objective) ? `Objective: ${cleanText(rules.objective)}` : '',
     cleanText(rules.gameplay) ? `Gameplay: ${cleanText(rules.gameplay)}` : '',
     cleanText(rules.scoring) || cleanText(scoring.description) ? `Scoring: ${cleanText(rules.scoring) || cleanText(scoring.description)}` : '',
     Array.isArray(rules.keyRules) ? rules.keyRules.map(item => `- ${stringifyListItem(item)}`).join('\n') : '',
+    Array.isArray(rules.ruleGroups) ? rules.ruleGroups.map(item => `- ${stringifyListItem(item)}`).join('\n') : '',
     cleanText(scoring.winCondition) ? `Win condition: ${cleanText(scoring.winCondition)}` : '',
+    sectionText(source.gameInfo, 'rules'),
   ]);
 }
 
 function renderStrategy(source) {
-  const strategy = asRecord(source.strategy);
+  const strategy = source.strategy;
   return joinParagraphs([
     cleanText(strategy.basic) ? `Basic: ${cleanText(strategy.basic)}` : '',
     cleanText(strategy.intermediate) ? `Intermediate: ${cleanText(strategy.intermediate)}` : '',
     cleanText(strategy.advanced) ? `Advanced: ${cleanText(strategy.advanced)}` : '',
     Array.isArray(strategy.tips) ? strategy.tips.map(item => `- ${stringifyListItem(item)}`).join('\n') : '',
+    stringifyValue(strategy.strategy),
+    sectionText(source.gameInfo, 'strategy'),
   ]);
 }
 
 function renderVariations(source) {
-  if (Array.isArray(source.variations)) {
-    return source.variations.map(item => `- ${stringifyListItem(item)}`).filter(Boolean).join('\n');
+  const variations = asRecord(source.gameInfo.variationsContent);
+  if (Array.isArray(variations.list)) {
+    return variations.list.map(item => `- ${stringifyListItem(item)}`).filter(Boolean).join('\n');
   }
-  return stringifyValue(source.variations);
+  return cleanText(variations.noVariationsReason) || sectionText(source.gameInfo, 'variations');
 }
 
 async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, 'utf8'));
 }
 
-async function gameFileNames() {
-  return new Set((await readdir(GAMES_DIR)).filter(fileName => fileName.endsWith('.json')));
+async function readAsset(filePath) {
+  return JSON5.parse(await readFile(filePath, 'utf8'));
+}
+
+async function assetFiles(dir) {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const entryPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...await assetFiles(entryPath));
+    } else if (entry.isFile() && entry.name.endsWith('.asset')) {
+      files.push(entryPath);
+    }
+  }
+  return files;
+}
+
+function resourcePathFromRef(ref) {
+  const refPath = cleanText(asRecord(ref).path);
+  if (!refPath) {
+    return null;
+  }
+  const normalized = refPath.replace(/\\/g, '/').replace(/^\/+/, '');
+  const resourceRelative = normalized.startsWith('Resources/')
+    ? normalized.slice('Resources/'.length)
+    : normalized;
+  return path.join(RESOURCES_DIR, ...resourceRelative.split('/'));
+}
+
+async function loadReferencedAsset(ref) {
+  const filePath = resourcePathFromRef(ref);
+  if (!filePath) {
+    return {};
+  }
+  try {
+    return await readAsset(filePath);
+  } catch {
+    return {};
+  }
+}
+
+function formatPlayers(minPlayers, maxPlayers) {
+  const min = Number(minPlayers);
+  const max = Number(maxPlayers);
+  if (!Number.isFinite(min) || min <= 0) {
+    return '';
+  }
+  if (!Number.isFinite(max) || max <= 0) {
+    return String(min);
+  }
+  return min === max ? String(min) : `${min}-${max}`;
 }
 
 function cleanReplacementEntry(entry) {
@@ -193,10 +300,6 @@ async function readReplacementEntries() {
   return (Array.isArray(source.replacements) ? source.replacements : [])
     .map(cleanReplacementEntry)
     .filter(Boolean);
-}
-
-function replacedCatalogSlugSet(replacements) {
-  return new Set(replacements.flatMap(entry => entry.catalogSlugs));
 }
 
 async function writeReplacementData(replacements) {
@@ -225,22 +328,54 @@ async function writeReplacementData(replacements) {
   await writeFile(REPLACEMENTS_OUTPUT_PATH, source, 'utf8');
 }
 
-async function buildEntry(entry, names) {
-  const fileName = `${entry.slug}.json`;
-  const source = names.has(fileName)
-    ? await readJson(path.join(GAMES_DIR, fileName))
-    : entry;
+async function buildEntry(gameModeFile) {
+  const document = await readAsset(gameModeFile);
+  const system = asRecord(document.system);
+  if (system.assetType !== 'CardGameMode') {
+    return null;
+  }
+
+  const gameMode = dataOf(document);
+  const gameInfo = dataOf(await loadReferencedAsset(gameMode.gameInfoAsset));
+  const rules = dataOf(await loadReferencedAsset(gameMode.gameRulesAsset));
+  const scoring = dataOf(await loadReferencedAsset(gameMode.scoringAsset));
+  const strategy = dataOf(await loadReferencedAsset(gameMode.strategyAsset));
+  const deckModel = dataOf(await loadReferencedAsset(gameMode.deckModelAsset ?? gameMode.deckAsset));
+  const relativeParts = path.relative(AUTHORED_GAMES_DIR, gameModeFile).split(path.sep);
+  const categoryFromPath = relativeParts[0] ?? '';
+  const subcategoryFromPath = relativeParts.length > 2 ? relativeParts[1] : '';
+  const hero = asRecord(gameInfo.hero);
+  const slug = normalizeIdentity(gameMode.gameId || system.gameId || path.basename(gameModeFile, '.asset'));
+  const displayName = cleanText(gameMode.displayName) || cleanText(system.displayName) || cleanText(hero.title) || slug;
+  const description =
+    cleanText(gameInfo.description) ||
+    cleanText(gameInfo.shortDescription) ||
+    firstSectionParagraph(gameInfo) ||
+    cleanText(gameMode.description);
+  const players = cleanText(gameInfo.playersDisplay) || formatPlayers(gameInfo.minPlayers ?? gameMode.minPlayers, gameInfo.maxPlayers ?? gameMode.maxPlayers);
+  const source = { gameInfo, rules, scoring, strategy };
+  const entry = {
+    slug,
+    name: displayName,
+    description: limitText(description, MAX_DESCRIPTION_LENGTH),
+    category: cleanText(gameInfo.gameCategory) || cleanText(categoryFromPath),
+    subcategory: cleanText(gameInfo.subcategory) || cleanText(subcategoryFromPath),
+    players,
+    deck: cleanText(gameInfo.deck) || cleanText(asRecord(gameInfo.setupContent).deck) || cleanText(deckModel.deckType) || cleanText(asRecord(gameMode.deckAsset).displayName),
+    difficulty: cleanText(gameInfo.difficulty),
+    duration: cleanText(gameInfo.duration),
+    quality: cleanText(gameInfo.quality) || 'placeholder',
+    releaseStatus: cleanText(gameMode.releaseStatus) || 'WorkInProgress',
+    overview: '',
+    history: '',
+    setup: '',
+    rules: '',
+    strategy: '',
+    variations: '',
+  };
+
   return {
-    slug: String(entry.slug),
-    name: cleanText(source.name) || cleanText(entry.name) || String(entry.slug),
-    description: limitText(cleanText(source.description) || cleanText(entry.description), MAX_DESCRIPTION_LENGTH),
-    category: cleanText(source.category) || cleanText(entry.category),
-    subcategory: cleanText(source.subcategory) || cleanText(entry.subcategory),
-    players: cleanText(source.players) || cleanText(entry.players),
-    deck: cleanText(source.deck) || cleanText(entry.deck),
-    difficulty: cleanText(source.difficulty) || cleanText(entry.difficulty),
-    duration: cleanText(source.duration) || cleanText(entry.duration),
-    quality: cleanText(source.quality) || cleanText(entry.quality) || 'placeholder',
+    ...entry,
     overview: limitText(renderOverview(entry, source), MAX_SECTION_LENGTH),
     history: limitText(renderHistory(source), MAX_SECTION_LENGTH),
     setup: limitText(renderSetup(entry, source), MAX_SECTION_LENGTH),
@@ -251,16 +386,13 @@ async function buildEntry(entry, names) {
 }
 
 async function main() {
-  const index = await readJson(path.join(CATALOG_DIR, 'index.json'));
-  const names = await gameFileNames();
   const replacements = await readReplacementEntries();
-  const replacedSlugs = replacedCatalogSlugSet(replacements);
   const entries = [];
-  for (const entry of index.games ?? []) {
-    if (replacedSlugs.has(normalizeIdentity(entry.slug))) {
-      continue;
+  for (const filePath of await assetFiles(AUTHORED_GAMES_DIR)) {
+    const entry = await buildEntry(filePath);
+    if (entry) {
+      entries.push(entry);
     }
-    entries.push(await buildEntry(entry, names));
   }
   entries.sort((a, b) => a.slug.localeCompare(b.slug));
   await writeReplacementData(replacements);
@@ -277,6 +409,7 @@ async function main() {
     '  difficulty: string;',
     '  duration: string;',
     '  quality: string;',
+    '  releaseStatus: string;',
     '  overview: string;',
     '  history: string;',
     '  setup: string;',

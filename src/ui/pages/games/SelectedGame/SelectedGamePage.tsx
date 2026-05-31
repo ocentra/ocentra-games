@@ -8,8 +8,9 @@ import type {
   SelectedGamePresentation,
   SelectedGamePresentationVisualRef,
 } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
-import { withSelectedGameActions } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
+import { withSelectedGameReleaseStatus } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import { buildSelectedGamePresentation } from '@ocentra/game-asset-domain/ui/selectedGame/buildSelectedGamePresentation';
+import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
@@ -27,7 +28,6 @@ import {
   loadSelectedGameLayoutControls,
   type SelectedGameAssetBundle,
 } from '@/ui/pages/games/SelectedGame/gameDetailAssetSections';
-import { loadCatalogSelectedGamePresentation } from '@/ui/pages/games/SelectedGame/catalogSelectedGamePresentation';
 import { SelectedGameVisualContent } from '@/ui/pages/games/SelectedGame/SelectedGameVisualContent';
 import { findAuthoredSlugForCatalogSlug } from '@/seo/generated/catalogSeoReplacements';
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
@@ -196,6 +196,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [parsedGameName, setParsedGameName] = useState<string>('');
   const [resolvedGameId, setResolvedGameId] = useState<string>('');
+  const [resolvedReleaseStatus, setResolvedReleaseStatus] = useState<string | null>(null);
   const [showPilotSetup, setShowPilotSetup] = useState(false);
   const handleLogout = () => {
     if (onLogoutClick) {
@@ -223,6 +224,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
       setPresentation(null);
       setAssetBundle(null);
       setLayoutControls(undefined);
+      setResolvedReleaseStatus(null);
       setShowPilotSetup(false);
 
       try {
@@ -242,7 +244,10 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
           const [loadedInfo, bundle] = await Promise.all([loadedInfoPromise, bundlePromise]);
 
           if (bundle?.gameMode) {
-            const nextPresentation = withSelectedGameActions(buildSelectedGamePresentation(bundle), true);
+            const releaseStatus = typeof dataOf(bundle.gameMode).releaseStatus === 'string'
+              ? String(dataOf(bundle.gameMode).releaseStatus)
+              : GameModeStatus.WorkInProgress;
+            const nextPresentation = withSelectedGameReleaseStatus(buildSelectedGamePresentation(bundle), releaseStatus);
             const savedLayoutControls = await layoutControlsPromise;
             setGameInfo(loadedInfo ?? null);
             setPresentation(nextPresentation);
@@ -250,6 +255,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
             setLayoutControls(savedLayoutControls ?? extractSelectedGameLayoutControls(bundle?.layout));
             setParsedGameName(authoredGame.slug);
             setResolvedGameId(authoredGame.routeId);
+            setResolvedReleaseStatus(releaseStatus);
             setIsValid(true);
             return;
           }
@@ -258,26 +264,16 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
             setGameInfo(loadedInfo);
             setPresentation(null);
             setAssetBundle(null);
+            setResolvedReleaseStatus(null);
             setIsValid(false);
             setErrorMessage(`Game "${authoredGame.slug}" asset bundle could not be loaded.`);
             return;
           }
         }
 
-        const catalogResolution = await withPageLoadTimeout(loadCatalogSelectedGamePresentation(parsed.name));
-        if (catalogResolution) {
-          const savedLayoutControls = await layoutControlsPromise;
-          setGameInfo(null);
-          setPresentation(withSelectedGameActions(catalogResolution.presentation, false));
-          setAssetBundle(null);
-          setLayoutControls(savedLayoutControls ?? undefined);
-          setParsedGameName(catalogResolution.displayName);
-          setResolvedGameId(parsed.name);
-          setIsValid(true);
-        } else {
-          setIsValid(false);
-          setErrorMessage(`Game "${parsed.name}" not found.`);
-        }
+        setResolvedReleaseStatus(null);
+        setIsValid(false);
+        setErrorMessage(`Game "${parsed.name}" not found as an authored game asset.`);
       } catch {
         setIsValid(false);
         setErrorMessage('Error loading game information.');
@@ -321,6 +317,9 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   }
 
   const handleOpenLobbies = () => {
+    if (resolvedReleaseStatus !== GameModeStatus.Available) {
+      return;
+    }
     const nextGameId = resolvedGameId || gameId;
     if (typeof window !== 'undefined') {
       window.sessionStorage.setItem(
@@ -342,6 +341,9 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   };
 
   const handleStartPilot = () => {
+    if (resolvedReleaseStatus !== GameModeStatus.Available) {
+      return;
+    }
     EventBus.instance.publish(new ShowScreenEvent(buildGamePlayPath(resolvedGameId || gameId)));
   };
 
@@ -383,7 +385,9 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
               handleOpenLobbies();
             }
             if (actionId === 'play-local-pilot') {
-              setShowPilotSetup(true);
+              if (resolvedReleaseStatus === GameModeStatus.Available) {
+                setShowPilotSetup(true);
+              }
             }
           }}
           presentation={presentation ?? undefined}

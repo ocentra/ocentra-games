@@ -12,7 +12,7 @@ import {
 import { LocalWebConfig } from '@ocentra/endpoint-domain/constants/local';
 
 const REPO_ROOT_URL = new URL('../../', import.meta.url);
-const CATALOG_INDEX_URL = new URL('packages/asset-editor/Resources/catalog/index.json', REPO_ROOT_URL);
+const CATALOG_SEO_DATA_URL = new URL('src/seo/generated/catalogSeoData.ts', REPO_ROOT_URL);
 const CATALOG_REPLACEMENTS_URL = new URL('scripts/seo/catalog-replacements.json', REPO_ROOT_URL);
 const DEFAULT_BASE_URL = LocalWebConfig.BaseUrl;
 const DEFAULT_TIMEOUT_MS = 10000;
@@ -298,10 +298,10 @@ async function loadCatalogSample(limit) {
   if (limit === 0) {
     return [];
   }
-  const catalogText = await readFile(CATALOG_INDEX_URL, 'utf8');
+  const catalogText = await readFile(CATALOG_SEO_DATA_URL, 'utf8');
   const replacedSlugs = await loadReplacedCatalogSlugs();
-  const catalog = JSON.parse(catalogText);
-  const games = Array.isArray(catalog.games) ? catalog.games : [];
+  const gamesMatch = catalogText.match(/export const catalogSeoGames = ([\s\S]*?) satisfies readonly CatalogSeoGameEntry\[\];/);
+  const games = gamesMatch ? JSON.parse(gamesMatch[1]) : [];
   const seen = new Set();
   const candidates = [
     'tysiac-1000',

@@ -2,6 +2,11 @@ import { useMemo } from 'react';
 import { getPlaceholderImageUrl, placeholderImageCount } from '@ocentra/app-assets/placeholders';
 import type { GamesExplorerGame } from './types';
 import { SECTIONS, CATEGORY_ICONS, SECTION_LABELS } from './types';
+import {
+  gamesExplorerReleaseStatusLabel,
+  gamesExplorerReleaseStatusShortLabel,
+  isGamesExplorerGameAvailable,
+} from './releaseStatus';
 import './GameCard.css';
 
 function stableIndex(slug: string): number {
@@ -28,8 +33,8 @@ export function GameCard({ game, onGameClick }: GameCardProps) {
   const pct = game.completenessPercent ?? 0;
   const fillClass = pct >= 75 ? 'is-high' : pct >= 40 ? 'is-medium' : 'is-low';
   const quality = game.quality ?? 'complete';
-  const isAsset = game.source === 'asset';
-  const qualityColor = isAsset ? '#3b82f6' : (QUALITY_COLORS[quality] ?? '#6b7280');
+  const isAvailable = isGamesExplorerGameAvailable(game.releaseStatus);
+  const qualityColor = isAvailable ? '#3b82f6' : (QUALITY_COLORS[quality] ?? '#6b7280');
   const completeness = game.completeness ?? {};
   const filledSections = SECTIONS.filter((s) => completeness[s]);
   const category = game.subcategory ? `${game.category} / ${game.subcategory}` : game.category;
@@ -39,7 +44,7 @@ export function GameCard({ game, onGameClick }: GameCardProps) {
 
   return (
     <div
-      className={`cge-game-card cge-game-card--${quality} ${isAsset ? 'cge-game-card--asset' : 'cge-game-card--catalog'}`}
+      className={`cge-game-card cge-game-card--${quality} ${isAvailable ? 'cge-game-card--asset' : 'cge-game-card--catalog'}`}
       onClick={handleClick}
       {...(onGameClick && {
         role: 'button' as const,
@@ -59,8 +64,11 @@ export function GameCard({ game, onGameClick }: GameCardProps) {
         <span className="cge-game-card__cat-badge">
           {CATEGORY_ICONS[game.category] ?? '📦'} {game.subcategory ? `${game.category} / ${game.subcategory}` : game.category}
         </span>
-        <span className={`cge-game-card__status-chip cge-game-card__status-chip--${isAsset ? 'available' : 'soon'}`}>
-          {isAsset ? '✓ Available' : '◷ Coming Soon'}
+        <span
+          className={`cge-game-card__status-chip cge-game-card__status-chip--${isAvailable ? 'available' : 'soon'}`}
+          title={gamesExplorerReleaseStatusLabel(game.releaseStatus)}
+        >
+          {isAvailable ? 'Available' : gamesExplorerReleaseStatusShortLabel(game.releaseStatus)}
         </span>
       </div>
 

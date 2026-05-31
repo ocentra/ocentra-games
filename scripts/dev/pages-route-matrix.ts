@@ -37,8 +37,6 @@ interface RouteProbeResult {
 }
 
 interface NetworkStats {
-  catalogIndexRequests: number;
-  catalogGameRequests: number;
   downloadUrlRequests: number;
   workerAssetByteRequests: string[];
 }
@@ -64,7 +62,6 @@ const THREE_CARD_BRAG_GAME_ID = 'three-card-brag';
 const TOURNAMENT_ID = 'may-2026';
 const IMPORTANT_CONSOLE_TYPES = new Set(['error', 'warning']);
 const ASSET_BYTE_ENDPOINT_PREFIX = `${ApiEndpoint.Assets.Base}/`;
-const CATALOG_GAME_SLICE_PREFIX = ApiEndpoint.Slices.CatalogGame('');
 const OPTIONAL_EXTERNAL_RESOURCE_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
 const BROWSER_HARNESS_CONSOLE_PATTERNS = [
   'GroupMarkerNotSet(crbug.com/242999)',
@@ -179,8 +176,6 @@ function isWorkerAssetByteEndpoint(url: string): boolean {
 
 function emptyNetworkStats(): NetworkStats {
   return {
-    catalogIndexRequests: 0,
-    catalogGameRequests: 0,
     downloadUrlRequests: 0,
     workerAssetByteRequests: [],
   };
@@ -194,12 +189,6 @@ function addNetworkRequest(stats: NetworkStats, url: string): void {
     return;
   }
 
-  if (pathname === ApiEndpoint.Slices.CatalogIndex) {
-    stats.catalogIndexRequests += 1;
-  }
-  if (pathname.startsWith(CATALOG_GAME_SLICE_PREFIX)) {
-    stats.catalogGameRequests += 1;
-  }
   if (pathname === ApiEndpoint.Assets.DownloadUrl) {
     stats.downloadUrlRequests += 1;
   }
@@ -380,8 +369,6 @@ function compareRouteResults(localResults: RouteProbeResult[], remoteResults: Ro
 
 function networkStatsSummary(stats: NetworkStats): string {
   return [
-    `catalogIndex=${stats.catalogIndexRequests}`,
-    `catalogGame=${stats.catalogGameRequests}`,
     `downloadUrl=${stats.downloadUrlRequests}`,
     `workerAssetBytes=${stats.workerAssetByteRequests.length}`,
   ].join(' ');
@@ -556,9 +543,6 @@ async function runCatalogCacheCheck(browser: Browser, baseUrl: string, enforcePr
 
     if (result.secondReturnShowedLoadingGames) {
       throw new Error(`${baseUrl} showed "Loading games" on same-session catalog return`);
-    }
-    if (result.returnCatalog.catalogIndexRequests > 0) {
-      throw new Error(`${baseUrl} refetched catalog index on same-session catalog return`);
     }
     if (result.returnCatalog.downloadUrlRequests > 0) {
       throw new Error(`${baseUrl} repeated download-url calls on same-session catalog return`);

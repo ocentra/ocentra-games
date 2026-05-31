@@ -21,6 +21,7 @@ export interface GamesExplorerGame {
   link_valid?: string;
   file?: string;
   source?: 'asset' | 'catalog';
+  releaseStatus?: string | null;
 }
 
 export interface GamesExplorerGameDetail {
@@ -39,6 +40,7 @@ export interface GamesExplorerGameDetail {
   sources?: unknown;
   pagat?: unknown;
   source?: 'asset' | 'catalog';
+  releaseStatus?: string | null;
   cursorFind?: unknown;
 }
 

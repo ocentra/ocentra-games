@@ -1,6 +1,26 @@
 import { useState, useMemo } from 'react';
+import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
 import type { Game, GameMetadata, PlayerModeFilter, QualityFilter, SortBy, ViewMode } from '../types';
 import { ALPHABET_NUM_KEY } from '../types';
+
+function releaseStatusRank(game: Game): number {
+  switch (game.releaseStatus) {
+    case GameModeStatus.Available:
+      return 0;
+    case GameModeStatus.ComingSoon:
+      return 1;
+    case GameModeStatus.WorkInProgress:
+      return 2;
+    case GameModeStatus.Maintenance:
+      return 3;
+    case GameModeStatus.InternalOnly:
+      return 4;
+    case GameModeStatus.Deprecated:
+      return 5;
+    default:
+      return 2;
+  }
+}
 
 export function useGamesFilter(games: Game[], metadata: GameMetadata | null) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -143,7 +163,7 @@ export function useGamesFilter(games: Game[], metadata: GameMetadata | null) {
 
     if (qualityFilter !== 'all') {
       if (qualityFilter === 'available')
-        result = result.filter(g => g.source === 'asset');
+        result = result.filter(g => g.releaseStatus === GameModeStatus.Available);
       else if (qualityFilter === 'missing_json')
         result = result.filter(g => !g.file_exists);
       else if (qualityFilter === 'missing_name')
@@ -170,9 +190,7 @@ export function useGamesFilter(games: Game[], metadata: GameMetadata | null) {
         case 'category':     return a.category.localeCompare(b.category) || a.normalizedName.localeCompare(b.normalizedName);
         case 'completeness': return b.completenessPercent - a.completenessPercent || a.normalizedName.localeCompare(b.normalizedName);
         case 'available': {
-          const aIsAsset = a.source === 'asset' ? 0 : 1;
-          const bIsAsset = b.source === 'asset' ? 0 : 1;
-          return aIsAsset - bIsAsset || a.normalizedName.localeCompare(b.normalizedName);
+          return releaseStatusRank(a) - releaseStatusRank(b) || a.normalizedName.localeCompare(b.normalizedName);
         }
         default:             return a.normalizedName.localeCompare(b.normalizedName);
       }

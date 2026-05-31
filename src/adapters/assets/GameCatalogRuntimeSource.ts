@@ -3,11 +3,9 @@ import type { AppPageSliceDocument } from '@ocentra/game-asset-domain/schemas/ap
 import type { GameCatalogDocument } from '@ocentra/game-asset-domain/schemas/game-catalog-entry-schema';
 import type { HomePageGamesDocument } from '@ocentra/game-asset-domain/schemas/home-page-games-schema';
 import type { GamePage } from '@ocentra/game-asset-domain/schemas/game-page-schema';
-import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { getPlatformAssetRuntime } from '@/adapters/assets/PlatformAssetRuntime';
-import { fetchJsonSlice, getSliceUrl } from '@/adapters/assets/PlatformAssetRuntimeShared';
 import { getStorageConfig } from '@/services/storage/StorageConfig';
 
 const log = MainAppLogger.instance;
@@ -57,22 +55,4 @@ export async function loadRemoteGameEngine(gameId: string): Promise<GameEngine |
   return await withRuntimeRead(`remote game engine (${gameId})`, async () =>
     await getPlatformAssetRuntime().getGameEngine(gameId, getStorageConfig())
   );
-}
-
-export async function loadRemoteCatalogIndex(): Promise<unknown | null> {
-  const storageConfig = getStorageConfig();
-  const url = getSliceUrl(storageConfig, ApiEndpoint.Slices.CatalogIndex);
-  if (!url) return null;
-  return await withRuntimeRead('remote catalog index', async () => {
-    return await fetchJsonSlice<unknown>(url);
-  });
-}
-
-export async function loadRemoteCatalogGame(slug: string): Promise<unknown | null> {
-  const storageConfig = getStorageConfig();
-  const url = getSliceUrl(storageConfig, ApiEndpoint.Slices.CatalogGame(slug));
-  if (!url) return null;
-  return await withRuntimeRead(`remote catalog game (${slug})`, async () => {
-    return await fetchJsonSlice<unknown>(url);
-  });
 }

@@ -5,31 +5,10 @@ import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { getGameMode } from '@/adapters/assets/GameCatalogService';
 import { buildGameDetail } from '../adapters/gameCatalogToGameInfo';
 import { loadAssetExplorerContent } from '../adapters/assetExplorerContent';
-import { loadRemoteCatalogGame } from '@/adapters/assets/GameCatalogRuntimeSource';
 import type { GameInfo } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
 
 const log = MainAppLogger.instance;
 log.register(import.meta.url);
-
-function buildCatalogGameDetail(slug: string, raw: unknown): GameDetail {
-  const data = raw as Record<string, unknown>;
-  return {
-    filename: slug,
-    name: (data.name as string) ?? slug,
-    guid: undefined,
-    completeness: (data.completeness as Record<string, boolean>) ?? {},
-    quality: (data.quality as string) ?? 'placeholder',
-    overview: data.overview,
-    history: data.history,
-    setup: data.setup,
-    rules: data.rules,
-    strategy: data.strategy,
-    variations: data.variations,
-    ai: null,
-    sources: data.sources,
-    source: 'catalog',
-  };
-}
 
 export function useGameDetail() {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
@@ -57,6 +36,7 @@ export function useGameDetail() {
         completeness: game.completeness,
         quality: game.quality,
         source: game.source,
+        releaseStatus: game.releaseStatus,
         overview: game.description,
         ai: null,
       });
@@ -65,30 +45,8 @@ export function useGameDetail() {
 
     try {
       log.logInfo('[CardGamesExplorer] Starting detail load', getStackTrace(), { slug: game.slug, source: game.source });
-      
-      if (game.source === 'catalog') {
-        const raw = await loadRemoteCatalogGame(game.slug);
-        if (isResolved) return; // Already handled by timeout
 
-        if (raw) {
-          log.logInfo('[CardGamesExplorer] Catalog game loaded from R2', getStackTrace(), { slug: game.slug });
-          setGameDetail(buildCatalogGameDetail(game.slug, raw));
-        } else {
-          log.logWarn('[CardGamesExplorer] Catalog game record NOT found in R2 path card-games/games/<slug>.json, using item metadata', getStackTrace(), { slug: game.slug });
-          // Fallback to basic info if R2 record is missing
-          setGameDetail({
-            filename: game.slug,
-            name: game.name,
-            guid: undefined,
-            completeness: game.completeness,
-            quality: game.quality,
-            overview: game.description,
-            ai: null,
-            source: 'catalog',
-          });
-        }
-      } else {
-        try {
+      try {
           const assetContent = await loadAssetExplorerContent(game);
           if (isResolved) return;
 
@@ -99,7 +57,7 @@ export function useGameDetail() {
           }
 
           const gameModeId = game.guid || game.slug;
-          log.logInfo('[CardGamesExplorer] Fetching GameMode for "Made" game', getStackTrace(), { identifier: gameModeId });
+          log.logInfo('[CardGamesExplorer] Fetching GameMode for authored game', getStackTrace(), { identifier: gameModeId });
           const gameMode = await getGameMode(gameModeId);
           
           if (isResolved) return;
@@ -125,7 +83,7 @@ export function useGameDetail() {
             
             setGameDetail(buildGameDetail(home, gameInfo));
           } else {
-            log.logWarn('[CardGamesExplorer] GameMode not found in registry or bucket, using catalog fallback', getStackTrace(), { slug: game.slug });
+            log.logWarn('[CardGamesExplorer] GameMode not found in registry or bucket, using authored summary fallback', getStackTrace(), { slug: game.slug });
             setGameDetail({
               filename: game.slug,
               name: game.name,
@@ -133,6 +91,7 @@ export function useGameDetail() {
               completeness: game.completeness,
               quality: game.quality,
               source: 'asset',
+              releaseStatus: game.releaseStatus,
               overview: game.description,
               ai: null,
             });
@@ -150,11 +109,11 @@ export function useGameDetail() {
             completeness: game.completeness,
             quality: game.quality,
             source: 'asset',
+            releaseStatus: game.releaseStatus,
             overview: game.description,
             ai: null,
           });
         }
-      }
     } catch (e) {
       log.logError('[CardGamesExplorer] Uncaught exception in load flow', getStackTrace(), { 
         slug: game.slug, 
@@ -169,6 +128,7 @@ export function useGameDetail() {
         completeness: game.completeness,
         quality: game.quality,
         source: game.source,
+        releaseStatus: game.releaseStatus,
         overview: game.description,
         ai: null,
       });

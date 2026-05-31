@@ -1,3 +1,5 @@
+import { GameModeStatus } from '@/constants/game-mode-status';
+
 export type SelectedGameTabId =
   | 'about'
   | 'rules'
@@ -70,16 +72,19 @@ export interface SelectedGamePresentation {
   actions: SelectedGamePresentationAction[];
 }
 
+export function selectedGameActionsForReleaseStatus(releaseStatus?: string | null): SelectedGamePresentationAction[] {
+  const isAvailable = releaseStatus === GameModeStatus.Available;
+  return [
+    { id: 'explore-card-games', label: 'Explore Games' },
+    { id: 'view-lobbies', label: 'View Lobbies', enabled: isAvailable },
+    { id: 'play-local-pilot', label: 'Play Local Pilot', enabled: isAvailable },
+  ];
+}
+
 export function selectedGameActionsForAuthoredState(isAuthored: boolean): SelectedGamePresentationAction[] {
   return isAuthored
-    ? [
-      { id: 'explore-card-games', label: 'Explore Games' },
-      { id: 'view-lobbies', label: 'View Lobbies' },
-      { id: 'play-local-pilot', label: 'Play Local Pilot' },
-    ]
-    : [
-      { id: 'explore-card-games', label: 'Explore Games' },
-    ];
+    ? selectedGameActionsForReleaseStatus(GameModeStatus.Available)
+    : [{ id: 'explore-card-games', label: 'Explore Games' }];
 }
 
 export function withSelectedGameActions(
@@ -89,6 +94,16 @@ export function withSelectedGameActions(
   return {
     ...presentation,
     actions: selectedGameActionsForAuthoredState(isAuthored),
+  };
+}
+
+export function withSelectedGameReleaseStatus(
+  presentation: SelectedGamePresentation,
+  releaseStatus?: string | null
+): SelectedGamePresentation {
+  return {
+    ...presentation,
+    actions: selectedGameActionsForReleaseStatus(releaseStatus),
   };
 }
 

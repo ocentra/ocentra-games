@@ -57,6 +57,7 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
   "Card": {
     "cardIdentity": "CardIdentity",
     "imageHash": "ImageHash",
+    "imagePath": "String",
     "cardId": "String",
     "rankingAsset": "AssetResourceEntry<DeckRanking>",
     "cardRankingAsset": "AssetResourceEntry<CardRanking>"
@@ -558,7 +559,8 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "group": "HanafudaGroup",
     "points": "Number",
     "cardId": "String",
-    "imageHash": "ImageHash"
+    "imageHash": "ImageHash",
+    "imagePath": "String"
   },
   "HanafudaDeck": {
     "name": "String",
@@ -613,6 +615,7 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "pieceKind": "PieceKind",
     "cardId": "String",
     "imageHash": "ImageHash",
+    "imagePath": "String",
     "playingCardRankingAsset": "AssetResourceEntry<PlayingCardRanking>"
   },
   "PlayingCardDeck": {
