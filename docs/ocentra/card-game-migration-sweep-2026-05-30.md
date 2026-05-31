@@ -106,6 +106,17 @@ Captured through the user's Chrome session against `http://localhost:5174/?mock=
   - `rookDeckModel.asset` resolves the Rook deck reference and renders the linked 56-piece deck preview.
   - The proof page had no `Loading deck...`, no `Loading asset...`, and no Chrome console errors after the preview loader fix.
 
+Captured through the user's Chrome session against `http://localhost:3000` after enabling the next local runtime pilots:
+
+- `docs/ocentra/evidence/card-game-migration-2026-05-30/runtime-briscola-fresh-initial.png`
+  - Briscola play route loads through the SVG/local-pilot table, deals a 4-player hand, and exposes real `Play ...` card actions.
+- `docs/ocentra/evidence/card-game-migration-2026-05-30/runtime-briscola-fresh-after-play.png`
+  - A real card action was clicked in Chrome, bots advanced the trick, the HUD falls back to `Waiting` instead of fake `A1`, and the fresh console had no React errors.
+- `docs/ocentra/evidence/card-game-migration-2026-05-30/runtime-three-card-brag-fresh-showdown-waiting.png`
+  - Three Card Brag play route loads through the SVG/local-pilot table, bots advance to showdown, and the human-facing action is `Reveal You`.
+- `docs/ocentra/evidence/card-game-migration-2026-05-30/runtime-three-card-brag-fresh-after-reveal.png`
+  - The `Reveal You` action was clicked in Chrome, the game advanced to the next hand, and the fresh console had no React errors.
+
 The Chrome pass caught two editor loading bugs while proving the migrated assets:
 
 - Asset-tree selection was loading non-image resources by GUID in browser mode instead of preferring the indexed resource path, which could leave migrated asset previews stuck at `Loading asset...`.
@@ -115,6 +126,17 @@ Both bugs were fixed in this pass:
 
 - `useAssetNavigation` now preserves the indexed resource path for non-image asset selection when the editor is running in browser mode.
 - `DeckPreview` now normalizes referenced resource paths, prefers direct resource paths over GUID lookup, and bounds nested reference loading so a missing/slow reference degrades instead of leaving the preview stuck indefinitely.
+
+The Chrome play-route pass caught two runtime UX bugs:
+
+- Empty HUD action labels could render as fake fallback labels such as `A1`.
+- The generic bot reveal path could reveal the human hand during Three Card Brag showdown.
+
+Both runtime bugs were fixed in this continuation:
+
+- Empty local-pilot HUD action lists now render `Waiting`.
+- Non-Claim bot reveal logic reveals the bot's own hand, or another AI hand, and leaves human reveal actions for the human-facing HUD.
+- Local pilot routing now allows resolver-backed Briscola and Three Card Brag in addition to Claim.
 
 ## Warning Policy
 
@@ -168,6 +190,28 @@ The migration validator is intentionally not silent-green. It passes only when t
 
 - The migration creates schema-valid, selected-game-ready asset bundles with placeholder/fallback art warnings preserved where final art is still needed.
 - Browser visual proof was captured in Chrome at `http://localhost:5174/?mock=true` and covers both folder hierarchy and rendered migrated asset previews.
+- Browser play-route proof was captured in Chrome at `http://localhost:3000` for Briscola and Three Card Brag local runtime pilots.
 - The `.meta` files are present on disk for selected pilot assets, but the editor resource index path filter is expected to hide `.meta` and dot-folder paths from the tree.
 - Standard 52 card assets now carry `imageHash` and `imagePath`; if the deck preview renders labels only, that is a UI/runtime loading bug rather than missing card asset metadata.
-- True two-browser gameplay proof is not available for arbitrary migrated games yet. The current local pilot runtime still gates non-Claim play routes before generic engine execution, so honest smoke coverage for new migrations is selected-game and lobby/editor surface loading until generic runtime execution is expanded.
+- True two-browser multiplayer proof is still separate from local pilot proof. Claim, Briscola, and Three Card Brag now have local resolver-backed play-route smoke coverage; arbitrary migrated games remain selected-game/editor validated until their family resolver and local pilot flow are explicitly enabled.
+
+## Runtime Continuation Validation
+
+- `cmd /c npm --prefix packages/card-game-ui run test -- src/localPilot/localPilotRuntimeHelpers.test.ts`
+  - test files 1
+  - tests 2
+  - failed 0
+- `cmd /c npm --prefix packages/card-game-ui run lint:exec`
+  - passed
+- `cmd /c npm --prefix packages/card-game-ui run build`
+  - passed
+- `cmd /c npm exec -- vitest run src\ui\pages\games\CardGamePlay\GameScreenPage.test.tsx`
+  - test files 1
+  - tests 3
+  - failed 0
+- `cmd /c npm --prefix packages/game-domain run test -- src\engine\__tests__\MechanicsBriscolaFlow.test.ts src\engine\__tests__\MechanicsThreeCardBragFlow.test.ts`
+  - test files 2
+  - tests 2
+  - failed 0
+- `cmd /c npm exec -- tsc -b --pretty false`
+  - passed
