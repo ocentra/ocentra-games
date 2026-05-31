@@ -137,6 +137,8 @@ Both runtime bugs were fixed in this continuation:
 - Empty local-pilot HUD action lists now render `Waiting`.
 - Non-Claim bot reveal logic reveals the bot's own hand, or another AI hand, and leaves human reveal actions for the human-facing HUD.
 - Local pilot routing now allows resolver-backed Briscola and Three Card Brag in addition to Claim.
+- Briscola and Three Card Brag are marked `WorkInProgress`, not `Available`, until source review is actually verified.
+- Selected-game readiness now blocks migrated games from being `Available` or `ComingSoon` while `editorOnly.migrationReview.status` is still pending.
 
 ## Warning Policy
 
@@ -194,6 +196,7 @@ The migration validator is intentionally not silent-green. It passes only when t
 - The `.meta` files are present on disk for selected pilot assets, but the editor resource index path filter is expected to hide `.meta` and dot-folder paths from the tree.
 - Standard 52 card assets now carry `imageHash` and `imagePath`; if the deck preview renders labels only, that is a UI/runtime loading bug rather than missing card asset metadata.
 - True two-browser multiplayer proof is still separate from local pilot proof. Claim, Briscola, and Three Card Brag now have local resolver-backed play-route smoke coverage; arbitrary migrated games remain selected-game/editor validated until their family resolver and local pilot flow are explicitly enabled.
+- Structural migration pass is not release proof. Migrated games with `pending_source_review` are valid work-in-progress assets only, not trusted release candidates.
 
 ## Runtime Continuation Validation
 
@@ -215,3 +218,12 @@ The migration validator is intentionally not silent-green. It passes only when t
   - failed 0
 - `cmd /c npm exec -- tsc -b --pretty false`
   - passed
+- `cmd /c npm --prefix packages/game-asset-domain run test -- src/ui/selectedGame/SelectedGameReadiness.test.ts`
+  - test files 1
+  - tests 3
+  - failed 0
+- `cmd /c npm run validate:game-assets`
+  - asset files 28,313
+  - failed 0
+  - selected-game game modes 1,413
+  - output now distinguishes `public ready` from `asset contract valid (WorkInProgress)`

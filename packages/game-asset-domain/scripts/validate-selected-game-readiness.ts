@@ -683,6 +683,7 @@ const gameModeFiles = findAssetFiles(GAMES_ROOT)
 const reports = gameModeFiles.map((gameModePath) => {
   const gameMode = readAsset(gameModePath);
   const gameModeData = dataOf(gameMode);
+  const releaseStatus = asText(gameModeData.releaseStatus) || 'missing';
   const gameInfo = loadAssetFromRef(gameModeData.gameInfoAsset);
   const rules = loadAssetFromRef(gameModeData.gameRulesAsset);
   const scoring = loadAssetFromRef(gameModeData.scoringAsset);
@@ -735,6 +736,7 @@ const reports = gameModeFiles.map((gameModePath) => {
   const publicAssetIssues = validatePublicGameAssetContract(loadedBundle);
   return {
     ...readinessReport,
+    releaseStatus,
     ok: readinessReport.ok
       && layoutIssues.every((layoutIssue) => layoutIssue.severity !== 'error')
       && publicAssetIssues.every((assetIssue) => assetIssue.severity !== 'error'),
@@ -753,10 +755,16 @@ for (const report of reports) {
   warningCount += report.issues.filter((issue) => issue.severity === 'warning').length;
   blockingCount += blocking.length;
   if (report.issues.length === 0) {
-    console.log(`${report.label}: ready`);
+    const statusLabel = PUBLIC_RELEASE_STATUSES.has(report.releaseStatus)
+      ? 'public ready'
+      : `asset contract valid (${report.releaseStatus})`;
+    console.log(`${report.label}: ${statusLabel}`);
     continue;
   }
-  console.log(`${report.label}: ${report.ok ? 'ready with warnings' : 'not ready'}`);
+  const issueLabel = report.ok
+    ? `asset contract valid with warnings (${report.releaseStatus})`
+    : `not ready (${report.releaseStatus})`;
+  console.log(`${report.label}: ${issueLabel}`);
   for (const issue of report.issues) {
     console.log(`  ${issue.severity.toUpperCase()} [${issue.code}] ${issue.path}: ${issue.message}`);
   }

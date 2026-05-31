@@ -9,6 +9,7 @@ import {
   buildSelectedGamePresentation,
   type BuildSelectedGamePresentationInput,
 } from '@/ui/selectedGame/buildSelectedGamePresentation';
+import { GameModeStatus } from '@/constants/game-mode-status';
 
 export const SelectedGameReadinessSeveritySchema = schema.enum(['error', 'warning']);
 
@@ -37,6 +38,10 @@ export interface SelectedGameReadinessOptions {
 
 const PROVENANCE_PATTERN = /\b(provenance|scraper|audit)\b|https?:\/\//i;
 const REQUIRED_VALIDATION_PURPOSES = ['setup', 'flow', 'scoring'] as const;
+const PUBLIC_RELEASE_STATUSES = new Set<GameModeStatus>([
+  GameModeStatus.Available,
+  GameModeStatus.ComingSoon,
+]);
 type RequiredValidationPurpose = typeof REQUIRED_VALIDATION_PURPOSES[number];
 
 interface ValidationFixtureContractInput {
@@ -136,6 +141,7 @@ export function validateSelectedGameBundleReadiness(
       actions,
     }));
   }
+  issues.push(...validateReleaseReviewContract(gameMode, gameInfo));
 
   const linkedKeys = {
     ...asRecord(asRecord(gameInfo.mechanicsContract).linkedAssetKeys),
@@ -378,6 +384,31 @@ function requireNumber(
     issues.push(issue('error', 'validation-contract-missing-number', path, `${label} must be a finite number.`));
   }
   return numberValue;
+}
+
+function validateReleaseReviewContract(
+  gameMode: Record<string, unknown>,
+  gameInfo: Record<string, unknown>,
+): SelectedGameReadinessIssue[] {
+  const releaseStatus = asText(gameMode.releaseStatus);
+  if (!PUBLIC_RELEASE_STATUSES.has(releaseStatus as GameModeStatus)) {
+    return [];
+  }
+
+  const migrationReview = asRecord(asRecord(gameInfo.editorOnly).migrationReview);
+  const reviewStatus = asText(migrationReview.status);
+  if (!reviewStatus || reviewStatus === 'verified') {
+    return [];
+  }
+
+  return [
+    issue(
+      'error',
+      'release-review-not-verified',
+      'gameInfo.editorOnly.migrationReview.status',
+      `Public migrated game cannot be ${releaseStatus} while migrationReview.status is ${reviewStatus}.`,
+    ),
+  ];
 }
 
 function assertSameNumber(
