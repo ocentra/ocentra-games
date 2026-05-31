@@ -1,0 +1,72 @@
+{
+  system: {
+    guid: 'f762c61e-f312-4564-9302-9f74260b760d',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/pepper/pepperStateEventModel.asset',
+    gameId: 'pepper',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pepper',
+    familyVariant: 'Bid Euchre',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'bid',
+        'play',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'play_card',
+        'pass',
+        'bid',
+        'lead',
+      ],
+    },
+    examples: [],
+  },
+}

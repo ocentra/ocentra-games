@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: 'e6ac2adf-2e45-429f-9ca3-ab3d0883e4c4',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/unteransetzen/unteransetzenPhaseFlowModel.asset',
+    gameId: 'unteransetzen',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'unteransetzen',
+    familyVariant: 'Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal',
+        label: 'Deal Cards',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: "Dealer deals all cards one at a time clockwise to each player starting with player to dealer's left.",
+      },
+      {
+        id: 'play_round',
+        label: 'Play Round',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+          'pass',
+        ],
+        nextPhase: 'play_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_hand_empty == true',
+            nextPhase: null,
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Players play cards to the layout or pass. First to empty hand wins.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2-6 players use the table arrangement described for Unteransetzen.',
+        deck: 'German-suited playing cards',
+        equipment: 'German-suited playing cards, score area, and enough table space for play.',
+        dealing: 'Prepare German-suited playing cards and deal or lay out cards according to the documented Unteransetzen rules before play begins.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'setup_round',
+      'deal',
+      'play_round',
+    ],
+    examples: [],
+  },
+}

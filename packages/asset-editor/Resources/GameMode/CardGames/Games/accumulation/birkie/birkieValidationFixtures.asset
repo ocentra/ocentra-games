@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '070d82a8-7c5e-4d2f-aa42-d10fb3250ae0',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/accumulation/birkie/birkieValidationFixtures.asset',
+    gameId: 'birkie',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'birkie',
+    familyVariant: 'War / Accumulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'birkie.core-runtime-contracts',
+        title: 'Birkie Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'birkie.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 6,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Birkie must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'birkie.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'birkie.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Birkie must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'birkie.setup.initial-deal',
+              'birkie.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'birkie.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Capture the play pile or outlast the opponent according to the battle-style penalty-card sequence.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'The winner captures cards or survives after the opponent is exhausted.',
+            linkedRuleIds: [
+              'birkie.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'birkie.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

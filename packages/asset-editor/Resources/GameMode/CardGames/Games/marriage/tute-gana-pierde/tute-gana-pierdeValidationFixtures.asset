@@ -1,0 +1,127 @@
+{
+  system: {
+    guid: 'b3b88ce6-9ee2-42c9-bb08-ed9a04407913',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/tute-gana-pierde/tute-gana-pierdeValidationFixtures.asset',
+    gameId: 'tute-gana-pierde',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tute-gana-pierde',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tute-gana-pierde.core-runtime-contracts',
+        title: 'Tute gana-pierde Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tute-gana-pierde.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 50,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tute gana-pierde must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tute-gana-pierde.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tute-gana-pierde.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Tute gana-pierde must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'tute-gana-pierde.setup.initial-deal',
+              'tute-gana-pierde.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'tute-gana-pierde.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '101',
+            scoringDirection: 'high_wins',
+            targetScore: 101,
+            cardValues: {
+              '2': '0',
+              '3': '10',
+              '4': '0',
+              '5': '0',
+              '6': '0',
+              '7': '0',
+              Ace: '11',
+              King: '4',
+              Horse: '3',
+              Jack: '2',
+              last_trick: '10',
+            },
+            explanation: 'Points from cards in tricks, last trick 10, singing 40 or 20. Reach 101+ to win; else most points loses.',
+            linkedRuleIds: [
+              'tute-gana-pierde.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tute-gana-pierde.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

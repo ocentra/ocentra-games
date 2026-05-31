@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '9d0aa8fa-a681-4482-9379-c4a67a7574fa',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/mexican-train/mexican-trainValidationFixtures.asset',
+    gameId: 'mexican-train',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mexican-train',
+    familyVariant: 'Connecting / Train',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mexican-train.core-runtime-contracts',
+        title: 'Mexican Train Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mexican-train.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 96,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Mexican Train must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mexican-train.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mexican-train.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+            ],
+            explanation: 'Mexican Train must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'mexican-train.setup.initial-deal',
+              'mexican-train.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+              'draw',
+            ],
+          },
+          {
+            id: 'mexican-train.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: "Winner scores total pips in opponents' hands. If blocked, lowest pip count scores the difference from each opponent.",
+            linkedRuleIds: [
+              'mexican-train.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mexican-train.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

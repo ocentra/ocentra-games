@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '86c73574-4e30-476e-a4fb-1bc39f622ee1',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/accumulation/tausendeins/tausendeinsValidationFixtures.asset',
+    gameId: 'tausendeins',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tausendeins',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tausendeins.core-runtime-contracts',
+        title: 'Tausendeins Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tausendeins.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 10,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tausendeins must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tausendeins.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tausendeins.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Tausendeins must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'tausendeins.setup.initial-deal',
+              'tausendeins.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'tausendeins.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Be the first player to achieve the winning condition through strategic play of cards.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '9': '0',
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+            linkedRuleIds: [
+              'tausendeins.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tausendeins.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

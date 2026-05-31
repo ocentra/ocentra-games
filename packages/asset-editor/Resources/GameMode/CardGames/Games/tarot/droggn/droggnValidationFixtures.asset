@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '696ece55-28b2-42a1-b116-013ffc76a4e8',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/droggn/droggnValidationFixtures.asset',
+    gameId: 'droggn',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'droggn',
+    familyVariant: 'Tarot',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'droggn.core-runtime-contracts',
+        title: 'Droggn Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'droggn.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 21,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 84,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Droggn must start by giving each active player 21 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'droggn.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'droggn.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'declare',
+              'play_card',
+              'bid',
+              'weiter',
+            ],
+            explanation: 'Droggn must run setup_round first, then enter bidding with the processed legal actions.',
+            linkedRuleIds: [
+              'droggn.setup.initial-deal',
+              'droggn.flow.bidding',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'bidding',
+            firstPlayableLegalActions: [
+              'bid',
+              'weiter',
+            ],
+          },
+          {
+            id: 'droggn.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Declarer wins the contract by taking at least 37 card points (half of 74) in tricks.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Honors (Kings, SkÃ¼s, 21, 1) = 5. Queens = 4. Cavaliers = 3. Jacks = 2. All others = 1.',
+            linkedRuleIds: [
+              'droggn.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'droggn.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 21,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

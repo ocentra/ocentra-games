@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '1fb5bdb6-1fa6-4b88-9a26-d93f6657886a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/commercial/ani-mayhem/ani-mayhemValidationFixtures.asset',
+    gameId: 'ani-mayhem',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ani-mayhem',
+    familyVariant: '2-Player / Card Battle',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ani-mayhem.core-runtime-contracts',
+        title: 'Ani-Mayhem Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ani-mayhem.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 10,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Ani-Mayhem must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ani-mayhem.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ani-mayhem.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Ani-Mayhem must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'ani-mayhem.setup.initial-deal',
+              'ani-mayhem.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'ani-mayhem.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win through the games mission, battle, or card-objective system.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Victory follows the games custom objective and battle rules.',
+            linkedRuleIds: [
+              'ani-mayhem.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ani-mayhem.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

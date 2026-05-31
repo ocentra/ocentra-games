@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: '638cce69-8450-4eeb-9382-b220b78fe6cf',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/stud/london-lowball/london-lowballValidationFixtures.asset',
+    gameId: 'london-lowball',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'london-lowball',
+    familyVariant: 'Lowball Stud',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'london-lowball.core-runtime-contracts',
+        title: 'London Lowball Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'london-lowball.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'London Lowball must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'london-lowball.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'london-lowball.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'deal',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'bring_in',
+              'reveal',
+            ],
+            explanation: 'London Lowball must run setup_round first, then enter ante with the processed legal actions.',
+            linkedRuleIds: [
+              'london-lowball.setup.initial-deal',
+              'london-lowball.flow.ante',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
+            ],
+          },
+          {
+            id: 'london-lowball.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Lowest qualifying 5-card hand wins the pot.',
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {
+              ace: '1',
+            },
+            explanation: 'Ace-to-five lowball hand ranking. The wheel (A-2-3-4-5) is the nuts.',
+            linkedRuleIds: [
+              'london-lowball.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'london-lowball.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

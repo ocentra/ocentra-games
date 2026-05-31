@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '8d870e59-7cdb-4b48-98b6-ed4d7920ef9a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/commercial/sleeping-queens/sleeping-queensValidationFixtures.asset',
+    gameId: 'sleeping-queens',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sleeping-queens',
+    familyVariant: "Children's",
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sleeping-queens.core-runtime-contracts',
+        title: 'Sleeping Queens Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sleeping-queens.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 25,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sleeping Queens must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sleeping-queens.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sleeping-queens.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'pass',
+            ],
+            explanation: 'Sleeping Queens must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'sleeping-queens.setup.initial-deal',
+              'sleeping-queens.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'sleeping-queens.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'high_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '1',
+              K: '13',
+              Q: '12',
+              J: '11',
+            },
+            explanation: 'Be the first player to shed all cards from your hand.',
+            linkedRuleIds: [
+              'sleeping-queens.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sleeping-queens.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

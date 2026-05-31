@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '97f43b0c-92b0-4d01-9c2f-7ddd7d15526a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/clag/clagValidationFixtures.asset',
+    gameId: 'clag',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'clag',
+    familyVariant: 'Exact Bidding / Special Deals',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'clag.core-runtime-contracts',
+        title: 'Clag Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'clag.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 7,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Clag must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'clag.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'clag.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'bid',
+              'update_score',
+            ],
+            explanation: 'Clag must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'clag.setup.initial-deal',
+              'clag.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'clag.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest score after 22 deals.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Cumulative scoring over 22 deals. 1 point per trick + 10 for exact bid (normal deals). Special deals have modified scoring.',
+            linkedRuleIds: [
+              'clag.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'clag.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

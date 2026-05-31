@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'a4566dab-d374-4b99-8288-4d0653df4fab',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/podrida/podridaValidationFixtures.asset',
+    gameId: 'podrida',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'podrida',
+    familyVariant: 'Exact Bidding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'podrida.core-runtime-contracts',
+        title: 'Podrida Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'podrida.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 7,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Podrida must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'podrida.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'podrida.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'bid',
+              'lead',
+            ],
+            explanation: 'Podrida must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'podrida.setup.initial-deal',
+              'podrida.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'podrida.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest score after all deals.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Exact bid = score. Over/under = penalty.',
+            linkedRuleIds: [
+              'podrida.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'podrida.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

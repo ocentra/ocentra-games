@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '0fa3e416-93b3-42e5-8c6e-b3a1705c242f',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/gambling/matka-gambling/matka-gamblingValidationFixtures.asset',
+    gameId: 'matka-gambling',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'matka-gambling',
+    familyVariant: 'Gambling',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'matka-gambling.core-runtime-contracts',
+        title: 'Matka Gambling Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'matka-gambling.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 20,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 100,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Matka Gambling must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'matka-gambling.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'matka-gambling.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Matka Gambling must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'matka-gambling.setup.initial-deal',
+              'matka-gambling.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'matka-gambling.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'high_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '11',
+              K: '10',
+              Q: '10',
+              J: '10',
+            },
+            explanation: 'Bets are paid or lost against the bank according to the exposed-card result.',
+            linkedRuleIds: [
+              'matka-gambling.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'matka-gambling.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 20,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

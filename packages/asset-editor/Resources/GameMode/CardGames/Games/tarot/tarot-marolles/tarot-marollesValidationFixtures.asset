@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '4aadb217-e0a8-48c8-adff-6539449a0abe',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/tarot-marolles/tarot-marollesValidationFixtures.asset',
+    gameId: 'tarot-marolles',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tarot-marolles',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tarot-marolles.core-runtime-contracts',
+        title: 'Tarot of the Abbé de Marolles 1637 Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tarot-marolles.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 21,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 63,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tarot of the Abbé de Marolles 1637 must start by giving each active player 21 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tarot-marolles.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tarot-marolles.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'declare',
+              'play_card',
+            ],
+            explanation: 'Tarot of the Abbé de Marolles 1637 must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'tarot-marolles.setup.initial-deal',
+              'tarot-marolles.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'tarot-marolles.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'After the hand, the player(s) with above-average card points (25 or more) win; the player(s) with below average (24 or less) pay. Two losers each pay the single winner per 5-point band below 25; two winners each collect from the single loser per 5-point band above 25. Ultimo (last trick with King or Trump I) pays 6 marques from each opponent.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              'Tarots (XXI,I,Fool,Kings)': '5',
+              Queens: '4',
+              Cavaliers: '3',
+              Jacks: '2',
+            },
+            explanation: 'Marques are won or paid for: declarations (Tarots, Kings+Fool, Triomphes, Imperials, Brizigole, Tous les trois), playing or capturing Tarots in tricks, Ultimo (last trick with King or Trump I), and card points (Tarots 5, Queens 4, Cavaliers 3, Jacks 2; pack total 74). Below 25 points = loser pays winner(s); above 25 = winner collects.',
+            linkedRuleIds: [
+              'tarot-marolles.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tarot-marolles.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 21,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

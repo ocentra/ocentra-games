@@ -13,8 +13,8 @@ function makeAsset(path: string, guid: string): ResourceEntry {
 describe('buildTreeFromPaths', () => {
   it('keeps the full tree shape by default', () => {
     const tree = buildTreeFromPaths([
-      makeAsset('Resources/GameMode/CardGames/Games/Claim/claim.asset', 'claim-guid'),
-      makeAsset('Resources/GameMode/CardGames/Games/briscola/briscola.asset', 'briscola-guid'),
+      makeAsset('Resources/GameMode/CardGames/Games/invented/claim/claim.asset', 'claim-guid'),
+      makeAsset('Resources/GameMode/CardGames/Games/trick-taking/briscola/briscola.asset', 'briscola-guid'),
     ]);
 
     expect(tree.rootNode.name).toBe('Resources');
@@ -24,8 +24,8 @@ describe('buildTreeFromPaths', () => {
 
   it('can build a Games-only subtree rooted at the Games folder', () => {
     const tree = buildTreeFromPaths([
-      makeAsset('Resources/GameMode/CardGames/Games/Claim/claim.asset', 'claim-guid'),
-      makeAsset('Resources/GameMode/CardGames/Games/briscola/briscola.asset', 'briscola-guid'),
+      makeAsset('Resources/GameMode/CardGames/Games/invented/claim/claim.asset', 'claim-guid'),
+      makeAsset('Resources/GameMode/CardGames/Games/trick-taking/briscola/briscola.asset', 'briscola-guid'),
       makeAsset('Resources/Pages/Home/ComingSoon.asset', 'coming-soon-guid'),
     ], {
       rootPath: 'GameMode/CardGames/Games',
@@ -35,8 +35,8 @@ describe('buildTreeFromPaths', () => {
     expect(tree.rootNode.name).toBe('Games');
     expect(tree.rootNode.path).toBe('Resources/GameMode/CardGames/Games');
     expect(tree.rootNode.children).toEqual([
-      'folder:GameMode/CardGames/Games/Claim',
-      'folder:GameMode/CardGames/Games/briscola',
+      'folder:GameMode/CardGames/Games/invented',
+      'folder:GameMode/CardGames/Games/trick-taking',
     ]);
     expect(tree.allNodes.has('virtual:GameRegistry')).toBe(false);
     expect(tree.allNodes.has('virtual:DeckManager')).toBe(false);

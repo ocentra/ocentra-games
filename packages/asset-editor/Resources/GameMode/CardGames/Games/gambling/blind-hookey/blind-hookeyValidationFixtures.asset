@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '0966d449-81a5-45a6-91c0-1310fb011fb3',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/gambling/blind-hookey/blind-hookeyValidationFixtures.asset',
+    gameId: 'blind-hookey',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'blind-hookey',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'blind-hookey.core-runtime-contracts',
+        title: 'Blind Hookey Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'blind-hookey.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 12,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 60,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Blind Hookey must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'blind-hookey.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'blind-hookey.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Blind Hookey must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'blind-hookey.setup.initial-deal',
+              'blind-hookey.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'blind-hookey.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win the chance outcome associated with the chosen card packet.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Stakes are paid or collected by the banker after the reveal.',
+            linkedRuleIds: [
+              'blind-hookey.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'blind-hookey.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 12,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

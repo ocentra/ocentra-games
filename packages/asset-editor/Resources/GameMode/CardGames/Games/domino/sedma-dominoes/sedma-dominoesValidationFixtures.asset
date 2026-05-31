@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '1c8922f4-15ac-452d-a62c-f3d6c01b9f21',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/sedma-dominoes/sedma-dominoesValidationFixtures.asset',
+    gameId: 'sedma-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sedma-dominoes',
+    familyVariant: 'Connecting / Train',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sedma-dominoes.core-runtime-contracts',
+        title: 'Sedma Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sedma-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sedma Dominoes must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sedma-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sedma-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+            ],
+            explanation: 'Sedma Dominoes must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'sedma-dominoes.setup.initial-deal',
+              'sedma-dominoes.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+              'pass',
+            ],
+          },
+          {
+            id: 'sedma-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '60',
+            scoringDirection: 'high_wins',
+            targetScore: 60,
+            cardValues: {},
+            explanation: 'When you set a double you score one point for it plus one for each double already in the train lower than yours. Double order: 0-0 through 6-6 then 0-0 again.',
+            linkedRuleIds: [
+              'sedma-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sedma-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,124 @@
+{
+  system: {
+    guid: 'ff866033-1c86-48f8-9814-a2f91ea57c51',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/sedma/ristikontra/ristikontraValidationFixtures.asset',
+    gameId: 'ristikontra',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ristikontra',
+    familyVariant: 'Sedma / Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ristikontra.core-runtime-contracts',
+        title: 'Ristikontra Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ristikontra.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Ristikontra must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ristikontra.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ristikontra.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'lead',
+              'play_dark',
+            ],
+            explanation: 'Ristikontra must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'ristikontra.setup.initial-deal',
+              'ristikontra.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'ristikontra.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '7',
+            scoringDirection: 'high_wins',
+            targetScore: 7,
+            cardValues: {
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: '61+ = 1 game point. 120 = 2. Tie = abeyance.',
+            linkedRuleIds: [
+              'ristikontra.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ristikontra.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

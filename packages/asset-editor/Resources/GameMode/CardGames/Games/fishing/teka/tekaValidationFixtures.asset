@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '103d0223-70dd-4c0f-a0e1-bca24076ed50',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/teka/tekaValidationFixtures.asset',
+    gameId: 'teka',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'teka',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'teka.core-runtime-contracts',
+        title: 'Teka Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'teka.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Teka must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'teka.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'teka.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Teka must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'teka.setup.initial-deal',
+              'teka.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'teka.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First partnership to reach 104 or more cumulative points wins the game.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Won bid scores as many points as tricks bid; lost bid scores twice that many to the opponents. Double 13 scores 26 if won, 52 to opponents if lost. Failed bid of 8 by fourth player after three passes scores only 8 to opponents.',
+            linkedRuleIds: [
+              'teka.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'teka.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

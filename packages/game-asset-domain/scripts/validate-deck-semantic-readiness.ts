@@ -6,7 +6,6 @@ import { DECK_TYPE_VALUES } from '@ocentra/game-domain/deck/deckTypes';
 import { ALLOWED_TRIPLES } from '@ocentra/game-domain/deck/deckCompatibility';
 import {
   COMMERCIAL_DECK_TRIPLES,
-  COMMERCIAL_DECK_TYPE_SET,
 } from '@ocentra/game-domain/deck/commercialDeckTypes';
 import { getCommercialAssetViolation } from '../src/schemas/asset/commercial-asset-policy';
 import { computeExpectedCardIdentities } from '../src/schemas/asset/deck-cross-validators';
@@ -18,6 +17,7 @@ const RESOURCES_DIR = path.resolve(__dirname, '../../asset-editor/Resources');
 const DECKS_DIR = path.join(RESOURCES_DIR, 'GameMode/CardGames/Decks');
 const CARD_RANKING_DIR = path.join(RESOURCES_DIR, 'GameMode/CardGames/CardRanking');
 const CARDS_DIR = path.join(RESOURCES_DIR, 'GameMode/CardGames/Cards');
+const TILES_DIR = path.join(RESOURCES_DIR, 'GameMode/CardGames/Tiles');
 
 type AssetJson = {
   system?: {
@@ -62,7 +62,10 @@ type RankingJson = AssetJson & {
 type CardJson = AssetJson & {
   data?: {
     cardId?: string;
+    pieceId?: string;
+    rankingAsset?: AssetRef;
     cardRankingAsset?: AssetRef;
+    tileId?: string;
   };
 };
 
@@ -295,6 +298,14 @@ function resolveCard(
 }
 
 function getCardIdentityId(card: CardJson, ref: AssetRef): string {
+  const tileId = card.data?.tileId;
+  if (typeof tileId === 'string' && tileId.length > 0) {
+    return tileId;
+  }
+  const pieceId = card.data?.pieceId;
+  if (typeof pieceId === 'string' && pieceId.length > 0) {
+    return pieceId;
+  }
   const cardId = card.data?.cardId;
   if (typeof cardId === 'string' && cardId.length > 0) {
     return cardId;
@@ -314,11 +325,11 @@ function getCardIdentityId(card: CardJson, ref: AssetRef): string {
 
 function expandDeckCardRefs(
   templateRefs: AssetRef[],
-  compositionRefs: Array<{ cardTemplate?: AssetRef; copies?: number }> | undefined,
+  compositionRefs: Array<{ cardTemplate?: AssetRef; pieceTemplate?: AssetRef; copies?: number }> | undefined,
 ): AssetRef[] {
   if (Array.isArray(compositionRefs) && compositionRefs.length > 0) {
     return compositionRefs.flatMap((entry) => {
-      const cardTemplate = entry.cardTemplate;
+      const cardTemplate = entry.cardTemplate ?? entry.pieceTemplate;
       if (!cardTemplate) {
         return [];
       }
@@ -329,13 +340,74 @@ function expandDeckCardRefs(
   return templateRefs;
 }
 
+function readLegacyCardId(value: unknown): string | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const cardId = (value as { cardId?: unknown }).cardId;
+  return typeof cardId === 'string' && cardId.trim().length > 0 ? cardId : null;
+}
+
+function getLegacyCardRankingIdentities(data: Record<string, unknown>): string[] | null {
+  const ids: string[] = [];
+  if (Array.isArray(data.cards)) {
+    for (const card of data.cards) {
+      const cardId = readLegacyCardId(card);
+      if (cardId) {
+        ids.push(cardId);
+      }
+    }
+    return ids;
+  }
+  if (Array.isArray(data.months)) {
+    for (const month of data.months) {
+      const slots = (month as { slots?: unknown }).slots;
+      if (!Array.isArray(slots)) {
+        return null;
+      }
+      for (const slot of slots) {
+        const cardId = readLegacyCardId(slot);
+        if (cardId) {
+          ids.push(cardId);
+        }
+      }
+    }
+    return ids;
+  }
+  return null;
+}
+
+function getRankingExpectations(ranking: RankingJson): { ids: string[] | null; count: number | null } {
+  const data = ranking.data ?? {};
+  if (typeof data.deckType === 'string') {
+    const ids = computeExpectedCardIdentities(
+      data as Parameters<typeof computeExpectedCardIdentities>[0],
+    );
+    return { ids, count: ids.length };
+  }
+  const legacyCardIds = getLegacyCardRankingIdentities(data);
+  if (legacyCardIds) {
+    return { ids: legacyCardIds, count: legacyCardIds.length };
+  }
+  const expectedTileCount = (data as { expectedTileCount?: unknown }).expectedTileCount;
+  if (typeof expectedTileCount === 'number' && Number.isInteger(expectedTileCount)) {
+    return { ids: null, count: expectedTileCount };
+  }
+  const expectedCardCount = data.expectedCardCount;
+  if (typeof expectedCardCount === 'number' && Number.isInteger(expectedCardCount)) {
+    return { ids: null, count: expectedCardCount };
+  }
+  return { ids: null, count: null };
+}
+
 function main(): void {
   const expectedDeckNames: Set<string> = new Set(
-    (DECK_TYPE_VALUES as readonly string[]).filter((deckType) => !COMMERCIAL_DECK_TYPE_SET.has(deckType)),
+    DECK_TYPE_VALUES as readonly string[],
   );
   const deckFiles = fs.readdirSync(DECKS_DIR).filter((file) => file.endsWith('.asset')).sort();
   const rankingFiles = walkAssetFiles(CARD_RANKING_DIR);
-  const cardFiles = walkAssetFiles(CARDS_DIR);
+  const cardFiles = [...walkAssetFiles(CARDS_DIR), ...walkAssetFiles(TILES_DIR)];
+  const issues: DeckIssue[] = [];
 
   const rankingsByPath = new Map<string, RankingJson>();
   const rankingsByGuid = new Map<string, RankingJson>();
@@ -403,7 +475,6 @@ function main(): void {
     }
   }
 
-  const issues: DeckIssue[] = [];
   const representedTriples = new Set<string>();
   let readyDecks = 0;
 
@@ -440,6 +511,7 @@ function main(): void {
       ? (data.supportedTriples as SupportedTriple[])
       : [];
     const rankingRef =
+      (data.rankingAsset as AssetRef | undefined) ??
       (data.cardRankingAsset as AssetRef | undefined) ??
       (data.dominoRankingAsset as AssetRef | undefined) ??
       (data.hanafudaRankingAsset as AssetRef | undefined) ??
@@ -495,23 +567,33 @@ function main(): void {
           deckReady = false;
         }
 
-        const expectedIdentities = computeExpectedCardIdentities(
-          (ranking.data ?? ranking) as Parameters<typeof computeExpectedCardIdentities>[0],
-        );
+        const rankingExpectations = getRankingExpectations(ranking);
+        const expectedIdentities = rankingExpectations.ids;
+        const expectedCount = rankingExpectations.count;
         const templateRefs = expandDeckCardRefs(
           Array.isArray(data.cardTemplates) ? (data.cardTemplates as AssetRef[]) : [],
           Array.isArray(data.cardComposition)
             ? (data.cardComposition as Array<{ cardTemplate?: AssetRef; copies?: number }>)
+            : Array.isArray(data.composition)
+              ? (data.composition as Array<{ pieceTemplate?: AssetRef; copies?: number }>)
             : undefined,
         );
         const canonicalCount = getExpectedGenericDeckCardCount(deckName);
 
-        if (templateRefs.length !== expectedIdentities.length) {
+        if (expectedCount == null) {
+          issues.push({
+            deck: deckName,
+            file,
+            issue: 'unsupported-ranking-semantics',
+            detail: `Deck ranking ${ranking.system?.displayName ?? 'unknown'} has no computable expected piece count`,
+          });
+          deckReady = false;
+        } else if (templateRefs.length !== expectedCount) {
           issues.push({
             deck: deckName,
             file,
             issue: 'deck-template-count-mismatch',
-            detail: `Deck has ${templateRefs.length} cardTemplates but ranking expects ${expectedIdentities.length} physical cards`,
+            detail: `Deck has ${templateRefs.length} composition pieces but ranking expects ${expectedCount} physical pieces`,
           });
           deckReady = false;
         }
@@ -524,12 +606,12 @@ function main(): void {
           });
           deckReady = false;
         }
-        if (canonicalCount != null && ranking.data?.expectedCardCount !== canonicalCount) {
+        if (canonicalCount != null && expectedCount !== canonicalCount) {
           issues.push({
             deck: deckName,
             file,
             issue: 'canonical-ranking-size-mismatch',
-            detail: `CardRanking for ${deckName} must declare ${canonicalCount} physical cards, got ${ranking.data?.expectedCardCount ?? 'unknown'}`,
+            detail: `Ranking for ${deckName} must declare ${canonicalCount} physical pieces, got ${expectedCount ?? 'unknown'}`,
           });
           deckReady = false;
         }
@@ -560,7 +642,7 @@ function main(): void {
             continue;
           }
 
-          const cardRankingRef = card.data?.cardRankingAsset;
+          const cardRankingRef = card.data?.rankingAsset ?? card.data?.cardRankingAsset;
           const rankingGuid = ranking.system?.guid;
           const rankingPath = rankingRef?.path ? normalizeResourcePath(String(rankingRef.path)) : undefined;
           const cardRankingGuid = cardRankingRef?.guid;
@@ -592,6 +674,7 @@ function main(): void {
             rankingFamily.length > 0 && cardRankingFamily.length > 0 && rankingFamily === cardRankingFamily;
 
           if (
+            cardRankingRef &&
             rankingFamily !== 'French' &&
             !rankingMatches &&
             !germanShared32PoolOk &&
@@ -613,15 +696,25 @@ function main(): void {
           actualIds.push(actualCardId);
         }
 
-        const expectedCounts = multiset(expectedIdentities);
-        const actualCounts = multiset(actualIds);
-        const diffs = formatCountDiff(expectedCounts, actualCounts);
-        if (diffs.length > 0) {
+        if (expectedIdentities) {
+          const expectedCounts = multiset(expectedIdentities);
+          const actualCounts = multiset(actualIds);
+          const diffs = formatCountDiff(expectedCounts, actualCounts);
+          if (diffs.length > 0) {
+            issues.push({
+              deck: deckName,
+              file,
+              issue: 'deck-ranking-identity-mismatch',
+              detail: diffs.slice(0, 10).join('; '),
+            });
+            deckReady = false;
+          }
+        } else if (expectedCount != null && actualIds.length !== expectedCount) {
           issues.push({
             deck: deckName,
             file,
             issue: 'deck-ranking-identity-mismatch',
-            detail: diffs.slice(0, 10).join('; '),
+            detail: `Deck has ${actualIds.length} resolved pieces but ranking expects ${expectedCount}`,
           });
           deckReady = false;
         }

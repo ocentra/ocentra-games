@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '2945e0c0-ec69-44ca-adb0-5cad7fa8eef7',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/rufmariasch/rufmariaschValidationFixtures.asset',
+    gameId: 'rufmariasch',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'rufmariasch',
+    familyVariant: 'Mariage / Call',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'rufmariasch.core-runtime-contracts',
+        title: 'Rufmariasch Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'rufmariasch.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Rufmariasch must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'rufmariasch.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'rufmariasch.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'pass',
+              'bid',
+              'call_card',
+              'lead',
+            ],
+            explanation: 'Rufmariasch must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'rufmariasch.setup.initial-deal',
+              'rufmariasch.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'rufmariasch.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Point-trick. Contract success/fail.',
+            linkedRuleIds: [
+              'rufmariasch.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'rufmariasch.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

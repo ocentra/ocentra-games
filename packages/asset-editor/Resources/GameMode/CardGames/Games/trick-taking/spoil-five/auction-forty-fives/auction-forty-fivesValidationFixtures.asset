@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '0c0ff95f-0696-4122-8703-e04005a8dc95',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/spoil-five/auction-forty-fives/auction-forty-fivesValidationFixtures.asset',
+    gameId: 'auction-forty-fives',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'auction-forty-fives',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'auction-forty-fives.core-runtime-contracts',
+        title: 'Auction Forty-Fives Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'auction-forty-fives.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Auction Forty-Fives must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'auction-forty-fives.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'auction-forty-fives.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+              'deal_five_kitty',
+              'tally_45s',
+            ],
+            explanation: 'Auction Forty-Fives must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'auction-forty-fives.setup.initial-deal',
+              'auction-forty-fives.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_five_kitty',
+            ],
+          },
+          {
+            id: 'auction-forty-fives.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '120',
+            scoringDirection: 'high_wins',
+            targetScore: 120,
+            cardValues: {},
+            explanation: '5 per trick; +5 for highest trump in trick. First to 120 wins.',
+            linkedRuleIds: [
+              'auction-forty-fives.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'auction-forty-fives.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

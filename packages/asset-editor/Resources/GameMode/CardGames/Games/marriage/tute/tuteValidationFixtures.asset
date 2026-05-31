@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: '848cfaf9-6098-462b-af14-d25c3d57e52b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/tute/tuteValidationFixtures.asset',
+    gameId: 'tute',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tute',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tute.core-runtime-contracts',
+        title: 'Tute Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tute.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tute must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tute.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tute.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Tute must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'tute.setup.initial-deal',
+              'tute.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'tute.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Score 101+ points. Or declare Tute (4 Kings or 4 Knights).',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '2': '0',
+              '3': '10',
+              '4': '0',
+              '5': '0',
+              '6': '0',
+              '7': '0',
+              Ace: '11',
+              King: '4',
+              Knight: '3',
+              Jack: '2',
+            },
+            explanation: 'A=11, 3=10, K=4, Kt=3, J=2. Cantes: 40/20. Last trick=10.',
+            linkedRuleIds: [
+              'tute.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tute.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

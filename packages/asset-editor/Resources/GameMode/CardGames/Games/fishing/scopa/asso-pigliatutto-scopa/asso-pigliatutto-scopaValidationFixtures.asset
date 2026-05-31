@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '967168ba-7a1e-4b1f-9a57-ba5c9e28a910',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/scopa/asso-pigliatutto-scopa/asso-pigliatutto-scopaValidationFixtures.asset',
+    gameId: 'asso-pigliatutto-scopa',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'asso-pigliatutto-scopa',
+    familyVariant: 'Scopa Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'asso-pigliatutto-scopa.core-runtime-contracts',
+        title: 'Asso Pigliatutto Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'asso-pigliatutto-scopa.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Asso Pigliatutto must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'asso-pigliatutto-scopa.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'asso-pigliatutto-scopa.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal_3_cards',
+              'play_card_capture',
+              'play_card_discard',
+              'refill_hands_or_end',
+              'score_and_end_round',
+            ],
+            explanation: 'Asso Pigliatutto must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'asso-pigliatutto-scopa.setup.initial-deal',
+              'asso-pigliatutto-scopa.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_3_cards',
+            ],
+          },
+          {
+            id: 'asso-pigliatutto-scopa.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '11',
+            scoringDirection: 'high_wins',
+            targetScore: 11,
+            cardValues: {},
+            explanation: 'Standard Scopa scoring.',
+            linkedRuleIds: [
+              'asso-pigliatutto-scopa.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'asso-pigliatutto-scopa.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'bc21cfad-12fc-4ba7-8f7a-7d52ba19c588',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/derda/derdaValidationFixtures.asset',
+    gameId: 'derda',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'derda',
+    familyVariant: 'Jass',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'derda.core-runtime-contracts',
+        title: 'Derda Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'derda.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Derda must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'derda.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'derda.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'award_pot',
+              'play_card',
+              'bid',
+            ],
+            explanation: 'Derda must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'derda.setup.initial-deal',
+              'derda.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'derda.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '500',
+            scoringDirection: 'high_wins',
+            targetScore: 500,
+            cardValues: {},
+            explanation: 'Score comes from captured trick cards and word bonuses across repeated deals.',
+            linkedRuleIds: [
+              'derda.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'derda.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

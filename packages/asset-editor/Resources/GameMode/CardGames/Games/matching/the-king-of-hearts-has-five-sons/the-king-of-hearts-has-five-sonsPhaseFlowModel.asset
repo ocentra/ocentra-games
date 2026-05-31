@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: 'd8d48adf-62b4-4c2e-b336-e7b6165da2c4',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/the-king-of-hearts-has-five-sons/the-king-of-hearts-has-five-sonsPhaseFlowModel.asset',
+    gameId: 'the-king-of-hearts-has-five-sons',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'the-king-of-hearts-has-five-sons',
+    familyVariant: 'Memory',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal',
+        label: 'Deal Cards',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: "Dealer deals all cards one at a time clockwise to each player starting with player to dealer's left.",
+      },
+      {
+        id: 'play_round',
+        label: 'Play Round',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+          'pass',
+        ],
+        nextPhase: 'play_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_hand_empty == true',
+            nextPhase: null,
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Players play cards to the layout or pass. First to empty hand wins.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 or more players use the table arrangement described for The King of Hearts Has Five Sons.',
+        deck: 'Standard playing cards',
+        equipment: 'Standard playing cards, score area, and enough table space for play.',
+        dealing: 'Prepare Standard playing cards and deal or lay out cards according to the documented The King of Hearts Has Five Sons rules before play begins.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'setup_round',
+      'deal',
+      'play_round',
+    ],
+    examples: [],
+  },
+}

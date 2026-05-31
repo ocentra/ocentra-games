@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '9c93d79d-2518-4705-931a-f3c9f9aada4b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/bai-choi/bai-choiValidationFixtures.asset',
+    gameId: 'bai-choi',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bai-choi',
+    familyVariant: 'Capture / Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bai-choi.core-runtime-contracts',
+        title: 'Bai Choi Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bai-choi.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 10,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 80,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bai Choi must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bai-choi.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bai-choi.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+              'deal_oya_8_8_8',
+            ],
+            explanation: 'Bai Choi must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'bai-choi.setup.initial-deal',
+              'bai-choi.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_oya_8_8_8',
+            ],
+          },
+          {
+            id: 'bai-choi.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+            linkedRuleIds: [
+              'bai-choi.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bai-choi.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 10,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

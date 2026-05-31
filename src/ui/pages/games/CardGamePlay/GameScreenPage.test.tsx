@@ -366,13 +366,13 @@ describe('GameScreenPage', () => {
   it('shows the local pilot readiness error for unsupported pilots', async () => {
     loadLocalPlayableGameMock.mockResolvedValue({
       bundle: null,
-      error: 'three-card-brag local pilot is not ready yet. Claim is the first supported local pilot.',
+      error: 'rook does not have a local pilot.',
     });
 
-    render(<GameScreenPage gameModeId="three-card-brag" />);
+    render(<GameScreenPage gameModeId="rook" />);
 
     expect(
-      await screen.findByText(/three-card-brag local pilot is not ready yet/i),
+      await screen.findByText(/rook does not have a local pilot/i),
     ).toBeTruthy();
   });
 

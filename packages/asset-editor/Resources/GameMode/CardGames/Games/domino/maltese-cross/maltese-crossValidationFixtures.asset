@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '3a0d1fa2-e89c-406d-ab52-2c86bce9b970',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/maltese-cross/maltese-crossValidationFixtures.asset',
+    gameId: 'maltese-cross',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'maltese-cross',
+    familyVariant: 'Domino / Adding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'maltese-cross.core-runtime-contracts',
+        title: 'Maltese Cross Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'maltese-cross.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Maltese Cross must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'maltese-cross.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'maltese-cross.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+            ],
+            explanation: 'Maltese Cross must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'maltese-cross.setup.initial-deal',
+              'maltese-cross.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+              'draw',
+            ],
+          },
+          {
+            id: 'maltese-cross.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '60',
+            scoringDirection: 'high_wins',
+            targetScore: 60,
+            cardValues: {},
+            explanation: "When one player dominoes, they score the total pips on tiles in opponents' hands. If the game blocks, the player with the lowest total wins and scores the sum of the others' pips minus their own. Game is played to 60 points (or more by agreement).",
+            linkedRuleIds: [
+              'maltese-cross.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'maltese-cross.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

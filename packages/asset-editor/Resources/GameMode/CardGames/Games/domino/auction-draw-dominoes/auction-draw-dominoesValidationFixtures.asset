@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '11a1cb16-b025-4e2a-a40e-6a0aa458dacb',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/auction-draw-dominoes/auction-draw-dominoesValidationFixtures.asset',
+    gameId: 'auction-draw-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'auction-draw-dominoes',
+    familyVariant: 'Line / Draw',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'auction-draw-dominoes.core-runtime-contracts',
+        title: 'Auction Draw Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'auction-draw-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Auction Draw Dominoes must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'auction-draw-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'auction-draw-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'setup_round',
+              'check',
+              'place_initial_chip',
+              'distribute_tiles',
+              'match_tile',
+              'draw_tile',
+              'bid_chips',
+              'assign_pool_to_winner',
+            ],
+            explanation: 'Auction Draw Dominoes must run setup_round first, then enter ante with the processed legal actions.',
+            linkedRuleIds: [
+              'auction-draw-dominoes.setup.initial-deal',
+              'auction-draw-dominoes.flow.ante',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'place_initial_chip',
+            ],
+          },
+          {
+            id: 'auction-draw-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Emptying your hand first or holding the lowest pips in a block.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Winner takes the entire pool accrued from the ante, the draw payments, and the auction bid.',
+            linkedRuleIds: [
+              'auction-draw-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'auction-draw-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

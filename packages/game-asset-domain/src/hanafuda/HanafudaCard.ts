@@ -26,6 +26,7 @@ export class HanafudaCard extends ScriptableObject {
       points: 0,
       cardId: '',
       imageHash: '',
+      imagePath: '',
     };
   }
 
@@ -56,4 +57,7 @@ export class HanafudaCard extends ScriptableObject {
   @required('Image Hash is required')
   @serializable({ label: 'Image Hash' })
   imageHash: ImageHash = '' as ImageHash;
+
+  @serializable({ label: 'Image Path' })
+  imagePath?: string;
 }

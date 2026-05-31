@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '4f94d14d-3199-4562-a0ec-79e5bacf0875',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/commercial/fight-klub/fight-klubValidationFixtures.asset',
+    gameId: 'fight-klub',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'fight-klub',
+    familyVariant: '2-Player / Card Battle',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'fight-klub.core-runtime-contracts',
+        title: 'Fight Klub Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'fight-klub.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 6,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Fight Klub must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'fight-klub.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'fight-klub.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Fight Klub must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'fight-klub.setup.initial-deal',
+              'fight-klub.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'fight-klub.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'The published duel or scenario victory condition determines the winner.',
+            linkedRuleIds: [
+              'fight-klub.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'fight-klub.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

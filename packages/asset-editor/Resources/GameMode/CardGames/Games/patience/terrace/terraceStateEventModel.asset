@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: '644f0d75-59a6-41f1-9165-00399e671fc5',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/terrace/terraceStateEventModel.asset',
+    gameId: 'terrace',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'terrace',
+    familyVariant: 'Two-Deck Patience',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'custom:reserve',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 11,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 104,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 104,
+        },
+        {
+          id: 'tableau',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 104,
+        },
+        {
+          id: 'foundation',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 104,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_up',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: 'face_up',
+        tableauCards: 'face_up',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'play',
+      ],
+      actions: [
+        'setup_round',
+        'play_card',
+        'draw',
+        'layout_terrace',
+      ],
+    },
+    examples: [],
+  },
+}

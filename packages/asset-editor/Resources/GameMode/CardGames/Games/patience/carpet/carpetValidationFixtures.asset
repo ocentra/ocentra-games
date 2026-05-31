@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '74df1ae3-d9cc-474b-8d0c-b8b9524a92a0',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/carpet/carpetValidationFixtures.asset',
+    gameId: 'carpet',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'carpet',
+    familyVariant: 'Solitaire',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'carpet.core-runtime-contracts',
+        title: 'Carpet Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'carpet.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 5,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Carpet must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'carpet.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'carpet.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Carpet must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'carpet.setup.initial-deal',
+              'carpet.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'carpet.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Move all cards onto the four foundations, building each up in suit from Ace to King.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win by moving all cards to foundations. Most games are winnable. Score based on efficiency (cards remaining in stock when won).',
+            linkedRuleIds: [
+              'carpet.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'carpet.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

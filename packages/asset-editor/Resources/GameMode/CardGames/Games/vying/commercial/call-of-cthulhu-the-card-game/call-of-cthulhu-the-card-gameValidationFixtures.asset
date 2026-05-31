@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '496fed44-b156-4a21-8696-2644975423b7',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/commercial/call-of-cthulhu-the-card-game/call-of-cthulhu-the-card-gameValidationFixtures.asset',
+    gameId: 'call-of-cthulhu-the-card-game',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'call-of-cthulhu-the-card-game',
+    familyVariant: '2-Player / Card Battle',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'call-of-cthulhu-the-card-game.core-runtime-contracts',
+        title: 'Call of Cthulhu The Card Game Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'call-of-cthulhu-the-card-game.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 6,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Call of Cthulhu The Card Game must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'call-of-cthulhu-the-card-game.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'call-of-cthulhu-the-card-game.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Call of Cthulhu The Card Game must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'call-of-cthulhu-the-card-game.setup.initial-deal',
+              'call-of-cthulhu-the-card-game.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'call-of-cthulhu-the-card-game.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '3',
+            scoringDirection: 'high_wins',
+            targetScore: 3,
+            cardValues: {},
+            explanation: 'The duel is won by claiming the required number of story cards.',
+            linkedRuleIds: [
+              'call-of-cthulhu-the-card-game.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'call-of-cthulhu-the-card-game.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

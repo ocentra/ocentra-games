@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '8f1ab003-5863-4863-96d1-02fb24489c0c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/dreierles/dreierlesValidationFixtures.asset',
+    gameId: 'dreierles',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'dreierles',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'dreierles.core-runtime-contracts',
+        title: 'Dreierles (Baden Tarock) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'dreierles.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 16,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 64,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Dreierles (Baden Tarock) must start by giving each active player 16 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'dreierles.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'dreierles.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'declare',
+              'play_card',
+              'draw',
+              'bid',
+            ],
+            explanation: 'Dreierles (Baden Tarock) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'dreierles.setup.initial-deal',
+              'dreierles.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'dreierles.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Scoring uses the documented rules for Dreierles (Baden Tarock) and determines round or match winners accordingly.',
+            linkedRuleIds: [
+              'dreierles.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'dreierles.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 16,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

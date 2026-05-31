@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '08baebe3-9f4e-4787-8cab-86c7485d2e60',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/snap/snapValidationFixtures.asset',
+    gameId: 'snap',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'snap',
+    familyVariant: 'War / Accumulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'snap.core-runtime-contracts',
+        title: 'Snap Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'snap.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Snap must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'snap.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'snap.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Snap must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'snap.setup.initial-deal',
+              'snap.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'snap.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win all the cards.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win all the cards.',
+            linkedRuleIds: [
+              'snap.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'snap.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

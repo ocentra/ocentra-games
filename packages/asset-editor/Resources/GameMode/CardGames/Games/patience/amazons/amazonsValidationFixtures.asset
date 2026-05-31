@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '9b36d9f9-1fbd-4ab8-b659-efe7b2bf700e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/amazons/amazonsValidationFixtures.asset',
+    gameId: 'amazons',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'amazons',
+    familyVariant: 'One-Deck',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'amazons.core-runtime-contracts',
+        title: 'Amazons Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'amazons.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Amazons must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'amazons.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'amazons.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'draw',
+            ],
+            explanation: 'Amazons must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'amazons.setup.initial-deal',
+              'amazons.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'amazons.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Build the required suit sequences and clear the reduced pack.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win by completing the prescribed foundations; lose if the layout blocks.',
+            linkedRuleIds: [
+              'amazons.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'amazons.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

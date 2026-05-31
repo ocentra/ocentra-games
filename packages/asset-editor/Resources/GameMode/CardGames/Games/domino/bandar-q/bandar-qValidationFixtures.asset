@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '1ff7222a-7872-469a-914d-6938a7952e5a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/bandar-q/bandar-qValidationFixtures.asset',
+    gameId: 'bandar-q',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bandar-q',
+    familyVariant: 'Baccarat Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bandar-q.core-runtime-contracts',
+        title: 'Bandar Q Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bandar-q.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 2,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Bandar Q must start by giving each active player 2 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bandar-q.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bandar-q.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'wagering',
+            supportedActionIds: [
+              'setup_round',
+              'bet',
+              'place_bet',
+              'deal_two_tiles',
+              'show_tiles',
+              'compare_modulo_10',
+              'payout_bets',
+              'rotate_banker',
+            ],
+            explanation: 'Bandar Q must run setup_round first, then enter wagering with the processed legal actions.',
+            linkedRuleIds: [
+              'bandar-q.setup.initial-deal',
+              'bandar-q.flow.wagering',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'wagering',
+            firstPlayableLegalActions: [
+              'place_bet',
+            ],
+          },
+          {
+            id: 'bandar-q.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '9',
+            scoringDirection: 'high_wins',
+            targetScore: 9,
+            cardValues: {},
+            explanation: 'Payout based on comparison with the Banker.',
+            linkedRuleIds: [
+              'bandar-q.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bandar-q.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 2,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

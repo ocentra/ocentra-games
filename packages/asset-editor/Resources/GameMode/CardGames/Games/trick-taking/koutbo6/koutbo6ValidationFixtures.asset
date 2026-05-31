@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '891e84df-eb38-462d-860b-106d2a2f87e4',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/koutbo6/koutbo6ValidationFixtures.asset',
+    gameId: 'koutbo6',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'koutbo6',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'koutbo6.core-runtime-contracts',
+        title: 'Kout Bo 6 Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'koutbo6.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 6,
+              max: 6,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 54,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Kout Bo 6 must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'koutbo6.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'koutbo6.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+              'deal_9_counterclockwise',
+            ],
+            explanation: 'Kout Bo 6 must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'koutbo6.setup.initial-deal',
+              'koutbo6.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_9_counterclockwise',
+            ],
+          },
+          {
+            id: 'koutbo6.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '101',
+            scoringDirection: 'high_wins',
+            targetScore: 101,
+            cardValues: {},
+            explanation: 'Bidding team wins if tricks won >= bid. If they win, they gain points. If they lose, the defending team gets double the bid value.',
+            linkedRuleIds: [
+              'koutbo6.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'koutbo6.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 6,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

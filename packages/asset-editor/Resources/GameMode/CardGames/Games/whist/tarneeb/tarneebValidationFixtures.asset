@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'fed37b57-1b5b-4a14-802e-33bd7ad9fc3c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/tarneeb/tarneebValidationFixtures.asset',
+    gameId: 'tarneeb',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tarneeb',
+    familyVariant: 'Auction Whist',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tarneeb.core-runtime-contracts',
+        title: 'Tarneeb Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tarneeb.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 78,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tarneeb must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tarneeb.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tarneeb.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Tarneeb must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'tarneeb.setup.initial-deal',
+              'tarneeb.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'tarneeb.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win at least as many tricks as bid. First team to reach target score (e.g., 31, 41, or 61) wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'If declaring team wins bid details: Score = Tricks taken. Bonus often applies for 13 (Kaboot). If they fail: Score = Negative of bid (or zero for opponents, or opponents score tricks taken + bonus). Non-bidding team scores tricks taken (unless bidder fails). Exact scoring varies by region (e.g. Tarneeb 41 rules).',
+            linkedRuleIds: [
+              'tarneeb.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tarneeb.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

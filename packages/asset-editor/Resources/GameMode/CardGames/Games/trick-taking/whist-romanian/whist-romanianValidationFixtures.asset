@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '82f30f06-066c-433a-9ead-445ca9a4d20b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/whist-romanian/whist-romanianValidationFixtures.asset',
+    gameId: 'whist-romanian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'whist-romanian',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'whist-romanian.core-runtime-contracts',
+        title: 'Whist Romanian Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'whist-romanian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Whist Romanian must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'whist-romanian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'whist-romanian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'bid',
+              'deal_variable_turn_trump',
+            ],
+            explanation: 'Whist Romanian must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'whist-romanian.setup.initial-deal',
+              'whist-romanian.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_variable_turn_trump',
+            ],
+          },
+          {
+            id: 'whist-romanian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest total score after the full sequence of deals (1-up-to-8-down-to-1).',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Make contract: 5 points plus number of tricks made. Miss: lose 1 point per trick over or under bid. Highest total after full deal sequence wins.',
+            linkedRuleIds: [
+              'whist-romanian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'whist-romanian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

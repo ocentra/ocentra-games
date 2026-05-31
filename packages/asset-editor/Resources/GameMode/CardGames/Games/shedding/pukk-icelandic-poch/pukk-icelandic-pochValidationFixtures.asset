@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: '62750bbd-5d60-4d1a-ba4c-932bf74a5ae1',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/pukk-icelandic-poch/pukk-icelandic-pochValidationFixtures.asset',
+    gameId: 'pukk-icelandic-poch',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pukk-icelandic-poch',
+    familyVariant: 'Combination / Comparison',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pukk-icelandic-poch.core-runtime-contracts',
+        title: 'Púkk Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pukk-icelandic-poch.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 5,
+              max: 7,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 35,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Púkk must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pukk-icelandic-poch.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pukk-icelandic-poch.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'dress_board',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'play_card',
+              'claim_pool',
+            ],
+            explanation: 'Púkk must run setup_round first, then enter dress_board with the processed legal actions.',
+            linkedRuleIds: [
+              'pukk-icelandic-poch.setup.initial-deal',
+              'pukk-icelandic-poch.flow.dress_board',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'dress_board',
+            firstPlayableLegalActions: [
+              'ante',
+            ],
+          },
+          {
+            id: 'pukk-icelandic-poch.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Points or match rules.',
+            linkedRuleIds: [
+              'pukk-icelandic-poch.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pukk-icelandic-poch.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 5,
+          max: 7,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

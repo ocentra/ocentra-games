@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: '7b41cb9a-dc66-4d1a-807f-ee0ac0e9c1c7',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/commercial/pit/pitPhaseFlowModel.asset',
+    gameId: 'pit',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pit',
+    familyVariant: 'Pair Collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal',
+        label: 'Deal Cards',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: "Dealer deals all cards one at a time clockwise to each player starting with player to dealer's left.",
+      },
+      {
+        id: 'play_round',
+        label: 'Play Round',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+          'pass',
+        ],
+        nextPhase: 'play_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_hand_empty == true',
+            nextPhase: null,
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Players play cards to the layout or pass. First to empty hand wins.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3-8 players use the table arrangement described for Pit.',
+        deck: 'Dedicated Pit commodity deck',
+        equipment: 'Dedicated Pit commodity deck, score area, and enough table space for play.',
+        dealing: 'Prepare Dedicated Pit commodity deck and deal or lay out cards according to the documented Pit rules before play begins.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'setup_round',
+      'deal',
+      'play_round',
+    ],
+    examples: [],
+  },
+}

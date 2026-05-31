@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: '18aa2b9b-2cb2-4735-8779-e4dbdebda487',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/shanghai-rummy/shanghai-rummyValidationFixtures.asset',
+    gameId: 'shanghai-rummy',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'shanghai-rummy',
+    familyVariant: 'Contract Rummy',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'shanghai-rummy.core-runtime-contracts',
+        title: 'Shanghai Rummy Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'shanghai-rummy.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 11,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 8,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 88,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Shanghai Rummy must start by giving each active player 11 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'shanghai-rummy.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'shanghai-rummy.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'buy_stock',
+              'draw',
+              'discard',
+              'meld',
+              'go_out',
+            ],
+            explanation: 'Shanghai Rummy must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'shanghai-rummy.setup.initial-deal',
+              'shanghai-rummy.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'shanghai-rummy.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Player with the lowest total penalty points after the tenth hand wins.',
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {
+              '2': '20',
+              '3-9': '5',
+              '10-K': '10',
+              A: '15',
+              Joker: '25',
+            },
+            explanation: 'At hand end, the player who goes out scores 0 and others score cards left in hand. After ten hands, lowest cumulative score wins.',
+            linkedRuleIds: [
+              'shanghai-rummy.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'shanghai-rummy.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 11,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

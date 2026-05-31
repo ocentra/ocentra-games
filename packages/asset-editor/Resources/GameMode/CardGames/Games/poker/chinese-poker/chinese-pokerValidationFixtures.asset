@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'ccf90ac3-8c1c-443b-adb0-ec13bd230407',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/chinese-poker/chinese-pokerValidationFixtures.asset',
+    gameId: 'chinese-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'chinese-poker',
+    familyVariant: 'Poker Hand Collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'chinese-poker.core-runtime-contracts',
+        title: 'Chinese Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'chinese-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Chinese Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'chinese-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'chinese-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Chinese Poker must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'chinese-poker.setup.initial-deal',
+              'chinese-poker.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'chinese-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Arrange 13 cards into three poker hands (back: 5 cards, middle: 5 cards, front: 3 cards) where back ≥ middle ≥ front in strength. Win units by beating opponents' corresponding hands.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Basic scoring: Win 1 unit for each corresponding hand you beat, lose 1 unit for each hand that beats you. Special hands: Three of a kind in front wins 3 units instead of 1. Full house in middle wins 2 units. Four of a kind in back/middle wins 4 units. Royal/straight flush in back/middle wins 5 units. Special 13-card hands win automatically: Six pairs (3 units), Three straights (3 units), Three flushes (3 units), Complete straight A-K (13 units).',
+            linkedRuleIds: [
+              'chinese-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'chinese-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

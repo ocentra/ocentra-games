@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'bb9850d6-06a5-443c-bbda-029f09efb0f9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/steal-war/steal-warValidationFixtures.asset',
+    gameId: 'steal-war',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'steal-war',
+    familyVariant: 'War / Accumulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'steal-war.core-runtime-contracts',
+        title: 'Steal War Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'steal-war.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 27,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 54,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Steal War must start by giving each active player 27 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'steal-war.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'steal-war.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'steal_pile',
+            ],
+            explanation: 'Steal War must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'steal-war.setup.initial-deal',
+              'steal-war.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+              'steal_pile',
+            ],
+          },
+          {
+            id: 'steal-war.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Collect all the cards; running out of cards during a war means immediate loss.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Winner is the player who collects all the cards; a player who runs out of cards during a war loses immediately.',
+            linkedRuleIds: [
+              'steal-war.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'steal-war.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 27,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

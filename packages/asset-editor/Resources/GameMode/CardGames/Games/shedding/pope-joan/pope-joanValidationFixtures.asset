@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '7f8d457d-9738-4992-8ff4-844d4a5653aa',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/pope-joan/pope-joanValidationFixtures.asset',
+    gameId: 'pope-joan',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pope-joan',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pope-joan.core-runtime-contracts',
+        title: 'Pope Joan Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pope-joan.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 8,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 80,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Pope Joan must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pope-joan.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pope-joan.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Pope Joan must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'pope-joan.setup.initial-deal',
+              'pope-joan.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'pope-joan.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Points or match rules.',
+            linkedRuleIds: [
+              'pope-joan.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pope-joan.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 8,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

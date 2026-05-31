@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '8afce02e-9765-4fd1-b878-cf3a5bda8cbf',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/porrazo/porrazoValidationFixtures.asset',
+    gameId: 'porrazo',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'porrazo',
+    familyVariant: 'Capture / Ronda',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'porrazo.core-runtime-contracts',
+        title: 'Porrazo Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'porrazo.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Porrazo must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'porrazo.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'porrazo.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'deal_3',
+              'deal_tendido',
+              'announce_ronda',
+            ],
+            explanation: 'Porrazo must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'porrazo.setup.initial-deal',
+              'porrazo.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_3',
+              'deal_tendido',
+            ],
+          },
+          {
+            id: 'porrazo.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '61',
+            scoringDirection: 'high_wins',
+            targetScore: 61,
+            cardValues: {},
+            explanation: 'Cumulative. Ronda/rondine, porrazo/counter porrazo, limpia, cards in place, tendido, card count. First to 61 wins.',
+            linkedRuleIds: [
+              'porrazo.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'porrazo.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '23ce037b-bad6-4e40-94ba-30c6ea393e7f',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/vier-anderle/vier-anderleValidationFixtures.asset',
+    gameId: 'vier-anderle',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'vier-anderle',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'vier-anderle.core-runtime-contracts',
+        title: 'Vier-Anderle Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'vier-anderle.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Vier-Anderle must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'vier-anderle.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'vier-anderle.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'finalize_round',
+            ],
+            explanation: 'Vier-Anderle must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'vier-anderle.setup.initial-deal',
+              'vier-anderle.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'vier-anderle.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win at least 1 trick to avoid paying penalty.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Each trick = Â¼ pot (when pot active). No tricks = penalty.',
+            linkedRuleIds: [
+              'vier-anderle.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'vier-anderle.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

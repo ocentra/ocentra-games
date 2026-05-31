@@ -1,22 +1,16 @@
-import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import JSON5 from 'json5';
-import { validateAssetFile } from '@ocentra/game-asset-domain/schemas/asset/asset-file-schema';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { OperationResult } from '@ocentra/eventing-domain/core/OperationResult';
-import { createTestEventBus } from '@ocentra/eventing-domain/testing/createTestEventBus';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
-import { createProcessedGameModeBundle } from '@/adapters/assets/createProcessedGameModeBundle';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, '../../..');
-const resourcesRoot = path.resolve(repoRoot, 'packages/asset-editor/Resources');
+import {
+  parseProcessedGameTaxonomyPath,
+  type ProcessedGameTaxonomyPath,
+} from '@ocentra/game-asset-domain/factories/ProcessedGameAssetFactory';
+import {
+  installProcessedGameBundle,
+  setupProcessedGameBundleEventBus,
+} from './processed-game-bundle-installer';
 
 interface CliOptions {
   processedGamePath: string;
-  category: string;
+  category?: ProcessedGameTaxonomyPath;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -29,8 +23,8 @@ function parseArgs(argv: string[]): CliOptions {
 
   const categoryIndex = argv.indexOf('--category');
   const category = categoryIndex >= 0 && argv[categoryIndex + 1]
-    ? argv[categoryIndex + 1]
-    : 'CardGames/Games';
+    ? parseProcessedGameTaxonomyPath(argv[categoryIndex + 1])
+    : undefined;
 
   return {
     processedGamePath: path.resolve(processedGamePath),
@@ -39,44 +33,21 @@ function parseArgs(argv: string[]): CliOptions {
 }
 
 async function main(): Promise<void> {
-  EventBus.instance = createTestEventBus();
-  EventBus.instance.subscribeAsync(GenerateUniqueGuidEvent, async (event) => {
-    event.deferred.resolve(OperationResult.success(crypto.randomUUID()));
-  });
-
+  setupProcessedGameBundleEventBus();
   const options = parseArgs(process.argv.slice(2));
-  const bundle = await createProcessedGameModeBundle({
+  const result = await installProcessedGameBundle({
     processedGamePath: options.processedGamePath,
     category: options.category,
   });
 
-  const writtenFiles: string[] = [];
-
-  for (const file of bundle.files) {
-    const parsed = JSON5.parse(file.content) as unknown;
-    const validation = validateAssetFile(parsed);
-    if (!validation.success) {
-      throw new Error(
-        `Validation failed for ${file.path}: ${validation.error.issues
-          .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-          .join(' | ')}`,
-      );
-    }
-
-    const outputPath = path.join(resourcesRoot, file.path.replace(/^Resources[\\/]/, ''));
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, file.content, 'utf8');
-    writtenFiles.push(outputPath);
-  }
-
   process.stdout.write(
     JSON.stringify(
       {
-        mainAssetGuid: bundle.mainAssetGuid,
-        mainAssetPath: bundle.mainAssetPath,
-        resourcesRoot,
-        filesWritten: writtenFiles.length,
-        writtenFiles,
+        mainAssetGuid: result.mainAssetGuid,
+        mainAssetPath: result.mainAssetPath,
+        resourcesRoot: result.resourcesRoot,
+        filesWritten: result.filesWritten,
+        writtenFiles: result.writtenFiles,
       },
       null,
       2,

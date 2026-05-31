@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'e04f72c0-bdc9-4300-8f05-fd868bbfd66c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/matador/matadorValidationFixtures.asset',
+    gameId: 'matador',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'matador',
+    familyVariant: 'Connecting / Matador',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'matador.core-runtime-contracts',
+        title: 'Matador Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'matador.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Matador must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'matador.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'matador.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+            ],
+            explanation: 'Matador must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'matador.setup.initial-deal',
+              'matador.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+              'draw',
+            ],
+          },
+          {
+            id: 'matador.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'low_wins',
+            targetScore: 100,
+            cardValues: {},
+            explanation: "At end of hand each player totals pips in hand. Lowest wins the hand and is credited with sum of losers' pips minus own total. Tie for lowest scores nothing. Game is played to 100 points.",
+            linkedRuleIds: [
+              'matador.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'matador.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

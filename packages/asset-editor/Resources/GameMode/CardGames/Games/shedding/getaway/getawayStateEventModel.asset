@@ -1,0 +1,74 @@
+{
+  system: {
+    guid: 'bd7aaf53-1204-4a62-903d-62c7a107be00',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/getaway/getawayStateEventModel.asset',
+    gameId: 'getaway',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'getaway',
+    familyVariant: 'Inflation / Follow-Suit Shedding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'face_down',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 3,
+        max_players: 8,
+        deck_count: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'trick_play',
+        'resolution',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'award_pot',
+        'play_card',
+        'discard',
+        'go_out',
+        'take_left_hand',
+      ],
+    },
+    examples: [],
+  },
+}

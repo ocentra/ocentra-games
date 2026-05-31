@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'e6d34861-76e3-4502-a189-111361ba39cf',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/magarac/magaracValidationFixtures.asset',
+    gameId: 'magarac',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'magarac',
+    familyVariant: 'Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'magarac.core-runtime-contracts',
+        title: 'Magarac (Donkey) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'magarac.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 13,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 52,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Magarac (Donkey) must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'magarac.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'magarac.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'passing',
+            supportedActionIds: [
+              'setup_round',
+              'declare',
+              'pass',
+            ],
+            explanation: 'Magarac (Donkey) must run setup_round first, then enter passing with the processed legal actions.',
+            linkedRuleIds: [
+              'magarac.setup.initial-deal',
+              'magarac.flow.passing',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'passing',
+            firstPlayableLegalActions: [
+              'pass',
+              'declare',
+            ],
+          },
+          {
+            id: 'magarac.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Avoid being the last player to complete MAGARAC.',
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Loser of each round receives a letter (M-A-G-A-R-A-C). Completing the word means losing the game.',
+            linkedRuleIds: [
+              'magarac.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'magarac.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 13,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

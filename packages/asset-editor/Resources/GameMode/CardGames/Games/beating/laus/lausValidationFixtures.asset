@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '26cf6a6b-8b25-4486-ba37-b4e1b3d2f24c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/laus/lausValidationFixtures.asset',
+    gameId: 'laus',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'laus',
+    familyVariant: 'Avoidance / Hearts Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'laus.core-runtime-contracts',
+        title: 'Laus Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'laus.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Laus must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'laus.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'laus.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'calculate',
+            ],
+            explanation: 'Laus must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'laus.setup.initial-deal',
+              'laus.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'laus.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'low_wins',
+            targetScore: 100,
+            cardValues: {},
+            explanation: 'Penalty points for capturing cards. Lower score is better.',
+            linkedRuleIds: [
+              'laus.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'laus.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

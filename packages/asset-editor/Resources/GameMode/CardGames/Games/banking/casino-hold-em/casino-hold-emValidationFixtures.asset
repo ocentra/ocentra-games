@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '3e625cf4-2f5d-4d42-9e1b-284aa1f9f6db',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/casino-hold-em/casino-hold-emValidationFixtures.asset',
+    gameId: 'casino-hold-em',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'casino-hold-em',
+    familyVariant: 'Casino Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'casino-hold-em.core-runtime-contracts',
+        title: "Casino Hold'em Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'casino-hold-em.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: "Casino Hold'em must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'casino-hold-em.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'casino-hold-em.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'fold',
+              'bet',
+            ],
+            explanation: "Casino Hold'em must run setup_round first, then enter deal with the processed legal actions.",
+            linkedRuleIds: [
+              'casino-hold-em.setup.initial-deal',
+              'casino-hold-em.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'casino-hold-em.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Payouts by hand rank vs dealer; tie pushes.',
+            linkedRuleIds: [
+              'casino-hold-em.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'casino-hold-em.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

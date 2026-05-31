@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: 'e8e4ee3b-6760-43c1-b753-7e16a6c988a1',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/polignac/polignacValidationFixtures.asset',
+    gameId: 'polignac',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'polignac',
+    familyVariant: 'Trick Avoidance / Reverse',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'polignac.core-runtime-contracts',
+        title: 'Polignac Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'polignac.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Polignac must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'polignac.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'polignac.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Polignac must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'polignac.setup.initial-deal',
+              'polignac.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'polignac.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '10',
+            scoringDirection: 'low_wins',
+            targetScore: 10,
+            cardValues: {
+              'Jack of Spades': '2',
+              'Jack of Hearts': '1',
+              'Jack of Diamonds': '1',
+              'Jack of Clubs': '1',
+            },
+            explanation: 'Penalty points for capturing Jacks. Jack of Spades (Polignac) costs 2 points; each other Jack costs 1. First player to reach an agreed total (typically 10 or 20) loses the game.',
+            linkedRuleIds: [
+              'polignac.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'polignac.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

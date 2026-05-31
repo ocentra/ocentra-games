@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '03f09e7a-ce51-4a92-aad3-1fdcb76c68b5',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/commercial/pit/pitValidationFixtures.asset',
+    gameId: 'pit',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pit',
+    familyVariant: 'Pair Collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pit.core-runtime-contracts',
+        title: 'Pit Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pit.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 8,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 40,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Pit must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pit.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pit.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'pass',
+            ],
+            explanation: 'Pit must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'pit.setup.initial-deal',
+              'pit.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'pit.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'high_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '1',
+              K: '13',
+              Q: '12',
+              J: '11',
+            },
+            explanation: 'Be the first player to shed all cards from your hand.',
+            linkedRuleIds: [
+              'pit.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pit.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: '6ab95d05-ee6b-49ec-ae63-5c135af68033',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/pisti-turkish/pisti-turkishValidationFixtures.asset',
+    gameId: 'pisti-turkish',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pisti-turkish',
+    familyVariant: 'Capture / Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pisti-turkish.core-runtime-contracts',
+        title: 'Pişti Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pisti-turkish.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 8,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Pişti must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pisti-turkish.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pisti-turkish.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Pişti must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'pisti-turkish.setup.initial-deal',
+              'pisti-turkish.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'pisti-turkish.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '151',
+            scoringDirection: 'high_wins',
+            targetScore: 151,
+            cardValues: {
+              Jack: '1 point each',
+              Ace: '1 point each',
+              '2_of_clubs': '2 points',
+              '10_of_diamonds': '3 points',
+              majority_of_cards: '3 points',
+              pisti: '10 points',
+              double_pisti: '20 points',
+            },
+            explanation: 'Points for captured cards: Jack 1, Ace 1, 2 of Clubs 2, 10 of Diamonds 3; majority of cards 3; pişti (single-card capture by matching rank) 10; double pişti (Jack on Jack) 20. If both take 26 cards, no majority point. First to 151 wins.',
+            linkedRuleIds: [
+              'pisti-turkish.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pisti-turkish.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '8eaee443-acef-4a21-a222-eb0bbb6e6620',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/mattis/mattisValidationFixtures.asset',
+    gameId: 'mattis',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mattis',
+    familyVariant: 'Trick-taking / Multi-game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mattis.core-runtime-contracts',
+        title: 'Mattis Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mattis.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 9,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Mattis must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mattis.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mattis.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'phase_1_tricks',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Mattis must run setup_round first, then enter phase_1_tricks with the processed legal actions.',
+            linkedRuleIds: [
+              'mattis.setup.initial-deal',
+              'mattis.flow.phase_1_tricks',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'phase_1_tricks',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'mattis.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Usually played without scoring - the loser is simply identified. In some variants, players play multiple rounds and track losses.',
+            linkedRuleIds: [
+              'mattis.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mattis.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

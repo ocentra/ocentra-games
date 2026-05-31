@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: '1e0abf00-f7ab-4160-b653-27b5f1c9836d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/stud/english-stud/english-studValidationFixtures.asset',
+    gameId: 'english-stud',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'english-stud',
+    familyVariant: 'Stud Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'english-stud.core-runtime-contracts',
+        title: 'English Stud Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'english-stud.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'English Stud must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'english-stud.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'english-stud.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'betting',
+            supportedActionIds: [
+              'setup_round',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+            ],
+            explanation: 'English Stud must run setup_round first, then enter betting with the processed legal actions.',
+            linkedRuleIds: [
+              'english-stud.setup.initial-deal',
+              'english-stud.flow.betting',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'betting',
+            firstPlayableLegalActions: [
+              'bet',
+              'raise',
+              'call',
+              'check',
+              'fold',
+            ],
+          },
+          {
+            id: 'english-stud.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'At showdown, the player with the highest-ranking 5-card poker hand wins the pot. If all other players fold before showdown, the remaining player wins without revealing their hand.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Each player makes the best five-card poker hand from their seven cards. Standard poker hand rankings determine the winner.',
+            linkedRuleIds: [
+              'english-stud.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'english-stud.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

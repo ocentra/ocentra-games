@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: 'f3a483d0-f042-4b0f-b30a-93e09afbb39b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/domino-cribbage/domino-cribbageValidationFixtures.asset',
+    gameId: 'domino-cribbage',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'domino-cribbage',
+    familyVariant: 'Domino / Adding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'domino-cribbage.core-runtime-contracts',
+        title: 'Domino Cribbage Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'domino-cribbage.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Domino Cribbage must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'domino-cribbage.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'domino-cribbage.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'reveal_hand',
+              'award_pot',
+              'play_card',
+              'discard',
+            ],
+            explanation: 'Domino Cribbage must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'domino-cribbage.setup.initial-deal',
+              'domino-cribbage.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+              'discard',
+            ],
+          },
+          {
+            id: 'domino-cribbage.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '121',
+            scoringDirection: 'high_wins',
+            targetScore: 121,
+            cardValues: {},
+            explanation: 'Players score during pegging and hand-show phases, including dealer crib scoring.',
+            linkedRuleIds: [
+              'domino-cribbage.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'domino-cribbage.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

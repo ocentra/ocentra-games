@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: 'd89d61f5-81ff-4729-8d07-39eed614f6bf',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/go-fish/backstab-fish/backstab-fishValidationFixtures.asset',
+    gameId: 'backstab-fish',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'backstab-fish',
+    familyVariant: 'Memory / Quartets',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'backstab-fish.core-runtime-contracts',
+        title: 'Backstab Fish Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'backstab-fish.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 10,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 70,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_up',
+            explanation: 'Backstab Fish must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'backstab-fish.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'backstab-fish.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'dealing',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'draw',
+              'deal_hand',
+              'create_stock',
+              'ask_player_for_rank',
+              'declare_book',
+              'draw_from_stock',
+              'tally_points',
+            ],
+            explanation: 'Backstab Fish must run setup_round first, then enter dealing with the processed legal actions.',
+            linkedRuleIds: [
+              'backstab-fish.setup.initial-deal',
+              'backstab-fish.flow.dealing',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_hand',
+              'create_stock',
+            ],
+          },
+          {
+            id: 'backstab-fish.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest number of books at the end of the stock.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Simple tally of completed sets.',
+            linkedRuleIds: [
+              'backstab-fish.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'backstab-fish.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 10,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

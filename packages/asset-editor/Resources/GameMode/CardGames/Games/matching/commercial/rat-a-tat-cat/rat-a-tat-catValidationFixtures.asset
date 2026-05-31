@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '9cd149bc-0fb9-4ffc-a099-3917ec6385d7',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/commercial/rat-a-tat-cat/rat-a-tat-catValidationFixtures.asset',
+    gameId: 'rat-a-tat-cat',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'rat-a-tat-cat',
+    familyVariant: 'Memory',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'rat-a-tat-cat.core-runtime-contracts',
+        title: 'Rat-a-Tat Cat Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'rat-a-tat-cat.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Rat-a-Tat Cat must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'rat-a-tat-cat.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'rat-a-tat-cat.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'pass',
+            ],
+            explanation: 'Rat-a-Tat Cat must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'rat-a-tat-cat.setup.initial-deal',
+              'rat-a-tat-cat.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'rat-a-tat-cat.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'low_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '1',
+              K: '13',
+              Q: '12',
+              J: '11',
+            },
+            explanation: 'Be the first player to shed all cards from your hand.',
+            linkedRuleIds: [
+              'rat-a-tat-cat.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'rat-a-tat-cat.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

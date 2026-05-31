@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'a7e0e0a0-a3bd-442f-baba-84ffc5696488',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/6-bid-solo/6-bid-soloValidationFixtures.asset',
+    gameId: '6-bid-solo',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '6-bid-solo',
+    familyVariant: 'Tarokk / Preferansz Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '6-bid-solo.core-runtime-contracts',
+        title: '6-Bid Solo Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '6-bid-solo.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 11,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 33,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '6-Bid Solo must start by giving each active player 11 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '6-bid-solo.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '6-bid-solo.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: '6-Bid Solo must run setup_round first, then enter bid with the processed legal actions.',
+            linkedRuleIds: [
+              '6-bid-solo.setup.initial-deal',
+              '6-bid-solo.flow.bid',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'bid',
+            firstPlayableLegalActions: [
+              'bid',
+              'pass',
+            ],
+          },
+          {
+            id: '6-bid-solo.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Declarer wins by meeting the bid contract (e.g. 61+ points in Solo, zero in Misère, all 120 in Call Solo); defenders win by defeating the contract.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Card points in tricks (and widow for declarer): A=11, 10=10, K=4, Q=3, J=2; 9-6=0. Total 120. Declarer must meet contract: Solo/Heart Solo 61+; Guarantee 74 (hearts) or 80 (other); Misère/Spread Misère zero points; Call Solo all 120. Fixed scores per bid (30–150) paid to or by declarer.',
+            linkedRuleIds: [
+              '6-bid-solo.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '6-bid-solo.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 11,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

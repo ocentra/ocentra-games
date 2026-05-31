@@ -1,0 +1,127 @@
+{
+  system: {
+    guid: '081a230a-ac0e-478a-90ee-4c190ed49049',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/tysiac-1000/tysiac-1000ValidationFixtures.asset',
+    gameId: 'tysiac-1000',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tysiac-1000',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tysiac-1000.core-runtime-contracts',
+        title: '1000 (Tysiąc) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tysiac-1000.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '1000 (Tysiąc) must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tysiac-1000.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tysiac-1000.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+              'meld',
+              'deal_7_each_3_talon',
+              'take_talon_discard_2',
+            ],
+            explanation: '1000 (Tysiąc) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'tysiac-1000.setup.initial-deal',
+              'tysiac-1000.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_7_each_3_talon',
+            ],
+          },
+          {
+            id: 'tysiac-1000.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1000',
+            scoringDirection: 'high_wins',
+            targetScore: 1000,
+            cardValues: {
+              '9': '0',
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'Win bid: score declared points. Fail: lose declared amount. Opponents score tricks. Marriage bonuses. 120 card points + marriage values.',
+            linkedRuleIds: [
+              'tysiac-1000.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tysiac-1000.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: '47695eed-307b-4c3a-a877-e1f3c36e362a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/indian-poker-bull/indian-poker-bullValidationFixtures.asset',
+    gameId: 'indian-poker-bull',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'indian-poker-bull',
+    familyVariant: 'Vying',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'indian-poker-bull.core-runtime-contracts',
+        title: 'Poker Bull Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'indian-poker-bull.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 1,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 8,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Poker Bull must start by giving each active player 1 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'indian-poker-bull.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'indian-poker-bull.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'deal_cards',
+              'place_on_forehead',
+            ],
+            explanation: 'Poker Bull must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'indian-poker-bull.setup.initial-deal',
+              'indian-poker-bull.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_cards',
+            ],
+          },
+          {
+            id: 'indian-poker-bull.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Points or match rules.',
+            linkedRuleIds: [
+              'indian-poker-bull.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'indian-poker-bull.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 1,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

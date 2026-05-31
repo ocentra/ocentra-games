@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '92638c02-c141-4a9c-a737-1ff62017b5c2',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/tarok-slovenian/tarok-slovenianValidationFixtures.asset',
+    gameId: 'tarok-slovenian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tarok-slovenian',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tarok-slovenian.core-runtime-contracts',
+        title: 'Tarok Slovenian Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tarok-slovenian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tarok Slovenian must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tarok-slovenian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tarok-slovenian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Tarok Slovenian must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'tarok-slovenian.setup.initial-deal',
+              'tarok-slovenian.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'tarok-slovenian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Declarer's side wins by taking at least 36 of 70 card points in positive contracts; in klop lowest points win; in beggar/valat take no tricks or all tricks respectively. Cumulative score; game ends by škis round or target (e.g. 1000).",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+            linkedRuleIds: [
+              'tarok-slovenian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tarok-slovenian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

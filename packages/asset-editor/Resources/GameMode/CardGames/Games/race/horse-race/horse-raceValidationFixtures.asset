@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '55ced239-c106-48a7-b550-506d71ffd676',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/race/horse-race/horse-raceValidationFixtures.asset',
+    gameId: 'horse-race',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'horse-race',
+    familyVariant: 'Gambling / Card Race',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'horse-race.core-runtime-contracts',
+        title: 'Calcutta Horse Race Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'horse-race.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 8,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Calcutta Horse Race must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'horse-race.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'horse-race.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'setup',
+            supportedActionIds: [
+              'setup_round',
+              'bet',
+              'lay_course',
+              'turn_card',
+            ],
+            explanation: 'Calcutta Horse Race must run setup_round first, then enter setup with the processed legal actions.',
+            linkedRuleIds: [
+              'horse-race.setup.initial-deal',
+              'horse-race.flow.setup',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'lay_course',
+            ],
+          },
+          {
+            id: 'horse-race.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Best race combination wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Betting on card sequences + races.',
+            linkedRuleIds: [
+              'horse-race.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'horse-race.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 8,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

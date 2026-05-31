@@ -1,0 +1,151 @@
+{
+  system: {
+    guid: '22d60890-ba1f-44a3-8cdb-e8fa65b3b5b2',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/hazari/hazariPhaseFlowModel.asset',
+    gameId: 'hazari',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hazari',
+    familyVariant: 'Brag Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal',
+        label: 'Dealing',
+        actor: 'role:dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'partition',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal 13 cards each.',
+      },
+      {
+        id: 'partition',
+        label: 'Hand Partitioning',
+        actor: 'role:all',
+        legalActions: [
+          'declare',
+        ],
+        nextPhase: 'comparison',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          declare: 'face_down',
+        },
+        notes: "Players divide 13 cards into 3-3-3-4 sets. Called 'Up' when done.",
+      },
+      {
+        id: 'comparison',
+        label: 'Set Comparison',
+        actor: 'role:all',
+        legalActions: [
+          'reveal_hand',
+        ],
+        nextPhase: 'scoring',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 4,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          reveal_hand: 'face_up',
+        },
+        notes: 'Four comparisons. Winner of each takes the cards.',
+      },
+      {
+        id: 'scoring',
+        label: 'Round Scoring',
+        actor: 'role:system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'total_1000',
+            nextPhase: null,
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Tally 10-point cards. Check for 1000.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '4 players playing individually.',
+        deck: 'Standard 52-card deck. Ace is high.',
+        equipment: 'Standard deck, score sheet.',
+        dealing: 'Dealer deals 13 cards to each player in batches (e.g., 4-4-5 or all at once).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: true,
+      customLogicNeeded: [
+        '13_card_partitioning_validation',
+        'Brag_Hand_Ranking_Engine',
+        'Cumulative_Points_Tracking',
+      ],
+    },
+    progression: [
+      'setup_round',
+      'deal',
+      'partition',
+      'comparison',
+      'scoring',
+    ],
+    examples: [],
+  },
+}

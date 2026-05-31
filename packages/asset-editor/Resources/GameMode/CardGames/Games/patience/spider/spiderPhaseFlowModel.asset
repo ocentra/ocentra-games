@@ -1,0 +1,108 @@
+{
+  system: {
+    guid: '88223131-f1d2-4ebc-afeb-6daa2610a089',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/spider/spiderPhaseFlowModel.asset',
+    gameId: 'spider',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'spider',
+    familyVariant: 'Two-Deck Patience',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+          'deal',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'game_continues',
+            nextPhase: 'play',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Player moves cards on tableau or deals 10 from stock when no column is empty. Game ends when eight complete sequences removed (win) or no legal move and no deal (loss).',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'One player only. Spider is a solitaire (patience) game played by a single player against the tableau and stock.',
+        deck: '104 cards (two standard 52-card decks).',
+        equipment: 'Table space for 10 tableau columns and stock.',
+        dealing: 'Deal 54 cards to the tableau in 10 columns: first 4 columns get 6 cards each, remaining 6 columns get 5 cards each; only the top card of each column is face up. The remaining 50 cards form the stock. When no column is empty, the player may deal 10 more cards from the stock (one to each column).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'dealer',
+        dealerRotates: false,
+      },
+      trickConfig: {
+        hasTricks: false,
+        tricksPerRound: 0,
+        mustFollowSuit: false,
+        mustOvertrump: false,
+        leadRestrictions: '',
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: false,
+        scoredTricks: false,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: 0,
+          maxBid: 0,
+          passAllowed: false,
+          doubling: false,
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
+    examples: [],
+  },
+}

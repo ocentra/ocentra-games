@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'f287b9f2-1999-43c5-973b-0fad7a1d047f',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/solo-crazy/solo-crazyValidationFixtures.asset',
+    gameId: 'solo-crazy',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'solo-crazy',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'solo-crazy.core-runtime-contracts',
+        title: 'Crazy Solo Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'solo-crazy.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 12,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 108,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Crazy Solo must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'solo-crazy.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'solo-crazy.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+              'deal_all_clockwise',
+            ],
+            explanation: 'Crazy Solo must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'solo-crazy.setup.initial-deal',
+              'solo-crazy.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_all_clockwise',
+            ],
+          },
+          {
+            id: 'solo-crazy.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Solo team wins by taking 61 or more of the 120 card points in tricks.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Points awarded for making bid. Penalties for failing. Hearts double the stakes.',
+            linkedRuleIds: [
+              'solo-crazy.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'solo-crazy.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 12,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

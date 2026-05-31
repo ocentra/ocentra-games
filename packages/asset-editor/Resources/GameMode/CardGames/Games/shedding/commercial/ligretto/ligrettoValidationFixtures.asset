@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '9f8378bc-57f3-46d3-9d9d-579741cd5126',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/commercial/ligretto/ligrettoValidationFixtures.asset',
+    gameId: 'ligretto',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ligretto',
+    familyVariant: 'Shedding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ligretto.core-runtime-contracts',
+        title: 'Ligretto Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ligretto.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 12,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 60,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Ligretto must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ligretto.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ligretto.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Ligretto must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'ligretto.setup.initial-deal',
+              'ligretto.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'ligretto.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'low_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '1',
+              K: '10',
+              Q: '10',
+              J: '10',
+              Joker: '50',
+            },
+            explanation: 'Be the first player to discard all cards from your hand.',
+            linkedRuleIds: [
+              'ligretto.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ligretto.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 12,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

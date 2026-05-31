@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '85d57688-1b40-433d-bfaa-fa94d34731d9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/thunee/thuni-nigerian/thuni-nigerianValidationFixtures.asset',
+    gameId: 'thuni-nigerian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'thuni-nigerian',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'thuni-nigerian.core-runtime-contracts',
+        title: 'Thuni (Nigerian) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'thuni-nigerian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Thuni (Nigerian) must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'thuni-nigerian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'thuni-nigerian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'deal_cards',
+            ],
+            explanation: 'Thuni (Nigerian) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'thuni-nigerian.setup.initial-deal',
+              'thuni-nigerian.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_cards',
+            ],
+          },
+          {
+            id: 'thuni-nigerian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win majority of tricks.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Count tricks won.',
+            linkedRuleIds: [
+              'thuni-nigerian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'thuni-nigerian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '61b57684-fd58-4329-a931-7b3be0c9c81a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/chinchon/chinchonValidationFixtures.asset',
+    gameId: 'chinchon',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'chinchon',
+    familyVariant: 'Draw and Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'chinchon.core-runtime-contracts',
+        title: 'Chinchón Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'chinchon.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Chinchón must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'chinchon.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'chinchon.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Chinchón must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'chinchon.setup.initial-deal',
+              'chinchon.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'chinchon.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '500',
+            scoringDirection: 'high_wins',
+            targetScore: 500,
+            cardValues: {
+              A: '1',
+              K: '10',
+              Q: '10',
+              J: '10',
+              Joker: '15',
+            },
+            explanation: 'Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins.',
+            linkedRuleIds: [
+              'chinchon.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'chinchon.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

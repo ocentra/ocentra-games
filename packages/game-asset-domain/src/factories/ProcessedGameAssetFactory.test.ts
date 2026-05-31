@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildCreateGameModeOptionsFromProcessedGame,
   loadProcessedGame,
+  parseProcessedGameTaxonomyPath,
 } from '@/factories/ProcessedGameAssetFactory';
 import { validateProcessedGameTransferCoverage } from '@/factories/ProcessedGameAssetTransferContract';
 
@@ -18,6 +19,7 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
     const options = buildCreateGameModeOptionsFromProcessedGame({ processedGamePath: sampleGamePath });
     const overrides = options.assetDataOverrides;
 
+    expect(options.category).toBe('CardGames/Games/accumulation');
     expect(overrides.gameInfo.origin).toBe('Japan');
     expect(overrides.gameInfo.originName).toBe('Buta no Shippo');
     expect(overrides.gameInfo.historyContent).toMatchObject({
@@ -34,7 +36,27 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
     expect(overrides.strategy.Player).toContain('Watch suits and ranks');
     expect(overrides.scoring.winCondition).toContain('fewer penalty cards');
     expect(overrides.gameInfo.sections.map((section) => section.type)).toEqual(['about']);
+    expect(overrides.gameInfo.sourcesContent).toMatchObject({
+      primary: [
+        expect.objectContaining({
+          name: 'Wikipedia - Buta no Shippo',
+          url: 'https://en.wikipedia.org/wiki/Buta_no_shippo',
+        }),
+      ],
+    });
     expect(overrides.gameInfo.editorOnly).toMatchObject({
+      processedSource: expect.objectContaining({
+        filename: 'buta-no-shippo.json',
+        name: 'Buta no Shippo',
+      }),
+      migrationReview: expect.objectContaining({
+        status: 'pending_source_review',
+        sourceSearchRequired: true,
+        requiredChecks: expect.arrayContaining([
+          'verify rules against primary source pages',
+          'verify aliases and duplicates so one game is not migrated twice under different names',
+        ]),
+      }),
       sources: expect.objectContaining({
         primary: expect.any(Array),
       }),
@@ -59,7 +81,7 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
     });
     expect(options.mechanicsModelDataOverrides?.actions).toMatchObject({
       actionModel: {
-        actionIds: expect.arrayContaining(['play_card']),
+        actionIds: expect.arrayContaining(['setup_round', 'play_card']),
       },
     });
     expect(options.mechanicsModelDataOverrides?.validation).toMatchObject({
@@ -78,8 +100,10 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
             }),
             expect.objectContaining({
               purpose: 'flow',
-              expectedFirstPhase: 'play',
-              expectedLegalActions: expect.arrayContaining(['play_card']),
+              expectedFirstPhase: 'setup_round',
+              expectedLegalActions: ['setup_round'],
+              firstPlayablePhase: 'play',
+              firstPlayableLegalActions: expect.arrayContaining(['play_card']),
             }),
             expect.objectContaining({
               purpose: 'scoring',
@@ -94,6 +118,13 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
         }),
       ],
     });
+    const carouselSlides = overrides.carousel.slides as Array<{ imageHash: string; label: string }>;
+    expect(carouselSlides).toHaveLength(3);
+    expect(new Set(carouselSlides.map((slide) => slide.imageHash)).size).toBe(3);
+    expect(overrides.carousel.visualAssetSource).toBe('game_folder_fallback_art');
+    expect(overrides.carousel.visualAssetStatus).toBe('needs_final_art');
+    expect(overrides.carousel.visualAssetReplacementRequired).toBe(true);
+    expect(overrides.cardGame.bannerImage).toBe(carouselSlides[0].imageHash);
     expect(JSON.stringify(overrides.gameInfo.sections)).not.toContain('sourceUrl');
   });
 
@@ -126,7 +157,32 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
     expect(options.assetDataOverrides.rules.Player).not.toContain('[');
     expect(options.assetDataOverrides.rules.LLM).toBe(source.rules.gameplay);
     expect(options.assetDataOverrides.rules.Player).toBe(source.rules.gameplay);
-    expect(options.assetDataOverrides.mechanics.phases[0]).not.toHaveProperty('notes');
-    expect(options.mechanicsModelDataOverrides?.phaseFlow.phases[0]).not.toHaveProperty('notes');
+    expect(options.assetDataOverrides.mechanics.phases.find((phase: { id?: string }) => phase.id === 'play')).not.toHaveProperty('notes');
+    expect(options.mechanicsModelDataOverrides?.phaseFlow.phases.find((phase: { id?: string }) => phase.id === 'play')).not.toHaveProperty('notes');
+  });
+
+  it('uses rotated shared fallback art when no per-game image folder exists', () => {
+    const source = JSON.parse(fs.readFileSync(sampleGamePath, 'utf8'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'processed-game-factory-'));
+    const tempPath = path.join(tempDir, 'no-image-carousel-source.json');
+    fs.writeFileSync(tempPath, `${JSON.stringify(source, null, 2)}\n`, 'utf8');
+
+    const options = buildCreateGameModeOptionsFromProcessedGame({ processedGamePath: tempPath });
+    const carousel = options.assetDataOverrides.carousel;
+    const slides = carousel.slides as Array<{ imageHash: string; label: string }>;
+
+    expect(carousel.visualAssetSource).toBe('shared_fallback_art');
+    expect(carousel.visualAssetStatus).toBe('needs_final_art');
+    expect(carousel.visualAssetReplacementRequired).toBe(true);
+    expect(slides).toHaveLength(3);
+    expect(new Set(slides.map((slide) => slide.imageHash)).size).toBe(3);
+    expect(slides.every((slide) => slide.label.includes('fallback art'))).toBe(true);
+    expect(options.assetDataOverrides.cardGame.bannerImage).toBe(slides[0].imageHash);
+  });
+
+  it('rejects processed-game migrations outside categorized CardGames/Games folders', () => {
+    expect(() => parseProcessedGameTaxonomyPath('CardGames/Games')).toThrow();
+    expect(() => parseProcessedGameTaxonomyPath('CardGames/Imported')).toThrow();
+    expect(parseProcessedGameTaxonomyPath('CardGames/Games/Trick-Taking')).toBe('CardGames/Games/trick-taking');
   });
 });

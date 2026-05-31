@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '7ca194dc-4be5-4446-938c-a83def81d20b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/marquise/marquiseValidationFixtures.asset',
+    gameId: 'marquise',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'marquise',
+    familyVariant: 'One-Deck',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'marquise.core-runtime-contracts',
+        title: 'Marquise (Solitaire) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'marquise.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Marquise (Solitaire) must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'marquise.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'marquise.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'turn_stock',
+            ],
+            explanation: 'Marquise (Solitaire) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'marquise.setup.initial-deal',
+              'marquise.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'marquise.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Build four foundation piles by suit, from Ace up to King.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Build four foundation piles by suit, from Ace up to King.',
+            linkedRuleIds: [
+              'marquise.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'marquise.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

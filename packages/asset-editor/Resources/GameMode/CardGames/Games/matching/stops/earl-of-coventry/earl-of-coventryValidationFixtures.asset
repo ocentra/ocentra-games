@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'c0139ce6-5f6f-4ab5-8c95-7304b4e8fa9d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/stops/earl-of-coventry/earl-of-coventryValidationFixtures.asset',
+    gameId: 'earl-of-coventry',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'earl-of-coventry',
+    familyVariant: 'Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'earl-of-coventry.core-runtime-contracts',
+        title: 'Earl of Coventry Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'earl-of-coventry.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 8,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Earl of Coventry must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'earl-of-coventry.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'earl-of-coventry.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'pass',
+            ],
+            explanation: 'Earl of Coventry must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'earl-of-coventry.setup.initial-deal',
+              'earl-of-coventry.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'earl-of-coventry.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player to shed all cards from their hand wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'The player who empties their hand first wins the game.',
+            linkedRuleIds: [
+              'earl-of-coventry.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'earl-of-coventry.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 8,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

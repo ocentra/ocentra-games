@@ -1,0 +1,81 @@
+{
+  system: {
+    guid: '56ffc32b-fcb1-4ce2-a11e-231426861033',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/game-flip-flop/game-flip-flopStateEventModel.asset',
+    gameId: 'game-flip-flop',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'game-flip-flop',
+    familyVariant: 'Draw-and-Discard / Basic Rummy',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'tableau',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_down',
+        discardTop: 'face_up',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        hand_size: 5,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'stakes_and_deal',
+        'claim_flip_flop',
+        'draw_discard',
+        'resolution',
+      ],
+      actions: [
+        'setup_round',
+        'ante',
+        'deal',
+        'declare',
+        'award_pot',
+        'draw',
+        'discard',
+        'meld',
+        'go_out',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '97c7800e-87aa-4c9d-bd52-1636638a6968',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/commercial/arkham-horror-card-game/arkham-horror-card-gameValidationFixtures.asset',
+    gameId: 'arkham-horror-card-game',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'arkham-horror-card-game',
+    familyVariant: '2-Player / Card Battle',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'arkham-horror-card-game.core-runtime-contracts',
+        title: 'Arkham Horror The Card Game Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'arkham-horror-card-game.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Arkham Horror The Card Game must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'arkham-horror-card-game.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'arkham-horror-card-game.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Arkham Horror The Card Game must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'arkham-horror-card-game.setup.initial-deal',
+              'arkham-horror-card-game.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'arkham-horror-card-game.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Complete the scenario act goals before doom, horror, damage, or encounter effects overwhelm the investigators.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Scenarios are won, lost, or resolved with campaign consequences rather than simple points.',
+            linkedRuleIds: [
+              'arkham-horror-card-game.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'arkham-horror-card-game.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

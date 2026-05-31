@@ -1,0 +1,78 @@
+{
+  system: {
+    guid: '81ddfe85-9e9b-49e7-b457-37daab993a10',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/game-to-lose/game-to-loseStateEventModel.asset',
+    gameId: 'game-to-lose',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'game-to-lose',
+    familyVariant: 'Trick-avoidance',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'custom:dummy',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'face_up',
+        tableauCards: null,
+      },
+      constants: {
+        target_score: 121,
+        trick_count: 13,
+        hand_size: 13,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'trick_play',
+        'end_count',
+        'resolution',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'award_pot',
+        'play_card',
+      ],
+    },
+    examples: [],
+  },
+}

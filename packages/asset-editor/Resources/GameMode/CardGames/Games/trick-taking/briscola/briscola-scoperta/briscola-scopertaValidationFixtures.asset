@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: 'c434d236-c599-42c5-8bd9-c7abfcf628a7',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/briscola/briscola-scoperta/briscola-scopertaValidationFixtures.asset',
+    gameId: 'briscola-scoperta',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'briscola-scoperta',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'briscola-scoperta.core-runtime-contracts',
+        title: 'Briscola Scoperta Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'briscola-scoperta.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Briscola Scoperta must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'briscola-scoperta.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'briscola-scoperta.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Briscola Scoperta must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'briscola-scoperta.setup.initial-deal',
+              'briscola-scoperta.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'briscola-scoperta.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '61',
+            scoringDirection: 'high_wins',
+            targetScore: 61,
+            cardValues: {
+              Ace: '11 points',
+              Three: '10 points',
+              King: '4 points',
+              Queen: '3 points',
+              Jack: '2 points',
+              Others: '0 points',
+            },
+            explanation: 'Card points won in tricks using the Briscola scale (A=11, 3=10, K=4, Q=3, J=2; others 0).',
+            linkedRuleIds: [
+              'briscola-scoperta.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'briscola-scoperta.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

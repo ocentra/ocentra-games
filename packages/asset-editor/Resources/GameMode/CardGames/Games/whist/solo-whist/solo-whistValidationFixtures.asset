@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '8a0c4715-8346-4217-88d9-b09931343c79',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/solo-whist/solo-whistValidationFixtures.asset',
+    gameId: 'solo-whist',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'solo-whist',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'solo-whist.core-runtime-contracts',
+        title: 'Solo Whist Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'solo-whist.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 52,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Solo Whist must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'solo-whist.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'solo-whist.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+              'deal_13_each_turn_last',
+            ],
+            explanation: 'Solo Whist must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'solo-whist.setup.initial-deal',
+              'solo-whist.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_13_each_turn_last',
+            ],
+          },
+          {
+            id: 'solo-whist.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Fulfill your bid.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Fixed payments for each bid (e.g., Solo pays 2 chips, Abundance pays 4).',
+            linkedRuleIds: [
+              'solo-whist.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'solo-whist.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

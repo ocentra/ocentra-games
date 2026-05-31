@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '2e7cb8d0-4494-42f1-bece-35668afa6420',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/rams/knektpass/knektpassValidationFixtures.asset',
+    gameId: 'knektpass',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'knektpass',
+    familyVariant: 'Rams / Gambling',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'knektpass.core-runtime-contracts',
+        title: 'Knektpass Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'knektpass.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 80,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Knektpass must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'knektpass.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'knektpass.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'discard',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Knektpass must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'knektpass.setup.initial-deal',
+              'knektpass.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'knektpass.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win the tricks, card points, or contract result required by the local form of the game.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Tricks, card points, or contract success determine scoring.',
+            linkedRuleIds: [
+              'knektpass.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'knektpass.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

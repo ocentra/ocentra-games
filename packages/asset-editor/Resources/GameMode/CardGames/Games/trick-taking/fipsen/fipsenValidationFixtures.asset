@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'dbc2c9ce-dc84-4c85-b19f-439fd4707c35',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/fipsen/fipsenValidationFixtures.asset',
+    gameId: 'fipsen',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'fipsen',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'fipsen.core-runtime-contracts',
+        title: 'Fipsen Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'fipsen.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Fipsen must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'fipsen.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'fipsen.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Fipsen must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'fipsen.setup.initial-deal',
+              'fipsen.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'fipsen.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Bidder wins if tricks taken >= bid. Defenders win if bidder fails. Game continues with rotating bidder.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Trick-based scoring. Bidder tries to achieve bid tricks; defenders try to stop them. Points awarded based on bid success.',
+            linkedRuleIds: [
+              'fipsen.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'fipsen.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

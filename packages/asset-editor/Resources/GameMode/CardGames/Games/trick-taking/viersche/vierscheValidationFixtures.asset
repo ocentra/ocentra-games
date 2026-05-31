@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: '2db0a39f-6c3e-4229-ad07-54a853e927ed',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/viersche/vierscheValidationFixtures.asset',
+    gameId: 'viersche',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'viersche',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'viersche.core-runtime-contracts',
+        title: 'Viersche Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'viersche.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Viersche must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'viersche.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'viersche.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'draw',
+              'finish_game',
+            ],
+            explanation: 'Viersche must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'viersche.setup.initial-deal',
+              'viersche.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'viersche.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First to claim 100+ card points. Erase 4 rungs to win session.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '6': '0',
+              '7': '0',
+              '8': '0',
+              '9': '0',
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'A=11, 10=10, K=4, Q=3, J=2. Total=140. First to 100 claims win.',
+            linkedRuleIds: [
+              'viersche.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'viersche.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

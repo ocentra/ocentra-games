@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '6cf31e1a-cda4-4284-9c10-97e1e7188fac',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/paranoia-mandatory-bonus-fun-card-game/paranoia-mandatory-bonus-fun-card-gameValidationFixtures.asset',
+    gameId: 'paranoia-mandatory-bonus-fun-card-game',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'paranoia-mandatory-bonus-fun-card-game',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'paranoia-mandatory-bonus-fun-card-game.core-runtime-contracts',
+        title: 'Paranoia Mandatory Bonus Fun Card Game Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'paranoia-mandatory-bonus-fun-card-game.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 8,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Paranoia Mandatory Bonus Fun Card Game must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'paranoia-mandatory-bonus-fun-card-game.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'paranoia-mandatory-bonus-fun-card-game.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'turning_round',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Paranoia Mandatory Bonus Fun Card Game must run setup_round first, then enter turning_round with the processed legal actions.',
+            linkedRuleIds: [
+              'paranoia-mandatory-bonus-fun-card-game.setup.initial-deal',
+              'paranoia-mandatory-bonus-fun-card-game.flow.turning_round',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'turning_round',
+            firstPlayableLegalActions: [
+              'flip_top_card',
+            ],
+          },
+          {
+            id: 'paranoia-mandatory-bonus-fun-card-game.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Complete the published mission or personal objective while surviving other players interference.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Published scoring or victory conditions determine the winner.',
+            linkedRuleIds: [
+              'paranoia-mandatory-bonus-fun-card-game.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'paranoia-mandatory-bonus-fun-card-game.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

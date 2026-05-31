@@ -1,0 +1,127 @@
+{
+  system: {
+    guid: '2c0209d8-ae37-43d7-bb68-09638c0b14f0',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/all-fours-lancashire/all-fours-lancashireValidationFixtures.asset',
+    gameId: 'all-fours-lancashire',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'all-fours-lancashire',
+    familyVariant: 'Classic Point-scoring (Regional)',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'all-fours-lancashire.core-runtime-contracts',
+        title: 'All Fours (Lancashire) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'all-fours-lancashire.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'All Fours (Lancashire) must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'all-fours-lancashire.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'all-fours-lancashire.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'award_pot',
+              'play_card',
+            ],
+            explanation: 'All Fours (Lancashire) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'all-fours-lancashire.setup.initial-deal',
+              'all-fours-lancashire.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'all-fours-lancashire.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '11',
+            scoringDirection: 'high_wins',
+            targetScore: 11,
+            cardValues: {
+              High: '1',
+              Low_taken: '1',
+              Jack: '1',
+              Game: '1',
+              A_any_suit_for_game: '4',
+              K_any_suit_for_game: '3',
+              Q_any_suit_for_game: '2',
+              J_any_suit_for_game: '1',
+              '10_any_suit_for_game': '10',
+            },
+            explanation: 'Pegging points immediately at the end of the hand.',
+            linkedRuleIds: [
+              'all-fours-lancashire.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'all-fours-lancashire.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

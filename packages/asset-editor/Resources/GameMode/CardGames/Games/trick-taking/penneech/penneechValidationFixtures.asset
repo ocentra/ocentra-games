@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: 'aa838bc3-65f0-49fe-b8f2-1cf0cfef9034',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/penneech/penneechValidationFixtures.asset',
+    gameId: 'penneech',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'penneech',
+    familyVariant: 'Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'penneech.core-runtime-contracts',
+        title: 'Penneech Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'penneech.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 14,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Penneech must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'penneech.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'penneech.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'lead',
+            ],
+            explanation: 'Penneech must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'penneech.setup.initial-deal',
+              'penneech.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'penneech.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '61',
+            scoringDirection: 'high_wins',
+            targetScore: 61,
+            cardValues: {
+              A: '5',
+              K: '4',
+              Q: '3',
+              J: '2',
+              '7_diamonds_trump': '7',
+            },
+            explanation: 'A=5, K=4, Q=3, J=2, 7â™¦=7 (when diamonds trump). 61 wins.',
+            linkedRuleIds: [
+              'penneech.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'penneech.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

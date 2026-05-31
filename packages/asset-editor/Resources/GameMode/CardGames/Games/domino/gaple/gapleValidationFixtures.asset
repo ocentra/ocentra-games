@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: 'e00c5f04-5e9b-4491-ab90-d0f9be8740b6',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/gaple/gapleValidationFixtures.asset',
+    gameId: 'gaple',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'gaple',
+    familyVariant: 'Line / Scoring',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'gaple.core-runtime-contracts',
+        title: 'Gaple Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'gaple.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 5,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Gaple must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'gaple.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'gaple.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'award_pot',
+              'play_card',
+              'discard',
+              'pass',
+              'go_out',
+            ],
+            explanation: 'Gaple must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'gaple.setup.initial-deal',
+              'gaple.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'gaple.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'low_wins',
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'At hand end, each player totals pips on all unplayed tiles, including dead tiles if used. Lowest total wins the hand.',
+            linkedRuleIds: [
+              'gaple.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'gaple.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

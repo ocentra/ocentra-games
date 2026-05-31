@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '7aaf9f4f-dfc6-4062-b17e-693b1813267b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/sheriff-of-nottingham/sheriff-of-nottinghamValidationFixtures.asset',
+    gameId: 'sheriff-of-nottingham',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sheriff-of-nottingham',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sheriff-of-nottingham.core-runtime-contracts',
+        title: 'Sheriff of Nottingham Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sheriff-of-nottingham.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sheriff of Nottingham must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sheriff-of-nottingham.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sheriff-of-nottingham.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'turning_round',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Sheriff of Nottingham must run setup_round first, then enter turning_round with the processed legal actions.',
+            linkedRuleIds: [
+              'sheriff-of-nottingham.setup.initial-deal',
+              'sheriff-of-nottingham.flow.turning_round',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'turning_round',
+            firstPlayableLegalActions: [
+              'flip_top_card',
+            ],
+          },
+          {
+            id: 'sheriff-of-nottingham.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'high_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '1',
+              K: '13',
+              Q: '12',
+              J: '11',
+            },
+            explanation: 'No scoring; the activity ends when the deck has been picked up.',
+            linkedRuleIds: [
+              'sheriff-of-nottingham.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sheriff-of-nottingham.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: 'b5fac4d6-cbd7-4d49-ae93-55d04fac3975',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/laugavatnsmanni/laugavatnsmanniValidationFixtures.asset',
+    gameId: 'laugavatnsmanni',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'laugavatnsmanni',
+    familyVariant: 'Contracts',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'laugavatnsmanni.core-runtime-contracts',
+        title: 'Laugavatnsmanni Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'laugavatnsmanni.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 16,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Laugavatnsmanni must start by giving each active player 16 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'laugavatnsmanni.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'laugavatnsmanni.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'pass',
+              'choose_contract',
+              'exchange',
+              'calculate',
+            ],
+            explanation: 'Laugavatnsmanni must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'laugavatnsmanni.setup.initial-deal',
+              'laugavatnsmanni.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'laugavatnsmanni.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Highest net score (positive minus negative points) after 18 deals.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Points awarded based on tricks taken relative to contract-specific targets.',
+            linkedRuleIds: [
+              'laugavatnsmanni.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'laugavatnsmanni.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 16,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -50,6 +50,7 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
   { sourcePath: 'variations.list', targetPath: 'assetDataOverrides.gameInfo.variationsContent.list', match: 'publicVariationList', message: 'Public variations must land in GameInfo variationsContent without editor-only override metadata.' },
   { sourcePath: 'ai.difficulty', targetPath: 'assetDataOverrides.gameInfo.aiContent.difficulty', match: 'exact', message: 'AI difficulty notes must land in GameInfo aiContent.' },
   { sourcePath: 'ai.considerations', targetPath: 'assetDataOverrides.gameInfo.aiContent.considerations', match: 'exact', message: 'AI considerations must land in GameInfo aiContent.' },
+  { sourcePath: 'sources.primary', targetPath: 'assetDataOverrides.gameInfo.sourcesContent.primary', message: 'Primary source records must land in GameInfo sourcesContent.' },
   { sourcePath: 'rules.objective', targetPath: 'assetDataOverrides.rules.objective', match: 'exact', message: 'Rule objective must land in CardGameRules.' },
   { sourcePath: 'rules.gameplay', targetPath: 'assetDataOverrides.rules.gameplay', match: 'exact', message: 'Gameplay rules must land in CardGameRules.' },
   { sourcePath: 'rules.keyRules', targetPath: 'assetDataOverrides.rules.keyRules', match: 'exact', message: 'Key rules must land in CardGameRules.' },
@@ -84,6 +85,7 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
 ];
 
 const EDITOR_ONLY_CHECKS: TransferCheck[] = [
+  { sourcePath: '', targetPath: 'assetDataOverrides.gameInfo.editorOnly.processedSource', match: 'exact', message: 'The full processed source JSON must be retained in editor-only migration metadata so no source field is lost.' },
   { sourcePath: 'sources', targetPath: 'assetDataOverrides.gameInfo.editorOnly.sources', message: 'Sources must stay in GameInfo editorOnly metadata.' },
   { sourcePath: 'evidence', targetPath: 'assetDataOverrides.gameInfo.editorOnly.evidence', message: 'Evidence must stay in GameInfo editorOnly metadata.' },
   { sourcePath: 'extraction', targetPath: 'assetDataOverrides.gameInfo.editorOnly.extraction', message: 'Extraction audit data must stay in GameInfo editorOnly metadata.' },
@@ -216,6 +218,9 @@ function validateCheck(
 }
 
 function readPath(value: unknown, path: string): unknown {
+  if (path === '') {
+    return value;
+  }
   return path.split('.').reduce((current: unknown, segment) => {
     if (!current || typeof current !== 'object') {
       return undefined;

@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: 'e35f820d-a470-4d2e-9bd4-82e0011c8cfd',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/compendium/hollywood-garbage/hollywood-garbageValidationFixtures.asset',
+    gameId: 'hollywood-garbage',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hollywood-garbage',
+    familyVariant: 'Poker-based',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'hollywood-garbage.core-runtime-contracts',
+        title: 'Hollywood Garbage Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'hollywood-garbage.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 10,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 50,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_up',
+            explanation: 'Hollywood Garbage must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'hollywood-garbage.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'hollywood-garbage.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'deal',
+              'award_pot',
+              'play',
+            ],
+            explanation: 'Hollywood Garbage must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'hollywood-garbage.setup.initial-deal',
+              'hollywood-garbage.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play',
+            ],
+          },
+          {
+            id: 'hollywood-garbage.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Winner of Poker rounds + Bingo wins entire hand.',
+            linkedRuleIds: [
+              'hollywood-garbage.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'hollywood-garbage.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 10,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: 'a44a924b-ef74-4772-8c13-81f8ceed584e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/low-hole/low-holeValidationFixtures.asset',
+    gameId: 'low-hole',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'low-hole',
+    familyVariant: 'Wild Card Stud',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'low-hole.core-runtime-contracts',
+        title: 'Low Hole (Wild Card Stud) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'low-hole.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 8,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Low Hole (Wild Card Stud) must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'low-hole.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'low-hole.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'deal',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'reveal_hand',
+              'reveal',
+            ],
+            explanation: 'Low Hole (Wild Card Stud) must run setup_round first, then enter ante with the processed legal actions.',
+            linkedRuleIds: [
+              'low-hole.setup.initial-deal',
+              'low-hole.flow.ante',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
+            ],
+          },
+          {
+            id: 'low-hole.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Best 5-card poker hand wins the pot.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Standard poker hand rankings with wild cards. Five of a Kind possible.',
+            linkedRuleIds: [
+              'low-hole.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'low-hole.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '097fef86-f6a1-47cc-ad67-0eee23669f60',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/block-dominoes/block-dominoesValidationFixtures.asset',
+    gameId: 'block-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'block-dominoes',
+    familyVariant: 'Block / Line Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'block-dominoes.core-runtime-contracts',
+        title: 'Block Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'block-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Block Dominoes must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'block-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'block-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'dealing',
+            supportedActionIds: [
+              'setup_round',
+              'pass',
+              'deal_tiles',
+              'place_tile',
+              'calculate_pips',
+              'award_round_points',
+            ],
+            explanation: 'Block Dominoes must run setup_round first, then enter dealing with the processed legal actions.',
+            linkedRuleIds: [
+              'block-dominoes.setup.initial-deal',
+              'block-dominoes.flow.dealing',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_tiles',
+            ],
+          },
+          {
+            id: 'block-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'high_wins',
+            targetScore: 100,
+            cardValues: {},
+            explanation: "Winner scores sum of losers' pips minus own pips. Game to 100 (2-player/partnership) or 61 (3-4 player).",
+            linkedRuleIds: [
+              'block-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'block-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

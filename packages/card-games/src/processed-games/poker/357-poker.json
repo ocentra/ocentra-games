@@ -8,12 +8,12 @@
     "history": true,
     "setup": true,
     "rules": true,
-    "strategy": false,
+    "strategy": true,
     "variations": true,
-    "ai": false,
+    "ai": true,
     "sources": true
   },
-  "quality": "draft",
+  "quality": "complete",
   "overview": {
     "description": "Three-stage Guts variant: stage one 3 cards (threes wild), stage two 5 cards (fives wild), stage three 7 cards (sevens wild). At each stage players declare in or out; only player in scores a leg; multiple in then best hand wins and losers match the pot. First to three legs wins the pot.",
     "category": "Poker",
@@ -67,10 +67,14 @@
     "hasPlaceholders": false
   },
   "strategy": {
-    "basic": "",
-    "intermediate": "",
-    "advanced": "",
-    "tips": [],
+    "basic": "Play tight in stage one: stay in with trips, pairs, or strong wild-card support because losing a contested pot requires matching the pot.",
+    "intermediate": "Track each player's leg count and stage pressure; a player with two legs can win the pot with one uncontested declaration.",
+    "advanced": "Change risk by stage: three-card hands rank trips over pairs with threes wild, while stages two and three use five-card poker values with fives or sevens wild.",
+    "tips": [
+      "Do not chase a large pot with a weak declaration just because later stages remain.",
+      "A player already holding legs can pressure the table by staying in on marginal but plausible hands.",
+      "Remember that players who declared out in an earlier stage still receive later cards and can compete again."
+    ],
     "hasPlaceholders": false
   },
   "variations": {
@@ -80,11 +84,15 @@
   },
   "ai": {
     "difficulty": {
-      "easy": "",
-      "medium": "",
-      "hard": ""
+      "easy": "Declares in with pairs, trips, wild cards, or obvious high five-card strength; otherwise declares out.",
+      "medium": "Considers stage number, leg count, pot size, and stage-specific wild cards before declaring.",
+      "hard": "Estimates showdown equity, match-pot exposure, and opponent leg pressure before each in/out declaration."
     },
-    "considerations": [],
+    "considerations": [
+      "AI must evaluate a different hand model in each stage: three-card guts, then five-card poker, then best five of seven.",
+      "Decision logic must include match-pot loss risk, not only hand strength.",
+      "Leg count changes incentives because one uncontested stay-in can end the game."
+    ],
     "hasPlaceholders": false
   },
   "sources": {

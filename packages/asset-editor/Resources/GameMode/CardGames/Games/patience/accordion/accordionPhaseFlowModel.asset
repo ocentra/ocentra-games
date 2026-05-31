@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '184edad8-667e-45be-a880-dd721ed22a75',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/accordion/accordionPhaseFlowModel.asset',
+    gameId: 'accordion',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'accordion',
+    familyVariant: 'One-Deck',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'system',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+        },
+        notes: 'Cards are dealt one-by-one into a contiguous row.',
+      },
+      {
+        id: 'play',
+        label: 'Compression',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'moves_available',
+            nextPhase: 'play',
+          },
+          {
+            condition: 'stock_has_cards',
+            nextPhase: 'deal',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'A legal move places a top card onto the 1-left or 3-left pile when suit or rank matches.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'One player. Accordion is a patience (solitaire) game played by a single player; there are no opponents or partners.',
+        deck: 'Standard 52-card deck.',
+        equipment: 'One shuffled deck and table space for a long row of piles.',
+        dealing: 'Deal cards one by one from stock into a single row. After each deal, resolve any legal compression moves before dealing again if playing the incremental style.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'dealer',
+        dealerRotates: false,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'left_1_or_3_match_move',
+      ],
+    },
+    progression: [
+      'setup_round',
+      'deal',
+      'play',
+    ],
+    examples: [],
+  },
+}

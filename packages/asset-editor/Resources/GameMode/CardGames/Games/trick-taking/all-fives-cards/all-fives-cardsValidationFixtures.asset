@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: '25b44445-ec96-4983-b36a-3509aa61c776',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fives-cards/all-fives-cardsValidationFixtures.asset',
+    gameId: 'all-fives-cards',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'all-fives-cards',
+    familyVariant: 'Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'all-fives-cards.core-runtime-contracts',
+        title: 'All Fives (Cards) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'all-fives-cards.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 3,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 18,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'All Fives (Cards) must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'all-fives-cards.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'all-fives-cards.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'reveal_market',
+              'check',
+              'award_pot',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'All Fives (Cards) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'all-fives-cards.setup.initial-deal',
+              'all-fives-cards.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'all-fives-cards.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '61',
+            scoringDirection: 'high_wins',
+            targetScore: 61,
+            cardValues: {
+              '10_trump': '10',
+              '5_trump': '5',
+              A_trump: '4',
+              K_trump: '3',
+              Q_trump: '2',
+              J_trump: '1',
+            },
+            explanation: 'Points are scored immediately upon winning a trick containing a point-card.',
+            linkedRuleIds: [
+              'all-fives-cards.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'all-fives-cards.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

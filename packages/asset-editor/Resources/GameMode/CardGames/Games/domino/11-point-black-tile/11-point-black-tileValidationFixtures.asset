@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '811508aa-0006-406f-be85-8b7193efb1a6',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/11-point-black-tile/11-point-black-tileValidationFixtures.asset',
+    gameId: '11-point-black-tile',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '11-point-black-tile',
+    familyVariant: 'Trick-avoidance',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '11-point-black-tile.core-runtime-contracts',
+        title: '11 Point Black Tile Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '11-point-black-tile.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '11 Point Black Tile must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '11-point-black-tile.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '11-point-black-tile.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: '11 Point Black Tile must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              '11-point-black-tile.setup.initial-deal',
+              '11-point-black-tile.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: '11-point-black-tile.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Avoid taking tricks containing counter tiles; lowest total score wins. The name comes from the 11 points in play per deal (double-0 = 4, seven 3-suit tiles = 7).',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Double-0 = 4 points; each 3-suit tile = 1 point. There are 21-point and 30-point variants.',
+            linkedRuleIds: [
+              '11-point-black-tile.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '11-point-black-tile.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

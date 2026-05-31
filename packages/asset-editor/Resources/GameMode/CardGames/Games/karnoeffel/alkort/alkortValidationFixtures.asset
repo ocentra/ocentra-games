@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '59277ced-1945-4c77-9789-2c8ac1d985f1',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/karnoeffel/alkort/alkortValidationFixtures.asset',
+    gameId: 'alkort',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'alkort',
+    familyVariant: 'Karnöffel-style',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'alkort.core-runtime-contracts',
+        title: 'Alkort Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'alkort.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Alkort must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'alkort.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'alkort.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'buy_stock',
+              'reveal_hand',
+              'award_pot',
+              'play_card',
+              'pass',
+            ],
+            explanation: 'Alkort must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'alkort.setup.initial-deal',
+              'alkort.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'alkort.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '21',
+            scoringDirection: 'high_wins',
+            targetScore: 21,
+            cardValues: {},
+            explanation: 'Points awarded at the end of each deal.',
+            linkedRuleIds: [
+              'alkort.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'alkort.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

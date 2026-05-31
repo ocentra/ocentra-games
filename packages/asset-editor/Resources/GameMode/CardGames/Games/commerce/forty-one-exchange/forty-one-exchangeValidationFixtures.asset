@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '86831173-172b-4dff-82b5-1d3bb6a80112',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/commerce/forty-one-exchange/forty-one-exchangeValidationFixtures.asset',
+    gameId: 'forty-one-exchange',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'forty-one-exchange',
+    familyVariant: 'Melding / Pay-Card Gambling',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'forty-one-exchange.core-runtime-contracts',
+        title: 'Forty-One Exchange Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'forty-one-exchange.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Forty-One Exchange must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'forty-one-exchange.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'forty-one-exchange.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'draw',
+              'discard',
+            ],
+            explanation: 'Forty-One Exchange must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'forty-one-exchange.setup.initial-deal',
+              'forty-one-exchange.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'forty-one-exchange.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player to collect 4 cards of the same suit summing to exactly 41 points wins immediately. If deck empties, highest suit-total wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Players collect cards of the same suit totaling exactly 41 points. High suit-score wins if deck runs out.',
+            linkedRuleIds: [
+              'forty-one-exchange.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'forty-one-exchange.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

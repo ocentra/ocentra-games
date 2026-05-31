@@ -1,4 +1,4 @@
-const READY_LOCAL_PILOT_GAMES = new Set(['claim']);
+const READY_LOCAL_PILOT_GAMES = new Set(['claim', 'briscola', 'three-card-brag']);
 const KNOWN_LOCAL_PILOT_GAMES = new Set(['claim', 'briscola', 'three-card-brag']);
 
 export type LocalPilotStatus =
@@ -19,7 +19,7 @@ export function getLocalPilotStatus(gameId: string): LocalPilotStatus {
     return {
       isKnown: true,
       isReady: false,
-      message: `${gameId} local pilot is not ready yet. Claim is the first supported local pilot.`,
+      message: `${gameId} local pilot is known but not ready yet.`,
     };
   }
 

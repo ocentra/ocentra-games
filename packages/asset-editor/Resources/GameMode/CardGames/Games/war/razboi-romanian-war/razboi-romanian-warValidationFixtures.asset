@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '5de76179-90c4-44db-a14e-c5d568100bd8',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/razboi-romanian-war/razboi-romanian-warValidationFixtures.asset',
+    gameId: 'razboi-romanian-war',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'razboi-romanian-war',
+    familyVariant: 'War / Accumulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'razboi-romanian-war.core-runtime-contracts',
+        title: 'RÄƒzboi Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'razboi-romanian-war.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'RÄƒzboi must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'razboi-romanian-war.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'razboi-romanian-war.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'flip',
+            supportedActionIds: [
+              'setup_round',
+              'flip',
+              'take',
+              'war',
+            ],
+            explanation: 'RÄƒzboi must run setup_round first, then enter flip with the processed legal actions.',
+            linkedRuleIds: [
+              'razboi-romanian-war.setup.initial-deal',
+              'razboi-romanian-war.flow.flip',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'flip',
+            firstPlayableLegalActions: [
+              'flip',
+            ],
+          },
+          {
+            id: 'razboi-romanian-war.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Win all 52 cards.',
+            linkedRuleIds: [
+              'razboi-romanian-war.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'razboi-romanian-war.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

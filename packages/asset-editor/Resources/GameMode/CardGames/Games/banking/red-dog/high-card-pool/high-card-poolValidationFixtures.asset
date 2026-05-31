@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '3467df5a-ac2e-4703-ae43-beeb02bd5896',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/red-dog/high-card-pool/high-card-poolValidationFixtures.asset',
+    gameId: 'high-card-pool',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'high-card-pool',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'high-card-pool.core-runtime-contracts',
+        title: 'High Card Pool Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'high-card-pool.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 8,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 40,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'High Card Pool must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'high-card-pool.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'high-card-pool.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'contribute_ante',
+              'place_bet',
+              'resolve_round',
+            ],
+            explanation: 'High Card Pool must run setup_round first, then enter ante with the processed legal actions.',
+            linkedRuleIds: [
+              'high-card-pool.setup.initial-deal',
+              'high-card-pool.flow.ante',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'contribute_ante',
+            ],
+          },
+          {
+            id: 'high-card-pool.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {
+              '10-2': '0',
+            },
+            explanation: 'Players bet against the central pot. Winning hand wins the bet amount plus an equal amount from the pot.',
+            linkedRuleIds: [
+              'high-card-pool.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'high-card-pool.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

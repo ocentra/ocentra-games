@@ -21,7 +21,10 @@ export interface LocalPilotHudActionDescriptor {
     | 'discard_card'
     | 'end_turn'
     | 'pass'
+    | 'bet'
+    | 'fold'
     | 'pick_up'
+    | 'play_card'
     | 'reveal_hand'
     | 'take_discard'
     | 'take_stock';
@@ -344,6 +347,30 @@ export function buildLocalPilotHudActions({
     });
   }
 
+  if (legalActions.includes('play_card')) {
+    currentPlayer.hand.forEach((card) => {
+      cardChoiceActions.push({
+        cardId: card.id,
+        kind: 'play_card',
+        label: `Play ${formatLocalPilotCardShortLabel(card)}`,
+      });
+    });
+  }
+
+  if (legalActions.includes('bet')) {
+    primaryActions.push({
+      kind: 'bet',
+      label: 'Bet 1',
+    });
+  }
+
+  if (legalActions.includes('fold')) {
+    terminalActions.push({
+      kind: 'fold',
+      label: 'Fold',
+    });
+  }
+
   if (legalActions.includes('call_showdown')) {
     terminalActions.push({
       kind: 'call_showdown',
@@ -390,7 +417,9 @@ export function buildLocalPilotHudControls(
   hudActions: LocalPilotHudActionDescriptor[],
 ): HudArtworkControls {
   const nextDocument = cloneCardGameLayoutDocument(ensureRuntimeLayoutDocument(document));
-  const nextLabels = Array.from({ length: 6 }, (_, index) => hudActions[index]?.label ?? '');
+  const nextLabels = hudActions.length > 0
+    ? Array.from({ length: 6 }, (_, index) => hudActions[index]?.label ?? '')
+    : ['Waiting', '', '', '', '', ''];
   nextDocument.hud.buttonLabels = nextLabels;
   nextDocument.hud.buttonCount = Math.max(1, Math.min(6, hudActions.length || 1));
   nextDocument.renderToggles = {
@@ -464,7 +493,7 @@ export function buildLocalPilotZonePresentation({
                   accent: true,
                   card,
                   detail,
-                  id: record.playerId ?? `${zone.id}-${index}`,
+                  id: [record.playerId, card?.id, index].filter((part) => part !== undefined && part !== null && String(part).length > 0).join('-'),
                   label: record.card ? formatLocalPilotCardShortLabel(record.card) : 'Unknown',
                 };
               }

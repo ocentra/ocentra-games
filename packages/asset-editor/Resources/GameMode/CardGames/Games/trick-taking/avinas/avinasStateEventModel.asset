@@ -1,0 +1,72 @@
+{
+  system: {
+    guid: 'f9f1b15a-1ad9-415c-a52e-7fe05bffcf5f',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/avinas/avinasStateEventModel.asset',
+    gameId: 'avinas',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'avinas',
+    familyVariant: 'Schafkopf Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 32,
+        },
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 8,
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: null,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'trump_declaration',
+        'trick_play',
+        'payout',
+      ],
+      actions: [
+        'setup_round',
+        'play_card',
+        'deal_batches_4',
+        'declare_suit',
+        'calculate_120_and_assign_horns',
+      ],
+    },
+    examples: [],
+  },
+}

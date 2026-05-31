@@ -1,0 +1,127 @@
+{
+  system: {
+    guid: '1cd30ba5-cb5e-457a-b2e4-c18c7115890c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/commercial/rook/rookValidationFixtures.asset',
+    gameId: 'rook',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'rook',
+    familyVariant: 'Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'rook.core-runtime-contracts',
+        title: 'Rook Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'rook.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 40,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Rook must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'rook.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'rook.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'discard',
+              'pass',
+              'bid',
+              'take_nest',
+              'name_trump',
+            ],
+            explanation: 'Rook must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'rook.setup.initial-deal',
+              'rook.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'rook.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '500',
+            scoringDirection: 'high_wins',
+            targetScore: 500,
+            cardValues: {
+              '1': '15',
+              '5': '5',
+              '10': '10',
+              '14': '10',
+              Rook: '20',
+            },
+            explanation: "Card points: 1=15, 14=10, 10=10, 5=5, Rook=20 (180 per deal). Bidder's team scores its points if they make the bid, else subtracts the bid; other team always scores its points. First team to 500 wins.",
+            linkedRuleIds: [
+              'rook.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'rook.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

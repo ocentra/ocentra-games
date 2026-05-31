@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '66dfbeb3-b7f9-4860-aa12-ad7428a2e3af',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/karnoeffel/br-us-gotland/br-us-gotlandValidationFixtures.asset',
+    gameId: 'br-us-gotland',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'br-us-gotland',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'br-us-gotland.core-runtime-contracts',
+        title: 'Bräus Gotland Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'br-us-gotland.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 54,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bräus Gotland must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'br-us-gotland.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'br-us-gotland.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Bräus Gotland must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'br-us-gotland.setup.initial-deal',
+              'br-us-gotland.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'br-us-gotland.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Play deals until one partnership reaches the agreed number of points; the team with the higher total score wins the game.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Each deal awards one point to the team that first reaches six tricks, or two points for Jan when the first six tricks are won in a row; other deals with no decisive result score nothing.',
+            linkedRuleIds: [
+              'br-us-gotland.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'br-us-gotland.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

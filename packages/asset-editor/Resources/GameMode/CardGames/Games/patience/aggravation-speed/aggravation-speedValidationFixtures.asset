@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '5da6e045-ed50-4d77-a825-1f58162bdad4',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/aggravation-speed/aggravation-speedValidationFixtures.asset',
+    gameId: 'aggravation-speed',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'aggravation-speed',
+    familyVariant: 'Speed Match',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'aggravation-speed.core-runtime-contracts',
+        title: 'Aggravation Speed Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'aggravation-speed.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 26,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 52,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Aggravation Speed must start by giving each active player 26 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'aggravation-speed.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'aggravation-speed.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'setup',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'award_pot',
+              'play_card',
+              'go_out',
+            ],
+            explanation: 'Aggravation Speed must run setup_round first, then enter setup with the processed legal actions.',
+            linkedRuleIds: [
+              'aggravation-speed.setup.initial-deal',
+              'aggravation-speed.flow.setup',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'aggravation-speed.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player to empty deck and call Aggravation on a valid match wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Single-hand winner game determined by first valid aggravation call.',
+            linkedRuleIds: [
+              'aggravation-speed.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'aggravation-speed.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 26,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

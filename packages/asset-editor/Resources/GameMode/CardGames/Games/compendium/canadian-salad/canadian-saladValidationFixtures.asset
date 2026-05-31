@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: 'a7f95395-188e-4694-bd03-a90f6b49d311',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/compendium/canadian-salad/canadian-saladValidationFixtures.asset',
+    gameId: 'canadian-salad',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'canadian-salad',
+    familyVariant: 'Avoidance',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'canadian-salad.core-runtime-contracts',
+        title: 'Canadian Salad Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'canadian-salad.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 6,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 78,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Canadian Salad must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'canadian-salad.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'canadian-salad.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+            ],
+            explanation: 'Canadian Salad must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'canadian-salad.setup.initial-deal',
+              'canadian-salad.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'canadian-salad.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Avoid winning cards and tricks that score penalty points. Six hands played in sequence with different objectives. Lowest total score after six hands wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Penalty points recorded after each hand. Hand 1: 10 pts per trick. Hand 2: 10 pts per heart. Hand 3: 25 pts per queen. Hand 4: 100 pts for Kâ™ . Hand 5: 100 pts for last trick. Hand 6: All penalties combined. Example: Last trick in hand 6 containing 8â™¥, 9â™¥, Qâ™¥, Kâ™¥ scores 175 pts: 40 (4 hearts) + 10 (trick) + 25 (queen) + 100 (last trick). Grand total of all scores = 1120. Player with lowest score wins.',
+            linkedRuleIds: [
+              'canadian-salad.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'canadian-salad.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

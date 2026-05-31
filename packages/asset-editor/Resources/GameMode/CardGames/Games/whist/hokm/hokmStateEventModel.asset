@@ -1,0 +1,82 @@
+{
+  system: {
+    guid: 'c426c742-f5ed-487f-835d-e6b51786ba19',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/hokm/hokmStateEventModel.asset',
+    gameId: 'hokm',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hokm',
+    familyVariant: 'Plain-trick with Trump',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'trick',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'custom:score_area',
+          type: 'area',
+          visibility: 'public',
+          owner: 'team',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'NA',
+        tableauCards: 'NA',
+      },
+      constants: {
+        target_score: 7,
+        hand_size: 13,
+        deck_count: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'hakem_selection',
+        'initial_deal',
+        'trump_declaration',
+        'final_deal',
+        'play',
+        'scoring',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'declare',
+        'play_card',
+        'complete_scoring',
+      ],
+    },
+    examples: [],
+  },
+}

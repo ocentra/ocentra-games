@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '1c159b08-c4f8-417e-a542-1fd8f669effb',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/spoil-five/110/110ValidationFixtures.asset',
+    gameId: '110',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '110',
+    familyVariant: 'Point-trick with Bidding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '110.core-runtime-contracts',
+        title: '110 (One Hundred and Ten) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '110.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 9,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 45,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '110 (One Hundred and Ten) must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '110.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '110.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: '110 (One Hundred and Ten) must run setup_round first, then enter bidding with the processed legal actions.',
+            linkedRuleIds: [
+              '110.setup.initial-deal',
+              '110.flow.bidding',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'bidding',
+            firstPlayableLegalActions: [
+              'bid',
+              'pass',
+            ],
+          },
+          {
+            id: '110.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '110',
+            scoringDirection: 'high_wins',
+            targetScore: 110,
+            cardValues: {},
+            explanation: 'Bidder scores trick points if total ≥ bid, else loses the bid amount. Bid of 60 = win all tricks: score 60 or lose 60. Others score for their tricks. First to 110 wins; if two reach it in the same deal, order of tricks determines winner.',
+            linkedRuleIds: [
+              '110.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '110.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 9,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

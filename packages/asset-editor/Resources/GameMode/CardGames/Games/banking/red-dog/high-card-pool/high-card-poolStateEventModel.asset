@@ -1,0 +1,74 @@
+{
+  system: {
+    guid: '0513465a-618a-448b-bd7b-63e4013100b7',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/red-dog/high-card-pool/high-card-poolStateEventModel.asset',
+    gameId: 'high-card-pool',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'high-card-pool',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'NA',
+        tableauCards: 'NA',
+      },
+      constants: {
+        ante: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'ante',
+        'deal',
+        'betting_round',
+        'round_end',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'contribute_ante',
+        'place_bet',
+        'resolve_round',
+      ],
+    },
+    examples: [],
+  },
+}

@@ -1,0 +1,125 @@
+{
+  system: {
+    guid: '979496b9-c903-45d0-9ea3-121af98f23b1',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/blind-don/blind-donValidationFixtures.asset',
+    gameId: 'blind-don',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'blind-don',
+    familyVariant: 'Pitch / All Fours Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'blind-don.core-runtime-contracts',
+        title: 'Blind Don Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'blind-don.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 26,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Blind Don must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'blind-don.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'blind-don.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'dealing_1',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'deal_13_each',
+              'deal_remaining_26',
+              'calculate_don_points',
+            ],
+            explanation: 'Blind Don must run setup_round first, then enter dealing_1 with the processed legal actions.',
+            linkedRuleIds: [
+              'blind-don.setup.initial-deal',
+              'blind-don.flow.dealing_1',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing_1',
+            firstPlayableLegalActions: [
+              'deal_13_each',
+            ],
+          },
+          {
+            id: 'blind-don.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '80',
+            scoringDirection: 'high_wins',
+            targetScore: 80,
+            cardValues: {
+              Nine: '9 points',
+              'Five (Don)': '5 points',
+              Ace: '4 points',
+              King: '3 points',
+              Queen: '2 points',
+              Jack: '1 point',
+            },
+            explanation: 'Points are tallied after all 26 tricks. First to reach 80 points wins the match.',
+            linkedRuleIds: [
+              'blind-don.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'blind-don.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

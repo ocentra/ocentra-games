@@ -10,7 +10,12 @@ import { createTestEventBus } from '@ocentra/eventing-domain/testing/createTestE
 import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
 import { validateAssetFile } from '@ocentra/game-asset-domain/schemas/asset/asset-file-schema';
 import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
-import { loadProcessedGame } from '@ocentra/game-asset-domain/factories/ProcessedGameAssetFactory';
+import {
+  deriveProcessedGameCategory,
+  loadProcessedGame,
+  parseProcessedGameTaxonomyPath,
+  type ProcessedGameTaxonomyPath,
+} from '@ocentra/game-asset-domain/factories/ProcessedGameAssetFactory';
 import { validateSelectedGameBundleReadiness } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGameReadiness';
 import { createProcessedGameModeBundle } from '@/adapters/assets/createProcessedGameModeBundle';
 import type { GameModeBundle, GameModeBundleFile } from '@/adapters/assets/createGameModeBundle';
@@ -62,7 +67,7 @@ type MigrationGameReport = schema.infer<typeof MigrationGameReportSchema>;
 interface CliOptions {
   processedRoot: string;
   files: string[];
-  category: string;
+  category?: ProcessedGameTaxonomyPath;
   prefix?: string;
   limit?: number;
   samplePerDeckTriple: boolean;
@@ -187,6 +192,14 @@ function readNumberArg(argv: string[], name: string): number | undefined {
   return parsed;
 }
 
+function resolveRepoRelativePath(value: string): string {
+  const cwdResolved = path.resolve(value);
+  if (fs.existsSync(cwdResolved)) {
+    return cwdResolved;
+  }
+  return path.resolve(repoRoot, value);
+}
+
 function parseArgs(argv: string[]): CliOptions {
   const fileArgs = argv.flatMap((arg, index) => {
     if (arg === '--file' && argv[index + 1]) {
@@ -198,10 +211,11 @@ function parseArgs(argv: string[]): CliOptions {
     return [];
   });
   const processedRoot = path.resolve(readArgValue(argv, '--root') ?? defaultProcessedRoot);
+  const categoryArg = readArgValue(argv, '--category');
   return {
     processedRoot,
-    files: fileArgs.map((file) => path.resolve(file)),
-    category: readArgValue(argv, '--category') ?? 'CardGames/Imported',
+    files: fileArgs.map(resolveRepoRelativePath),
+    category: categoryArg ? parseProcessedGameTaxonomyPath(categoryArg) : undefined,
     prefix: readArgValue(argv, '--prefix'),
     limit: readNumberArg(argv, '--limit'),
     samplePerDeckTriple: argv.includes('--sample-per-deck-triple'),
@@ -494,6 +508,69 @@ function validateGeneratedAssetSet(sourcePath: string, bundle: GameModeBundle, p
   }
 }
 
+function validateGeneratedTaxonomyPath(sourcePath: string, bundle: GameModeBundle, options: CliOptions, issues: MigrationIssue[]): void {
+  const expectedCategory = (options.category ?? deriveProcessedGameCategory(sourcePath, options.processedRoot))
+    .replace(/\\/g, '/')
+    .replace(/^\/+|\/+$/g, '');
+  const expectedCategoryDir = path.resolve(resourcesRoot, 'GameMode', expectedCategory);
+  if (!fs.existsSync(expectedCategoryDir) || !fs.statSync(expectedCategoryDir).isDirectory()) {
+    addIssue(
+      issues,
+      sourcePath,
+      'target-taxonomy-folder-missing',
+      `Target category folder must be scaffolded before migration: Resources/GameMode/${expectedCategory}.`,
+    );
+  }
+  const expectedPrefix = normalizeResourcePath(`Resources/GameMode/${expectedCategory}/`);
+  const normalizedMainPath = normalizeResourcePath(bundle.mainAssetPath);
+  const taxonomyRoot = 'gamemode/cardgames/games/';
+  if (!normalizedMainPath.startsWith(taxonomyRoot)) {
+    addIssue(
+      issues,
+      sourcePath,
+      'generated-path-outside-card-games-taxonomy',
+      `Generated main asset path must live under Resources/GameMode/CardGames/Games/<category>/<game>; got ${bundle.mainAssetPath}.`,
+      bundle.mainAssetPath,
+    );
+    return;
+  }
+
+  const taxonomySegments = normalizedMainPath.slice(taxonomyRoot.length).split('/');
+  if (taxonomySegments.length < 3) {
+    addIssue(
+      issues,
+      sourcePath,
+      'generated-path-missing-category-folder',
+      `Generated main asset path must include at least one category folder before the game folder; got ${bundle.mainAssetPath}.`,
+      bundle.mainAssetPath,
+    );
+  }
+
+  if (!normalizedMainPath.startsWith(expectedPrefix)) {
+    addIssue(
+      issues,
+      sourcePath,
+      'generated-path-category-mismatch',
+      `Generated main asset path must use category ${expectedCategory}; got ${bundle.mainAssetPath}.`,
+      bundle.mainAssetPath,
+    );
+  }
+
+  const mainFolder = normalizedMainPath.slice(0, normalizedMainPath.lastIndexOf('/') + 1);
+  for (const file of bundle.files) {
+    const normalizedPath = normalizeResourcePath(file.path);
+    if (!normalizedPath.startsWith(mainFolder)) {
+      addIssue(
+        issues,
+        sourcePath,
+        'generated-file-outside-game-folder',
+        `Generated file ${file.path} is outside the generated game folder ${mainFolder}.`,
+        file.path,
+      );
+    }
+  }
+}
+
 function validateMainReleaseState(sourcePath: string, mainAsset: AssetEnvelope | null, issues: MigrationIssue[]): void {
   if (!mainAsset) {
     addIssue(issues, sourcePath, 'missing-main-card-game-mode', 'Generated bundle is missing CardGameMode.');
@@ -582,8 +659,21 @@ function validateGameInfo(sourcePath: string, gameInfo: AssetEnvelope | null, is
     'aiContent.considerations',
     'mechanicsContract.linkedAssetKeys',
     'sections',
+    'editorOnly.processedSource',
+    'editorOnly.migrationReview.status',
+    'editorOnly.migrationReview.requiredChecks',
   ]) {
     requireMeaningful(data, sourcePath, assetPath, dataPath, issues);
+  }
+  const reviewStatus = asText(readPath(data, 'editorOnly.migrationReview.status'));
+  if (reviewStatus !== 'verified') {
+    addWarning(
+      issues,
+      sourcePath,
+      'source-review-pending',
+      `Rules, deck, category, and duplicate-identity review requires source-page knowledge work; current migrationReview.status is ${reviewStatus || 'missing'}.`,
+      assetPath,
+    );
   }
 }
 
@@ -806,6 +896,7 @@ async function validateOne(sourcePath: string, options: CliOptions, resources: R
     });
     parsedBundle = parseBundle(bundle, sourcePath, issues);
     validateGeneratedAssetSet(sourcePath, bundle, parsedBundle, issues);
+    validateGeneratedTaxonomyPath(sourcePath, bundle, options, issues);
     const mainAsset = findBundleAsset(parsedBundle, 'CardGameMode');
     validateMainReleaseState(sourcePath, mainAsset, issues);
     validateMainAssetRefs(sourcePath, mainAsset, parsedBundle, resources, issues);

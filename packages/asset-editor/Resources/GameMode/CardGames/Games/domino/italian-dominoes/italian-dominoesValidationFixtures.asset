@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '985a7f7e-63e3-47c5-a26c-a97ad7c003e5',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/italian-dominoes/italian-dominoesValidationFixtures.asset',
+    gameId: 'italian-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'italian-dominoes',
+    familyVariant: 'Domino / Adding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'italian-dominoes.core-runtime-contracts',
+        title: 'Italian Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'italian-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Italian Dominoes must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'italian-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'italian-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'draw',
+              'pass',
+            ],
+            explanation: 'Italian Dominoes must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'italian-dominoes.setup.initial-deal',
+              'italian-dominoes.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+              'draw',
+              'pass',
+            ],
+          },
+          {
+            id: 'italian-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '50',
+            scoringDirection: 'high_wins',
+            targetScore: 50,
+            cardValues: {},
+            explanation: 'When the cumulative pip total hits exactly 30, 50, 70, or 100, the player who laid that tile scores 1, 2, 4, or 8 points respectively. First to reach or pass 50 points wins the game.',
+            linkedRuleIds: [
+              'italian-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'italian-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

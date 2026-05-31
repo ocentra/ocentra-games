@@ -1,0 +1,132 @@
+{
+  system: {
+    guid: 'c4ddfdba-b16f-4c21-8844-1bb6f4c22a53',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/gaps/gapsPhaseFlowModel.asset',
+    gameId: 'gaps',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'gaps',
+    familyVariant: 'Non-Builder',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'setup',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 0 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'setup',
+        label: 'Initial Layout',
+        actor: 'system',
+        legalActions: [
+          'deal',
+          'discard',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+        },
+        notes: 'Deal four rows of thirteen and remove aces to create four gaps.',
+      },
+      {
+        id: 'play',
+        label: 'Gap Fill and Redeal',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+          'deal',
+        ],
+        nextPhase: null,
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'all_rows_completed',
+            nextPhase: null,
+          },
+          {
+            condition: 'moves_available',
+            nextPhase: 'play',
+          },
+          {
+            condition: 'moves_available == false AND redeals_remaining > 0',
+            nextPhase: 'play',
+          },
+          {
+            condition: 'moves_available == false AND redeals_remaining == 0',
+            nextPhase: null,
+          },
+        ],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+          play_card: 'face_up',
+        },
+        notes: 'Fill legal gaps by successor rule. If stuck and redeals remain, redeal unsorted cards into open spaces.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'One player. Gaps is a patience (solitaire) game; a single player plays alone and makes all decisions about which cards to move into gaps and when to redeal.',
+        deck: 'Standard 52-card deck.',
+        equipment: 'One shuffled deck and table space for four rows of thirteen cards.',
+        dealing: 'Deal all 52 cards face up into four rows of thirteen. Remove all four aces, leaving four empty spaces.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'dealer',
+        dealerRotates: false,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'Successor lookup by suit and rank for each gap.',
+        'Detect and preserve maximal left-anchored in-order suit prefixes before redeal.',
+        'Apply redeal limit and terminate on unsolved state when limit reached.',
+      ],
+    },
+    progression: [
+      'setup_round',
+      'setup',
+      'play',
+    ],
+    examples: [],
+  },
+}

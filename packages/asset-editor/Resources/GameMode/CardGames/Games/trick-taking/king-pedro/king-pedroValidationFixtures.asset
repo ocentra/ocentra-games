@@ -1,0 +1,127 @@
+{
+  system: {
+    guid: 'a9fe3b91-5e6f-4b66-8d89-0de7389ee87c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/king-pedro/king-pedroValidationFixtures.asset',
+    gameId: 'king-pedro',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'king-pedro',
+    familyVariant: 'Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'king-pedro.core-runtime-contracts',
+        title: 'King Pedro Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'king-pedro.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'King Pedro must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'king-pedro.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'king-pedro.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'discard',
+              'pass',
+              'bid',
+            ],
+            explanation: 'King Pedro must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'king-pedro.setup.initial-deal',
+              'king-pedro.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'king-pedro.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '62',
+            scoringDirection: 'high_wins',
+            targetScore: 62,
+            cardValues: {
+              'high (trump ace)': '1',
+              'jack (trump jack)': '1',
+              'game (trump ten)': '1',
+              'pedro (trump 5)': '5',
+              'low pedro (other 5 same color)': '5',
+              'king (trump king)': '5',
+              'low (trump 2)': '1',
+            },
+            explanation: 'Be the first team to reach 62 or more points by winning tricks containing valuable cards.',
+            linkedRuleIds: [
+              'king-pedro.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'king-pedro.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: 'df1f1c5c-92e0-48cf-a473-c0dec54f9ba8',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/tarok-romanian/tarok-romanianValidationFixtures.asset',
+    gameId: 'tarok-romanian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tarok-romanian',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tarok-romanian.core-runtime-contracts',
+        title: 'Tarok Romanian Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tarok-romanian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tarok Romanian must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tarok-romanian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tarok-romanian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'declare',
+              'play_card',
+              'pass',
+              'bid',
+              'deal_6_talon_12_each',
+              'call_king',
+              'take_talon_discard',
+            ],
+            explanation: 'Tarok Romanian must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'tarok-romanian.setup.initial-deal',
+              'tarok-romanian.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_6_talon_12_each',
+            ],
+          },
+          {
+            id: 'tarok-romanian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Declarer's team wins the hand by taking at least 36 of 70 card points in tricks; opponents win with 35 or more. Bonuses and declarations add or subtract game points.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              skiz_luna_pagat: '5',
+              kings: '5',
+              queens: '4',
+              horses: '3',
+              jacks: '2',
+              others: '1',
+            },
+            explanation: "70 card points in the pack. Count cards in groups of three and subtract 2 per group. Declarer's team needs at least 36 points to win the game; opponents win with 35 or more. Bonuses (trula, pagat ultimo, rege ultimo, valat) and declarations (8, 9, 10 taroace) scored per payment table.",
+            linkedRuleIds: [
+              'tarok-romanian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tarok-romanian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

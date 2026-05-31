@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '044150cf-04b8-46cc-945f-f2e88ff5f588',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/sidi-barrani/sidi-barraniValidationFixtures.asset',
+    gameId: 'sidi-barrani',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sidi-barrani',
+    familyVariant: 'Ace-Ten / Jass',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sidi-barrani.core-runtime-contracts',
+        title: 'Sidi Barrani Jass Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sidi-barrani.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sidi Barrani Jass must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sidi-barrani.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sidi-barrani.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'declare',
+              'play_card',
+              'pass',
+              'bid',
+              'deal_9_each_3_batches',
+            ],
+            explanation: 'Sidi Barrani Jass must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'sidi-barrani.setup.initial-deal',
+              'sidi-barrani.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_9_each_3_batches',
+            ],
+          },
+          {
+            id: 'sidi-barrani.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '2000',
+            scoringDirection: 'high_wins',
+            targetScore: 2000,
+            cardValues: {},
+            explanation: 'Card points in tricks (157 total), 5 for last trick, 100 for Match (all nine tricks). Weis and Stöck add extra. Bid value (×2 if doubled) added to declarers if contract made, else to opponents. First team to 2000 wins; loser under 1000 = double game.',
+            linkedRuleIds: [
+              'sidi-barrani.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sidi-barrani.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

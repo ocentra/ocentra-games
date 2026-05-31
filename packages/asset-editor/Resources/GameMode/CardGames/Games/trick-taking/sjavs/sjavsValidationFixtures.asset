@@ -1,0 +1,125 @@
+{
+  system: {
+    guid: '5a9d764e-bebc-4218-845c-aa900fc363ec',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/sjavs/sjavsValidationFixtures.asset',
+    gameId: 'sjavs',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sjavs',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sjavs.core-runtime-contracts',
+        title: 'Sjavs Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sjavs.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sjavs must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sjavs.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sjavs.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+              'perform_deal',
+              'name_trump_suit',
+            ],
+            explanation: 'Sjavs must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'sjavs.setup.initial-deal',
+              'sjavs.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'perform_deal',
+            ],
+          },
+          {
+            id: 'sjavs.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Win the rubber by reducing your side's score from 24 to 0 before the opponents.",
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'Each deal: card points (A=11, 10=10, K=4, Q=3, J=2) in tricks determine game score. Rubber: start at 24, subtract; first side to reach 0 wins the rubber.',
+            linkedRuleIds: [
+              'sjavs.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sjavs.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

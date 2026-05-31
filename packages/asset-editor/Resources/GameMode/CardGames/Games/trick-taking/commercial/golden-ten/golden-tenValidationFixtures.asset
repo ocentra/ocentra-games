@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: 'a695560a-6a02-41a6-9b1f-a91c61a3121e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/commercial/golden-ten/golden-tenValidationFixtures.asset',
+    gameId: 'golden-ten',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'golden-ten',
+    familyVariant: 'Avoidance / Hearts Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'golden-ten.core-runtime-contracts',
+        title: 'Golden Ten Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'golden-ten.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 7,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 56,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Golden Ten must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'golden-ten.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'golden-ten.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'award_pot',
+              'play_card',
+            ],
+            explanation: 'Golden Ten must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'golden-ten.setup.initial-deal',
+              'golden-ten.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'golden-ten.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'After six deals, player with the lowest cumulative penalty total wins.',
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {
+              red_cards: '1 each',
+              red_5: '5',
+              red_10: '10',
+              yellow_10: '10',
+            },
+            explanation: 'Each red card is 1 penalty, except red 5 is 5 and red 10 is 10. Capturing yellow 10 reduces your red penalties by 10, minimum zero.',
+            linkedRuleIds: [
+              'golden-ten.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'golden-ten.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: 'bcf23c86-7f0e-4d7f-a175-6826271d7792',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/bieten/bietenValidationFixtures.asset',
+    gameId: 'bieten',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bieten',
+    familyVariant: 'Last-Trick / Betting',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bieten.core-runtime-contracts',
+        title: 'Bieten Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bieten.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 15,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bieten must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bieten.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bieten.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'deal_3_each',
+              'bet_category',
+              'concede_category',
+              'evaluate_categories',
+            ],
+            explanation: 'Bieten must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'bieten.setup.initial-deal',
+              'bieten.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_3_each',
+            ],
+          },
+          {
+            id: 'bieten.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '15',
+            scoringDirection: 'high_wins',
+            targetScore: 15,
+            cardValues: {},
+            explanation: 'Each category is worth 1 base point (or more if contested/bet up).',
+            linkedRuleIds: [
+              'bieten.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bieten.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

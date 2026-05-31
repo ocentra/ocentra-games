@@ -115,7 +115,14 @@ function main(): void {
     }
 
     const card = cardParsed.data;
-    const rankingRef = card.cardRankingAsset as { guid?: string | null; path?: string; assetType: string };
+    const rankingRef = (card.rankingAsset ?? card.cardRankingAsset) as { guid?: string | null; path?: string; assetType: string } | undefined;
+    if (!rankingRef) {
+      failures.push({
+        filePath: relativePath,
+        errors: ['Card must declare rankingAsset or cardRankingAsset'],
+      });
+      continue;
+    }
     const ranking =
       (rankingRef.guid ? byGuid.get(rankingRef.guid) : undefined) ??
       (rankingRef.path ? byRelativePath.get(normalizeAssetTreePath(String(rankingRef.path))) : undefined);
@@ -128,10 +135,11 @@ function main(): void {
       continue;
     }
 
-    if (ranking.asset.system.assetType !== 'CardRanking') {
+    const rankingAssetType = ranking.asset.system.assetType;
+    if (rankingAssetType !== 'CardRanking' && rankingAssetType !== 'DeckRanking') {
       failures.push({
         filePath: relativePath,
-        errors: [`cardRankingAsset points to non-CardRanking assetType=${ranking.asset.system.assetType}`],
+        errors: [`rankingAsset points to non-ranking assetType=${rankingAssetType}`],
       });
       continue;
     }

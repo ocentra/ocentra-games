@@ -121,6 +121,11 @@ function normalizeResourceUrlPath(relPath: string): string {
   return normalized.startsWith('Resources/') ? normalized : `Resources/${normalized}`;
 }
 
+function isInternalResourcePath(resourcePath: string): boolean {
+  const normalized = resourcePath.replace(/\\/g, '/').replace(/^Resources\//, '').toLowerCase();
+  return normalized.endsWith('.meta') || normalized.split('/').some((segment) => segment.startsWith('.'));
+}
+
 function sha256Hex(buffer: Buffer): string {
   return createHash('sha256').update(buffer).digest('hex');
 }
@@ -143,12 +148,18 @@ function buildBrowserAssetIndexEntries(): BrowserAssetIndexEntry[] {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
+        if (entry.name.startsWith('.')) {
+          continue;
+        }
         walk(fullPath);
         continue;
       }
 
       const relativePath = path.relative(assetEditorResourcesDir, fullPath);
       const resourcePath = normalizeResourceUrlPath(relativePath);
+      if (isInternalResourcePath(resourcePath)) {
+        continue;
+      }
       const stats = fs.statSync(fullPath);
       const extension = path.extname(entry.name).toLowerCase();
       const fileBytes = fs.readFileSync(fullPath);

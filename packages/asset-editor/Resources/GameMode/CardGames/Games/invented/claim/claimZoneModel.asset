@@ -1,0 +1,96 @@
+{
+  system: {
+    guid: '57d3c381-cf8e-4f64-9a3d-f9a1826dc104',
+    assetType: 'GameZoneModel',
+    schemaVersion: 1,
+    displayName: 'Claim Zone Model',
+    category: 'Game',
+    gameId: 'claim',
+    treePath: 'Resources/GameMode/CardGames/Games/invented/claim/claimZoneModel.asset',
+  },
+  data: {
+    modelKind: 'zone_model',
+    modelId: 'claim.zone-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'claim',
+    familyVariant: 'hoarder',
+    zones: [
+      {
+        id: 'stock',
+        type: 'stack',
+        owner: 'table',
+        visibility: 'top_face_up',
+        capacity: 52,
+      },
+      {
+        id: 'hand',
+        type: 'hand',
+        owner: 'player',
+        visibility: 'private',
+        capacity: null,
+      },
+      {
+        id: 'discard',
+        type: 'stack',
+        owner: 'table',
+        visibility: 'top_face_up',
+        capacity: 52,
+      },
+      {
+        id: 'table_cards',
+        type: 'list',
+        owner: 'table',
+        visibility: 'public',
+        capacity: null,
+      },
+      {
+        id: 'declarations',
+        type: 'private_state',
+        owner: 'player',
+        visibility: 'secret_until_showdown',
+        capacity: 4,
+      },
+      {
+        id: 'showdown',
+        type: 'reveal',
+        owner: 'table',
+        visibility: 'public',
+        capacity: null,
+      },
+    ],
+    zoneModel: {
+      hand: {
+        owner: 'player',
+        visibility: 'private',
+        minCards: 3,
+        maxCards: null,
+      },
+      stock: {
+        owner: 'table',
+        visibility: 'top_face_up',
+        startsEmpty: false,
+      },
+      discard: {
+        owner: 'table',
+        visibility: 'top_face_up',
+        startsEmpty: true,
+      },
+      table_cards: {
+        owner: 'table',
+        visibility: 'public',
+        runtimeBinding: 'mechanicsContext.tableCards',
+      },
+      declarations: {
+        owner: 'player',
+        visibility: 'secret_until_showdown',
+      },
+    },
+    cardVisibility: {
+      handDefault: 'private',
+      stockTop: 'face_up',
+      discardTop: 'face_up',
+      declarations: 'secret_until_showdown',
+      showdownReveal: 'face_up',
+    },
+  },
+}

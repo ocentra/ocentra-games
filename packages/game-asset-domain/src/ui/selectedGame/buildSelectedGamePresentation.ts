@@ -152,17 +152,17 @@ function chunksForTab(tab: SelectedGameTabId, data: Record<string, LooseRecord>)
     case 'about':
       return buildAboutChunks(data.gameInfo);
     case 'rules':
-      return buildRuleChunks(data.rules);
+      return buildRuleChunks(data.rules, data.validationFixtures);
     case 'deck':
       return buildDeckChunks(data.gameMode, data.rules, data.deckModel, data.deck);
     case 'ranking':
-      return buildRankingChunks(data.scoring, data.deckModel, data.ranking);
+      return buildRankingChunks(data.scoring, data.deckModel, data.ranking, data.validationFixtures);
     case 'scoring':
       return buildScoringChunks(data.scoring, data.validationFixtures);
     case 'strategy':
       return buildStrategyChunks(data.strategy, data.gameInfo);
     case 'systems':
-      return buildSystemChunks(data.gameInfo, data.mechanics, data.actions);
+      return buildSystemChunks(data.gameInfo, data.mechanics, data.actions, data.validationFixtures);
   }
 }
 
@@ -287,7 +287,7 @@ function buildProfileBullets(gameInfo: LooseRecord): string[] {
   ]);
 }
 
-function buildRuleChunks(rules: LooseRecord): SelectedGamePresentationChunk[] {
+function buildRuleChunks(rules: LooseRecord, validationFixtures: LooseRecord): SelectedGamePresentationChunk[] {
   const rulesById = new Map(asArray(rules.rules).map((rule) => {
     const record = asRecord(rule);
     return [asText(record.id), asText(record.text)] as const;
@@ -310,6 +310,16 @@ function buildRuleChunks(rules: LooseRecord): SelectedGamePresentationChunk[] {
   const edgeCases = asArray(rules.edgeCaseRules).map(asRecord).map((edge) => asText(edge.text)).filter(Boolean);
   if (edgeCases.length > 0) {
     chunks.push(chunk('rules-edge-cases', 'Edge Cases', [], edgeCases.slice(0, 5), 'list', 'Boundary rules'));
+  }
+
+  const exampleHands = asArray(rules.exampleHands).map(asText).filter(Boolean);
+  if (exampleHands.length > 0) {
+    chunks.push(chunk('rules-example-hands', 'Example Hands', [], exampleHands.slice(0, 5), 'example', 'Examples'));
+  }
+
+  const runtimeExamples = validationFixturesForPurposes(validationFixtures, ['setup', 'flow']);
+  if (runtimeExamples.length > 0) {
+    chunks.push(chunk('rules-runtime-examples', 'Runtime Examples', [], runtimeExamples.map(formatValidationFixture).slice(0, 5), 'example', 'Fixtures'));
   }
 
   return chunks;
@@ -346,7 +356,7 @@ function buildDeckChunks(gameMode: LooseRecord, rules: LooseRecord, deckModel: L
   ];
 }
 
-function buildRankingChunks(scoring: LooseRecord, deckModel: LooseRecord, ranking: LooseRecord): SelectedGamePresentationChunk[] {
+function buildRankingChunks(scoring: LooseRecord, deckModel: LooseRecord, ranking: LooseRecord, validationFixtures: LooseRecord): SelectedGamePresentationChunk[] {
   if (
     Object.keys(scoring).length === 0
     && Object.keys(deckModel).length === 0
@@ -368,9 +378,14 @@ function buildRankingChunks(scoring: LooseRecord, deckModel: LooseRecord, rankin
     line('Suit scope', firstText(handRanks.suitScope, scoringRules.suitSet)),
     line('Ranking asset', firstText(ranking.displayName, asRecord(scoring.rankingAsset).displayName)),
   ].filter(Boolean);
-  return [
+  const chunks = [
     chunk('ranking-model', 'Card Ranking', [firstText(handRanks.valueSystem, scoring.description)], bullets, 'visual', 'Ranking', refs),
   ];
+  const examples = validationFixturesForPurposes(validationFixtures, ['ranking']);
+  if (examples.length > 0) {
+    chunks.push(chunk('ranking-examples', 'Ranking Examples', [], examples.map(formatValidationFixture).slice(0, 5), 'example', 'Examples'));
+  }
+  return chunks;
 }
 
 function buildScoringChunks(scoring: LooseRecord, validationFixtures: LooseRecord): SelectedGamePresentationChunk[] {
@@ -389,12 +404,9 @@ function buildScoringChunks(scoring: LooseRecord, validationFixtures: LooseRecor
     chunks.push(chunk('scoring-card-values', 'Card Values', [], values, 'metric', 'Values'));
   }
 
-  const examples = asArray(validationFixtures.validationSuites)
-    .flatMap((suite) => asArray(asRecord(suite).fixtures))
-    .map(asRecord)
-    .filter((fixture) => asText(fixture.purpose) === 'scoring');
+  const examples = validationFixturesForPurposes(validationFixtures, ['scoring']);
   if (examples.length > 0) {
-    chunks.push(chunk('scoring-examples', 'Examples', [], examples.map((fixture) => `${firstText(fixture.title)}: ${firstText(fixture.explanation)} Expected ${firstText(fixture.expectedFinalScore)}.`).filter(Boolean).slice(0, 5), 'example', 'Examples'));
+    chunks.push(chunk('scoring-examples', 'Examples', [], examples.map(formatValidationFixture).filter(Boolean).slice(0, 5), 'example', 'Examples'));
   }
 
   return chunks;
@@ -420,7 +432,7 @@ function buildStrategyChunks(strategy: LooseRecord, gameInfo: LooseRecord): Sele
   return chunks;
 }
 
-function buildSystemChunks(gameInfo: LooseRecord, mechanics: LooseRecord, actions: LooseRecord): SelectedGamePresentationChunk[] {
+function buildSystemChunks(gameInfo: LooseRecord, mechanics: LooseRecord, actions: LooseRecord, validationFixtures: LooseRecord): SelectedGamePresentationChunk[] {
   const contract = asRecord(gameInfo.mechanicsContract);
   const chunks: SelectedGamePresentationChunk[] = [];
   if (Object.keys(contract).length > 0 || Object.keys(mechanics).length > 0) {
@@ -433,6 +445,13 @@ function buildSystemChunks(gameInfo: LooseRecord, mechanics: LooseRecord, action
     ].filter(Boolean), 'metric', 'Runtime'));
   }
 
+  const linkedAssets = Object.entries(asRecord(contract.linkedAssetKeys))
+    .map(([key, value]) => line(formatIdentifier(key), value))
+    .filter(Boolean);
+  if (linkedAssets.length > 0) {
+    chunks.push(chunk('systems-linked-assets', 'Linked Assets', [], linkedAssets.slice(0, 8), 'list', 'Asset contract'));
+  }
+
   const actionIds = [
     ...asArray(asRecord(actions.actionModel).actionIds).map(asText),
     ...Object.keys(asRecord(actions.actions)),
@@ -441,7 +460,33 @@ function buildSystemChunks(gameInfo: LooseRecord, mechanics: LooseRecord, action
     chunks.push(chunk('systems-actions', 'Actions', [], actionIds.map(formatIdentifier).slice(0, 8), 'list', 'Action model'));
   }
 
+  const fixtures = validationFixturesForPurposes(validationFixtures, []);
+  if (fixtures.length > 0) {
+    chunks.push(chunk('systems-validation-fixtures', 'Validation Fixtures', [], fixtures.map(formatValidationFixture).slice(0, 6), 'example', 'Validation'));
+  }
+
   return chunks;
+}
+
+function validationFixturesForPurposes(validationFixtures: LooseRecord, purposes: readonly string[]): LooseRecord[] {
+  const purposeSet = new Set(purposes);
+  return asArray(validationFixtures.validationSuites)
+    .flatMap((suite) => asArray(asRecord(suite).fixtures))
+    .map(asRecord)
+    .filter((fixture) => purposeSet.size === 0 || purposeSet.has(asText(fixture.purpose)));
+}
+
+function formatValidationFixture(fixture: LooseRecord): string {
+  const hand = asArray(fixture.hand).map(asText).filter(Boolean).join(', ');
+  const expected = firstText(fixture.expectedFinalScore, fixture.expectedOutcome, fixture.expectedNextPhase, fixture.expectedFirstPhase, fixture.expectedInitialHandSize);
+  const detail = uniqueLines([
+    line('Hand', hand),
+    line('Declared', fixture.declaredSuit),
+    line('Debt', fixture.debt),
+    line('Expected', expected),
+    line('Calculation', fixture.explanation),
+  ]).join(' | ');
+  return [firstText(fixture.title, fixture.id), detail].filter(Boolean).join(': ');
 }
 
 function buildStats(gameMode: LooseRecord, gameInfo: LooseRecord, rules: LooseRecord, scoring: LooseRecord, deckModel: LooseRecord): SelectedGamePresentationMetric[] {
@@ -678,6 +723,7 @@ function formatRange(min: number | null, max: number | null): string {
 
 function formatIdentifier(value: string): string {
   return cleanText(value)
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
     .replace(/[_.-]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()

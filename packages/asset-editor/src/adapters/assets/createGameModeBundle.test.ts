@@ -8,6 +8,7 @@ import { createTestEventBus } from '@ocentra/eventing-domain/testing/createTestE
 import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
 import { validateAssetFile } from '@ocentra/game-asset-domain/schemas/asset/asset-file-schema';
 import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
+import { parseGameModeAssetCategoryPath } from '@ocentra/game-asset-domain/factories/GameModeAssetCategoryPath';
 
 const uuidSequence = [
   '00000000-0000-4000-8000-000000000001',
@@ -69,6 +70,8 @@ const repoRoot = path.resolve(__dirname, '../../../../..');
 const threeCardBragPath = path.join(repoRoot, 'packages/card-games/src/processed-games/vying/brag-3-card.json');
 
 describe('createGameModeBundle', () => {
+  const cardGamesCategory = parseGameModeAssetCategoryPath('CardGames');
+
   const originalCrypto = globalThis.crypto;
 
   beforeEach(() => {
@@ -90,7 +93,7 @@ describe('createGameModeBundle', () => {
     const bundle = await createGameModeBundle({
       gameId: 'Claim',
       displayName: 'Claim',
-      category: 'CardGames',
+      category: cardGamesCategory,
     });
 
     expect(bundle.files).toHaveLength(18);
@@ -139,7 +142,7 @@ describe('createGameModeBundle', () => {
     const bundle = await createGameModeBundle({
       gameId: 'Whist',
       displayName: 'Whist',
-      category: 'CardGames',
+      category: cardGamesCategory,
       copyFromTemplate: {
         baseBet: 25,
         minPlayers: 3,
@@ -162,7 +165,7 @@ describe('createGameModeBundle', () => {
     const bundle = await createGameModeBundle({
       gameId: 'Solitaire',
       displayName: 'Solitaire',
-      category: 'CardGames',
+      category: cardGamesCategory,
     });
 
     expect(bundle.files).toHaveLength(18);
@@ -259,7 +262,7 @@ describe('createGameModeBundle', () => {
       processedGamePath: threeCardBragPath,
     });
 
-    expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/Imported/brag-3-card/brag-3-card.asset');
+    expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/Games/vying/brag-3-card/brag-3-card.asset');
     expect(bundle.files).toHaveLength(18);
 
     const assetTypes = bundle.files.map((file) => {

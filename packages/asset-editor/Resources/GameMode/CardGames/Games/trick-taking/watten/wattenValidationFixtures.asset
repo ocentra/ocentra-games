@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'a8cf92e6-95e1-4b9d-8e36-6f593ee1ae86',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/watten/wattenValidationFixtures.asset',
+    gameId: 'watten',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'watten',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'watten.core-runtime-contracts',
+        title: 'Watten Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'watten.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 3,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 15,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Watten must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'watten.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'watten.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Watten must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'watten.setup.initial-deal',
+              'watten.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'watten.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win 3 of 5 tricks. First to 11/15 points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win 3/5 tricks = 2pts. Raised = more pts. Machine (all 3 criticals) = instant 2pts.',
+            linkedRuleIds: [
+              'watten.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'watten.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

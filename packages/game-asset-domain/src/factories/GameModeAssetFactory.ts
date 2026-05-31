@@ -43,6 +43,7 @@ import {
   getCardRankingReference,
   resolveDeckAssetByTriple,
 } from './ProcessedGameAssetFactory';
+import type { ProcessedGameTaxonomyPath } from './ProcessedGameTaxonomyPath';
 
 const log = MainAppLogger.instance;
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
@@ -79,7 +80,7 @@ log.register(import.meta.url);
 export interface CreateGameModeOptions {
   gameId: string;
   displayName: string;
-  category: string;
+  category: ProcessedGameTaxonomyPath;
   copyFromTemplate?: Record<string, unknown>;
   assetDataOverrides?: Partial<Record<'rules' | 'strategy' | 'scoring' | 'gameInfo' | 'layout' | 'deck' | 'carousel' | 'mechanics' | 'cardGame', Record<string, unknown>>>;
   mechanicsModelDataOverrides?: Partial<Record<GameMechanicsModelRefKey, Record<string, unknown>>>;
@@ -182,7 +183,7 @@ function bindPageLayoutToGame(asset: CreatedAsset, gameId: string, gameModeGuid:
 }
 
 export class GameModeCreator {
-  async createGameModeAssetsFromProcessedGame(processedGamePath: string, category = 'CardGames/Imported'): Promise<CreateResult> {
+  async createGameModeAssetsFromProcessedGame(processedGamePath: string, category?: ProcessedGameTaxonomyPath): Promise<CreateResult> {
     const createOptions = buildCreateGameModeOptionsFromProcessedGame({
       processedGamePath,
       category,
@@ -435,7 +436,7 @@ export class GameModeCreator {
     }
   }
 
-  private getGameFolder(category: string, gameId: string): string {
+  private getGameFolder(category: ProcessedGameTaxonomyPath, gameId: string): string {
     return `${category}/${gameId}`;
   }
 

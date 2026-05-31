@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '93b9ac2c-f5f2-4f0e-a72a-d5f20b0f9339',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/41-syrian/41-syrianValidationFixtures.asset',
+    gameId: '41-syrian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '41-syrian',
+    familyVariant: 'Partnership / Bidding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '41-syrian.core-runtime-contracts',
+        title: '41 Syrian Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '41-syrian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 52,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '41 Syrian must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '41-syrian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '41-syrian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: '41 Syrian must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              '41-syrian.setup.initial-deal',
+              '41-syrian.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: '41-syrian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'One partner 41 points, other positive.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Make bid scores; miss negative.',
+            linkedRuleIds: [
+              '41-syrian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '41-syrian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

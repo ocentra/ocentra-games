@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: '7e6672fe-6f18-4217-bcb1-fef715483b92',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/dreeg/dreegValidationFixtures.asset',
+    gameId: 'dreeg',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'dreeg',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'dreeg.core-runtime-contracts',
+        title: 'Dreeg (NÃ¼rnberger Dreck) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'dreeg.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Dreeg (NÃ¼rnberger Dreck) must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'dreeg.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'dreeg.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'declare',
+              'play_card',
+              'bid',
+              'go_out',
+            ],
+            explanation: 'Dreeg (NÃ¼rnberger Dreck) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'dreeg.setup.initial-deal',
+              'dreeg.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'dreeg.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'low_wins',
+            targetScore: 'NA',
+            cardValues: {
+              Ace: '11',
+              Ten: '10',
+              King: '4',
+              Ober: '3',
+              Unter: '2',
+              Nine: '0',
+            },
+            explanation: 'Scoring uses the documented rules for Dreeg (NÃ¼rnberger Dreck) and determines round or match winners accordingly.',
+            linkedRuleIds: [
+              'dreeg.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'dreeg.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

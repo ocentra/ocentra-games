@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: 'b17ce8b5-a28c-4212-8ce3-9ffb16aab0ba',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/knaves/knavesValidationFixtures.asset',
+    gameId: 'knaves',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'knaves',
+    familyVariant: 'Avoidance',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'knaves.core-runtime-contracts',
+        title: 'Knaves Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'knaves.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 17,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 68,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Knaves must start by giving each active player 17 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'knaves.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'knaves.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'score_round',
+            ],
+            explanation: 'Knaves must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'knaves.setup.initial-deal',
+              'knaves.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'knaves.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '20',
+            scoringDirection: 'high_wins',
+            targetScore: 20,
+            cardValues: {
+              trick: '1',
+            },
+            explanation: 'Each trick: +1 point. Knave of Hearts: -20, Diamonds: -15, Clubs: -10, Spades: -5. Game to 20 or 50 points.',
+            linkedRuleIds: [
+              'knaves.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'knaves.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 17,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

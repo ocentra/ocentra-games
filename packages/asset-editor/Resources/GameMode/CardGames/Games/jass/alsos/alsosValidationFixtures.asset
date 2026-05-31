@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: '52d70fde-2dff-4d20-8d33-0e0e1479f773',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/alsos/alsosValidationFixtures.asset',
+    gameId: 'alsos',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'alsos',
+    familyVariant: 'Jass-Tarokk Fusion',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'alsos.core-runtime-contracts',
+        title: 'Alsos Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'alsos.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Alsos must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'alsos.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'alsos.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'initial_deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'reveal_market',
+              'declare',
+              'award_pot',
+              'play_card',
+              'pass',
+              'bid',
+              'meld',
+            ],
+            explanation: 'Alsos must run setup_round first, then enter initial_deal with the processed legal actions.',
+            linkedRuleIds: [
+              'alsos.setup.initial-deal',
+              'alsos.flow.initial_deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'initial_deal',
+            firstPlayableLegalActions: [
+              'deal',
+              'reveal_market',
+            ],
+          },
+          {
+            id: 'alsos.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "The declarer wins only if their total points exceed the points of BOTH opponents. If either opponent beats or ties the declarer, the declarer 'goes down'.",
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {
+              Last_trick_bonus: '10',
+              Vannak_set_of_four: '80',
+              Trump_suit_total_points: '62',
+              Each_non_trump_suit_total_points: '30',
+            },
+            explanation: 'Total points come from card values, melds, and figures.',
+            linkedRuleIds: [
+              'alsos.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'alsos.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

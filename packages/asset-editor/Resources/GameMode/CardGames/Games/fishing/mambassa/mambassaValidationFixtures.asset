@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '77ab1736-e9c9-4122-8ad9-67695a665b6e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/mambassa/mambassaValidationFixtures.asset',
+    gameId: 'mambassa',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mambassa',
+    familyVariant: 'Combination / Comparison',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mambassa.core-runtime-contracts',
+        title: 'Mambassa Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mambassa.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 4,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 8,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Mambassa must start by giving each active player 4 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mambassa.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mambassa.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'dealer_choice',
+            supportedActionIds: [
+              'setup_round',
+              'draw',
+              'discard',
+              'set_monte',
+              'take_monte_and_knock',
+              'exchange_with_monte',
+              'knock',
+              'compare_hands',
+            ],
+            explanation: 'Mambassa must run setup_round first, then enter dealer_choice with the processed legal actions.',
+            linkedRuleIds: [
+              'mambassa.setup.initial-deal',
+              'mambassa.flow.dealer_choice',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealer_choice',
+            firstPlayableLegalActions: [
+              'set_monte',
+              'take_monte_and_knock',
+            ],
+          },
+          {
+            id: 'mambassa.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'Points or match rules.',
+            linkedRuleIds: [
+              'mambassa.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mambassa.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 4,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 8,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

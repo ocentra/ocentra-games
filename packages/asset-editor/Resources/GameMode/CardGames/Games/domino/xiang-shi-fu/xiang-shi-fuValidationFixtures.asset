@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '8cd90011-33db-4330-8ef3-2bbdd4d5c0fe',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/xiang-shi-fu/xiang-shi-fuValidationFixtures.asset',
+    gameId: 'xiang-shi-fu',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'xiang-shi-fu',
+    familyVariant: 'Chinese Dominoes',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'xiang-shi-fu.core-runtime-contracts',
+        title: 'Xiàng Shí Fù Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'xiang-shi-fu.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Xiàng Shí Fù must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'xiang-shi-fu.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'xiang-shi-fu.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'exchange_tiles',
+            ],
+            explanation: 'Xiàng Shí Fù must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'xiang-shi-fu.setup.initial-deal',
+              'xiang-shi-fu.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'exchange_tiles',
+            ],
+          },
+          {
+            id: 'xiang-shi-fu.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'All 11 sets valid: 10 valid triplets and 1 valid pair.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'No points; win when all 10 triplets and 1 pair are valid under Chinese domino rules.',
+            linkedRuleIds: [
+              'xiang-shi-fu.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'xiang-shi-fu.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

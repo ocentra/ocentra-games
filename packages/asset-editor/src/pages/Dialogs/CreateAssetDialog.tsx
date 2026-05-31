@@ -18,6 +18,7 @@ import { MimeTypes } from '@ocentra/asset-domain/constants/assets';
 import JSON5 from 'json5';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode';
+import { parseGameModeAssetCategoryPath } from '@ocentra/game-asset-domain/factories/GameModeAssetCategoryPath';
 import type { AssetEntry } from '@ocentra/boundary-domain/types/asset-entry';
 import { createGameModeBundle } from '@/adapters/assets/createGameModeBundle';
 import { validateGameName, validateGameId, validateAssetName } from '@/lib/validation/createAssetValidation';
@@ -244,7 +245,7 @@ export const CreateAssetDialog: React.FC<CreateAssetDialogProps> = ({
         if (isFullGameSet) {
             try {
                 const gameId = assetName.trim().toLowerCase().replace(/\s+/g, '_');
-                const category = gameModeCategory ?? 'CardGames';
+                const category = parseGameModeAssetCategoryPath(gameModeCategory ?? 'CardGames');
                 const bundle = await createGameModeBundle({
                     gameId,
                     displayName: assetName.trim(),

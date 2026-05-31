@@ -32,6 +32,7 @@ import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogge
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { getResourceByGuidDb, loadAsset } from '@/adapters/assets/TauriAssetAdapter';
 import { useImageUrl } from '@/hooks/useImageUrl';
+import { assetTypeMap } from '@/lib/core/registry/assetTypeMap.generated';
 import './DeckPreview.css';
 
 interface DeckPreviewProps {
@@ -62,6 +63,9 @@ const constructors: Record<string, AssetConstructor> = {
 
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
+
+const DECK_PREVIEW_REF_BATCH_SIZE = 128;
+const DECK_PREVIEW_REF_TIMEOUT_MS = 6000;
 
 export const DeckPreview: React.FC<DeckPreviewProps> = ({
   assetId,
@@ -94,10 +98,18 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({
           return;
         }
 
-        const refs = collectDeckPreviewRefs(source);
+        const previewSource = await withDeckPreviewTimeout(
+          resolveDeckPreviewSource(source),
+          'deck preview source'
+        ) ?? source;
+        const refs = collectDeckPreviewRefs(previewSource);
+        const rankingRefs = uniqueDeckPreviewRefs([
+          ...refs.rankingRefs,
+          ...collectDeckModelRankingRefs(source),
+        ]);
         const [pieces, rankings] = await Promise.all([
           loadRefs(uniqueDeckPreviewRefs(refs.pieceRefs)),
-          loadRefs(refs.rankingRefs),
+          loadRefs(rankingRefs),
         ]);
 
         if (isCancelled) {
@@ -105,7 +117,7 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({
         }
 
         setModel(buildDeckPreviewModel({
-          deck: source,
+          deck: previewSource,
           pieces,
           rankings,
           title: assetId,
@@ -198,8 +210,134 @@ function buildDeckPreviewCompactStyle(
 }
 
 async function loadRefs(refs: DeckPreviewReference[]): Promise<unknown[]> {
-  const results = await Promise.all(refs.map(loadRef));
+  const normalizedRefs = refs.map(normalizePreviewRef);
+  const results: Array<unknown | null> = [];
+  for (let index = 0; index < normalizedRefs.length; index += DECK_PREVIEW_REF_BATCH_SIZE) {
+    const batch = normalizedRefs.slice(index, index + DECK_PREVIEW_REF_BATCH_SIZE);
+    results.push(...await Promise.all(batch.map((ref) =>
+      withDeckPreviewTimeout(
+        loadRef(ref),
+        `deck preview reference ${ref.path || ref.guid || ref.displayName || ref.assetType}`
+      )
+    )));
+  }
   return results.filter((asset): asset is unknown => asset !== null);
+}
+
+async function resolveDeckPreviewSource(source: unknown): Promise<unknown> {
+  const ref = collectDeckModelDeckRef(source);
+  if (!ref) {
+    return source;
+  }
+  const rawDocument = await loadRawDocumentFromRef(ref);
+  return rawDocument ?? source;
+}
+
+function collectDeckModelDeckRef(source: unknown): DeckPreviewReference | null {
+  const record = asRecord(source);
+  const system = asRecord(record.system);
+  if (stringValue(system.assetType) !== assetTypeMap.CardGameDeckModel.assetType) {
+    return null;
+  }
+  const data = asRecord(record.data);
+  const assetRefs = asRecord(data.assetRefs);
+  const deckModel = asRecord(data.deckModel);
+  const deckAssetRef = stringValue(deckModel.deckAssetRef) || 'deck';
+  return referenceFromValue(assetRefs[deckAssetRef], assetTypeMap.Deck.assetType);
+}
+
+function collectDeckModelRankingRefs(source: unknown): DeckPreviewReference[] {
+  const record = asRecord(source);
+  const system = asRecord(record.system);
+  if (stringValue(system.assetType) !== assetTypeMap.CardGameDeckModel.assetType) {
+    return [];
+  }
+  const data = asRecord(record.data);
+  const assetRefs = asRecord(data.assetRefs);
+  const deckModel = asRecord(data.deckModel);
+  const rankingAssetRef = stringValue(deckModel.rankingAssetRef) || 'ranking';
+  const ref = referenceFromValue(assetRefs[rankingAssetRef], assetTypeMap.DeckRanking.assetType);
+  return ref ? [ref] : [];
+}
+
+function referenceFromValue(value: unknown, fallbackAssetType: string): DeckPreviewReference | null {
+  const record = asRecord(value);
+  const refValue = record.ref;
+  if (typeof refValue === 'string') {
+    return {
+      assetType: fallbackAssetType,
+      guid: refValue,
+    };
+  }
+  if (refValue && typeof refValue === 'object') {
+    return referenceFromValue(refValue, fallbackAssetType);
+  }
+  const guid = stringValue(record.guid);
+  const path = normalizePreviewResourcePath(stringValue(record.path));
+  const assetType = stringValue(record.assetType) || stringValue(record.type) || fallbackAssetType;
+  if (!guid && !path) {
+    return null;
+  }
+  return {
+    assetType,
+    guid: guid || undefined,
+    path: path || undefined,
+    displayName: stringValue(record.displayName) || undefined,
+    variant: typeof record.variant === 'string' || record.variant === null ? record.variant : undefined,
+  };
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' ? value as Record<string, unknown> : {};
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function normalizePreviewResourcePath(path: string): string {
+  if (!path) {
+    return '';
+  }
+  const normalized = path.replace(/\\/g, '/').replace(/^\/+/, '');
+  if (/^https?:\/\//i.test(normalized)) {
+    return normalized;
+  }
+  return normalized.startsWith('Resources/') ? normalized : `Resources/${normalized}`;
+}
+
+function normalizePreviewRef(ref: DeckPreviewReference): DeckPreviewReference {
+  const path = normalizePreviewResourcePath(ref.path ?? '');
+  return {
+    ...ref,
+    path: path || undefined,
+  };
+}
+
+async function withDeckPreviewTimeout<T>(promise: Promise<T>, label: string): Promise<T | null> {
+  let timeoutId: number | undefined;
+  const timeout = new Promise<null>((resolve) => {
+    timeoutId = window.setTimeout(() => {
+      log.logWarn('[DeckPreview] Reference load timed out', getStackTrace(), {
+        label,
+        timeoutMs: DECK_PREVIEW_REF_TIMEOUT_MS,
+      });
+      resolve(null);
+    }, DECK_PREVIEW_REF_TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([promise, timeout]);
+  } catch (error) {
+    log.logWarn('[DeckPreview] Reference load failed', getStackTrace(), {
+      label,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  } finally {
+    if (timeoutId !== undefined) {
+      window.clearTimeout(timeoutId);
+    }
+  }
 }
 
 async function loadRef(ref: DeckPreviewReference): Promise<unknown | null> {
@@ -226,10 +364,7 @@ async function loadRawDocumentFromRef(ref: DeckPreviewReference): Promise<Record
   }
 
   try {
-    const response = await loadAsset({
-      guid: ref.guid,
-      path,
-    });
+    const response = await loadAsset(path ? { path } : { guid: ref.guid });
     if (!response.ok) {
       return null;
     }

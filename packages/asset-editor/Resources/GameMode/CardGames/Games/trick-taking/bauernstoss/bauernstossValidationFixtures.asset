@@ -1,0 +1,125 @@
+{
+  system: {
+    guid: '6c548dc7-dce3-4269-a237-e455c39c5d49',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bauernstoss/bauernstossValidationFixtures.asset',
+    gameId: 'bauernstoss',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bauernstoss',
+    familyVariant: 'Schafkopf Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bauernstoss.core-runtime-contracts',
+        title: 'Bauernstoss Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bauernstoss.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 32,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bauernstoss must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bauernstoss.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bauernstoss.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'deal_8_each',
+              'knock',
+              'calculate_trick_points',
+            ],
+            explanation: 'Bauernstoss must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'bauernstoss.setup.initial-deal',
+              'bauernstoss.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_8_each',
+            ],
+          },
+          {
+            id: 'bauernstoss.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Usually played for a set duration or until the slate is wiped.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {
+              Ace: '11 points',
+              Ten: '10 points',
+              King: '4 points',
+              Queen: '3 points',
+              Jack: '2 points',
+            },
+            explanation: 'Strokes (Striche) on a slate or coin payments.',
+            linkedRuleIds: [
+              'bauernstoss.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bauernstoss.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

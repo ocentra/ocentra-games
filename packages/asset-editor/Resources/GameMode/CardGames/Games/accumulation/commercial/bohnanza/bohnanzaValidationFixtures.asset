@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'e0933eea-2c9b-4641-8133-5a1dd2b44af1',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/accumulation/commercial/bohnanza/bohnanzaValidationFixtures.asset',
+    gameId: 'bohnanza',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bohnanza',
+    familyVariant: 'Hand Building',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bohnanza.core-runtime-contracts',
+        title: 'Bohnanza Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bohnanza.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 7,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 21,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bohnanza must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bohnanza.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bohnanza.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Bohnanza must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'bohnanza.setup.initial-deal',
+              'bohnanza.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'bohnanza.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Earn the most coins by planting and harvesting valuable sets of bean cards.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Harvested bean cards become coins; most coins wins.',
+            linkedRuleIds: [
+              'bohnanza.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bohnanza.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

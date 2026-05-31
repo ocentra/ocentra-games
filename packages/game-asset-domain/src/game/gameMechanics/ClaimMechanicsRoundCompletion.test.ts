@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../../../..');
 const claimMechanicsAssetPath = path.resolve(
   repoRoot,
-  'packages/asset-editor/Resources/GameMode/CardGames/Games/Claim/claimMechanics.asset',
+  'packages/asset-editor/Resources/GameMode/CardGames/Games/invented/claim/claimMechanics.asset',
 );
 
 describe('Claim mechanics round completion', () => {

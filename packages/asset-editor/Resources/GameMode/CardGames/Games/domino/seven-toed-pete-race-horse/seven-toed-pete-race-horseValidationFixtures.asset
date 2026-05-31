@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '93f7e862-c745-47eb-b7fa-e234045c44ce',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/seven-toed-pete-race-horse/seven-toed-pete-race-horseValidationFixtures.asset',
+    gameId: 'seven-toed-pete-race-horse',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'seven-toed-pete-race-horse',
+    familyVariant: 'Fives and Threes Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'seven-toed-pete-race-horse.core-runtime-contracts',
+        title: 'Seven-Toed Pete Race Horse Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'seven-toed-pete-race-horse.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Seven-Toed Pete Race Horse must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'seven-toed-pete-race-horse.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'seven-toed-pete-race-horse.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'award_pot',
+              'play_card',
+              'pass',
+            ],
+            explanation: 'Seven-Toed Pete Race Horse must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'seven-toed-pete-race-horse.setup.initial-deal',
+              'seven-toed-pete-race-horse.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'seven-toed-pete-race-horse.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Reach the table-agreed target score before opponents.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: "Score when exposed ends total a multiple of five. Hand winner (domino or blocked-hand low pip total) also scores opponents' remaining pips, commonly converted by dividing by five after rounding.",
+            linkedRuleIds: [
+              'seven-toed-pete-race-horse.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'seven-toed-pete-race-horse.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

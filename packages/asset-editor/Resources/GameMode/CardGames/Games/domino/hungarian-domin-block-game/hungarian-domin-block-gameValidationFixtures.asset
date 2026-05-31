@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '7b2e6970-0a02-459f-b3d1-7e2e1de72e37',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/hungarian-domin-block-game/hungarian-domin-block-gameValidationFixtures.asset',
+    gameId: 'hungarian-domin-block-game',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hungarian-domin-block-game',
+    familyVariant: 'Block / Line Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'hungarian-domin-block-game.core-runtime-contracts',
+        title: 'Hungarian DominÃ³ (Block) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'hungarian-domin-block-game.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Hungarian DominÃ³ (Block) must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'hungarian-domin-block-game.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'hungarian-domin-block-game.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'pass',
+              'play_tile',
+              'score_round',
+            ],
+            explanation: 'Hungarian DominÃ³ (Block) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'hungarian-domin-block-game.setup.initial-deal',
+              'hungarian-domin-block-game.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'hungarian-domin-block-game.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {
+              'Per pip': '1',
+            },
+            explanation: "Players score based on pips remaining in opponents' hands. In avoidance variants, lowest score wins.",
+            linkedRuleIds: [
+              'hungarian-domin-block-game.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'hungarian-domin-block-game.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

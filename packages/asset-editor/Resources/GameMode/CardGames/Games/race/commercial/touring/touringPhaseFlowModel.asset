@@ -1,0 +1,85 @@
+{
+  system: {
+    guid: '71f05400-0cff-4857-9569-d9e95055b942',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/race/commercial/touring/touringPhaseFlowModel.asset',
+    gameId: 'touring',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'touring',
+    familyVariant: 'Gambling / Card Race',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 5 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'system',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Main game phase',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 or more players use the table arrangement described for Touring.',
+        deck: 'Dedicated Touring road and hazard card deck',
+        equipment: 'Dedicated Touring road and hazard card deck, score area, and enough table space for play.',
+        dealing: 'Prepare Dedicated Touring road and hazard card deck and deal or lay out cards according to the documented Touring rules before play begins.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'setup_round',
+      'play',
+    ],
+    examples: [],
+  },
+}

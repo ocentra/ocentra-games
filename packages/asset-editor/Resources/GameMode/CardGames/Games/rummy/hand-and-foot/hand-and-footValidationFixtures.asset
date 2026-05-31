@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: 'ade9ef13-126f-452b-a085-1f5c8a0714e5',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/hand-and-foot/hand-and-footValidationFixtures.asset',
+    gameId: 'hand-and-foot',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hand-and-foot',
+    familyVariant: 'Canasta Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'hand-and-foot.core-runtime-contracts',
+        title: 'Hand and Foot Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'hand-and-foot.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 11,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 66,
+            expectedDeckCount: 5,
+            expectedVisibility: 'face_down',
+            explanation: 'Hand and Foot must start by giving each active player 11 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'hand-and-foot.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'hand-and-foot.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'award_pot',
+              'draw',
+              'discard',
+              'meld',
+              'go_out',
+            ],
+            explanation: 'Hand and Foot must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'hand-and-foot.setup.initial-deal',
+              'hand-and-foot.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'hand-and-foot.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '10000',
+            scoringDirection: 'high_wins',
+            targetScore: 10000,
+            cardValues: {
+              Joker: '50 points',
+              '2/Ace': '20 points',
+              'K-8': '10 points',
+              '7-3': '5 points',
+              'Red Three (melded)': '100',
+            },
+            explanation: 'Points for melds, canastas, cards in hand. Deductions for unmelded cards. Clean canastas worth 500, dirty canastas worth 300. Red Threes +100 if melded, -100 if caught. Game played over 4 rounds.',
+            linkedRuleIds: [
+              'hand-and-foot.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'hand-and-foot.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 11,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

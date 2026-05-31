@@ -1,0 +1,124 @@
+{
+  system: {
+    guid: '8759d99f-281f-4efc-b009-7a45388f1080',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/rodskagg/rodskaggValidationFixtures.asset',
+    gameId: 'rodskagg',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'rodskagg',
+    familyVariant: 'Exact Bidding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'rodskagg.core-runtime-contracts',
+        title: 'Rödskägg Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'rodskagg.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 7,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 70,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Rödskägg must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'rodskagg.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'rodskagg.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'discard',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Rödskägg must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'rodskagg.setup.initial-deal',
+              'rodskagg.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'rodskagg.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'high_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '11',
+              T: '10',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'Tricks, card points, or contract success determine scoring.',
+            linkedRuleIds: [
+              'rodskagg.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'rodskagg.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 7,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

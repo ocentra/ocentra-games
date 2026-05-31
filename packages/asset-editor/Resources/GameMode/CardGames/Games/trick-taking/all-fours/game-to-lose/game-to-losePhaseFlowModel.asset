@@ -1,0 +1,202 @@
+{
+  system: {
+    guid: '221b02d1-bfd3-42e6-a950-afe599395dbd',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/game-to-lose/game-to-losePhaseFlowModel.asset',
+    gameId: 'game-to-lose',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'game-to-lose',
+    familyVariant: 'Trick-avoidance',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 13 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal',
+        label: 'Deal and Sleep Dummy',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'trick_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal four 13-card hands clockwise: three player hands plus one face-down dummy hand.',
+      },
+      {
+        id: 'trick_play',
+        label: 'Play 13 Tricks',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: 'trick_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_score_gte_121 == true',
+            nextPhase: 'resolution',
+          },
+          {
+            condition: 'all_cards_played == true',
+            nextPhase: 'end_count',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: "Pitcher's first lead sets trump suit. Winner of each trick leads next; immediate pegging applies for trump honors and fives.",
+      },
+      {
+        id: 'end_count',
+        label: 'Post-play Card Count',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: 'resolution',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Count A/K/Q/J/10 card points in won cards and peg Eight bonus (8 for sole leader, 4 each in two-way tie).',
+      },
+      {
+        id: 'resolution',
+        label: 'Check Loss Threshold',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Any player at 121 or more loses immediately.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'right_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3 players, playing individually.',
+        deck: 'Standard 52-card deck. Rank high to low: A K Q J 10 9 8 7 6 5 4 3 2.',
+        equipment: 'Score pegs or cribbage board lanes are commonly used.',
+        dealing: 'Dealer deals four clockwise 13-card hands one card at a time: pitcher, next player, dealer, and a dummy hand. The dummy hand is set aside face down as sleeping cards.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'right_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 13,
+        mustFollowSuit: true,
+        canTrumpFirstTrick: true,
+        mustOvertrump: null,
+        leadRestrictions: 'Pitcher leads first and that suit becomes trump for the hand.',
+        trickWinCondition: 'highest_trump_if_played_else_highest_led',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: false,
+          biddingSystem: 'auction',
+          minBid: null,
+          maxBid: null,
+          passAllowed: false,
+          doubling: false,
+        },
+        pointValues: {
+          specificCards: [
+            {
+              card: 'Ace of trumps',
+              points: 4,
+            },
+            {
+              card: 'King of trumps',
+              points: 3,
+            },
+            {
+              card: 'Queen of trumps',
+              points: 2,
+            },
+            {
+              card: 'Jack of trumps',
+              points: 1,
+            },
+            {
+              card: 'Nine of trumps',
+              points: 9,
+            },
+            {
+              card: 'Five of trumps',
+              points: 10,
+            },
+            {
+              card: 'Any non-trump Five',
+              points: 5,
+            },
+          ],
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'Support a fourth dealt dummy hand that is hidden and excluded from play.',
+        'Apply two-stage scoring: immediate trick pegs and post-play Eight bonus pegs.',
+        'Terminate game immediately when any score reaches 121 or more.',
+      ],
+    },
+    progression: [
+      'setup_round',
+      'deal',
+      'trick_play',
+      'end_count',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

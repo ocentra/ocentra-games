@@ -21,20 +21,31 @@ function normalizeResourcePath(path: string): string {
     : normalized
 }
 
-function createBrowserResourceUrl(path: string): URL {
+export function createBrowserResourceUrl(path: string): URL {
   const normalizedPath = normalizeResourcePath(path)
   if (
     normalizedPath.includes('\0') ||
-    /^[a-z][a-z0-9+.-]*:/i.test(normalizedPath)
+    /^[a-z][a-z0-9+.-]*:/i.test(normalizedPath) ||
+    normalizedPath.split('/').some(segment => segment === '..')
   ) {
     throw new Error('Invalid browser asset path')
   }
   const resourcePath = normalizedPath
     .split('/')
     .filter(Boolean)
-    .map(segment => encodeURIComponent(segment))
     .join('/')
   return new URL(`/Resources/${resourcePath}`, window.location.origin)
+}
+
+export function isInternalResourceIndexPath(path: string): boolean {
+  const normalizedPath = normalizeResourcePath(path).toLowerCase()
+  return normalizedPath.endsWith('.meta') || normalizedPath.split('/').some((segment) => segment.startsWith('.'))
+}
+
+function filterInternalResourceIndexEntries(
+  entries: AssetIndexEntry[]
+): AssetIndexEntry[] {
+  return entries.filter((entry) => !isInternalResourceIndexPath(entry.path))
 }
 
 function inferMimeType(path: string): string {
@@ -294,9 +305,10 @@ export async function getResourcesInFolder(
     })
   }
   try {
-    return await invoke<AssetIndexEntry[]>('get_resources_in_folder_db', {
+    const entries = await invoke<AssetIndexEntry[]>('get_resources_in_folder_db', {
       folder,
     })
+    return filterInternalResourceIndexEntries(entries)
   } catch (error) {
     throw new Error(toErrorMessage(error))
   }
@@ -322,10 +334,12 @@ export async function getDiskResourceEntriesFromTauri(): Promise<
     if (!response.ok) {
       throw new Error(`Failed to fetch browser asset index: ${response.status}`)
     }
-    return (await response.json()) as AssetIndexEntry[]
+    const entries = (await response.json()) as AssetIndexEntry[]
+    return filterInternalResourceIndexEntries(entries)
   }
   try {
-    return await invoke<AssetIndexEntry[]>('get_disk_resource_entries_db')
+    const entries = await invoke<AssetIndexEntry[]>('get_disk_resource_entries_db')
+    return filterInternalResourceIndexEntries(entries)
   } catch (error) {
     throw new Error(toErrorMessage(error))
   }
@@ -374,9 +388,13 @@ export async function queryResourcesFromTauri(input: {
   resourceType?: string
 }): Promise<TauriResourceQueryPayload> {
   try {
-    return await invoke<TauriResourceQueryPayload>('query_resources_db', {
+    const payload = await invoke<TauriResourceQueryPayload>('query_resources_db', {
       input,
     })
+    return {
+      ...payload,
+      items: payload.items.filter((item) => !isInternalResourceIndexPath(item.path)),
+    }
   } catch (error) {
     throw new Error(toErrorMessage(error))
   }

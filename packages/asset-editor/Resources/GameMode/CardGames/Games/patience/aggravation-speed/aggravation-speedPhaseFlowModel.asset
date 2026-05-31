@@ -1,0 +1,136 @@
+{
+  system: {
+    guid: 'a99f05a1-7cc3-4c17-bfe1-1916e711760b',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/aggravation-speed/aggravation-speedPhaseFlowModel.asset',
+    gameId: 'aggravation-speed',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'aggravation-speed',
+    familyVariant: 'Speed Match',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'setup',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 26 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'setup',
+        label: 'Split and Start',
+        actor: 'system',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'race',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+        },
+        notes: 'Split deck and begin with one face-up card each.',
+      },
+      {
+        id: 'race',
+        label: 'Simultaneous Race',
+        actor: 'all_simultaneous',
+        legalActions: [
+          'deal',
+          'play_card',
+          'go_out',
+        ],
+        nextPhase: 'race',
+        isMandatory: false,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_calls_aggravation_with_empty_deck_on_valid_match',
+            nextPhase: 'resolution',
+          },
+        ],
+        cardVisibilityChanges: {
+          deal: 'face_up',
+          play_card: 'face_up',
+        },
+        notes: 'Players extend rows and cover matching ranks in real time.',
+      },
+      {
+        id: 'resolution',
+        label: 'Win Verification',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Verify call and declare winner.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'variable',
+      startsWith: 'fixed_player',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Exactly 2 players.',
+        deck: 'One 52-card deck split equally into 26-card face-down player piles.',
+        equipment: 'Deck and flat table space for two parallel rows.',
+        dealing: 'Players simultaneously deal one face-up card each to begin rows, extending rows until matches occur.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'variable',
+        startsWith: 'fixed_player',
+        dealerRotates: false,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'simultaneous_match_claims',
+        'cascade_match_resolution',
+        'aggravation_call_validation',
+      ],
+    },
+    progression: [
+      'setup_round',
+      'setup',
+      'race',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

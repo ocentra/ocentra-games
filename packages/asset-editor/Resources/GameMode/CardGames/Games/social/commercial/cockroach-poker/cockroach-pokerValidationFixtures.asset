@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '73e38fde-6b3c-404e-b096-1a30af356580',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/cockroach-poker/cockroach-pokerValidationFixtures.asset',
+    gameId: 'cockroach-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'cockroach-poker',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'cockroach-poker.core-runtime-contracts',
+        title: 'Cockroach Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'cockroach-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Cockroach Poker must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'cockroach-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'cockroach-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'turning_round',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Cockroach Poker must run setup_round first, then enter turning_round with the processed legal actions.',
+            linkedRuleIds: [
+              'cockroach-poker.setup.initial-deal',
+              'cockroach-poker.flow.turning_round',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'turning_round',
+            firstPlayableLegalActions: [
+              'flip_top_card',
+            ],
+          },
+          {
+            id: 'cockroach-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Avoid collecting four cards of the same creature type or otherwise becoming the single loser.',
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'The player who collects the losing set loses; all others win collectively.',
+            linkedRuleIds: [
+              'cockroach-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'cockroach-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}
