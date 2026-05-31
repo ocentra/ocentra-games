@@ -36,6 +36,77 @@ function countValues(values: string[]): Map<string, number> {
   return counts;
 }
 
+function readCardId(value: unknown): string | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const cardId = (value as { cardId?: unknown }).cardId;
+  return typeof cardId === 'string' && cardId.trim().length > 0 ? cardId : null;
+}
+
+function validateLegacyCardRanking(data: unknown): string[] {
+  const record = data as {
+    cards?: unknown;
+    expectedCardCount?: unknown;
+    expectedPieceCount?: unknown;
+    months?: unknown;
+  };
+  const expectedCardCount = record.expectedCardCount;
+  const errors: string[] = [];
+  if (typeof expectedCardCount !== 'number' || !Number.isInteger(expectedCardCount) || expectedCardCount < 1) {
+    return ['expectedCardCount must be a positive integer'];
+  }
+  if (
+    typeof record.expectedPieceCount !== 'undefined' &&
+    record.expectedPieceCount !== expectedCardCount
+  ) {
+    errors.push(`expectedPieceCount must match expectedCardCount (${expectedCardCount})`);
+  }
+
+  const ids: string[] = [];
+  if (Array.isArray(record.cards)) {
+    for (const card of record.cards) {
+      const cardId = readCardId(card);
+      if (!cardId) {
+        errors.push('cards entries must declare cardId');
+        continue;
+      }
+      ids.push(cardId);
+    }
+  } else if (Array.isArray(record.months)) {
+    for (const month of record.months) {
+      const slots = (month as { slots?: unknown }).slots;
+      if (!Array.isArray(slots)) {
+        errors.push('months entries must declare slots');
+        continue;
+      }
+      for (const slot of slots) {
+        const cardId = readCardId(slot);
+        if (!cardId) {
+          errors.push('month slot entries must declare cardId');
+          continue;
+        }
+        ids.push(cardId);
+      }
+    }
+  } else {
+    errors.push('legacy card ranking must declare cards or months');
+  }
+
+  if (ids.length !== expectedCardCount) {
+    errors.push(`expectedCardCount mismatch: asset says ${expectedCardCount}, card ids total ${ids.length}`);
+  }
+  const counts = countValues(ids.map(normalizeCardIdentity));
+  const duplicates = [...counts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([id, count]) => `${id} (${count})`);
+  if (duplicates.length > 0) {
+    errors.push(`duplicate card ids: ${duplicates.slice(0, 5).join(', ')}${duplicates.length > 5 ? ' ...' : ''}`);
+  }
+
+  return errors;
+}
+
 function main(): void {
   if (!fs.existsSync(RESOURCES_DIR)) {
     process.stderr.write(`Resources directory not found at: ${RESOURCES_DIR}\n`);
@@ -77,12 +148,28 @@ function main(): void {
       failures.push({ filePath: relativePath, errors: [violation] });
       continue;
     }
-    if (system.assetType !== 'CardRanking') {
+    if (system.assetType !== 'CardRanking' && system.assetType !== 'DeckRanking') {
+      continue;
+    }
+
+    const data = assetData;
+    const rankingData = data as { deckType?: unknown; expectedCardCount?: unknown };
+    if (typeof rankingData.deckType !== 'string' && typeof rankingData.expectedCardCount === 'undefined') {
       continue;
     }
 
     rankings++;
-    const data = assetData;
+    if (typeof rankingData.deckType !== 'string') {
+      const legacyErrors = validateLegacyCardRanking(data);
+      if (legacyErrors.length > 0) {
+        failures.push({
+          filePath: relativePath,
+          errors: legacyErrors,
+        });
+      }
+      continue;
+    }
+
     const parsed = CardRankingDataSchema.safeParse(data);
     if (!parsed.success) {
       failures.push({
@@ -145,6 +232,7 @@ function main(): void {
     JSON.stringify(
       {
         scannedAssets: scanned,
+        rankingAssets: rankings,
         cardRankingAssets: rankings,
         failed: failures.length,
       },

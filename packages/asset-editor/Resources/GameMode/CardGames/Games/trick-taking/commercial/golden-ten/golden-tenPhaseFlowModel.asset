@@ -1,0 +1,127 @@
+{
+  system: {
+    guid: '64eeb6cc-a154-4e33-a69c-2d96688a2312',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/commercial/golden-ten/golden-tenPhaseFlowModel.asset',
+    gameId: 'golden-ten',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'golden-ten',
+    familyVariant: 'Avoidance / Hearts Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'deal',
+        label: 'Deal Cards',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'trick_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal cards equally; leftover cards handled by first trick winner rule when applicable.',
+      },
+      {
+        id: 'trick_loop',
+        label: 'Play Tricks',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: 'trick_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'all_cards_played',
+            nextPhase: 'resolution',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Follow led color if able; highest led color wins trick.',
+      },
+      {
+        id: 'resolution',
+        label: 'Score Penalties',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Apply red-card penalties and yellow-ten offset, then update cumulative totals.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '3-7 players, clockwise deal and play.',
+        deck: '56 cards: four colors (red, yellow, green, black), ranks 1 through 14.',
+        equipment: 'Scorepad for cumulative penalty totals across six deals.',
+        dealing: 'Deal all cards as equally as possible; with 3, 5, or 6 players, leftovers are won by winner of first trick.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: null,
+        mustFollowSuit: true,
+        canTrumpFirstTrick: false,
+        mustOvertrump: null,
+        leadRestrictions: null,
+        trickWinCondition: 'highest_of_led_suit',
+        trickWinnerLeads: true,
+        scoredTricks: false,
+        bidding: null,
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+      ],
+      authoritativeServer: true,
+      customLogicNeeded: [
+        'Penalty scoring for red cards with special red 5 and red 10 values',
+        'Yellow-ten bonus subtraction with floor at zero',
+        'Leftover-card transfer to first trick winner in non-divisible player counts',
+      ],
+    },
+    progression: [
+      'deal',
+      'trick_loop',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

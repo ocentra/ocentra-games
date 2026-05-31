@@ -2,6 +2,8 @@ import { schema } from '@ocentra/schema-domain/effect-builder';
 import { AssetRefSchema } from '../shared/asset-ref-schema';
 import { GameModeStatus } from '@/constants/game-mode-status';
 
+const MAX_CARD_GAME_PLAYERS = 100;
+
 export const CardGameModeDataSchema = schema.object({
     scoringAsset: AssetRefSchema.refine(v => v.assetType === 'CardGameScoring', { message: 'scoringAsset must be a CardGameScoring' }),
     gameRulesAsset: AssetRefSchema.refine(v => v.assetType === 'CardGameRules', { message: 'gameRulesAsset must be a CardGameRules' }),
@@ -15,10 +17,10 @@ export const CardGameModeDataSchema = schema.object({
     deckAsset: AssetRefSchema.refine(v => v.assetType === 'Deck', { message: 'deckAsset must be a Deck' }),
     carouselImagesAsset: AssetRefSchema.refine(v => v.assetType === 'ImageCarousel', { message: 'carouselImagesAsset must be an ImageCarousel' }).optional(),
     mechanicsAsset: AssetRefSchema.refine(v => v.assetType === 'CardGameMechanics', { message: 'mechanicsAsset must be a CardGameMechanics' }).optional(),
-    minPlayers: schema.number().int().min(1).max(20),
-    maxPlayers: schema.number().int().min(1).max(20),
-    minHumanPlayers: schema.number().int().min(1).max(20).optional(),
-    maxHumanPlayers: schema.number().int().min(1).max(20).optional(),
+    minPlayers: schema.number().int().min(1).max(MAX_CARD_GAME_PLAYERS),
+    maxPlayers: schema.number().int().min(1).max(MAX_CARD_GAME_PLAYERS),
+    minHumanPlayers: schema.number().int().min(1).max(MAX_CARD_GAME_PLAYERS).optional(),
+    maxHumanPlayers: schema.number().int().min(1).max(MAX_CARD_GAME_PLAYERS).optional(),
     supportsAI: schema.boolean().optional(),
     aiCountsAsPlayer: schema.boolean().optional(),
     baseBet: schema.number().min(0).optional(),

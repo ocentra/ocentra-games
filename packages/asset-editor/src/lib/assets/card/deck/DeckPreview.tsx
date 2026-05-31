@@ -64,6 +64,9 @@ const constructors: Record<string, AssetConstructor> = {
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
 
+const DECK_PREVIEW_REF_BATCH_SIZE = 128;
+const DECK_PREVIEW_REF_TIMEOUT_MS = 6000;
+
 export const DeckPreview: React.FC<DeckPreviewProps> = ({
   assetId,
   assetInstance,
@@ -95,7 +98,10 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({
           return;
         }
 
-        const previewSource = await resolveDeckPreviewSource(source);
+        const previewSource = await withDeckPreviewTimeout(
+          resolveDeckPreviewSource(source),
+          'deck preview source'
+        ) ?? source;
         const refs = collectDeckPreviewRefs(previewSource);
         const rankingRefs = uniqueDeckPreviewRefs([
           ...refs.rankingRefs,
@@ -204,7 +210,17 @@ function buildDeckPreviewCompactStyle(
 }
 
 async function loadRefs(refs: DeckPreviewReference[]): Promise<unknown[]> {
-  const results = await Promise.all(refs.map(loadRef));
+  const normalizedRefs = refs.map(normalizePreviewRef);
+  const results: Array<unknown | null> = [];
+  for (let index = 0; index < normalizedRefs.length; index += DECK_PREVIEW_REF_BATCH_SIZE) {
+    const batch = normalizedRefs.slice(index, index + DECK_PREVIEW_REF_BATCH_SIZE);
+    results.push(...await Promise.all(batch.map((ref) =>
+      withDeckPreviewTimeout(
+        loadRef(ref),
+        `deck preview reference ${ref.path || ref.guid || ref.displayName || ref.assetType}`
+      )
+    )));
+  }
   return results.filter((asset): asset is unknown => asset !== null);
 }
 
@@ -257,7 +273,7 @@ function referenceFromValue(value: unknown, fallbackAssetType: string): DeckPrev
     return referenceFromValue(refValue, fallbackAssetType);
   }
   const guid = stringValue(record.guid);
-  const path = stringValue(record.path);
+  const path = normalizePreviewResourcePath(stringValue(record.path));
   const assetType = stringValue(record.assetType) || stringValue(record.type) || fallbackAssetType;
   if (!guid && !path) {
     return null;
@@ -277,6 +293,51 @@ function asRecord(value: unknown): Record<string, unknown> {
 
 function stringValue(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+function normalizePreviewResourcePath(path: string): string {
+  if (!path) {
+    return '';
+  }
+  const normalized = path.replace(/\\/g, '/').replace(/^\/+/, '');
+  if (/^https?:\/\//i.test(normalized)) {
+    return normalized;
+  }
+  return normalized.startsWith('Resources/') ? normalized : `Resources/${normalized}`;
+}
+
+function normalizePreviewRef(ref: DeckPreviewReference): DeckPreviewReference {
+  const path = normalizePreviewResourcePath(ref.path ?? '');
+  return {
+    ...ref,
+    path: path || undefined,
+  };
+}
+
+async function withDeckPreviewTimeout<T>(promise: Promise<T>, label: string): Promise<T | null> {
+  let timeoutId: number | undefined;
+  const timeout = new Promise<null>((resolve) => {
+    timeoutId = window.setTimeout(() => {
+      log.logWarn('[DeckPreview] Reference load timed out', getStackTrace(), {
+        label,
+        timeoutMs: DECK_PREVIEW_REF_TIMEOUT_MS,
+      });
+      resolve(null);
+    }, DECK_PREVIEW_REF_TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([promise, timeout]);
+  } catch (error) {
+    log.logWarn('[DeckPreview] Reference load failed', getStackTrace(), {
+      label,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  } finally {
+    if (timeoutId !== undefined) {
+      window.clearTimeout(timeoutId);
+    }
+  }
 }
 
 async function loadRef(ref: DeckPreviewReference): Promise<unknown | null> {
@@ -303,10 +364,7 @@ async function loadRawDocumentFromRef(ref: DeckPreviewReference): Promise<Record
   }
 
   try {
-    const response = await loadAsset({
-      guid: ref.guid,
-      path,
-    });
+    const response = await loadAsset(path ? { path } : { guid: ref.guid });
     if (!response.ok) {
       return null;
     }
