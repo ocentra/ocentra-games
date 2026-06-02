@@ -5,6 +5,7 @@ import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { TestConfig } from '@tests/constants/test-constants';
 import { generateValidGuid, getValidRequestHeaders } from '@tests/helpers/test-helpers';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
@@ -43,6 +44,17 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     });
     expect(response.status).toBe(HttpStatus.Unauthorized);
     await response.text().catch(() => undefined);
+  });
+
+  it(testName('Message GET malformed conversation path: returns JSON not found'), async () => {
+    const response = await worker.fetch(`${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Message.Base}/.`, {
+      method: HttpMethod.Get,
+      headers: getValidRequestHeaders(TestConfig.TestUserId),
+    });
+    expect(response.status).toBe(HttpStatus.NotFound);
+    expect(response.headers.get(HttpHeader.ContentType)).toContain(HttpContentType.ApplicationJson);
+    const data = (await response.json()) as { error?: string };
+    expect(data.error).toBe(ErrorMessage.NotFound);
   });
 
   it(testName('Message GET list: returns 200 with messages array for conversation when authenticated'), async () => {
