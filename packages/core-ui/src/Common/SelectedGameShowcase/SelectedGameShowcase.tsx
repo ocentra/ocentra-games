@@ -518,7 +518,7 @@ function SvgFitText({ x, y, width, height, text, maxFontSize, minFontSize = 8, f
   return <text x={x + width / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="central" fontFamily={fontFamily} fontSize={fontSize} fontWeight={fontWeight} fill={fill} stroke={stroke} strokeWidth={strokeWidth} paintOrder={paintOrder}>{text}</text>;
 }
 
-function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 7, lineHeight = 1.16, fill = '#cbd5ff', fontFamily = 'Arial', fontWeight = '400', stroke, strokeWidth, paintOrder = 'normal' }: {
+function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 7, lineHeight = 1.16, fill = '#cbd5ff', fontFamily = 'Arial', fontWeight = '400', stroke, strokeWidth, paintOrder = 'normal', textAnchor = 'middle', verticalAlign = 'middle', maxLines }: {
   x: number;
   y: number;
   width: number;
@@ -533,17 +533,31 @@ function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 
   stroke?: string;
   strokeWidth?: number;
   paintOrder?: string;
+  textAnchor?: 'start' | 'middle' | 'end';
+  verticalAlign?: 'start' | 'middle';
+  maxLines?: number;
 }) {
+  const anchorX = textAnchor === 'start' ? x : textAnchor === 'end' ? x + width : x + width / 2;
   const makeLines = (fontSize: number) => wrapText(text, Math.max(8, Math.floor(width / (fontSize * 0.5))));
+  const fitLines = (source: string[], limit: number | undefined) => {
+    const effectiveLimit = Math.max(1, Math.floor(limit ?? source.length));
+    if (source.length <= effectiveLimit) return source;
+    const visible = source.slice(0, effectiveLimit);
+    const last = visible.at(-1) ?? '';
+    visible[visible.length - 1] = last.length > 3 ? `${last.replace(/[.,;:\s]+$/g, '').slice(0, Math.max(1, last.length - 1))}...` : `${last}...`;
+    return visible;
+  };
   let fontSize = maxFontSize;
-  let lines = makeLines(fontSize);
+  let lines = fitLines(makeLines(fontSize), maxLines);
   while (fontSize > minFontSize && lines.length * fontSize * lineHeight > height) {
     fontSize -= 0.5;
-    lines = makeLines(fontSize);
+    lines = fitLines(makeLines(fontSize), maxLines);
   }
+  const naturalMaxLines = Math.max(1, Math.floor(height / Math.max(1, fontSize * lineHeight)));
+  lines = fitLines(lines, naturalMaxLines);
   const totalH = lines.length * fontSize * lineHeight;
-  const firstY = y + Math.max(0, (height - totalH) / 2) + fontSize * 0.78;
-  return <text x={x + width / 2} y={firstY} textAnchor="middle" fontFamily={fontFamily} fontSize={fontSize} fontWeight={fontWeight} fill={fill} stroke={stroke} strokeWidth={strokeWidth} paintOrder={paintOrder}>{lines.map((line, index) => <tspan key={`${line}-${index}`} x={x + width / 2} dy={index === 0 ? 0 : fontSize * lineHeight}>{line}</tspan>)}</text>;
+  const firstY = y + (verticalAlign === 'start' ? 0 : Math.max(0, (height - totalH) / 2)) + fontSize * 0.78;
+  return <text x={anchorX} y={firstY} textAnchor={textAnchor} fontFamily={fontFamily} fontSize={fontSize} fontWeight={fontWeight} fill={fill} stroke={stroke} strokeWidth={strokeWidth} paintOrder={paintOrder}>{lines.map((line, index) => <tspan key={`${line}-${index}`} x={anchorX} dy={index === 0 ? 0 : fontSize * lineHeight}>{line}</tspan>)}</text>;
 }
 
 function DebugLabel({ x, y, label, cfg }: {
@@ -928,9 +942,11 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
   const hasChunkSelector = chunks.length > 1;
   const textShiftY = hasChunkSelector ? 42 : 0;
   const chunkSelectorMaxW = Math.max(120, w - o.textX - 72);
-  const textColumnW = Math.max(80, imageX - textX - 12);
-  const maxLineChars = Math.max(12, Math.floor(textColumnW / Math.max(1, o.bodyFont * 0.52)));
-  const rewrapParagraphs = cfg.canvas.vw <= 500;
+  const textColumnW = Math.max(80, w - o.textX - 24);
+  const bodyTextY = y + o.bodyY + textShiftY;
+  const bodyTextH = Math.max(28, imageBottomY - bodyTextY - 14);
+  const bodyText = content.paragraphs.flat().filter(Boolean).join(' ');
+  const bodyMaxLines = Math.max(2, Math.floor(bodyTextH / Math.max(1, o.bodyFont * 1.18)));
   return (
     <g>
       <defs>
@@ -953,13 +969,20 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
       <ChunkSelectorRow x={textX} y={y + 14} maxW={chunkSelectorMaxW} chunks={chunks} activeChunkId={activeChunkId} cfg={cfg} onSelectChunk={onSelectChunk} />
       <text x={textX} y={y + o.titleY + textShiftY} fontFamily="Arial" fontSize="18" fontWeight="900" fill={cfg.colors.iconPurple}>{content.eyebrow}</text>
       <text x={textX + 30} y={y + o.titleY + textShiftY} fontFamily="Impact, Arial Black" fontSize={o.titleFont} letterSpacing={o.titleLetterSpacing} fill={cfg.colors.titlePurple}>{content.title}</text>
-      {content.paragraphs.map((lines, paragraphIndex) => {
-        const startY = y + o.bodyY + textShiftY + paragraphIndex * o.paraGap;
-        const paragraphLines = rewrapParagraphs ? wrapText(lines.filter(Boolean).join(' '), maxLineChars).slice(0, 3) : lines;
-        return paragraphLines.map((line, lineIndex) => (
-          <text key={`${paragraphIndex}-${lineIndex}`} x={textX} y={startY + lineIndex * o.lineGap} fontFamily="Arial" fontSize={o.bodyFont} fill={cfg.colors.textPrimary}>{line}</text>
-        ));
-      })}
+      <SvgWrappedText
+        x={textX}
+        y={bodyTextY}
+        width={textColumnW}
+        height={bodyTextH}
+        text={bodyText}
+        maxFontSize={o.bodyFont}
+        minFontSize={Math.max(7, o.bodyFont * 0.68)}
+        lineHeight={o.lineGap / Math.max(1, o.bodyFont)}
+        fill={cfg.colors.textPrimary}
+        textAnchor="start"
+        verticalAlign="start"
+        maxLines={bodyMaxLines}
+      />
       <DebugLabel x={x + 8} y={y + 16} label="overview" cfg={cfg} />
     </g>
   );
@@ -1128,7 +1151,18 @@ function GoalCard({ x, y, w, h, card, active, onClick, config, clipPrefix }: {
       <path d={roundedRectPath(x + 1.5, y + 1.5, iconTileW, headerH, Math.max(0, c.cardRadius - 2), 0, 0, Math.max(0, c.cardRadius - 2))} fill={active ? 'url(#tabCountGoldFill)' : hover ? 'url(#tabHoverFill)' : 'url(#navIdle)'} stroke={active ? '#f7c84a' : hover ? colors.arrowHover : colors.stripStroke} strokeWidth="1.1" strokeOpacity={active || hover ? 0.86 : 0.42} />
       <path d={roundedRectPath(x + 1.5, y + 1.5, iconTileW, Math.max(7, headerH * 0.48), Math.max(0, c.cardRadius - 2), 0, 0, 0)} fill="url(#tabCountGoldShine)" opacity={active ? 0.28 : 0.08} pointerEvents="none" />
       <text x={x + iconTileW / 2 + 1} y={y + headerH / 2 + 1} textAnchor="middle" dominantBaseline="central" fontFamily="Georgia, serif" fontSize={c.headerIconSize} fill={active ? '#fff3b6' : hover ? '#9dffc2' : card.iconColor}>{card.icon}</text>
-      <text x={x + Math.max(c.headerTitleInsetX, iconTileW + 12)} y={y + headerH / 2 + 1} dominantBaseline="central" fontFamily="Arial Narrow, Arial" fontSize={c.headerTitleFont} fontWeight="900" letterSpacing={c.headerLetterSpacing} fill={active ? colors.stripActiveStroke : hover ? '#9dffc2' : '#d9edff'}>{card.title.toUpperCase()}</text>
+      <SvgFitText
+        x={x + Math.max(c.headerTitleInsetX, iconTileW + 12)}
+        y={y + 5}
+        width={Math.max(24, w - Math.max(c.headerTitleInsetX, iconTileW + 12) - c.cardTextPadRight)}
+        height={Math.max(12, headerH - 10)}
+        text={card.title.toUpperCase()}
+        maxFontSize={c.headerTitleFont}
+        minFontSize={Math.max(6, c.headerTitleFont * 0.54)}
+        fontFamily="Arial Narrow, Arial"
+        fontWeight="900"
+        fill={active ? colors.stripActiveStroke : hover ? '#9dffc2' : '#d9edff'}
+      />
       <g clipPath={`url(#${clipId})`}>
         {bulletRows.map((row) => (
           <g key={row.key}>
@@ -1829,7 +1863,7 @@ export function SelectedGameShowcase({
                       x={mainX + cfg.overview.xPad}
                       y={bodyY}
                       w={mainW - cfg.overview.xPad}
-                      imageBottomY={bandBY}
+                      imageBottomY={showHowTo ? Math.max(bodyY + 96, howToY - cfg.body.rowGap) : bandBY}
                       cfg={cfg}
                       content={activeContent}
                       imageUrl={overviewImageUrl}
