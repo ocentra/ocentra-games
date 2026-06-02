@@ -140,8 +140,8 @@ const DEFAULT_SELECTED_GAME_SHOWCASE_CONFIG = {
     button: true,
   },
   page: {
-    width: 1784,
-    x: 68,
+    width: 1880,
+    x: 20,
     y: 64,
     height: 980,
     radius: 14,
@@ -374,17 +374,32 @@ const DEFAULT_SELECTED_GAME_SHOWCASE_CONFIG = {
 };
 
 const NARROW_CONFIG_OVERRIDES = {
-  canvas: { vw: 390, vh: 760 },
+  canvas: { vw: 760, vh: 1320 },
   visibility: { stats: false },
-  page: { x: 12, y: 47, width: 366, height: 535 },
-  tabGroup: { y: 14, tabW: 47, tabH: 28, tabGap: 3, fontSize: 7.4, bgPadX: 4, bgPadY: 4 },
-  body: { aRatio: 0.34, rowGap: 9, bottomInset: 12 },
-  sideA: { logoXPad: 12, logoY: 18, logoFont: 22, taglineFont: 9.2, taglineGap: 16, statsY: 74, statsH: 30, statsGap: 4, artY: 106, artBottomPad: 220 },
-  overview: { xPad: 10, textX: 16, titleY: 24, titleFont: 12.5, titleLetterSpacing: 1.2, bodyY: 48, bodyFont: 8.8, lineGap: 12, paraGap: 42, imageRatio: 0.25 },
-  howTo: { yOffset: 0, topGap: 10, height: 190, xPad: 10, headerH: 48, bodyPadX: 9, bodyPadBottom: 8, arrowW: 14, titleFont: 11, titleLetterSpacing: 1.1, stepTitleFont: 8.8, stepBodyFont: 6.8, stepsPerPage: 2, pagerArrowWidth: 18, pagerArrowHeight: 34, pagerSideInset: -22 },
-  strip: { topGap: 10, height: 145, insetX: 10, arrowWidth: 20, arrowHeight: 34, arrowOutsideGap: -20, cardGap: 8, cardMinWidth: 82, cardMaxWidth: 112, bulletFont: 6.8, headerTitleFont: 8.2, headerTitleInsetX: 24, headerIconInsetX: 9, headerIconSize: 14, headerLetterSpacing: 0.4, bulletTop: 42, bulletGap: 4, bulletInsetX: 10, bodyLineHeight: 9.8 },
-  tip: { sideInset: 28, height: 48, iconX: 16, textX: 54, iconFont: 14, textFont: 9.2 },
-  button: { railHeight: 52, railInsetX: 24, width: 260, height: 36, fontSize: 7.2, letterSpacing: 0.25, innerBoxW: 18, arrowSize: 6 },
+  page: { x: 24, y: 92, width: 712, height: 1040 },
+  tabGroup: { y: 28, tabW: 92, tabH: 40, tabGap: 4, fontSize: 11, bgPadX: 8, bgPadY: 4 },
+  body: { aRatio: 0.34, rowGap: 12, bottomInset: 18 },
+  sideA: { logoXPad: 22, logoY: 46, logoFont: 36, taglineFont: 13, taglineGap: 22, statsY: 132, statsH: 46, statsGap: 5, artY: 210, artBottomPad: 420 },
+  overview: { xPad: 14, textX: 20, titleY: 50, titleFont: 15, titleLetterSpacing: 2, bodyY: 88, bodyFont: 10, lineGap: 16, paraGap: 32, imageRatio: 0.28 },
+  howTo: { yOffset: 0, topGap: 12, height: 300, xPad: 14, headerH: 52, bodyPadX: 12, bodyPadBottom: 12, arrowW: 14, titleFont: 16, titleLetterSpacing: 2, stepTitleFont: 11, stepBodyFont: 8, stepsPerPage: 2, pagerArrowWidth: 24, pagerArrowHeight: 46, pagerSideInset: 0 },
+  strip: { topGap: 12, height: 210, insetX: 18, arrowOutsideGap: -4, cardMinWidth: 116, cardMaxWidth: 160, bulletFont: 8, headerTitleFont: 10, headerTitleInsetX: 34, headerIconInsetX: 12, headerIconSize: 16, headerLetterSpacing: 1, bulletTop: 48, bulletGap: 5, bulletInsetX: 12, bodyLineHeight: 11 },
+  tip: { sideInset: 54, height: 92, iconX: 22, textX: 96, iconFont: 18, textFont: 12 },
+  button: { railHeight: 74, railInsetX: 24, width: 260, height: 52, fontSize: 15, letterSpacing: 1.5, innerBoxW: 34, arrowSize: 9 },
+};
+
+const SHORT_LANDSCAPE_CONFIG_OVERRIDES = {
+  canvas: { vw: 760, vh: 420 },
+  visibility: { stats: false, howTo: false },
+  page: { x: 18, y: 62, width: 724, height: 290, radius: 10 },
+  tabGroup: { y: 16, tabW: 82, tabH: 28, tabGap: 3, fontSize: 9, bgPadX: 6, bgPadY: 3, shineH: 8 },
+  body: { aRatio: 0.34, rowGap: 5, bottomInset: 8, dividerWidth: 1 },
+  sideA: { logoXPad: 18, logoY: 28, logoFont: 24, taglineFont: 9, taglineGap: 14, statsY: 92, statsH: 32, statsGap: 4, artY: 112, artBottomPad: 150 },
+  overview: { xPad: 10, textX: 16, titleY: 34, titleFont: 12, titleLetterSpacing: 1.6, bodyY: 58, bodyFont: 8, lineGap: 11, paraGap: 18, imageRatio: 0.18 },
+  howTo: { topGap: 6, height: 0, xPad: 10, headerH: 28, bodyPadX: 8, bodyPadBottom: 8, arrowW: 10, titleFont: 11, titleLetterSpacing: 1.2, stepTitleFont: 8, stepBodyFont: 6, stepsPerPage: 1, pagerArrowWidth: 18, pagerArrowHeight: 30, pagerSideInset: 0 },
+  strip: { topGap: 6, height: 74, insetX: 14, arrowOutsideGap: -4, cardGap: 8, cardMinWidth: 90, cardMaxWidth: 126, cardBaseHeight: 56, cardVerticalPad: 8, cardRadius: 8, headerStripHeight: 20, headerIconSize: 12, headerIconInsetX: 9, headerTitleFont: 7.5, headerTitleInsetX: 24, headerLetterSpacing: 0.8, bulletTop: 28, bulletGap: 3, bulletFont: 5.8, bulletInsetX: 9, bulletDotSize: 1.6, bodyLineHeight: 7.5, footerLineOffset: -3, footerPillY: 1, footerPillW: 8, footerActivePillW: 16, footerPillH: 4, footerPillGap: 4 },
+  tip: { sideInset: 62, height: 32, iconX: 18, textX: 76, iconFont: 14, textFont: 8 },
+  button: { railHeight: 46, railInsetX: 40, width: 212, height: 34, radius: 6, fontSize: 11, letterSpacing: 1, innerBoxW: 30, innerBoxRadius: 3, innerBoxShineH: 8, arrowSize: 7 },
+  glow: { pageBlur: 4, tabsBlur: 3, panelsBlur: 3, stripBlur: 3, buttonBlur: 4 },
 };
 
 function cloneDefaultConfig(): SelectedGameShowcaseConfig {
@@ -715,6 +730,7 @@ function HeroSummary({ x, y, w, cfg, logoUrl, presentation }: {
   const subtitleY = logoY + titleH + (logoUrl ? 2 : 8);
   const detailY = subtitleY + (logoUrl ? 24 : 30);
   const narrowCanvas = cfg.canvas.vw <= 500;
+  const compactHeight = cfg.canvas.vh <= 420;
   const subtitleMinFont = narrowCanvas ? 5 : 9;
   const detailMinFont = narrowCanvas ? 5 : 8;
   return (
@@ -739,8 +755,8 @@ function HeroSummary({ x, y, w, cfg, logoUrl, presentation }: {
           paintOrder="stroke"
         />
       )}
-      {subtitle && <SvgFitText x={x + 14} y={subtitleY} width={w - 28} height={28} text={subtitle} maxFontSize={cfg.sideA.taglineFont} minFontSize={subtitleMinFont} fontWeight="800" fill="#ffffff" />}
-      {detail && <SvgWrappedText x={x + 26} y={detailY} width={w - 52} height={42} text={detail} maxFontSize={Math.max(9, cfg.sideA.taglineFont * 0.72)} minFontSize={detailMinFont} fill="#cbd5ff" />}
+      {!compactHeight && subtitle && <SvgFitText x={x + 14} y={subtitleY} width={w - 28} height={28} text={subtitle} maxFontSize={cfg.sideA.taglineFont} minFontSize={subtitleMinFont} fontWeight="800" fill="#ffffff" />}
+      {!compactHeight && detail && <SvgWrappedText x={x + 26} y={detailY} width={w - 52} height={42} text={detail} maxFontSize={Math.max(9, cfg.sideA.taglineFont * 0.72)} minFontSize={detailMinFont} fill="#cbd5ff" />}
     </g>
   );
 }
@@ -939,14 +955,15 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
   const imageW = w * o.imageRatio;
   const imageX = x + w - imageW;
   const imageH = imageBottomY - y;
-  const hasChunkSelector = chunks.length > 1;
+  const compactOverview = cfg.canvas.vh <= 420 || imageH < 100;
+  const hasChunkSelector = chunks.length > 1 && !compactOverview;
   const textShiftY = hasChunkSelector ? 42 : 0;
   const chunkSelectorMaxW = Math.max(120, w - o.textX - 72);
   const textColumnW = Math.max(80, w - o.textX - 24);
   const bodyTextY = y + o.bodyY + textShiftY;
   const bodyTextH = Math.max(28, imageBottomY - bodyTextY - 14);
   const bodyText = content.paragraphs.flat().filter(Boolean).join(' ');
-  const bodyMaxLines = Math.max(2, Math.floor(bodyTextH / Math.max(1, o.bodyFont * 1.18)));
+  const bodyMaxLines = compactOverview ? 1 : Math.max(2, Math.floor(bodyTextH / Math.max(1, o.bodyFont * 1.18)));
   return (
     <g>
       <defs>
@@ -966,7 +983,7 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
         </mask>
       </defs>
       {cfg.visibility.overviewImage && <image href={imageUrl} x={imageX} y={y} width={imageW} height={imageH} preserveAspectRatio="xMidYMid slice" clipPath="url(#overviewImageClip)" mask="url(#overviewImageMask)" />}
-      <ChunkSelectorRow x={textX} y={y + 14} maxW={chunkSelectorMaxW} chunks={chunks} activeChunkId={activeChunkId} cfg={cfg} onSelectChunk={onSelectChunk} />
+      {hasChunkSelector && <ChunkSelectorRow x={textX} y={y + 14} maxW={chunkSelectorMaxW} chunks={chunks} activeChunkId={activeChunkId} cfg={cfg} onSelectChunk={onSelectChunk} />}
       <text x={textX} y={y + o.titleY + textShiftY} fontFamily="Arial" fontSize="18" fontWeight="900" fill={cfg.colors.iconPurple}>{content.eyebrow}</text>
       <text x={textX + 30} y={y + o.titleY + textShiftY} fontFamily="Impact, Arial Black" fontSize={o.titleFont} letterSpacing={o.titleLetterSpacing} fill={cfg.colors.titlePurple}>{content.title}</text>
       <SvgWrappedText
@@ -998,17 +1015,22 @@ function HowToContent({ x, y, w, h, cfg, content }: {
 }) {
   const c = cfg.howTo;
   const activeSteps = content.steps;
-  const stepsPerPage = Math.max(1, Math.min(activeSteps.length, Math.round(c.stepsPerPage)));
+  const compactCanvas = cfg.canvas.vw <= 900;
+  const headerH = Math.min(c.headerH, Math.max(compactCanvas ? 36 : 44, h * (compactCanvas ? 0.3 : 0.26)));
+  const bodyX = x + c.bodyPadX;
+  const bodyY = y + headerH;
+  const bodyW = Math.max(0, w - c.bodyPadX * 2);
+  const bodyH = Math.max(0, h - headerH - c.bodyPadBottom);
+  const minStepW = compactCanvas ? 130 : 190;
+  const widthStepLimit = Math.max(1, Math.floor((bodyW + c.arrowW) / Math.max(1, minStepW + c.arrowW)));
+  const heightStepLimit = bodyH < (compactCanvas ? 92 : 118) ? 1 : Math.max(1, Math.round(c.stepsPerPage));
+  const stepsPerPage = Math.max(1, Math.min(activeSteps.length, Math.round(c.stepsPerPage), widthStepLimit, heightStepLimit));
   const maxStepStart = Math.max(0, activeSteps.length - stepsPerPage);
   const [stepStart, setStepStart] = useState(0);
   const safeStepStart = Math.min(stepStart, maxStepStart);
   const visibleSteps = activeSteps.slice(safeStepStart, safeStepStart + stepsPerPage);
   const pageCount = Math.max(1, Math.ceil(activeSteps.length / stepsPerPage));
   const currentPage = Math.min(pageCount - 1, Math.floor(safeStepStart / stepsPerPage));
-  const bodyX = x + c.bodyPadX;
-  const bodyY = y + c.headerH;
-  const bodyW = w - c.bodyPadX * 2;
-  const bodyH = h - c.headerH - c.bodyPadBottom;
   const hasPager = activeSteps.length > stepsPerPage;
   const deckW = bodyW;
   const deckX = bodyX;
@@ -1017,10 +1039,11 @@ function HowToContent({ x, y, w, h, cfg, content }: {
   const previousPage = () => setStepStart((value) => Math.max(0, Math.min(value, maxStepStart) - stepsPerPage));
   const pagerW = pageCount * c.pagerPillW + Math.max(0, pageCount - 1) * c.pagerPillGap + c.pagerActivePillW - c.pagerPillW;
   const pagerX = x + w - pagerW - 28;
-  const pagerY = y + c.headerH / 2 - c.pagerPillH / 2;
+  const pagerY = y + headerH / 2 - c.pagerPillH / 2;
   const shellRadius = Math.max(c.boxRadius, cfg.strip.radius);
   const shellFillOpacity = Math.max(0.34, Math.min(0.78, cfg.strip.fillOpacity));
   const pagerArrowY = y + h / 2 - c.pagerArrowHeight / 2;
+  const titleBaselineY = y + Math.min(headerH - 10, Math.max(24, headerH * 0.72));
   const pagerRows = Array.from({ length: pageCount }).reduce<Array<{ active: boolean; currentX: number; width: number; index: number }>>((rows, _, index) => {
     const active = index === currentPage;
     const width = active ? c.pagerActivePillW : c.pagerPillW;
@@ -1033,8 +1056,8 @@ function HowToContent({ x, y, w, h, cfg, content }: {
       <rect x={x} y={y + 8} width={w} height={h} rx={shellRadius} fill="#000000" opacity="0.18" pointerEvents="none" />
       {cfg.glow.strip && <rect x={x - 1.5} y={y - 1.5} width={w + 3} height={h + 3} rx={shellRadius + 1.5} fill="none" stroke={cfg.glow.color} strokeWidth="3" strokeOpacity={Math.min(0.35, cfg.glow.stripOpacity * 0.42)} pointerEvents="none" />}
       <rect x={x} y={y} width={w} height={h} rx={shellRadius} fill="url(#skeletonGlass)" fillOpacity={shellFillOpacity} stroke={cfg.colors.stripStroke} strokeWidth="2" strokeOpacity="0.84" />
-      <rect x={x + 2} y={y + 2} width={w - 4} height={Math.min(c.headerH - 8, cfg.strip.shineH)} rx="12" fill="#ffffff" opacity="0.03" />
-      <text x={x + 32} y={y + 39} fontFamily="Impact, Arial Black" fontSize={c.titleFont} letterSpacing={c.titleLetterSpacing} fill={cfg.colors.titlePurple}>{content.stepsTitle}</text>
+      <rect x={x + 2} y={y + 2} width={w - 4} height={Math.min(headerH - 8, cfg.strip.shineH)} rx="12" fill="#ffffff" opacity="0.03" />
+      <text x={x + 32} y={titleBaselineY} fontFamily="Impact, Arial Black" fontSize={c.titleFont} letterSpacing={c.titleLetterSpacing} fill={cfg.colors.titlePurple}>{content.stepsTitle}</text>
       {pageCount > 1 && pagerRows.map(({ active, currentX, width, index }) => (
         <rect key={index} x={currentX} y={pagerY} width={width} height={c.pagerPillH} rx={c.pagerPillH / 2} fill={active ? 'url(#footerSelectedPill)' : 'transparent'} stroke={active ? cfg.colors.stripActiveStroke : cfg.colors.stripStroke} strokeWidth={active ? 1.4 : 1} strokeOpacity={active ? 0.9 : 0.46} />
       ))}
@@ -1137,11 +1160,19 @@ function GoalCard({ x, y, w, h, card, active, onClick, config, clipPrefix }: {
   const iconTileW = Math.min(Math.max(30, headerH * 1.1), 46);
   const bulletMaxChars = Math.max(9, Math.floor((w - c.bulletInsetX * 2 - c.bulletDotSize * 5) / (c.bulletFont * 0.54)));
   const clipId = `${clipPrefix}-card-${card.id}`;
-  const bulletRows = card.bullets.reduce<Array<{ baseY: number; lines: string[]; key: string }>>((rows, bullet, index) => {
-    const previous = rows.at(-1);
-    const baseY = previous ? previous.baseY + Math.max(c.bodyLineHeight, previous.lines.length * c.bodyLineHeight) + c.bulletGap : y + c.bulletTop;
-    return [...rows, { baseY, lines: wrapText(bullet, bulletMaxChars), key: `${card.id}-${index}` }];
-  }, []);
+  const bulletRows: Array<{ baseY: number; lines: string[]; key: string }> = [];
+  const bulletBottomY = y + h - 12;
+  let bulletCursorY = y + c.bulletTop;
+  card.bullets.forEach((bullet, index) => {
+    if (bulletCursorY >= bulletBottomY) return;
+    const lines = wrapText(bullet, bulletMaxChars);
+    const maxLines = Math.floor((bulletBottomY - bulletCursorY) / Math.max(1, c.bodyLineHeight));
+    if (maxLines <= 0) return;
+    const visibleLines = lines.slice(0, maxLines);
+    if (visibleLines.length === 0) return;
+    bulletRows.push({ baseY: bulletCursorY, lines: visibleLines, key: `${card.id}-${index}` });
+    bulletCursorY += Math.max(c.bodyLineHeight, visibleLines.length * c.bodyLineHeight) + c.bulletGap;
+  });
   return (
     <g onClick={onClick} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ cursor: 'pointer' }} filter={active ? 'url(#goldGlow)' : hover ? 'url(#tabGreenGlow)' : undefined}>
       <defs><clipPath id={clipId}><rect x={x + 5} y={y + headerH + 6} width={w - 10} height={h - headerH - 12} rx="8" /></clipPath></defs>
@@ -1191,8 +1222,8 @@ function GoalStripCarousel({ x, y, w, h, config, cards, selectedChunkId, onSelec
   const [windowStart, setWindowStart] = useState(selectedIndex);
   const c = config.strip;
   const colors = config.colors;
-  const arrowW = c.arrowWidth;
-  const arrowH = c.arrowHeight;
+  const arrowW = Math.min(c.arrowWidth, Math.max(18, w * 0.032));
+  const arrowH = Math.min(c.arrowHeight, Math.max(30, h - 22));
   const arrowGap = c.arrowOutsideGap;
   const viewportX = x + c.carouselSidePad;
   const viewportY = y + c.carouselPadTop;
@@ -1602,10 +1633,16 @@ export function SelectedGameShowcase({
   const [activeTopTab, setActiveTopTab] = useState<SelectedGameTabId>(presentation.tabs[0]?.id ?? 'about');
   const [hoverTopTab, setHoverTopTab] = useState<SelectedGameTabId | null>(null);
   const [activeChunkByTab, setActiveChunkByTab] = useState<Record<string, string>>({});
-  const effectiveLayoutMode = layoutMode === 'auto' && containerSize.width > 0 && containerSize.width < 860 ? 'narrow' : layoutMode;
+  const containerAspect = containerSize.width > 0 && containerSize.height > 0 ? containerSize.width / containerSize.height : 0;
+  const useShortLandscapeLayout = layoutMode !== 'wide' && containerAspect > 2.15 && containerSize.height > 0 && containerSize.height < 720;
+  const effectiveLayoutMode = layoutMode === 'auto' && !useShortLandscapeLayout && containerSize.width > 0 && containerSize.width < 860 ? 'narrow' : layoutMode;
   const propConfig = useMemo(() => mergeLayoutControls(cloneDefaultConfig(), layoutControls), [layoutControls]);
   const configSource = designerMode ? config : propConfig;
-  const cfg = effectiveLayoutMode === 'narrow' ? mergeConfig(configSource, NARROW_CONFIG_OVERRIDES) : configSource;
+  const cfg = useShortLandscapeLayout
+    ? mergeConfig(mergeConfig(configSource, NARROW_CONFIG_OVERRIDES), SHORT_LANDSCAPE_CONFIG_OVERRIDES)
+    : effectiveLayoutMode === 'narrow'
+      ? mergeConfig(configSource, NARROW_CONFIG_OVERRIDES)
+      : configSource;
   const tabs = presentation.tabs.length > 0 ? presentation.tabs : FALLBACK_PRESENTATION.tabs;
   const controlledActiveTopTab = activeTabId && tabs.some((tab) => tab.id === activeTabId) ? activeTabId : null;
   const normalizedActiveTopTab = controlledActiveTopTab ?? (tabs.some((tab) => tab.id === activeTopTab) ? activeTopTab : tabs[0]?.id ?? 'about');
@@ -1664,17 +1701,15 @@ export function SelectedGameShowcase({
   const vw = cfg.canvas.vw;
   const defaultVh = cfg.canvas.vh;
   const measuredAspect = containerSize.width > 0 && containerSize.height > 0 ? containerSize.width / containerSize.height : vw / defaultVh;
-  const fittedVh = Math.round(vw / clampNumber(measuredAspect, 0.52, 2.4));
+  const vh = showInternalDesignerControls ? defaultVh : vw / clampNumber(measuredAspect, 0.52, 2.4);
   const authoredPageH = cfg.page.height;
-  const minimumProductionPageH = Math.min(authoredPageH, Math.max(900, authoredPageH * 0.92));
-  const minimumProductionVh = cfg.page.y + minimumProductionPageH + cfg.button.edgeOffsetY + cfg.button.height / 2 + 8;
-  const vh = showInternalDesignerControls ? defaultVh : clampNumber(fittedVh, minimumProductionVh, defaultVh * 1.55);
   const pageX = cfg.page.x;
   const pageY = cfg.page.y;
   const pageW = cfg.page.width;
+  const availablePageH = Math.max(0, vh - pageY - cfg.button.edgeOffsetY - cfg.button.height / 2 - 8);
   const pageH = showInternalDesignerControls
     ? authoredPageH
-    : Math.max(minimumProductionPageH, vh - pageY - cfg.button.edgeOffsetY - cfg.button.height / 2 - 8);
+    : availablePageH;
   const tabW = cfg.tabGroup.tabW;
   const tabH = cfg.tabGroup.tabH;
   const tabsBgW = tabs.length * tabW + (tabs.length - 1) * cfg.tabGroup.tabGap + cfg.tabGroup.bgPadX * 2;
@@ -1698,22 +1733,63 @@ export function SelectedGameShowcase({
   const actionButtonW = Math.min(cfg.button.width, maxActionButtonW);
   const actionGroupW = actionButtonW * actionCount + actionGap * (actionCount - 1);
   const actionStartX = actionRailX + actionRailW / 2 - actionGroupW / 2;
-  const tipY = actionRailY - cfg.button.height / 2 - cfg.body.rowGap - cfg.tip.height + cfg.tip.yOffset;
   const sideAW = cfg.body.useABRatio ? Math.round(bodyW * cfg.body.aRatio) : cfg.body.leftWidth;
   const mainX = bodyX + sideAW;
   const mainW = bodyW - sideAW;
-  const stripY = Math.max(bodyY + 180, tipY - cfg.body.rowGap - cfg.strip.height + cfg.strip.yOffset);
-  const topContentH = Math.max(160, stripY - bodyY - cfg.body.rowGap);
-  const availableForHowTo = Math.max(96, topContentH - cfg.howTo.topGap - 132);
-  const targetHowToH = showHowTo ? Math.min(cfg.howTo.height, Math.max(96, topContentH * 0.42), availableForHowTo) : 0;
-  const maxHowToY = stripY - cfg.body.rowGap - targetHowToH;
-  const minHowToY = bodyY + 132 + cfg.howTo.topGap;
-  const howToY = showHowTo ? clampNumber(maxHowToY + cfg.howTo.yOffset, minHowToY, Math.max(minHowToY, maxHowToY)) : 0;
-  const howToH = targetHowToH;
+  const compactLayout = cfg.canvas.vw <= 900;
+  const shortLayout = vh < 430;
+  const rowGap = Math.max(4, cfg.body.rowGap);
+  const contentBottomY = viewButtonY - rowGap;
+  const overviewMinH = shortLayout ? 62 : compactLayout ? 150 : 210;
+  const howToMinH = shortLayout ? 0 : compactLayout ? 110 : 140;
+  const stripMinH = shortLayout ? 48 : compactLayout ? 132 : 154;
+  const tipMinH = shortLayout ? 24 : compactLayout ? 54 : 58;
+  const availableContentH = Math.max(0, contentBottomY - bodyY);
+  const canReserveHowTo = !shortLayout && showHowTo && availableContentH >= overviewMinH + cfg.howTo.topGap + howToMinH + rowGap * 2 + stripMinH + tipMinH;
+  const topMinH = overviewMinH + (canReserveHowTo ? cfg.howTo.topGap + howToMinH : 0);
+  const bandBudget = Math.max(0, availableContentH - topMinH - rowGap * 2);
+  let stripH = cfg.strip.height;
+  let tipH = cfg.tip.height;
+  let bandOverflow = Math.max(0, stripH + tipH - bandBudget);
+  const stripShrink = Math.min(Math.max(0, stripH - stripMinH), bandOverflow);
+  stripH -= stripShrink;
+  bandOverflow -= stripShrink;
+  const tipShrink = Math.min(Math.max(0, tipH - tipMinH), bandOverflow);
+  tipH -= tipShrink;
+  bandOverflow -= tipShrink;
+  if (bandOverflow > 0) {
+    const minBandH = stripMinH + tipMinH;
+    const scale = minBandH > 0 ? Math.max(0, Math.min(1, bandBudget / minBandH)) : 0;
+    stripH = stripMinH * scale;
+    tipH = tipMinH * scale;
+  }
+  const maxTipY = contentBottomY - tipH;
+  const minTipY = bodyY + topMinH + rowGap + stripH + rowGap;
+  const tipY = maxTipY >= minTipY
+    ? clampNumber(maxTipY + cfg.tip.yOffset, minTipY, maxTipY)
+    : maxTipY;
+  const maxStripY = tipY - rowGap - stripH;
+  const minStripY = bodyY + topMinH + rowGap;
+  const stripY = maxStripY >= minStripY
+    ? clampNumber(maxStripY + cfg.strip.yOffset, minStripY, maxStripY)
+    : maxStripY;
   const bandBY = stripY;
+  const topAreaBottom = Math.max(bodyY, stripY - rowGap);
+  const topContentH = Math.max(0, topAreaBottom - bodyY);
+  const availableForHowTo = Math.max(0, topContentH - overviewMinH - cfg.howTo.topGap);
+  const howToVisible = canReserveHowTo && availableForHowTo >= howToMinH;
+  const howToH = howToVisible
+    ? clampNumber(Math.min(cfg.howTo.height, Math.max(howToMinH, topContentH * 0.42), availableForHowTo), howToMinH, Math.max(howToMinH, availableForHowTo))
+    : 0;
+  const maxHowToY = topAreaBottom - howToH;
+  const minHowToY = bodyY + cfg.howTo.topGap;
+  const howToY = howToVisible
+    ? (maxHowToY >= minHowToY ? clampNumber(maxHowToY + cfg.howTo.yOffset, minHowToY, maxHowToY) : maxHowToY)
+    : 0;
+  const overviewBottomY = howToVisible ? Math.max(bodyY + 72, howToY - rowGap) : topAreaBottom;
   const stripX = bodyX + cfg.strip.insetX;
   const stripW = bodyW - cfg.strip.insetX * 2;
-  const bandAH = Math.max(120, bandBY - cfg.body.rowGap - bodyY);
+  const bandAH = Math.max(0, bandBY - rowGap - bodyY);
   const leftH = bandAH;
   const mainH = bandAH;
   const sideAArtY = bodyY + cfg.sideA.artY;
@@ -1863,7 +1939,7 @@ export function SelectedGameShowcase({
                       x={mainX + cfg.overview.xPad}
                       y={bodyY}
                       w={mainW - cfg.overview.xPad}
-                      imageBottomY={showHowTo ? Math.max(bodyY + 96, howToY - cfg.body.rowGap) : bandBY}
+                      imageBottomY={overviewBottomY}
                       cfg={cfg}
                       content={activeContent}
                       imageUrl={overviewImageUrl}
@@ -1872,20 +1948,20 @@ export function SelectedGameShowcase({
                       onSelectChunk={(chunkId) => setActiveChunkByTab((prev) => ({ ...prev, [activeTab.id]: chunkId }))}
                     />
                   )}
-                  {showHowTo && <HowToContent key={howToChunk?.id ?? activeTab.id} x={mainX + cfg.howTo.xPad} y={howToY} w={mainW - cfg.howTo.xPad * 2} h={howToH} cfg={cfg} content={howToContent} />}
+                  {howToVisible && <HowToContent key={howToChunk?.id ?? activeTab.id} x={mainX + cfg.howTo.xPad} y={howToY} w={mainW - cfg.howTo.xPad * 2} h={howToH} cfg={cfg} content={howToContent} />}
                 </>
               )}
               <DebugLabel x={mainX + 12} y={bodyY + 18} label="B side" cfg={cfg} />
             </g>
           )}
 
-          {cfg.visibility.strip && <GoalStripCarousel key={`${activeCardsKey}:${selectedStripChunkId}`} x={stripX} y={bandBY} w={stripW} h={cfg.strip.height} config={cfg} cards={activeCards} selectedChunkId={selectedStripChunkId} onSelectChunk={(chunkId) => {
+          {cfg.visibility.strip && <GoalStripCarousel key={`${activeCardsKey}:${selectedStripChunkId}`} x={stripX} y={bandBY} w={stripW} h={stripH} config={cfg} cards={activeCards} selectedChunkId={selectedStripChunkId} onSelectChunk={(chunkId) => {
             const card = activeCards.find((item) => item.id === chunkId);
             const nextTabId = card?.tabId ?? activeTab.id;
             selectTopTab(nextTabId);
             setActiveChunkByTab((prev) => ({ ...prev, [nextTabId]: card?.chunkId ?? chunkId }));
           }} />}
-          {cfg.visibility.tip && <TipContent x={bodyX + cfg.tip.sideInset} y={tipY} w={bodyW - cfg.tip.sideInset * 2} h={cfg.tip.height} cfg={cfg} text={activeTab.tip || presentation.tip[activeTab.id] || ''} />}
+          {cfg.visibility.tip && <TipContent x={bodyX + cfg.tip.sideInset} y={tipY} w={bodyW - cfg.tip.sideInset * 2} h={tipH} cfg={cfg} text={activeTab.tip || presentation.tip[activeTab.id] || ''} />}
 
           {cfg.visibility.button && visibleActions.length > 0 && (
             <g id="bottom-actions">
@@ -1960,15 +2036,15 @@ export function SelectedGameShowcase({
             <BoundsLabel x={mainX + 12} y={bodyY + 80} label="side B" fill="#c084fc" />
             <rect x={mainX + cfg.overview.xPad} y={bodyY + 12} width={Math.max(0, mainW - cfg.overview.xPad * 2)} height={Math.max(80, bandBY - bodyY - 24)} fill="none" stroke="#22d3ee" strokeWidth="2" strokeDasharray="8 6" />
             <BoundsLabel x={mainX + cfg.overview.xPad + 8} y={bodyY + 108} label="B content" fill="#22d3ee" />
-            {showHowTo ? (
+            {howToVisible ? (
               <>
                 <rect x={mainX + cfg.howTo.xPad} y={howToY} width={Math.max(0, mainW - cfg.howTo.xPad * 2)} height={howToH} fill="none" stroke="#34d399" strokeWidth="2" strokeDasharray="8 6" />
                 <BoundsLabel x={mainX + cfg.howTo.xPad + 8} y={howToY + 24} label="how to" fill="#34d399" />
               </>
             ) : null}
-            <rect x={stripX} y={bandBY} width={stripW} height={cfg.strip.height} rx={cfg.strip.radius} fill="none" stroke="#2dd4bf" strokeWidth="2.5" strokeDasharray="12 8" />
+            <rect x={stripX} y={bandBY} width={stripW} height={stripH} rx={cfg.strip.radius} fill="none" stroke="#2dd4bf" strokeWidth="2.5" strokeDasharray="12 8" />
             <BoundsLabel x={stripX + 12} y={bandBY + 24} label="quick strip" fill="#2dd4bf" />
-            <rect x={tipX} y={tipY} width={tipW} height={cfg.tip.height} rx={cfg.tip.radius} fill="none" stroke="#fbbf24" strokeWidth="2.5" strokeDasharray="10 7" />
+            <rect x={tipX} y={tipY} width={tipW} height={tipH} rx={cfg.tip.radius} fill="none" stroke="#fbbf24" strokeWidth="2.5" strokeDasharray="10 7" />
             <BoundsLabel x={tipX + 12} y={tipY + 24} label="tip" fill="#fbbf24" />
             <rect x={actionRailX} y={actionRailY - actionRailH / 2} width={actionRailW} height={actionRailH} rx={Math.min(18, actionRailH / 2)} fill="none" stroke="#4ade80" strokeWidth="2.5" strokeDasharray="14 9" />
             <BoundsLabel x={actionRailX + 12} y={actionRailY - actionRailH / 2 + 24} label="action rail" fill="#4ade80" />

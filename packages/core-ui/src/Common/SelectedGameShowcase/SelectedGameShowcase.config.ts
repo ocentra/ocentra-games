@@ -26,8 +26,8 @@ export const DEFAULT_SELECTED_GAME_SHOWCASE_CONFIG = {
     button: true,
   },
   page: {
-    width: 1784,
-    x: 68,
+    width: 1880,
+    x: 20,
     y: 64,
     height: 980,
     radius: 14,

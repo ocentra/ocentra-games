@@ -49,6 +49,7 @@ import {
 import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 import { useDailyRewardSpin } from '@/ui/rewards/dailyRewardSpinState';
+import { ScreenLoadingFallback } from '@/ui/components/Loading/ScreenLoadingFallback';
 
 interface ShopPageProps {
   user: UserProfile | null;
@@ -604,14 +605,20 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   }, []);
 
   const acBalance = cloudAccountState?.acBalance ?? null;
-  const accountSummary = useMemo<ShopAccountSummary>(() => ({
-    displayName: cloudAccountState?.displayName,
-    email: user?.email || auth?.currentUser?.email || undefined,
-    photoUrl: getHeaderAvatarUrl(user?.photoURL || auth?.currentUser?.photoURL) || undefined,
-    gamesPlayed: cloudAccountState?.gamesPlayed,
-    winRate: cloudAccountState?.winRate,
-    isGuest: user?.isGuest,
-  }), [cloudAccountState, user]);
+  const accountSummary = useMemo<ShopAccountSummary | null>(() => {
+    const email = user?.email || auth?.currentUser?.email || undefined;
+    const photoUrl = getHeaderAvatarUrl(user?.photoURL || auth?.currentUser?.photoURL) || undefined;
+    const hasAccount = Boolean(user || auth?.currentUser || email || photoUrl || cloudAccountState?.displayName);
+    if (!hasAccount) return null;
+    return {
+      displayName: cloudAccountState?.displayName,
+      email,
+      photoUrl,
+      gamesPlayed: cloudAccountState?.gamesPlayed,
+      winRate: cloudAccountState?.winRate,
+      isGuest: user?.isGuest,
+    };
+  }, [cloudAccountState, user]);
   const handleBack = useCallback(() => EventBus.instance.publish(new ShowScreenEvent('home')), []);
   const resolveDeckImageUrl = useCallback<ShopDeckImageResolver>((imageHash, imagePath) => {
     if (imageHash && vaultDeckImageUrls[imageHash]) return vaultDeckImageUrls[imageHash];
@@ -807,10 +814,12 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
           dailyRewardStatus={dailyRewardStatus}
           onDailyRewardSpin={handleDailyRewardSpin}
         />
+      ) : layoutLoading ? (
+        <ScreenLoadingFallback label="Loading shop layout" variant="page" />
       ) : (
         <div className="shop-page-integrity-state" role={layoutLoading ? 'status' : 'alert'}>
-          <strong>{layoutLoading ? 'Loading shop layout' : 'Shop layout unavailable'}</strong>
-          <span>{layoutLoading ? 'Waiting for authored Effect Schema content.' : layoutError ?? 'Authored shop content is required before rendering.'}</span>
+          <strong>Shop layout unavailable</strong>
+          <span>{layoutError ?? 'Authored shop content is required before rendering.'}</span>
         </div>
       )}
     </UnifiedPageShell>
