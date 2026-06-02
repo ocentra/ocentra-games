@@ -1,0 +1,230 @@
+{
+  system: {
+    guid: 'ee63dbcf-5c31-4f34-9753-e1e303bb2904',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/pai-gow-poker/pai-gow-pokerRules.asset',
+    gameId: 'pai-gow-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+    Player: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+    objective: "Arrange seven cards into two separate poker hands that both outrank the dealer's corresponding hands.",
+    gameplay: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+    keyRules: [
+      'The 5-card hand rank must exceed the 2-card hand rank or the hand is fouled.',
+      "Winner must beat both of the banker's hands; losing one results in a push.",
+      'Ties on individual hand comparisons (copies) are won by the banker.',
+      'Joker completes straights or flushes in the high hand; otherwise it is an Ace.',
+      'Wheel straight (A-2-3-4-5) is typically ranked as the second-highest straight.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Typically played with six players and a dealer who acts as the banker.',
+      deck: 'Standard pack including one Joker. The Joker is semi-wild, completing straights and flushes or acting as an Ace.',
+      equipment: 'Standard poker cards, casino chips, and sometimes dice to determine starting positions.',
+      dealing: 'Seven face-down piles of seven cards are dealt; four cards remain unused.',
+    },
+    turnFlow: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+    moveValidityConditions: {
+      ante: 'Pai Gow Poker uses standard casino wagers rather than a traditional poker ante system.',
+      deal: 'The initial dealing of seven-card hands is performed automatically by the game engine.',
+      reveal_market: 'This casino game does not utilize a market zone for additional card acquisition.',
+      buy_market: 'There is no mechanic for purchasing cards from a market in Pai Gow Poker.',
+      buy_stock: 'Players do not buy cards from the stock; all seven cards are dealt initially.',
+      fold: 'Folding is not an option; players must set their hands once the cards are dealt.',
+      check: 'Checking is not applicable as betting occurs before the deal in this game.',
+      call: 'Calling bets mid-hand is not part of the standard Pai Gow Poker ruleset.',
+      bet: 'Must be within the table minimum and maximum betting limits.',
+      raise: 'Raising wagers after the deal is not allowed in traditional Pai Gow Poker.',
+      declare: 'Hand strength is determined by reveal and comparison rather than verbal declaration.',
+      reveal_hand: 'Hand reveal is handled by the engine after all players have completed their splits.',
+      award_pot: 'Winning wagers are paid out by the banker rather than awarded from a central pot.',
+      play_card: 'Pai Gow Poker is a partition game and does not use trick-taking or card-by-card play.',
+      draw: 'No drawing of additional cards occurs after the initial deal of seven cards.',
+      discard: 'The game does not involve discarding cards; all seven cards must be used or accounted for.',
+      pass: 'Players must actively split their hands and cannot pass their turn to act.',
+      bid: 'Bidding mechanics are not present in this casino-style banking card game.',
+      meld: 'Standard rummy-style melding is not used; cards are partitioned into two separate poker hands.',
+      go_out: 'The game deal ends when all players have compared their hands with the banker.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      "Rule example: Arrange seven cards into two separate poker hands that both outrank the dealer's corresponding hands.",
+      "Turn-flow example: 1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+      "Scoring example: Win both hands to win (minus commission); lose both to lose; split one each for a push. Both the 5-card and 2-card hands must outrank the banker's corresponding hands..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'pai-gow-poker.rules.objective',
+        title: 'Objective',
+        text: "Arrange seven cards into two separate poker hands that both outrank the dealer's corresponding hands.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.setup.players',
+        title: 'Players',
+        text: 'Typically played with six players and a dealer who acts as the banker.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard pack including one Joker. The Joker is semi-wild, completing straights and flushes or acting as an Ace.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard poker cards, casino chips, and sometimes dice to determine starting positions.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Seven face-down piles of seven cards are dealt; four cards remain unused.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.score.win-condition',
+        title: 'Win condition',
+        text: "Both the 5-card and 2-card hands must outrank the banker's corresponding hands.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.score.description',
+        title: 'Scoring',
+        text: 'Win both hands to win (minus commission); lose both to lose; split one each for a push.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The 5-card hand rank must exceed the 2-card hand rank or the hand is fouled.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: "Winner must beat both of the banker's hands; losing one results in a push.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Ties on individual hand comparisons (copies) are won by the banker.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Joker completes straights or flushes in the high hand; otherwise it is an Ace.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Wheel straight (A-2-3-4-5) is typically ranked as the second-highest straight.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pai-gow-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pai-gow-poker.rules.objective',
+          'pai-gow-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pai-gow-poker.setup.players',
+          'pai-gow-poker.setup.deck',
+          'pai-gow-poker.setup.equipment',
+          'pai-gow-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pai-gow-poker.rules.key.1',
+          'pai-gow-poker.rules.key.2',
+          'pai-gow-poker.rules.key.3',
+          'pai-gow-poker.rules.key.4',
+          'pai-gow-poker.rules.key.5',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pai-gow-poker.score.description',
+          'pai-gow-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pai-gow-poker.setup.dealing',
+        'pai-gow-poker.rules.objective',
+      ],
+      bet: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+      deal_seven_cards: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+      partition_into_two_hands: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+      reveal_hands: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+      settle_bets: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+    },
+  },
+}

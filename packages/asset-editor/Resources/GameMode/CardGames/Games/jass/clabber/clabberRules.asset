@@ -1,0 +1,242 @@
+{
+  system: {
+    guid: 'd5720981-0e2e-417d-880f-2450e5be06c8',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/clabber/clabberRules.asset',
+    gameId: 'clabber',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Must follow suit. If void in the led suit, you MUST play a trump. If trumps are led, you MUST 'overtrump' (play a higher trump) if able. The last trick scores a 10-point bonus.",
+    Player: "Must follow suit. If void in the led suit, you MUST play a trump. If trumps are led, you MUST 'overtrump' (play a higher trump) if able. The last trick scores a 10-point bonus.",
+    objective: 'Be the first team to reach 500 points by winning tricks with high-value cards and declaring melds.',
+    gameplay: "Must follow suit. If void in the led suit, you MUST play a trump. If trumps are led, you MUST 'overtrump' (play a higher trump) if able. The last trick scores a 10-point bonus.",
+    keyRules: [
+      'No card can be used in more than one meld (except Bell cards).',
+      'Meld must be announced during the first trick and shown before the second.',
+      "Trump-maker must have at least one card of the named suit to 'play'.",
+      "Turkey Tracks: An 'XX' on the score sheet when a team is set.",
+      'Last Trick: 10 points bonus.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in fixed partnerships (North-South vs East-West).',
+      deck: '24-card deck (A-K-Q-J-10-9 in four suits).',
+      equipment: "24 cards and a 'Clabber' score sheet (typically with 4 columns for tracking team scores and addition-checks).",
+      dealing: "Dealer deals all 24 cards one at a time clockwise; each player receives six cards. The last card (dealer's) is turned face up; its suit is the trump candidate for the first round of bidding.",
+    },
+    turnFlow: "Must follow suit. If void in the led suit, you MUST play a trump. If trumps are led, you MUST 'overtrump' (play a higher trump) if able. The last trick scores a 10-point bonus.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be the first team to reach 500 points by winning tricks with high-value cards and declaring melds.',
+      "Turn-flow example: Must follow suit. If void in the led suit, you MUST play a trump. If trumps are led, you MUST 'overtrump' (play a higher trump) if able. The last trick scores a 10-point bonus.",
+      'Scoring example: Cumulative score to 500. Points come from card values in tricks (J=20, 9=14 in trumps), melds, and the last trick bonus. The first team to reach or exceed 500 points wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'clabber.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team to reach 500 points by winning tricks with high-value cards and declaring melds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'clabber.rules.gameplay',
+        title: 'Turn flow',
+        text: "Must follow suit. If void in the led suit, you MUST play a trump. If trumps are led, you MUST 'overtrump' (play a higher trump) if able. The last trick scores a 10-point bonus.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'clabber.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'clabber.setup.deck',
+        title: 'Deck',
+        text: '24-card deck (A-K-Q-J-10-9 in four suits).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'clabber.setup.equipment',
+        title: 'Equipment',
+        text: "24 cards and a 'Clabber' score sheet (typically with 4 columns for tracking team scores and addition-checks).",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'clabber.setup.dealing',
+        title: 'Deal',
+        text: "Dealer deals all 24 cards one at a time clockwise; each player receives six cards. The last card (dealer's) is turned face up; its suit is the trump candidate for the first round of bidding.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'clabber.score.win-condition',
+        title: 'Win condition',
+        text: 'The first team to reach or exceed 500 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'clabber.score.description',
+        title: 'Scoring',
+        text: 'Cumulative score to 500. Points come from card values in tricks (J=20, 9=14 in trumps), melds, and the last trick bonus.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'clabber.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No card can be used in more than one meld (except Bell cards).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'clabber.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Meld must be announced during the first trick and shown before the second.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'clabber.rules.key.3',
+        title: 'Key rule 3',
+        text: "Trump-maker must have at least one card of the named suit to 'play'.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'clabber.rules.key.4',
+        title: 'Key rule 4',
+        text: "Turkey Tracks: An 'XX' on the score sheet when a team is set.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'clabber.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Last Trick: 10 points bonus.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'clabber.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'clabber.rules.objective',
+          'clabber.rules.gameplay',
+        ],
+      },
+      {
+        id: 'clabber.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'clabber.setup.players',
+          'clabber.setup.deck',
+          'clabber.setup.equipment',
+          'clabber.setup.dealing',
+        ],
+      },
+      {
+        id: 'clabber.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'clabber.rules.key.1',
+          'clabber.rules.key.2',
+          'clabber.rules.key.3',
+          'clabber.rules.key.4',
+          'clabber.rules.key.5',
+        ],
+      },
+      {
+        id: 'clabber.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'clabber.score.description',
+          'clabber.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'clabber.setup.dealing',
+        'clabber.rules.objective',
+      ],
+      pass: [
+        'clabber.rules.gameplay',
+      ],
+      deal_6_per_player: [
+        'clabber.rules.gameplay',
+      ],
+      turn_up_trump_card: [
+        'clabber.rules.gameplay',
+      ],
+      play: [
+        'clabber.rules.gameplay',
+      ],
+      lead: [
+        'clabber.rules.gameplay',
+      ],
+      follow: [
+        'clabber.rules.gameplay',
+      ],
+      ruff_mandatory: [
+        'clabber.rules.gameplay',
+      ],
+      overtrump: [
+        'clabber.rules.gameplay',
+      ],
+      announce_meld: [
+        'clabber.rules.gameplay',
+      ],
+    },
+  },
+}

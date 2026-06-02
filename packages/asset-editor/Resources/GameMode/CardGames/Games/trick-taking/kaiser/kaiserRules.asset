@@ -1,0 +1,217 @@
+{
+  system: {
+    guid: '2f24abfd-5c3c-42c5-b3f7-ebff4dd3ed73',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/kaiser/kaiserRules.asset',
+    gameId: 'kaiser',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Must follow suit. If unable, play any card.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Scoring**: Each trick = 1 pt. 5 of Hearts = +5 pts. 3 of Spades = -3 pts.',
+    Player: '1. Must follow suit. If unable, play any card.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Scoring**: Each trick = 1 pt. 5 of Hearts = +5 pts. 3 of Spades = -3 pts.',
+    objective: 'Be the first team to reach +52 points (or reach the bid total).',
+    gameplay: '1. Must follow suit. If unable, play any card.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Scoring**: Each trick = 1 pt. 5 of Hearts = +5 pts. 3 of Spades = -3 pts.',
+    keyRules: [
+      'Must follow suit if able; if unable, may play any card.',
+      'Highest trump wins the trick; if no trump, highest card of led suit wins.',
+      'Each trick worth 1 point; 5 of Hearts +5, 3 of Spades -3 to the side that takes them.',
+      'First team to reach 52 or more points wins. Bidding team must make their bid or lose the bid amount.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in fixed partnerships.',
+      deck: '32 cards: 7, 8, 9, 10, J, Q, K, A in all suits, BUT the 7 of Hearts is replaced by the 5 of Hearts (+5), and the 7 of Spades is replaced by the 3 of Spades (-3).',
+      equipment: '32 cards: 7, 8, 9, 10, J, Q, K, A in all suits, BUT the 7 of Hearts is replaced by the 5 of Hearts (+5), and the 7 of Spades is replaced by the 3 of Spades (-3).',
+      dealing: 'Each player receives 8 cards. Dealing is clockwise.',
+    },
+    turnFlow: '1. Must follow suit. If unable, play any card.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Scoring**: Each trick = 1 pt. 5 of Hearts = +5 pts. 3 of Spades = -3 pts.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if possible',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Legal when it is your turn to bid and you do not wish to bid.',
+      bid: "One opportunity per player starting to dealer's left; bid must be higher than previous bid (dealer may equal to win). If first three pass, dealer must bid at least minimum.",
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Be the first team to reach +52 points (or reach the bid total).',
+      'Turn-flow example: 1. Must follow suit. If unable, play any card.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Scoring**: Each trick = 1 pt. 5 of Hearts = +5 pts. 3 of Spades = -3 pts.',
+      'Scoring example: Be the first team to reach +52 points (or reach the bid total). Be the first team to reach +52 points (or reach the bid total)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'kaiser.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team to reach +52 points (or reach the bid total).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kaiser.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must follow suit. If unable, play any card.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Scoring**: Each trick = 1 pt. 5 of Hearts = +5 pts. 3 of Spades = -3 pts.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kaiser.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kaiser.setup.deck',
+        title: 'Deck',
+        text: '32 cards: 7, 8, 9, 10, J, Q, K, A in all suits, BUT the 7 of Hearts is replaced by the 5 of Hearts (+5), and the 7 of Spades is replaced by the 3 of Spades (-3).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kaiser.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards: 7, 8, 9, 10, J, Q, K, A in all suits, BUT the 7 of Hearts is replaced by the 5 of Hearts (+5), and the 7 of Spades is replaced by the 3 of Spades (-3).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kaiser.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 8 cards. Dealing is clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kaiser.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first team to reach +52 points (or reach the bid total).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kaiser.score.description',
+        title: 'Scoring',
+        text: 'Be the first team to reach +52 points (or reach the bid total).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kaiser.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if able; if unable, may play any card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kaiser.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Highest trump wins the trick; if no trump, highest card of led suit wins.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kaiser.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each trick worth 1 point; 5 of Hearts +5, 3 of Spades -3 to the side that takes them.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kaiser.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First team to reach 52 or more points wins. Bidding team must make their bid or lose the bid amount.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kaiser.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kaiser.rules.objective',
+          'kaiser.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kaiser.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kaiser.setup.players',
+          'kaiser.setup.deck',
+          'kaiser.setup.equipment',
+          'kaiser.setup.dealing',
+        ],
+      },
+      {
+        id: 'kaiser.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kaiser.rules.key.1',
+          'kaiser.rules.key.2',
+          'kaiser.rules.key.3',
+          'kaiser.rules.key.4',
+        ],
+      },
+      {
+        id: 'kaiser.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kaiser.score.description',
+          'kaiser.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kaiser.setup.dealing',
+        'kaiser.rules.objective',
+      ],
+      deal: [
+        'kaiser.rules.gameplay',
+      ],
+      play_card: [
+        'kaiser.rules.gameplay',
+      ],
+      pass: [
+        'kaiser.rules.gameplay',
+      ],
+      bid: [
+        'kaiser.rules.gameplay',
+      ],
+    },
+  },
+}

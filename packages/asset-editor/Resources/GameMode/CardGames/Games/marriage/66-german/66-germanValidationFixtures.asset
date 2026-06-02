@@ -1,0 +1,125 @@
+{
+  system: {
+    guid: '34abdae7-fbf6-4293-accd-b35bb0c15983',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/66-german/66-germanValidationFixtures.asset',
+    gameId: '66-german',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '66-german',
+    familyVariant: 'Marriage / Ace-Ten',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '66-german.core-runtime-contracts',
+        title: '66 German Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '66-german.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '66 German must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '66-german.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '66-german.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: '66 German must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              '66-german.setup.initial-deal',
+              '66-german.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: '66-german.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Be first to 66 trick points in a hand (and declare) or reach 7 match points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '9': '0',
+              '10': '10',
+              A: '11',
+              K: '4',
+              Q: '3',
+              J: '2',
+              marriage_non_trump: '20',
+              marriage_trump: '40',
+              last_trick_bonus: '10',
+            },
+            explanation: 'Trick points (A=11, 10=10, K=4, Q=3, J=2, 9=0); marriages 20 or 40. First to 66 wins hand; game to 7.',
+            linkedRuleIds: [
+              '66-german.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '66-german.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

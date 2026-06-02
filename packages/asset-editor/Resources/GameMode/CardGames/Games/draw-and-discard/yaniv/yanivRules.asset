@@ -1,0 +1,221 @@
+{
+  system: {
+    guid: '649a3394-39dd-4683-83a8-6555079060da',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/draw-and-discard/yaniv/yanivRules.asset',
+    gameId: 'yaniv',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Each turn: discard (single/set/run), then draw 1 (stock or from discard â€” first or last of sequence). Call 'Yaniv!' at start of turn if hand â‰¤5. All reveal. Lowest = 0pts. Equal or lower by another = Assaf (caller gets +30).",
+    Player: "Each turn: discard (single/set/run), then draw 1 (stock or from discard â€” first or last of sequence). Call 'Yaniv!' at start of turn if hand â‰¤5. All reveal. Lowest = 0pts. Equal or lower by another = Assaf (caller gets +30).",
+    objective: 'Have lowest hand total. Call Yaniv at â‰¤5 points.',
+    gameplay: "Each turn: discard (single/set/run), then draw 1 (stock or from discard â€” first or last of sequence). Call 'Yaniv!' at start of turn if hand â‰¤5. All reveal. Lowest = 0pts. Equal or lower by another = Assaf (caller gets +30).",
+    keyRules: [
+      'Call Yaniv at â‰¤5 points',
+      'Assaf penalty (+30)',
+      'Discard sets/runs',
+      'Score halving at 50 multiples',
+      'Jokers = 0 points',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: '54 cards (Joker=0, A=1, 2-10=face, J/Q/K=10).',
+      equipment: 'Cards',
+      dealing: '5 each. Stock + 1 face-up discard.',
+    },
+    turnFlow: "Each turn: discard (single/set/run), then draw 1 (stock or from discard â€” first or last of sequence). Call 'Yaniv!' at start of turn if hand â‰¤5. All reveal. Lowest = 0pts. Equal or lower by another = Assaf (caller gets +30).",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Discard single card or set/run matching rank',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'After playing a card, draw one from stock or take top/bottom of discard',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Have lowest hand total. Call Yaniv at â‰¤5 points.',
+      "Turn-flow example: Each turn: discard (single/set/run), then draw 1 (stock or from discard â€” first or last of sequence). Call 'Yaniv!' at start of turn if hand â‰¤5. All reveal. Lowest = 0pts. Equal or lower by another = Assaf (caller gets +30).",
+      'Scoring example: Yaniv caller: 0 if lowest, else +30+hand. Others: hand value. Multiple of 50 = halved. 200+ = eliminated. Have lowest hand total. Call Yaniv at â‰¤5 points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'yaniv.rules.objective',
+        title: 'Objective',
+        text: 'Have lowest hand total. Call Yaniv at â‰¤5 points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'yaniv.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each turn: discard (single/set/run), then draw 1 (stock or from discard â€” first or last of sequence). Call 'Yaniv!' at start of turn if hand â‰¤5. All reveal. Lowest = 0pts. Equal or lower by another = Assaf (caller gets +30).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'yaniv.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'yaniv.setup.deck',
+        title: 'Deck',
+        text: '54 cards (Joker=0, A=1, 2-10=face, J/Q/K=10).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'yaniv.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'yaniv.setup.dealing',
+        title: 'Deal',
+        text: '5 each. Stock + 1 face-up discard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'yaniv.score.win-condition',
+        title: 'Win condition',
+        text: 'Have lowest hand total. Call Yaniv at â‰¤5 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'yaniv.score.description',
+        title: 'Scoring',
+        text: 'Yaniv caller: 0 if lowest, else +30+hand. Others: hand value. Multiple of 50 = halved. 200+ = eliminated.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'yaniv.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Call Yaniv at â‰¤5 points',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'yaniv.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Assaf penalty (+30)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'yaniv.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Discard sets/runs',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'yaniv.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Score halving at 50 multiples',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'yaniv.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Jokers = 0 points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'yaniv.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'yaniv.rules.objective',
+          'yaniv.rules.gameplay',
+        ],
+      },
+      {
+        id: 'yaniv.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'yaniv.setup.players',
+          'yaniv.setup.deck',
+          'yaniv.setup.equipment',
+          'yaniv.setup.dealing',
+        ],
+      },
+      {
+        id: 'yaniv.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'yaniv.rules.key.1',
+          'yaniv.rules.key.2',
+          'yaniv.rules.key.3',
+          'yaniv.rules.key.4',
+          'yaniv.rules.key.5',
+        ],
+      },
+      {
+        id: 'yaniv.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'yaniv.score.description',
+          'yaniv.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'yaniv.setup.dealing',
+        'yaniv.rules.objective',
+      ],
+      play_card: [
+        'yaniv.rules.gameplay',
+      ],
+      discard: [
+        'yaniv.rules.gameplay',
+      ],
+    },
+  },
+}

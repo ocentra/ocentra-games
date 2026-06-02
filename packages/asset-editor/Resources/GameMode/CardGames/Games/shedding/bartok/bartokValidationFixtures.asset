@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '1558b8f0-88bc-45b0-89ab-f4a399d575d2',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/bartok/bartokValidationFixtures.asset',
+    gameId: 'bartok',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bartok',
+    familyVariant: 'Crazy Eights Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bartok.core-runtime-contracts',
+        title: 'Bartok Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bartok.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 12,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 84,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Bartok must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bartok.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bartok.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'dealing',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+              'deal_7_cards',
+              'play_match',
+              'draw_card',
+              'call_bartok',
+              'propose_new_rule',
+              'calculate_hand_value',
+            ],
+            explanation: 'Bartok must run setup_round first, then enter dealing with the processed legal actions.',
+            linkedRuleIds: [
+              'bartok.setup.initial-deal',
+              'bartok.flow.dealing',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_7_cards',
+            ],
+          },
+          {
+            id: 'bartok.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Each round is won by the first player to empty their hand; tables may track number of rounds won, but there is no fixed overall score.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Bartok is usually played as a series of independent rounds with no shared score track; players simply note who wins each round.',
+            linkedRuleIds: [
+              'bartok.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bartok.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 12,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

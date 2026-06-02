@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: '911852d4-618b-4fe6-9a65-44be49520884',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Briscola Validation Fixtures',
+    category: 'Game',
+    gameId: 'briscola',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/briscola/briscolaValidationFixtures.asset',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'briscola.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'briscola',
+    familyVariant: 'ace-ten-draw',
+    validationSuites: [
+      {
+        id: 'briscola.runtime-contracts',
+        fixtures: [
+          {
+            id: 'briscola.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 18,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Briscola starts by dealing three face-down cards to each player from one Italian 40-card deck, with a turned trump card for the stock.',
+            linkedRuleIds: [
+              'briscola.setup.initial-deal',
+            ],
+            sourceFields: [
+              'briscola.asset.initialNumberOfCards',
+              'briscola.asset.minPlayers',
+              'briscola.asset.maxPlayers',
+              'briscolaMechanics.asset.initialHandSize',
+              'briscolaMechanics.asset.deckCount',
+            ],
+          },
+          {
+            id: 'briscola.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw_after_trick',
+              'score_trick',
+              'score_round',
+              'end_hand',
+              'deal_3_each_turn_trump',
+              'play_any_card',
+            ],
+            explanation: 'Briscola must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'briscola.setup.initial-deal',
+              'briscola.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_3_each_turn_trump',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'briscola.scoring.examples',
+        fixtures: [
+          {
+            id: 'briscola.score.ace_three_king',
+            title: 'Ace, Three, King',
+            purpose: 'scoring',
+            hand: [
+              'A_trump',
+              '3_trump',
+              'K_trump',
+            ],
+            expectedFinalScore: 25,
+            explanation: 'Ace 11 plus Three 10 plus King 4 equals 25 card points.',
+            linkedRuleIds: [
+              'briscola.score.card_values',
+            ],
+          },
+          {
+            id: 'briscola.score.target_61',
+            title: 'Winning Threshold',
+            purpose: 'scoring',
+            hand: [
+              'A_trump',
+              '3_trump',
+              'K_trump',
+              'Q_trump',
+              'J_trump',
+              'A_led',
+              '3_led',
+              'K_led',
+            ],
+            expectedFinalScore: 62,
+            explanation: 'A side with more than 60 of the 120 available card points wins the deal.',
+            linkedRuleIds: [
+              'briscola.score.win_threshold',
+            ],
+          },
+        ],
+      },
+    ],
+  },
+}

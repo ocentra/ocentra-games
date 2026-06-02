@@ -1,0 +1,227 @@
+{
+  system: {
+    guid: '13888e28-50fd-4c5e-8c0c-dddbb43084d2',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/nlk/nlkRules.asset',
+    gameId: 'nlk',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Two phases. Phase One: take turns anticlockwise; draw the top card of the talon and place it on your stack, and optionally give away cards from your stack or drawn talon cards onto opponents' stacks when a card fits (next rank above; lowest rank fits on Ace). Phase Two: play in tricks; beat the previous card with a higher card of the same suit or a trump, or pick up the lowest card in the trick. Last player left holding cards loses.",
+    Player: "Two phases. Phase One: take turns anticlockwise; draw the top card of the talon and place it on your stack, and optionally give away cards from your stack or drawn talon cards onto opponents' stacks when a card fits (next rank above; lowest rank fits on Ace). Phase Two: play in tricks; beat the previous card with a higher card of the same suit or a trump, or pick up the lowest card in the trick. Last player left holding cards loses.",
+    objective: 'Avoid being the last player holding cards at the end of Phase Two.',
+    gameplay: "Two phases. Phase One: take turns anticlockwise; draw the top card of the talon and place it on your stack, and optionally give away cards from your stack or drawn talon cards onto opponents' stacks when a card fits (next rank above; lowest rank fits on Ace). Phase Two: play in tricks; beat the previous card with a higher card of the same suit or a trump, or pick up the lowest card in the trick. Last player left holding cards loses.",
+    keyRules: [
+      'Phase One: accumulate cards, give away cards that fit (next rank higher)',
+      "Phase Two: shed cards by beating; pick up lowest if can't beat",
+      'Lowest rank fits on Ace (wrap-around)',
+      'No obligation to follow suit in Phase Twoâ€”just must beat or pick up',
+      'Trumps determined by last talon card drawn',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4-9 players. Deal and play are anticlockwise.',
+      deck: 'Variable size: 4 players=32 cards (A-7), 5 players=36 cards (A-6), 6 players=40 cards (A-5), 9 players=52 cards (A-2). Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+      equipment: 'Variable deck size based on player count.',
+      dealing: 'One card dealt face-up to each player. Remaining cards form the talon (face-down stack).',
+    },
+    turnFlow: "Two phases. Phase One: take turns anticlockwise; draw the top card of the talon and place it on your stack, and optionally give away cards from your stack or drawn talon cards onto opponents' stacks when a card fits (next rank above; lowest rank fits on Ace). Phase Two: play in tricks; beat the previous card with a higher card of the same suit or a trump, or pick up the lowest card in the trick. Last player left holding cards loses.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Avoid being the last player holding cards at the end of Phase Two.',
+      "Turn-flow example: Two phases. Phase One: take turns anticlockwise; draw the top card of the talon and place it on your stack, and optionally give away cards from your stack or drawn talon cards onto opponents' stacks when a card fits (next rank above; lowest rank fits on Ace). Phase Two: play in tricks; beat the previous card with a higher card of the same suit or a trump, or pick up the lowest card in the trick. Last player left holding cards loses.",
+      'Scoring example: Hand-based; loser is last player with cards. Loser deals next hand. Avoid being last player holding cards..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'nlk.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the last player holding cards at the end of Phase Two.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'nlk.rules.gameplay',
+        title: 'Turn flow',
+        text: "Two phases. Phase One: take turns anticlockwise; draw the top card of the talon and place it on your stack, and optionally give away cards from your stack or drawn talon cards onto opponents' stacks when a card fits (next rank above; lowest rank fits on Ace). Phase Two: play in tricks; beat the previous card with a higher card of the same suit or a trump, or pick up the lowest card in the trick. Last player left holding cards loses.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'nlk.setup.players',
+        title: 'Players',
+        text: '4-9 players. Deal and play are anticlockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'nlk.setup.deck',
+        title: 'Deck',
+        text: 'Variable size: 4 players=32 cards (A-7), 5 players=36 cards (A-6), 6 players=40 cards (A-5), 9 players=52 cards (A-2). Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'nlk.setup.equipment',
+        title: 'Equipment',
+        text: 'Variable deck size based on player count.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'nlk.setup.dealing',
+        title: 'Deal',
+        text: 'One card dealt face-up to each player. Remaining cards form the talon (face-down stack).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'nlk.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid being last player holding cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'nlk.score.description',
+        title: 'Scoring',
+        text: 'Hand-based; loser is last player with cards. Loser deals next hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'nlk.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Phase One: accumulate cards, give away cards that fit (next rank higher)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'nlk.rules.key.2',
+        title: 'Key rule 2',
+        text: "Phase Two: shed cards by beating; pick up lowest if can't beat",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'nlk.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Lowest rank fits on Ace (wrap-around)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'nlk.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No obligation to follow suit in Phase Twoâ€”just must beat or pick up',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'nlk.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Trumps determined by last talon card drawn',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'nlk.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'nlk.rules.objective',
+          'nlk.rules.gameplay',
+        ],
+      },
+      {
+        id: 'nlk.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'nlk.setup.players',
+          'nlk.setup.deck',
+          'nlk.setup.equipment',
+          'nlk.setup.dealing',
+        ],
+      },
+      {
+        id: 'nlk.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'nlk.rules.key.1',
+          'nlk.rules.key.2',
+          'nlk.rules.key.3',
+          'nlk.rules.key.4',
+          'nlk.rules.key.5',
+        ],
+      },
+      {
+        id: 'nlk.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'nlk.score.description',
+          'nlk.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'nlk.setup.dealing',
+        'nlk.rules.objective',
+      ],
+      draw_talon: [
+        'nlk.rules.gameplay',
+      ],
+      give_away_card: [
+        'nlk.rules.gameplay',
+      ],
+      beat_card: [
+        'nlk.rules.gameplay',
+      ],
+      pick_up_lowest: [
+        'nlk.rules.gameplay',
+      ],
+    },
+  },
+}

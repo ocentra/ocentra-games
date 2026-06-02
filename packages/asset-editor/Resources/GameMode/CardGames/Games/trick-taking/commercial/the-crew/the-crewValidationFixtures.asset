@@ -1,0 +1,124 @@
+{
+  system: {
+    guid: 'd3e7ddc1-b309-4874-a50e-ff8e084f5b7a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/commercial/the-crew/the-crewValidationFixtures.asset',
+    gameId: 'the-crew',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'the-crew',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'the-crew.core-runtime-contracts',
+        title: 'The Crew Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'the-crew.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 50,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'The Crew must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'the-crew.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'the-crew.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'discard',
+              'pass',
+              'bid',
+            ],
+            explanation: 'The Crew must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'the-crew.setup.initial-deal',
+              'the-crew.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'the-crew.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1',
+            scoringDirection: 'high_wins',
+            targetScore: 1,
+            cardValues: {
+              A: '11',
+              T: '10',
+              K: '4',
+              Q: '3',
+              J: '2',
+            },
+            explanation: 'Tricks, card points, or contract success determine scoring.',
+            linkedRuleIds: [
+              'the-crew.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'the-crew.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

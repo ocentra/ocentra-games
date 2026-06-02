@@ -1,0 +1,69 @@
+{
+  system: {
+    guid: 'd2c67f76-914b-4762-99d0-118f0cde1c4a',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bauernstoss/bauernstossStateEventModel.asset',
+    gameId: 'bauernstoss',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bauernstoss',
+    familyVariant: 'Schafkopf Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 8,
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        hand_size: 8,
+        target_score: 61,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'knocking_round',
+        'play_loop',
+        'scoring',
+      ],
+      actions: [
+        'setup_round',
+        'play_card',
+        'pass',
+        'deal_8_each',
+        'knock',
+        'calculate_trick_points',
+      ],
+    },
+    examples: [],
+  },
+}

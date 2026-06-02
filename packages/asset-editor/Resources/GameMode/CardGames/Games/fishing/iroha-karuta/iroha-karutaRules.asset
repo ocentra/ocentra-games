@@ -1,0 +1,204 @@
+{
+  system: {
+    guid: '4af0a18e-52ef-4dcb-b7c8-451e93fe43ec',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/iroha-karuta/iroha-karutaRules.asset',
+    gameId: 'iroha-karuta',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+    Player: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+    objective: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+    gameplay: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+    keyRules: [
+      'Match by month (suit): play a card from hand to capture a same-month card from the table, or discard to table if no match.',
+      'After play, draw one from stock; if it matches a table card capture both, else add to table.',
+      'On forming a yaku, choose to stop and score or call Koi-Koi to continue; opponent forming yaku first doubles their score and zeros the caller.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Players listen to reading cards and race to capture matching picture cards according to karuta rules.',
+      deck: '48 cards. Suits by month: January (Pine), February (Plum), March (Cherry)... to December (Paulownia). Each suit has 4 cards of varying value (Bright, Animal, Ribbon, Chaff).',
+      equipment: '48 cards. Suits by month: January (Pine), February (Plum), March (Cherry)... to December (Paulownia). Each suit has 4 cards of varying value (Bright, Animal, Ribbon, Chaff).',
+      dealing: "Each player is dealt 8 cards face-down; 8 cards are placed face-up in the 'field' (ba). The rest form the draw pile.",
+    },
+    turnFlow: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must match by suit (month) with a table card to capture, or discard to table if no match. If three of same suit on table and you play the fourth, capture all four.',
+      draw: 'After playing a card (matching or discarding). One card per turn.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      "Rule example: Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+      "Turn-flow example: 1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+      "Scoring example: Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds. Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'iroha-karuta.rules.objective',
+        title: 'Objective',
+        text: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'iroha-karuta.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'iroha-karuta.setup.players',
+        title: 'Players',
+        text: 'Players listen to reading cards and race to capture matching picture cards according to karuta rules.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'iroha-karuta.setup.deck',
+        title: 'Deck',
+        text: '48 cards. Suits by month: January (Pine), February (Plum), March (Cherry)... to December (Paulownia). Each suit has 4 cards of varying value (Bright, Animal, Ribbon, Chaff).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'iroha-karuta.setup.equipment',
+        title: 'Equipment',
+        text: '48 cards. Suits by month: January (Pine), February (Plum), March (Cherry)... to December (Paulownia). Each suit has 4 cards of varying value (Bright, Animal, Ribbon, Chaff).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'iroha-karuta.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 8 cards face-down; 8 cards are placed face-up in the 'field' (ba). The rest form the draw pile.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'iroha-karuta.score.win-condition',
+        title: 'Win condition',
+        text: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'iroha-karuta.score.description',
+        title: 'Scoring',
+        text: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'iroha-karuta.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match by month (suit): play a card from hand to capture a same-month card from the table, or discard to table if no match.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'iroha-karuta.rules.key.2',
+        title: 'Key rule 2',
+        text: 'After play, draw one from stock; if it matches a table card capture both, else add to table.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'iroha-karuta.rules.key.3',
+        title: 'Key rule 3',
+        text: 'On forming a yaku, choose to stop and score or call Koi-Koi to continue; opponent forming yaku first doubles their score and zeros the caller.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'iroha-karuta.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'iroha-karuta.rules.objective',
+          'iroha-karuta.rules.gameplay',
+        ],
+      },
+      {
+        id: 'iroha-karuta.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'iroha-karuta.setup.players',
+          'iroha-karuta.setup.deck',
+          'iroha-karuta.setup.equipment',
+          'iroha-karuta.setup.dealing',
+        ],
+      },
+      {
+        id: 'iroha-karuta.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'iroha-karuta.rules.key.1',
+          'iroha-karuta.rules.key.2',
+          'iroha-karuta.rules.key.3',
+        ],
+      },
+      {
+        id: 'iroha-karuta.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'iroha-karuta.score.description',
+          'iroha-karuta.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'iroha-karuta.setup.dealing',
+        'iroha-karuta.rules.objective',
+      ],
+      play_card: [
+        'iroha-karuta.rules.gameplay',
+      ],
+      draw: [
+        'iroha-karuta.rules.gameplay',
+      ],
+      deal_oya_8_8_8: [
+        'iroha-karuta.rules.gameplay',
+      ],
+    },
+  },
+}

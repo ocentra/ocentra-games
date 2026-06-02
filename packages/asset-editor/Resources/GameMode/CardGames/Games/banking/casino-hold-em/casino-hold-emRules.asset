@@ -1,0 +1,284 @@
+{
+  system: {
+    guid: '5b6e91f4-59bb-407c-b8da-b266e438110c',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/casino-hold-em/casino-hold-emRules.asset',
+    gameId: 'casino-hold-em',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Place ante bet (optional AA bonus side bet). Dealer gives 2 hole cards to each player and themselves. 3-card flop dealt face up. Decision: Fold (lose ante) OR Place play bet (2x ante amount). Turn and river dealt. Dealer reveals hole cards. Best 5-card hand from 7 cards wins. Dealer qualifies with pair of 4s or better.',
+    Player: 'Place ante bet (optional AA bonus side bet). Dealer gives 2 hole cards to each player and themselves. 3-card flop dealt face up. Decision: Fold (lose ante) OR Place play bet (2x ante amount). Turn and river dealt. Dealer reveals hole cards. Best 5-card hand from 7 cards wins. Dealer qualifies with pair of 4s or better.',
+    objective: 'Make a better 5-card poker hand than the dealer using your 2 hole cards and 5 community cards.',
+    gameplay: 'Place ante bet (optional AA bonus side bet). Dealer gives 2 hole cards to each player and themselves. 3-card flop dealt face up. Decision: Fold (lose ante) OR Place play bet (2x ante amount). Turn and river dealt. Dealer reveals hole cards. Best 5-card hand from 7 cards wins. Dealer qualifies with pair of 4s or better.',
+    keyRules: [
+      'Ante bet required to play',
+      'Optional AA bonus side bet',
+      '2 hole cards dealt to player and dealer',
+      '3-card flop shown before decision',
+      'Fold: lose ante',
+      'Play: bet 2x ante to continue',
+      'Turn and river dealt after play bet',
+      'Best 5-card hand from 7 cards wins',
+      'Dealer qualifies with pair of 4s or better',
+      'Ante pays enhanced odds by hand strength',
+      'Play bet pays even money (1:1) if won',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Any number of players, each playing individually against the house/dealer. No player vs player action.',
+      deck: 'Standard 52-card pack. Standard poker hand rankings apply.',
+      equipment: 'Standard deck, casino chips, table with betting areas',
+      dealing: 'Each player and dealer receive 2 hole cards face down. 5 community cards dealt in stages: 3-card flop (face up), turn, river.',
+    },
+    turnFlow: 'Place ante bet (optional AA bonus side bet). Dealer gives 2 hole cards to each player and themselves. 3-card flop dealt face up. Decision: Fold (lose ante) OR Place play bet (2x ante amount). Turn and river dealt. Dealer reveals hole cards. Best 5-card hand from 7 cards wins. Dealer qualifies with pair of 4s or better.',
+    moveValidityConditions: {
+      ante: 'This action does not apply to this game.',
+      deal: "Dealer deals according to Hold'em deal pattern.",
+      reveal_market: 'This action does not apply to this game.',
+      buy_market: 'This action does not apply to this game.',
+      buy_stock: 'This action does not apply to this game.',
+      fold: 'Player forfeits ante and does not place play bet.',
+      check: 'This action does not apply to this game.',
+      call: 'This action does not apply to this game.',
+      bet: 'Play bet must be 2x ante to stay in hand.',
+      raise: 'This action does not apply to this game.',
+      declare: 'This action does not apply to this game.',
+      reveal_hand: 'This action does not apply to this game.',
+      award_pot: 'This action does not apply to this game.',
+      play_card: 'This action does not apply to this game.',
+      draw: 'This action does not apply to this game.',
+      discard: 'This action does not apply to this game.',
+      pass: 'This action does not apply to this game.',
+      bid: 'This action does not apply to this game.',
+      meld: 'This action does not apply to this game.',
+      go_out: 'This action does not apply to this game.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Make a better 5-card poker hand than the dealer using your 2 hole cards and 5 community cards.',
+      'Turn-flow example: Place ante bet (optional AA bonus side bet). Dealer gives 2 hole cards to each player and themselves. 3-card flop dealt face up. Decision: Fold (lose ante) OR Place play bet (2x ante amount). Turn and river dealt. Dealer reveals hole cards. Best 5-card hand from 7 cards wins. Dealer qualifies with pair of 4s or better.',
+      "Scoring example: Payouts by hand rank vs dealer; tie pushes. Beat the dealer's hand; paytable for ante and play..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'casino-hold-em.rules.objective',
+        title: 'Objective',
+        text: 'Make a better 5-card poker hand than the dealer using your 2 hole cards and 5 community cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Place ante bet (optional AA bonus side bet). Dealer gives 2 hole cards to each player and themselves. 3-card flop dealt face up. Decision: Fold (lose ante) OR Place play bet (2x ante amount). Turn and river dealt. Dealer reveals hole cards. Best 5-card hand from 7 cards wins. Dealer qualifies with pair of 4s or better.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'casino-hold-em.setup.players',
+        title: 'Players',
+        text: 'Any number of players, each playing individually against the house/dealer. No player vs player action.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'casino-hold-em.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Standard poker hand rankings apply.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'casino-hold-em.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, casino chips, table with betting areas',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'casino-hold-em.setup.dealing',
+        title: 'Deal',
+        text: 'Each player and dealer receive 2 hole cards face down. 5 community cards dealt in stages: 3-card flop (face up), turn, river.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'casino-hold-em.score.win-condition',
+        title: 'Win condition',
+        text: "Beat the dealer's hand; paytable for ante and play.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'casino-hold-em.score.description',
+        title: 'Scoring',
+        text: 'Payouts by hand rank vs dealer; tie pushes.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Ante bet required to play',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Optional AA bonus side bet',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.3',
+        title: 'Key rule 3',
+        text: '2 hole cards dealt to player and dealer',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.4',
+        title: 'Key rule 4',
+        text: '3-card flop shown before decision',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Fold: lose ante',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Play: bet 2x ante to continue',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Turn and river dealt after play bet',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Best 5-card hand from 7 cards wins',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.9',
+        title: 'Key rule 9',
+        text: 'Dealer qualifies with pair of 4s or better',
+        sourceFields: [
+          'rules.keyRules.8',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.10',
+        title: 'Key rule 10',
+        text: 'Ante pays enhanced odds by hand strength',
+        sourceFields: [
+          'rules.keyRules.9',
+        ],
+      },
+      {
+        id: 'casino-hold-em.rules.key.11',
+        title: 'Key rule 11',
+        text: 'Play bet pays even money (1:1) if won',
+        sourceFields: [
+          'rules.keyRules.10',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'casino-hold-em.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'casino-hold-em.rules.objective',
+          'casino-hold-em.rules.gameplay',
+        ],
+      },
+      {
+        id: 'casino-hold-em.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'casino-hold-em.setup.players',
+          'casino-hold-em.setup.deck',
+          'casino-hold-em.setup.equipment',
+          'casino-hold-em.setup.dealing',
+        ],
+      },
+      {
+        id: 'casino-hold-em.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'casino-hold-em.rules.key.1',
+          'casino-hold-em.rules.key.2',
+          'casino-hold-em.rules.key.3',
+          'casino-hold-em.rules.key.4',
+          'casino-hold-em.rules.key.5',
+          'casino-hold-em.rules.key.6',
+          'casino-hold-em.rules.key.7',
+          'casino-hold-em.rules.key.8',
+          'casino-hold-em.rules.key.9',
+          'casino-hold-em.rules.key.10',
+          'casino-hold-em.rules.key.11',
+        ],
+      },
+      {
+        id: 'casino-hold-em.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'casino-hold-em.score.description',
+          'casino-hold-em.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'casino-hold-em.setup.dealing',
+        'casino-hold-em.rules.objective',
+      ],
+      deal: [
+        'casino-hold-em.rules.gameplay',
+      ],
+      fold: [
+        'casino-hold-em.rules.gameplay',
+      ],
+      bet: [
+        'casino-hold-em.rules.gameplay',
+      ],
+    },
+  },
+}

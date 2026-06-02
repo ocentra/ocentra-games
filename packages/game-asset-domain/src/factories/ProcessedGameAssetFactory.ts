@@ -7,22 +7,43 @@ import { GameSchema, type Game } from '@ocentra/card-games/schema/effect/game-sc
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import { asAssetType } from '@ocentra/asset-domain/types/assetType';
 import type { AssetGUIDType, AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
+import { decodeGameCategory, decodeGameSubCategory } from '@ocentra/game-domain/game/categories';
+import {
+  PROCESSED_GAME_CATEGORY_ROOT,
+  parseProcessedGameTaxonomyPath,
+  type ProcessedGameTaxonomyPath,
+} from './ProcessedGameTaxonomyPath';
 import type { Deck } from '@/card/deck/Deck';
+import { BannerPlaybackMode, BannerTransitionType } from '@/constants/banner-presentation';
+import { GameModeStatus } from '@/constants/game-mode-status';
 import type { CreateGameModeOptions } from '@/factories/GameModeAssetFactory';
 import { assertProcessedGameTransferCoverage } from '@/factories/ProcessedGameAssetTransferContract';
+
+export {
+  PROCESSED_GAME_CATEGORY_ROOT,
+  ProcessedGameTaxonomyPathSchema,
+  parseProcessedGameTaxonomyPath,
+  type ProcessedGameTaxonomyPath,
+} from './ProcessedGameTaxonomyPath';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const RESOURCES_ROOT = path.resolve(REPO_ROOT, 'packages/asset-editor/Resources');
 const DECKS_ROOT = path.resolve(RESOURCES_ROOT, 'GameMode/CardGames/Decks');
+const PROCESSED_GAMES_ROOT = path.resolve(REPO_ROOT, 'packages/card-games/src/processed-games');
+const PLACEHOLDER_CAROUSEL_RESOURCE_ROOT = 'AppAssets/PlaceHolders';
+const FALLBACK_CAROUSEL_SLIDE_COUNT = 3;
+const SETUP_ROUND_ACTION_ID = 'setup_round';
+const PUBLIC_JUNK_TEXT_PATTERN = /\[.{1,120}\]|\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
+const CAROUSEL_IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
 interface AssetEnvelope {
   system: {
     guid?: string;
     assetType?: string;
     displayName?: string;
-    category?: string;
+    category?: unknown;
   };
   data: Record<string, unknown>;
 }
@@ -32,9 +53,17 @@ interface DeckAssetRecord {
   envelope: AssetEnvelope;
 }
 
+interface FallbackCarouselData {
+  slides: Array<Record<string, unknown>>;
+  primaryImageHash: string;
+  visualAssetStatus: 'ready' | 'needs_final_art';
+  visualAssetSource: 'game_images_folder' | 'game_folder_fallback_art' | 'shared_fallback_art';
+  visualAssetReplacementRequired: boolean;
+}
+
 export interface BuildProcessedGameOptions {
   processedGamePath: string;
-  category?: string;
+  category?: ProcessedGameTaxonomyPath;
 }
 
 function readJsonFile(filePath: string): unknown {
@@ -63,8 +92,44 @@ function findAssetFiles(dir: string, fileList: string[] = []): string[] {
   return fileList;
 }
 
+let deckAssetRecordsCache: DeckAssetRecord[] | null = null;
+
+function getDeckAssetRecords(): DeckAssetRecord[] {
+  if (!deckAssetRecordsCache) {
+    deckAssetRecordsCache = findAssetFiles(DECKS_ROOT).map((filePath) => ({
+      path: filePath,
+      envelope: readAssetFile(filePath),
+    }));
+  }
+  return deckAssetRecordsCache;
+}
+
 function normalizeSlug(processedGamePath: string): string {
   return path.basename(processedGamePath, path.extname(processedGamePath)).trim().toLowerCase();
+}
+
+export function deriveProcessedGameCategory(processedGamePath: string, processedRoot = PROCESSED_GAMES_ROOT): ProcessedGameTaxonomyPath {
+  const sourceDir = path.resolve(path.dirname(processedGamePath));
+  const root = path.resolve(processedRoot);
+  const relativeDir = path.relative(root, sourceDir);
+  if (!relativeDir || relativeDir.startsWith('..') || path.isAbsolute(relativeDir)) {
+    return parseProcessedGameTaxonomyPath(`${PROCESSED_GAME_CATEGORY_ROOT}/uncategorized`);
+  }
+
+  const sourceSlug = normalizeSlug(processedGamePath);
+  const segments = relativeDir
+    .replace(/\\/g, '/')
+    .split('/')
+    .map((segment) => segment.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (segments.length > 1 && segments[segments.length - 1] === sourceSlug) {
+    segments.pop();
+  }
+
+  return parseProcessedGameTaxonomyPath(segments.length > 0
+    ? `${PROCESSED_GAME_CATEGORY_ROOT}/${segments.join('/')}`
+    : `${PROCESSED_GAME_CATEGORY_ROOT}/uncategorized`);
 }
 
 function paragraphBlocks(text: string): Array<Record<string, unknown>> {
@@ -101,6 +166,97 @@ function stringifyUnknown(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
+function publicText(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const trimmed = value.trim();
+  return trimmed && !PUBLIC_JUNK_TEXT_PATTERN.test(trimmed) ? trimmed : '';
+}
+
+function firstPublicText(...values: unknown[]): string {
+  for (const value of values) {
+    const text = publicText(value);
+    if (text) {
+      return text;
+    }
+  }
+  return '';
+}
+
+function asOptionalNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function firstNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    const numberValue = asOptionalNumber(value);
+    if (numberValue !== null) {
+      return numberValue;
+    }
+  }
+  return null;
+}
+
+function formatPlayerRange(minPlayers: number | null, maxPlayers: number | null): string {
+  if (minPlayers !== null && maxPlayers !== null) {
+    return minPlayers === maxPlayers ? `${minPlayers}` : `${minPlayers}-${maxPlayers}`;
+  }
+  return `${minPlayers ?? maxPlayers ?? 'unknown'}`;
+}
+
+function firstNumberFromText(text: unknown, pattern: RegExp): number | null {
+  const match = publicText(text).match(pattern);
+  if (!match?.[1]) {
+    return null;
+  }
+  const parsed = Number(match[1]);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function buildDealSummary(game: Game, initialHandSize: number | null): string {
+  const deals = Array.from(game.setup.dealing.matchAll(/(\d+)(?:\s*-\s*(\d+))?\s+players?\s+(\d+)\s+cards?\s+each/gi))
+    .map((match) => {
+      const players = match[2] ? `${match[1]}-${match[2]} players` : `${match[1]} players`;
+      return `${players}: ${match[3]} cards`;
+    });
+  if (deals.length > 0) {
+    return deals.join('; ');
+  }
+  const sourceDeal = publicText(game.setup.dealing.replace(/\s+/g, ' '));
+  if (sourceDeal) {
+    return sourceDeal;
+  }
+  if (initialHandSize !== null) {
+    return `${initialHandSize} card(s) per player`;
+  }
+  return firstPublicText(game.setup.dealing.replace(/\s+/g, ' '), 'deal policy requires source review');
+}
+
+function cleanRuleExampleText(value: string): string {
+  return value.replace(/\bnull\b/gi, 'none');
+}
+
+function publicSetupEquipment(game: Game): string {
+  return firstPublicText(game.setup.equipment, game.setup.deck, game.overview.deck);
+}
+
+function buildPublicVariationList(game: Game): Record<string, unknown>[] {
+  return game.variations.list.flatMap((variation) => {
+    const name = publicText(variation.name);
+    const description = publicText(variation.description);
+    if (!name || !description) {
+      return [];
+    }
+    const id = publicText(variation.id);
+    return [{
+      ...(id ? { id } : {}),
+      name,
+      description,
+    }];
+  });
+}
+
 function normalizeNumericRecord(value: unknown): Record<string, number> {
   if (!value || typeof value !== 'object') {
     return {};
@@ -124,6 +280,173 @@ function normalizeNumericRecord(value: unknown): Record<string, number> {
   );
 }
 
+function countRecordKeys(value: unknown): number {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? Object.keys(value).length
+    : 0;
+}
+
+function isMeaningfulPublicValue(value: unknown): boolean {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === 'string') {
+    return Boolean(publicText(value));
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.some(isMeaningfulPublicValue);
+  }
+  if (typeof value === 'object') {
+    return Object.values(value).some(isMeaningfulPublicValue);
+  }
+  return false;
+}
+
+function buildScoringRulesSourceCardValues(value: unknown, numericValues: Record<string, number>): Record<string, unknown> | null {
+  if (countRecordKeys(value) === 0 || countRecordKeys(value) === Object.keys(numericValues).length) {
+    return null;
+  }
+  return {
+    sourceCardValues: value,
+  };
+}
+
+function normalizeActionRecord(action: unknown): Record<string, unknown> {
+  const record = action && typeof action === 'object' && !Array.isArray(action)
+    ? { ...(action as Record<string, unknown>) }
+    : {};
+  const effectHints = record.effectHints;
+  record.effectHints = effectHints && typeof effectHints === 'object' && !Array.isArray(effectHints)
+    ? effectHints
+    : {};
+  return record;
+}
+
+function normalizePlayerActionRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, action]) => [key, normalizeActionRecord(action)]),
+  );
+}
+
+function normalizeCustomActions(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.map(normalizeActionRecord);
+}
+
+function resourceFilePath(resourcePath: string): string {
+  return path.join(RESOURCES_ROOT, resourcePath.replace(/\//g, path.sep));
+}
+
+function normalizeResourcePathFromFile(filePath: string): string {
+  return path.relative(RESOURCES_ROOT, filePath).replace(/\\/g, '/');
+}
+
+function listImageResourcePaths(resourcePath: string): string[] {
+  const root = resourceFilePath(resourcePath);
+  if (!fs.existsSync(root)) {
+    return [];
+  }
+  return fs.readdirSync(root, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && CAROUSEL_IMAGE_EXTENSIONS.has(path.extname(entry.name).toLowerCase()))
+    .map((entry) => normalizeResourcePathFromFile(path.join(root, entry.name)))
+    .sort((left, right) => left.localeCompare(right, undefined, { numeric: true, sensitivity: 'base' }));
+}
+
+function carouselResourcePathCandidates(slug: string, category?: ProcessedGameTaxonomyPath): string[] {
+  const candidates = new Set<string>();
+  const trimmedCategory = category?.trim();
+  if (trimmedCategory) {
+    candidates.add(`GameMode/${trimmedCategory}/${slug}/images`);
+  }
+  candidates.add(`GameMode/CardGames/Games/${slug}/images`);
+  return Array.from(candidates);
+}
+
+function listGameCarouselResourcePaths(slug: string, category?: ProcessedGameTaxonomyPath): string[] {
+  for (const candidate of carouselResourcePathCandidates(slug, category)) {
+    const paths = listImageResourcePaths(candidate);
+    if (paths.length > 0) {
+      return paths;
+    }
+  }
+  return [];
+}
+
+function listPlaceholderCarouselResourcePaths(): string[] {
+  return listImageResourcePaths(PLACEHOLDER_CAROUSEL_RESOURCE_ROOT);
+}
+
+function placeholderHashes(): Set<string> {
+  return new Set(listPlaceholderCarouselResourcePaths().map((resourcePath) => hashFileHex(resourceFilePath(resourcePath))));
+}
+
+function slugSeed(slug: string): number {
+  return crypto.createHash('sha256').update(slug).digest().readUInt32BE(0);
+}
+
+function selectFallbackCarouselResourcePaths(slug: string): string[] {
+  const paths = listPlaceholderCarouselResourcePaths();
+  if (paths.length === 0) {
+    throw new Error('Processed game import requires at least one shared fallback carousel image.');
+  }
+  const start = slugSeed(slug) % paths.length;
+  return Array.from({ length: Math.min(FALLBACK_CAROUSEL_SLIDE_COUNT, paths.length) }, (_, index) => paths[(start + index) % paths.length]);
+}
+
+function carouselSlideLabel(game: Game, source: FallbackCarouselData['visualAssetSource'], index: number): string {
+  return source === 'game_images_folder'
+    ? `${game.name} carousel frame ${index + 1}`
+    : `${game.name} fallback art ${index + 1}`;
+}
+
+function buildFallbackCarouselData(game: Game, slug: string, category?: ProcessedGameTaxonomyPath): FallbackCarouselData {
+  const gameImagePaths = listGameCarouselResourcePaths(slug, category);
+  const selectedResourcePaths = gameImagePaths.length > 0
+    ? gameImagePaths
+    : selectFallbackCarouselResourcePaths(slug);
+  const fallbackHashes = placeholderHashes();
+  const selectedHashes = selectedResourcePaths.map((resourcePath) => hashFileHex(resourceFilePath(resourcePath)));
+  const visualAssetReplacementRequired = selectedHashes.some((imageHash) => fallbackHashes.has(imageHash));
+  const visualAssetSource: FallbackCarouselData['visualAssetSource'] = gameImagePaths.length === 0
+    ? 'shared_fallback_art'
+    : visualAssetReplacementRequired
+      ? 'game_folder_fallback_art'
+      : 'game_images_folder';
+  const slides = selectedResourcePaths.flatMap((resourcePath, index) => {
+    const filePath = path.join(RESOURCES_ROOT, resourcePath);
+    if (!fs.existsSync(filePath)) {
+      return [];
+    }
+    const imageHash = hashFileHex(filePath);
+    return [{
+      id: `${slug}-carousel-${index + 1}`,
+      label: carouselSlideLabel(game, visualAssetSource, index),
+      alt: `Carousel artwork for ${game.name}`,
+      imageHash,
+    }];
+  });
+
+  if (slides.length === 0) {
+    throw new Error('Processed game import requires at least one shared fallback carousel image.');
+  }
+
+  return {
+    slides,
+    primaryImageHash: String(slides[0].imageHash),
+    visualAssetStatus: visualAssetReplacementRequired ? 'needs_final_art' : 'ready',
+    visualAssetSource,
+    visualAssetReplacementRequired,
+  };
+}
+
 function buildGameInfoSections(game: Game): Record<string, unknown>[] {
   const aboutContent = [
     ...paragraphBlocks(game.overview.description),
@@ -133,11 +456,12 @@ function buildGameInfoSections(game: Game): Record<string, unknown>[] {
   const setupContent = [
     ...paragraphBlocks(game.setup.players),
     ...paragraphBlocks(game.setup.deck),
-    ...paragraphBlocks(game.setup.equipment),
+    ...paragraphBlocks(publicSetupEquipment(game)),
     ...paragraphBlocks(game.setup.dealing),
   ];
+  const publicVariationList = buildPublicVariationList(game);
   const variationsBlock = listBlock(
-    game.variations.list.map((variation) => `${variation.name}: ${variation.description}`)
+    publicVariationList.map((variation) => `${String(variation.name)}: ${String(variation.description)}`)
   );
 
   return [
@@ -181,27 +505,212 @@ function buildSetupContent(game: Game): Record<string, unknown> {
   return {
     players: game.setup.players,
     deck: game.setup.deck,
-    equipment: game.setup.equipment,
+    equipment: publicSetupEquipment(game),
     dealing: game.setup.dealing,
   };
 }
 
 function buildVariationsContent(game: Game): Record<string, unknown> {
+  const list = buildPublicVariationList(game);
   return {
-    list: game.variations.list,
-    noVariationsReason: game.variations.noVariationsReason ?? '',
+    list,
+    noVariationsReason: list.length === 0 ? firstPublicText(game.variations.noVariationsReason, 'Base ruleset only.') : '',
   };
 }
 
 function buildAiContent(game: Game): Record<string, unknown> {
   return {
-    difficulty: game.ai.difficulty,
-    considerations: game.ai.considerations,
+    difficulty: isMeaningfulPublicValue(game.ai.difficulty) ? game.ai.difficulty : game.overview.difficulty,
+    considerations: isMeaningfulPublicValue(game.ai.considerations)
+      ? game.ai.considerations
+      : buildAiConsiderations(game),
   };
+}
+
+function buildSourcesContent(game: Game): Record<string, unknown> {
+  const normalizeSource = (source: unknown): Record<string, unknown>[] => {
+    if (!source || typeof source !== 'object' || Array.isArray(source)) {
+      return [];
+    }
+    const record = source as Record<string, unknown>;
+    const name = publicText(record.name);
+    const url = publicText(record.url);
+    if (!name || !url) {
+      return [];
+    }
+    return [{
+      id: publicText(record.id),
+      name,
+      url,
+      retrievedAt: publicText(record.retrievedAt),
+    }];
+  };
+
+  return {
+    primary: Array.isArray(game.sources.primary)
+      ? game.sources.primary.flatMap(normalizeSource)
+      : [],
+    additional: Array.isArray(game.sources.additional)
+      ? game.sources.additional.flatMap(normalizeSource)
+      : [],
+  };
+}
+
+function buildAiConsiderations(game: Game): string[] {
+  return [game.rules.objective, game.rules.gameplay, ...game.rules.keyRules]
+    .map(publicText)
+    .filter(Boolean)
+    .slice(0, 4);
+}
+
+function authoredRule(id: string, title: string, text: unknown, sourcePath: string): Record<string, unknown> | null {
+  const publicRuleText = publicText(text);
+  if (!publicRuleText) {
+    return null;
+  }
+  return {
+    id,
+    title,
+    text: publicRuleText,
+    sourceFields: [sourcePath],
+  };
+}
+
+function buildRuleRecords(game: Game, slug: string): Record<string, unknown>[] {
+  return [
+    authoredRule(`${slug}.rules.objective`, 'Objective', game.rules.objective, 'rules.objective'),
+    authoredRule(`${slug}.rules.gameplay`, 'Turn flow', game.rules.gameplay, 'rules.gameplay'),
+    authoredRule(`${slug}.setup.players`, 'Players', game.setup.players, 'setup.players'),
+    authoredRule(`${slug}.setup.deck`, 'Deck', game.setup.deck, 'setup.deck'),
+    authoredRule(`${slug}.setup.equipment`, 'Equipment', publicSetupEquipment(game), 'setup.equipment'),
+    authoredRule(`${slug}.setup.dealing`, 'Deal', game.setup.dealing, 'setup.dealing'),
+    authoredRule(`${slug}.score.win-condition`, 'Win condition', game.scoring.winCondition, 'scoring.winCondition'),
+    authoredRule(`${slug}.score.description`, 'Scoring', game.scoring.description, 'scoring.description'),
+    ...game.rules.keyRules.map((ruleText, index) => (
+      authoredRule(`${slug}.rules.key.${index + 1}`, `Key rule ${index + 1}`, ruleText, `rules.keyRules.${index}`)
+    )),
+  ].filter((rule): rule is Record<string, unknown> => rule !== null);
+}
+
+function buildRuleGroups(game: Game, slug: string): Record<string, unknown>[] {
+  const keyRuleIds = game.rules.keyRules
+    .map((ruleText, index) => publicText(ruleText) ? `${slug}.rules.key.${index + 1}` : '')
+    .filter(Boolean);
+  return [
+    {
+      id: `${slug}.group.overview`,
+      label: 'Objective',
+      ruleIds: [`${slug}.rules.objective`, `${slug}.rules.gameplay`],
+    },
+    {
+      id: `${slug}.group.setup`,
+      label: 'Setup',
+      ruleIds: [
+        `${slug}.setup.players`,
+        `${slug}.setup.deck`,
+        `${slug}.setup.equipment`,
+        `${slug}.setup.dealing`,
+      ],
+    },
+    ...(keyRuleIds.length > 0
+      ? [{
+          id: `${slug}.group.key-rules`,
+          label: 'Key Rules',
+          ruleIds: keyRuleIds,
+        }]
+      : []),
+    {
+      id: `${slug}.group.scoring`,
+      label: 'Scoring',
+      ruleIds: [`${slug}.score.description`, `${slug}.score.win-condition`],
+    },
+  ];
+}
+
+function buildActionRuleLinks(game: Game, slug: string): Record<string, string[]> {
+  const links: Record<string, string[]> = {
+    [SETUP_ROUND_ACTION_ID]: [`${slug}.setup.dealing`, `${slug}.rules.objective`],
+  };
+  for (const [actionId, action] of Object.entries(game.engine.playerActions)) {
+    if ((action as { supported?: boolean }).supported === true) {
+      links[actionId] = [`${slug}.rules.gameplay`];
+    }
+  }
+  for (const action of normalizeCustomActions(game.engine.customActions)) {
+    if (typeof action.id === 'string' && action.supported === true) {
+      links[action.id] = [`${slug}.rules.gameplay`];
+    }
+  }
+  return links;
+}
+
+function buildScoringRules(game: Game, sourceCardValues: Record<string, unknown> | null): Record<string, unknown> {
+  return {
+    summary: game.scoring.description,
+    winCondition: game.scoring.winCondition,
+    targetScore: game.scoring.targetScore,
+    scoringDirection: game.scoring.scoringDirection,
+    cardValues: game.scoring.cardValues,
+    ...(sourceCardValues ? { sourceCardValues } : {}),
+    nullReasons: game.scoring.nullReasons ?? {},
+    splitRules: game.scoring.splitRules ?? null,
+    sourceFields: [
+      'scoring.description',
+      'scoring.winCondition',
+      'scoring.cardValues',
+      'scoring.targetScore',
+      'scoring.scoringDirection',
+      'scoring.nullReasons',
+      'scoring.splitRules',
+    ],
+  };
+}
+
+function buildCanonicalRulesAudienceText(game: Game): string {
+  return firstPublicText(game.rules.gameplay, game.rules.objective, game.overview.description);
+}
+
+function buildCanonicalTagline(game: Game): string {
+  const description = publicText(game.overview.description);
+  if (description.length <= 140) {
+    return description;
+  }
+  const sentence = description.match(/^.{40,140}?[.!?](?:\s|$)/)?.[0]?.trim();
+  return sentence || description.slice(0, 137).trimEnd() + '...';
+}
+
+function buildStrategySummary(game: Game): string {
+  const authored = [game.strategy.basic, game.strategy.intermediate, game.strategy.advanced]
+    .map(publicText)
+    .filter(Boolean)
+    .join('\n\n');
+  if (authored.length >= 20) {
+    return authored;
+  }
+  return [game.rules.objective, game.rules.gameplay]
+    .map(publicText)
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 function buildEditorOnlyMetadata(game: Game): Record<string, unknown> {
   return {
+    processedSource: game,
+    migrationReview: {
+      status: 'pending_source_review',
+      sourceSearchRequired: true,
+      requiredChecks: [
+        'verify rules against primary source pages',
+        'verify deck type, suit set, rank set, deal pattern, and initial hand size',
+        'verify category and subcategory against the original game identity',
+        'verify aliases and duplicates so one game is not migrated twice under different names',
+        'record any source conflicts before promotion beyond work-in-progress',
+      ],
+      reviewedAt: null,
+      reviewer: null,
+      verifiedChecks: [],
+      notes: [],
+    },
     sources: game.sources,
     evidence: game.evidence,
     extraction: game.extraction,
@@ -228,7 +737,7 @@ function buildMechanicsContract(game: Game, slug: string): Record<string, unknow
     mechanicsId: `${slug}-mechanics`,
     mechanicsVersion: game.engineModelVersion,
     familyKernel: slug,
-    familyVariant: game.overview.subCategory || game.overview.category,
+    familyVariant: decodeGameSubCategory(game.overview.subCategory) || decodeGameCategory(game.overview.category),
     executorId: `${slug}.mechanics.v1`,
     strategyExecutorId: `${slug}.bot.v1`,
     linkedAssetKeys: mechanicsModelFileNames(slug),
@@ -236,19 +745,149 @@ function buildMechanicsContract(game: Game, slug: string): Record<string, unknow
 }
 
 function buildActionModel(game: Game): Record<string, unknown> {
-  const customActions = game.engine.customActions ?? [];
-  const playerActionIds = Object.entries(game.engine.playerActions)
+  const customActions = normalizeCustomActions(game.engine.customActions);
+  const playerActions = buildRuntimeActionRecords(game);
+  const playerActionIds = Object.entries(playerActions)
     .filter(([, value]) => Boolean((value as { supported?: boolean }).supported))
     .map(([key]) => key);
-  const customActionIds = customActions.map((action) => action.id);
+  const customActionIds = customActions
+    .map((action) => typeof action.id === 'string' ? action.id : '')
+    .filter(Boolean);
   return {
     actionIds: Array.from(new Set([...playerActionIds, ...customActionIds])),
     payloadSchemas: {},
     actionEndsTurn: Object.fromEntries(
-      [...Object.entries(game.engine.playerActions), ...customActions.map((action) => [action.id, action] as const)]
+      [
+        ...Object.entries(playerActions),
+        ...customActions
+          .filter((action): action is Record<string, unknown> & { id: string } => typeof action.id === 'string')
+          .map((action) => [action.id, action] as const),
+      ]
         .map(([id, action]) => [id, Boolean((action as { isTerminating?: boolean }).isTerminating)]),
     ),
   };
+}
+
+function buildRuntimeActionRecords(game: Game): Record<string, unknown> {
+  return {
+    [SETUP_ROUND_ACTION_ID]: buildSetupRoundAction(game),
+    ...normalizePlayerActionRecord(game.engine.playerActions),
+  };
+}
+
+function buildSetupRoundAction(game: Game): Record<string, unknown> {
+  return {
+    supported: true,
+    system: true,
+    description: `Deal ${game.engine.initialHandSize} card(s) to each active player and initialize the table before player actions begin.`,
+    cost: 'none',
+    constraints: 'System-only setup action before the first player phase.',
+    isTerminating: true,
+    effectType: SETUP_ROUND_ACTION_ID,
+    effectHints: {
+      initialHandSize: game.engine.initialHandSize,
+      deckCount: game.engine.deckCount,
+      visibility: game.engine.cardVisibility.initialDeal,
+    },
+  };
+}
+
+function buildValidationSuites(game: Game, slug: string): Record<string, unknown>[] {
+  const firstPlayablePhase = normalizePhaseFlowPhases(game.engine.phases)[0];
+  const supportedActions = [
+    SETUP_ROUND_ACTION_ID,
+    ...Object.entries(normalizePlayerActionRecord(game.engine.playerActions))
+      .filter(([, action]) => Boolean((action as { supported?: boolean }).supported))
+      .map(([id]) => id),
+    ...normalizeCustomActions(game.engine.customActions)
+      .map((action) => typeof action.id === 'string' && action.supported === true ? action.id : '')
+      .filter(Boolean),
+  ];
+  return [
+    {
+      id: `${slug}.core-runtime-contracts`,
+      title: `${game.name} Core Runtime Contracts`,
+      fixtures: [
+        {
+          id: `${slug}.setup.initial-deal`,
+          title: 'Initial deal',
+          purpose: 'setup',
+          expectedInitialHandSize: game.engine.initialHandSize,
+          expectedPlayerCounts: {
+            min: game.engine.playerConfig.minPlayers,
+            max: game.engine.playerConfig.maxPlayers,
+            recommended: game.overview.players.recommendedPlayers ?? game.engine.playerConfig.optimalPlayers,
+          },
+          expectedTotalInitialCards: game.engine.initialHandSize * game.engine.playerConfig.maxPlayers,
+          expectedDeckCount: game.engine.deckCount,
+          expectedVisibility: game.engine.cardVisibility.initialDeal,
+          explanation: `${game.name} must start by giving each active player ${game.engine.initialHandSize} card(s), matching the processed setup and engine initialHandSize.`,
+          linkedRuleIds: [`${slug}.setup.initial-deal`],
+          sourceFields: ['setup.dealing', 'engine.initialHandSize', 'engine.playerConfig', 'engine.cardVisibility.initialDeal'],
+        },
+        {
+          id: `${slug}.flow.first-phase`,
+          title: 'Opening phase',
+          purpose: 'flow',
+          expectedFirstPhase: SETUP_ROUND_ACTION_ID,
+          expectedActor: 'system',
+          expectedLegalActions: [SETUP_ROUND_ACTION_ID],
+          expectedNextPhase: firstPlayablePhase?.id ?? null,
+          supportedActionIds: supportedActions,
+          firstPlayablePhase: firstPlayablePhase?.id ?? null,
+          firstPlayableLegalActions: Array.isArray(firstPlayablePhase?.legalActions) ? firstPlayablePhase.legalActions : [],
+          explanation: `${game.name} must run setup_round first, then enter ${firstPlayablePhase?.id ?? 'the authored first phase'} with the processed legal actions.`,
+          linkedRuleIds: [`${slug}.setup.initial-deal`, `${slug}.flow.${firstPlayablePhase?.id ?? 'first-playable'}`],
+          sourceFields: ['setup.dealing', 'engine.phases.0', 'engine.playerActions', 'engine.customActions'],
+        },
+        {
+          id: `${slug}.scoring.primary-outcome`,
+          title: 'Primary scoring outcome',
+          purpose: 'scoring',
+          expectedFinalScore: stringifyUnknown(game.scoring.targetScore ?? game.scoring.winCondition),
+          scoringDirection: game.scoring.scoringDirection,
+          targetScore: game.scoring.targetScore,
+          cardValues: game.scoring.cardValues,
+          explanation: game.scoring.description,
+          linkedRuleIds: [`${slug}.score.win-condition`],
+          sourceFields: ['scoring.description', 'scoring.winCondition', 'scoring.cardValues', 'scoring.targetScore', 'scoring.scoringDirection'],
+        },
+      ],
+    },
+  ];
+}
+
+function buildValidationExamples(game: Game, slug: string): Record<string, unknown>[] {
+  return [
+    {
+      id: `${slug}.initial-deal-preview`,
+      purpose: 'Runtime setup preview and playtest assertion.',
+      expectedInitialHandSize: game.engine.initialHandSize,
+      expectedPlayerCounts: {
+        min: game.engine.playerConfig.minPlayers,
+        max: game.engine.playerConfig.maxPlayers,
+      },
+      expectedVisibility: game.engine.cardVisibility.initialDeal,
+    },
+  ];
+}
+
+function buildRuleExampleHands(game: Game): string[] {
+  const firstPhase = normalizePhaseFlowPhases(game.engine.phases)[0];
+  const minPlayers = firstNumber(game.engine.playerConfig.minPlayers, game.overview.players.minPlayers);
+  const maxPlayers = firstNumber(game.engine.playerConfig.maxPlayers, game.overview.players.maxPlayers);
+  const initialHandSize = firstNumber(game.engine.initialHandSize, firstNumberFromText(game.setup.dealing, /(\d+)\s+cards?\s+each/i));
+  const deckCount = firstNumber(game.engine.deckCount, firstNumberFromText(game.setup.deck, /Number of Decks:\s*(\d+)/i), 1);
+  const dealSummary = buildDealSummary(game, initialHandSize);
+  const initialVisibility = firstPublicText(game.engine.cardVisibility.initialDeal, 'face_down');
+  return [
+    `Setup example: ${formatPlayerRange(minPlayers, maxPlayers)} players; ${dealSummary}; ${deckCount} deck; initial visibility ${initialVisibility}.`,
+    `Rule example: ${game.rules.objective}`,
+    firstPhase
+      ? `Turn-flow example: ${game.rules.gameplay}`
+      : '',
+    `Scoring example: ${game.scoring.description} ${stringifyUnknown(game.scoring.winCondition)}.`,
+  ].map(cleanRuleExampleText).map(publicText).filter(Boolean);
 }
 
 function asMechanicsRecord(value: unknown, fallbackKey: string): Record<string, unknown> {
@@ -269,7 +908,7 @@ function normalizePhaseFlowPhases(value: unknown): Record<string, unknown>[] {
     .filter((phase): phase is Record<string, unknown> => !!phase && typeof phase === 'object' && !Array.isArray(phase))
     .map((phase) => {
       const next = { ...phase };
-      if (typeof next.notes === 'string' && next.notes.trim().length === 0) {
+      if (typeof next.notes !== 'string' || next.notes.trim().length === 0) {
         delete next.notes;
       }
       if (!Array.isArray(next.conditionalNext)) {
@@ -282,15 +921,41 @@ function normalizePhaseFlowPhases(value: unknown): Record<string, unknown>[] {
     });
 }
 
+function buildRuntimePhases(game: Game): Record<string, unknown>[] {
+  const playablePhases = normalizePhaseFlowPhases(game.engine.phases);
+  if (playablePhases[0]?.id === SETUP_ROUND_ACTION_ID) {
+    return playablePhases;
+  }
+  return [
+    {
+      id: SETUP_ROUND_ACTION_ID,
+      label: 'Setup Round',
+      actor: 'system',
+      legalActions: [SETUP_ROUND_ACTION_ID],
+      nextPhase: typeof playablePhases[0]?.id === 'string' ? playablePhases[0].id : null,
+      isMandatory: true,
+      loopIndex: null,
+      totalLoops: null,
+      conditionalNext: [],
+      cardVisibilityChanges: {},
+      notes: `Deal ${game.engine.initialHandSize} card(s) to each active player before player action begins.`,
+    },
+    ...playablePhases,
+  ];
+}
+
 function buildMechanicsModelDataOverrides(
   game: Game,
   slug: string,
   linkedDeckAsset: AssetResourceEntry<Deck>,
   rankingAsset: Record<string, unknown>,
 ): NonNullable<CreateGameModeOptions['mechanicsModelDataOverrides']> {
+  const playerActions = buildRuntimeActionRecords(game);
+  const customActions = normalizeCustomActions(game.engine.customActions);
+  const runtimePhases = buildRuntimePhases(game);
   const shared = {
     familyKernel: slug,
-    familyVariant: game.overview.subCategory || game.overview.category,
+    familyVariant: decodeGameSubCategory(game.overview.subCategory) || decodeGameCategory(game.overview.category),
   };
 
   return {
@@ -357,7 +1022,7 @@ function buildMechanicsModelDataOverrides(
     },
     phaseFlow: {
       ...shared,
-      phases: normalizePhaseFlowPhases(game.engine.phases),
+      phases: runtimePhases,
       turnPolicy: {
         direction: game.engine.turnOrder.direction,
         startsWith: game.engine.turnOrder.startsWith,
@@ -376,8 +1041,8 @@ function buildMechanicsModelDataOverrides(
     actions: {
       ...shared,
       actionModel: buildActionModel(game),
-      actions: game.engine.playerActions,
-      customActions: game.engine.customActions ?? [],
+      actions: playerActions,
+      customActions,
     },
     stateEvents: {
       ...shared,
@@ -387,14 +1052,14 @@ function buildMechanicsModelDataOverrides(
         constants: asMechanicsRecord(game.engine.constants, 'constants'),
       },
       eventModel: {
-        phases: game.engine.phases.map((phase) => phase.id),
+        phases: runtimePhases.map((phase) => phase.id),
         actions: buildActionModel(game).actionIds,
       },
     },
     validation: {
       ...shared,
-      validationSuites: [],
-      examples: [],
+      validationSuites: buildValidationSuites(game, slug),
+      examples: buildValidationExamples(game, slug),
     },
   };
 }
@@ -471,7 +1136,7 @@ function buildLinkedDeckEntry(filePath: string, envelope: AssetEnvelope): AssetR
     String((envelope.data.name as string | undefined) ?? envelope.system.displayName ?? 'Deck'),
   );
   entry.path = path.relative(RESOURCES_ROOT, filePath).replace(/\\/g, '/');
-  entry.category = (envelope.system.category ?? 'Game') as typeof entry.category;
+      entry.category = (typeof envelope.system.category === 'string' ? envelope.system.category : 'Game') as typeof entry.category;
   entry.variant = typeof envelope.system.displayName === 'string' ? envelope.system.displayName : null;
   entry.mimeType = 'application/json';
   entry.fileSize = fs.statSync(filePath).size;
@@ -484,11 +1149,7 @@ export function resolveDeckAssetByTriple(
   suitSet: string,
   rankSet: string,
 ): { linkedDeckAsset: AssetResourceEntry<Deck>; deckEnvelope: AssetEnvelope } {
-  const deckFiles = findAssetFiles(DECKS_ROOT);
-  const records: DeckAssetRecord[] = deckFiles.map((filePath) => ({
-    path: filePath,
-    envelope: readAssetFile(filePath),
-  }));
+  const records = getDeckAssetRecords();
 
   for (const record of records) {
     const triples = Array.isArray(record.envelope.data.supportedTriples)
@@ -528,40 +1189,53 @@ export function loadProcessedGame(processedGamePath: string): Game {
 export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProcessedGameOptions): CreateGameModeOptions {
   const game = loadProcessedGame(options.processedGamePath);
   const slug = normalizeSlug(options.processedGamePath);
+  const category = options.category ?? deriveProcessedGameCategory(options.processedGamePath);
+  const gameCategory = decodeGameCategory(game.overview.category);
+  const gameSubCategory = decodeGameSubCategory(game.overview.subCategory);
   const { linkedDeckAsset, deckEnvelope } = resolveDeckAsset(game);
   const rankingAsset = getCardRankingReference(deckEnvelope);
+  const carouselData = buildFallbackCarouselData(game, slug, category);
+  const numericCardValues = normalizeNumericRecord(game.scoring.cardValues);
+  const sourceCardValues = buildScoringRulesSourceCardValues(game.scoring.cardValues, numericCardValues);
+  const scoringRules = buildScoringRules(game, sourceCardValues);
+  const playerActions = buildRuntimeActionRecords(game);
+  const customActions = normalizeCustomActions(game.engine.customActions);
+  const phases = buildRuntimePhases(game);
 
   const createOptions: CreateGameModeOptions = {
     gameId: slug,
     displayName: game.name,
-    category: options.category ?? 'CardGames/Imported',
+    category,
     linkedDeckAsset,
     mechanicsModelDataOverrides: buildMechanicsModelDataOverrides(game, slug, linkedDeckAsset, rankingAsset),
     assetDataOverrides: {
       rules: {
-        LLM: game.prompts.ai || game.rules.gameplay,
-        Player: game.prompts.human || game.rules.gameplay,
+        LLM: buildCanonicalRulesAudienceText(game),
+        Player: buildCanonicalRulesAudienceText(game),
         objective: game.rules.objective,
         gameplay: game.rules.gameplay,
         keyRules: game.rules.keyRules,
         setup: {
           players: game.setup.players,
           deck: game.setup.deck,
-          equipment: game.setup.equipment,
+          equipment: publicSetupEquipment(game),
           dealing: game.setup.dealing,
         },
         turnFlow: game.rules.gameplay,
         moveValidityConditions: buildMoveValidityConditions(game),
-        exampleHands: [],
+        exampleHands: buildRuleExampleHands(game),
+        rules: buildRuleRecords(game, slug),
+        ruleGroups: buildRuleGroups(game, slug),
+        actionRuleLinks: buildActionRuleLinks(game, slug),
         bonusRules: '',
         bonusRuleGuids: [],
         useTrump: game.engine.useTrump,
         trumpBonusValues: null,
       },
       strategy: {
-        LLM: [game.strategy.basic, game.strategy.intermediate, game.strategy.advanced].filter(Boolean).join('\n\n'),
-        Player: [game.strategy.basic, game.strategy.intermediate, game.strategy.advanced].filter(Boolean).join('\n\n'),
-        basic: game.strategy.basic ?? '',
+        LLM: buildStrategySummary(game),
+        Player: buildStrategySummary(game),
+        basic: publicText(game.strategy.basic) || game.rules.objective,
         intermediate: game.strategy.intermediate ?? '',
         advanced: game.strategy.advanced ?? '',
         tips: game.strategy.tips.map((tip: string) => ({
@@ -572,33 +1246,34 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
       scoring: {
         rankingAsset,
         scoringType: deriveScoringType(game),
+        scoringRules,
         description: game.scoring.description,
         winCondition: game.scoring.winCondition,
-        cardValues: normalizeNumericRecord(game.scoring.cardValues),
+        cardValues: numericCardValues,
         penalties: stringifyUnknown(game.scoring.penalties),
         targetScore: typeof game.scoring.targetScore === 'number' ? game.scoring.targetScore : null,
         scoringDirection: game.scoring.scoringDirection,
       },
       gameInfo: {
         hero: {
-          title: game.synthesis.hero.title || game.name,
-          subtitle: game.synthesis.hero.subtitle || game.overview.category,
+          title: game.name,
+          subtitle: gameCategory,
         },
         description: game.overview.description,
-        LLM: game.prompts.ai || game.overview.description,
-        Player: game.prompts.human || game.overview.description,
-        tagline: game.synthesis.hero.tagline || game.overview.description.slice(0, 140),
+        LLM: game.overview.description,
+        Player: game.overview.description,
+        tagline: buildCanonicalTagline(game),
         tags: Array.from(new Set(['card-game', ...game.tags])),
         minPlayers: game.overview.players.minPlayers,
         maxPlayers: game.overview.players.maxPlayers,
         routePath: slug,
-        gameCategory: game.overview.category,
-        subcategory: game.overview.subCategory,
+        gameCategory,
+        subcategory: gameSubCategory,
         playerMode: game.overview.playerMode,
         difficulty: game.overview.difficulty,
         duration: game.overview.duration,
         origin: game.overview.origin,
-        originName: game.overview.originName,
+        originName: firstPublicText(game.overview.originName, game.name),
         deck: game.overview.deck,
         alsoKnownAs: game.alsoKnownAs,
         playersDisplay: game.overview.players.display ?? '',
@@ -608,6 +1283,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         setupContent: buildSetupContent(game),
         variationsContent: buildVariationsContent(game),
         aiContent: buildAiContent(game),
+        sourcesContent: buildSourcesContent(game),
         mechanicsContract: buildMechanicsContract(game, slug),
         editorOnly: buildEditorOnlyMetadata(game),
         sections: buildGameInfoSections(game),
@@ -622,7 +1298,19 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         extensions: {},
       },
       carousel: {
-        slides: [],
+        slides: carouselData.slides,
+        visualAssetStatus: carouselData.visualAssetStatus,
+        visualAssetSource: carouselData.visualAssetSource,
+        visualAssetReplacementRequired: carouselData.visualAssetReplacementRequired,
+        autoplayIntervalMs: 1800,
+        lastImageDurationMs: 2600,
+        fastRotationDurationMs: 1800,
+        defaultRotationDurationMs: 2200,
+        fastRotationThreshold: 99,
+        slideTransitionDelayMs: 0,
+        playbackMode: BannerPlaybackMode.PingPong,
+        transitionType: BannerTransitionType.CrossDissolve,
+        transitionDurationMs: 1200,
       },
       mechanics: {
         familyKernel: slug,
@@ -634,9 +1322,9 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
           optimalPlayers: game.engine.playerConfig.optimalPlayers,
           dealerRotates: game.engine.turnOrder.dealerRotates,
         },
-        phases: game.engine.phases,
-        actions: game.engine.playerActions,
-        customActions: game.engine.customActions,
+        phases,
+        actions: playerActions,
+        customActions,
         zones: game.engine.zones,
         turnPolicy: {
           direction: game.engine.turnOrder.direction,
@@ -676,7 +1364,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         bankingConfig: game.engine.bankingConfig,
         roundConfig: game.engine.roundConfig,
         constants: game.engine.constants,
-        finalHandSize: game.engine.finalHandSize,
+        finalHandSize: game.engine.finalHandSize ?? undefined,
         deckCount: game.engine.deckCount,
         implementationHints: game.engine.implementationHints,
         progression: game.engine.progression,
@@ -684,6 +1372,10 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         determinismNotes: buildDeterminismNotes(game),
       },
       cardGame: {
+        releaseStatus: GameModeStatus.WorkInProgress,
+        released: false,
+        bannerImage: carouselData.primaryImageHash,
+        gameIcon: carouselData.primaryImageHash,
         minPlayers: game.overview.players.minPlayers,
         maxPlayers: game.overview.players.maxPlayers,
         minHumanPlayers: 1,

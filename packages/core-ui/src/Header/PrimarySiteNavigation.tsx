@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PublicRouteKey, PublicRoutePath } from '@ocentra/endpoint-domain/constants/public-routes';
 import type { UnifiedHeaderNavigationConfig } from './UnifiedHeader.config';
@@ -159,6 +159,25 @@ function getMaxStartIndex(
   return Math.max(0, items.length - 1);
 }
 
+function getStartIndexForItem(
+  items: SiteNavItem[],
+  targetLabel: string,
+  availableWidth: number,
+  shellHeight: number,
+  config: UnifiedHeaderNavigationConfig,
+) {
+  const maxStartIndex = getMaxStartIndex(items, availableWidth, shellHeight, config);
+
+  for (let index = 0; index <= maxStartIndex; index += 1) {
+    const windowItems = getVisibleWindow(items, index, availableWidth, shellHeight, config);
+    if (windowItems.some((item) => item.label === targetLabel)) {
+      return index;
+    }
+  }
+
+  return 0;
+}
+
 function matchesItemPath(pathname: string, item: SiteNavItem) {
   const prefixes = item.matchPrefixes?.length ? item.matchPrefixes : [item.path];
   return prefixes.some((prefix) => pathname.startsWith(prefix));
@@ -243,12 +262,27 @@ function ArrowShell({
   const edgeColor = disabled ? 'rgba(217,247,231,0.22)' : active ? config.hoverEdgeColor : config.edgeColor;
   const fillColor = active ? config.hoverTintColor : config.tintColor;
   const fillOpacity = disabled ? 0.025 : active ? 0.16 : config.boxOpacity;
+  const label = side === 'left' ? 'Previous navigation items' : 'Next navigation items';
+  const handleKeyDown = (event: React.KeyboardEvent<SVGGElement>) => {
+    if (disabled || (event.key !== 'Enter' && event.key !== ' ')) {
+      return;
+    }
+
+    event.preventDefault();
+    onClick();
+  };
 
   return (
     <g
+      className={styles.primaryNavInteractive}
       onClick={disabled ? undefined : onClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      role="button"
+      aria-label={label}
+      aria-disabled={disabled}
+      tabIndex={disabled ? -1 : 0}
       style={{ cursor: disabled ? 'default' : 'pointer', pointerEvents: 'auto' }}
       opacity={disabled ? 0.55 : 1}
     >
@@ -336,13 +370,27 @@ function NavButton({
   const textStroke = clamp(config.textStrokeWidth, 0, 6);
   const lift = hovered ? -1.2 : active ? -0.6 : 0;
   const renderedLabel = getRenderedLabel(item.label, config);
+  const handleKeyDown = (event: React.KeyboardEvent<SVGGElement>) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    onClick();
+  };
 
   return (
     <g
+      className={styles.primaryNavInteractive}
       transform={`translate(0 ${lift})`}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      role="link"
+      aria-label={`Navigate to ${item.label}`}
+      aria-current={active ? 'page' : undefined}
+      tabIndex={0}
       style={{ cursor: 'pointer', pointerEvents: 'auto' }}
     >
       <path
@@ -526,6 +574,7 @@ function SiteNavigationSvg({
   const firstRenderedButtonX = layout.hasOverflow
     ? overflowNavLeft + Math.max(0, (overflowNavWidth - renderedWidth) / 2)
     : layout.firstButtonX;
+  const pageStep = Math.max(1, visibleItems.length);
 
   return (
     <svg viewBox={`0 0 ${viewWidth} ${viewHeight}`} preserveAspectRatio="none" className={styles.primaryNavSvg}>
@@ -626,7 +675,7 @@ function SiteNavigationSvg({
           side="left"
           config={config}
           disabled={!canGoPrevious}
-          onClick={() => setStartIndex(() => clamp(safeStartIndex - 1, 0, maxStartIndex))}
+          onClick={() => setStartIndex(() => clamp(safeStartIndex - pageStep, 0, maxStartIndex))}
         />
       ) : null}
 
@@ -660,7 +709,7 @@ function SiteNavigationSvg({
           side="right"
           config={config}
           disabled={!canGoNext}
-          onClick={() => setStartIndex(() => clamp(safeStartIndex + 1, 0, maxStartIndex))}
+          onClick={() => setStartIndex(() => clamp(safeStartIndex + pageStep, 0, maxStartIndex))}
         />
       ) : null}
     </svg>
@@ -672,7 +721,11 @@ export function PrimarySiteNavigation({ includeAdmin = false, config, extraItems
   const location = useLocation();
   const hostRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(900);
-  const [startIndex, setStartIndex] = useState(0);
+  const [navigationWindow, setNavigationWindow] = useState({
+    activeItem: '',
+    manuallyAdjusted: false,
+    startIndex: 0,
+  });
   const items = useMemo<SiteNavItem[]>(
     () => [
       { label: 'Shop', path: PublicRoutePath[PublicRouteKey.Shop] },
@@ -695,6 +748,52 @@ export function PrimarySiteNavigation({ includeAdmin = false, config, extraItems
     [extraItems, includeAdmin],
   );
   const activeItem = useMemo(() => resolveActiveItem(location.pathname, items), [items, location.pathname]);
+  const isManuallyAdjustedForActiveRoute = navigationWindow.activeItem === activeItem && navigationWindow.manuallyAdjusted;
+
+  const resolvedStartIndex = useMemo(() => {
+    const viewWidth = Math.max(240, width);
+    const layout = getLayout(items, viewWidth, config.height, config);
+    if (!layout.hasOverflow) {
+      return 0;
+    }
+
+    const maxStartIndex = getMaxStartIndex(items, layout.navWidth, layout.shellHeight, config);
+    if (!isManuallyAdjustedForActiveRoute && activeItem) {
+      return getStartIndexForItem(items, activeItem, layout.navWidth, layout.shellHeight, config);
+    }
+
+    return clamp(navigationWindow.startIndex, 0, maxStartIndex);
+  }, [activeItem, config, isManuallyAdjustedForActiveRoute, items, navigationWindow.startIndex, width]);
+
+  const setNavigationStartIndex = useCallback<Dispatch<SetStateAction<number>>>((nextStartIndex) => {
+    setNavigationWindow((previousWindow) => {
+      const previousStartIndex = previousWindow.activeItem === activeItem
+        ? previousWindow.startIndex
+        : resolvedStartIndex;
+      const startIndex = typeof nextStartIndex === 'function'
+        ? nextStartIndex(previousStartIndex)
+        : nextStartIndex;
+
+      return {
+        activeItem,
+        manuallyAdjusted: true,
+        startIndex,
+      };
+    });
+  }, [activeItem, resolvedStartIndex]);
+
+  const handleSelect = useCallback((item: SiteNavItem) => {
+    setNavigationWindow({
+      activeItem: item.label,
+      manuallyAdjusted: false,
+      startIndex: 0,
+    });
+    navigate(item.path);
+  }, [navigate]);
+
+  const setHostWidth = useCallback((nextWidth: number) => {
+    setWidth(nextWidth);
+  }, []);
 
   useEffect(() => {
     const element = hostRef.current;
@@ -704,7 +803,7 @@ export function PrimarySiteNavigation({ includeAdmin = false, config, extraItems
 
     const updateWidth = () => {
       const rect = element.getBoundingClientRect();
-      setWidth(Math.max(240, Math.floor(rect.width)));
+      setHostWidth(Math.max(240, Math.floor(rect.width)));
     };
 
     updateWidth();
@@ -716,7 +815,7 @@ export function PrimarySiteNavigation({ includeAdmin = false, config, extraItems
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateWidth);
     };
-  }, []);
+  }, [setHostWidth]);
 
   return (
     <div ref={hostRef} className={styles.primaryNavHost} style={{ height: `${config.height}px` }}>
@@ -725,11 +824,9 @@ export function PrimarySiteNavigation({ includeAdmin = false, config, extraItems
         config={config}
         items={items}
         activeItem={activeItem}
-        startIndex={startIndex}
-        setStartIndex={setStartIndex}
-        onSelect={(item) => {
-          navigate(item.path);
-        }}
+        startIndex={resolvedStartIndex}
+        setStartIndex={setNavigationStartIndex}
+        onSelect={handleSelect}
       />
     </div>
   );

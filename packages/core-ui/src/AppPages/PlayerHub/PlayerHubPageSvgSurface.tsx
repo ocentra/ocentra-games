@@ -565,7 +565,7 @@ function PlayerHubProfileEditor({
           <div className="player-hub-edit-panel__grid">
             <label>
               Display name
-              <input value={displayName} maxLength={128} onChange={event => setDisplayName(event.target.value)} placeholder="N/A" />
+              <input value={displayName} maxLength={128} onChange={event => setDisplayName(event.target.value)} placeholder="Not set" />
             </label>
             <label>
               Visibility
@@ -577,15 +577,15 @@ function PlayerHubProfileEditor({
             </label>
             <label>
               Custom title
-              <input value={customTitle} maxLength={128} onChange={event => setCustomTitle(event.target.value)} placeholder="N/A" />
+              <input value={customTitle} maxLength={128} onChange={event => setCustomTitle(event.target.value)} placeholder="Not set" />
             </label>
             <label>
               Profile theme
-              <input value={profileTheme} maxLength={64} onChange={event => setProfileTheme(event.target.value)} placeholder="N/A" />
+              <input value={profileTheme} maxLength={64} onChange={event => setProfileTheme(event.target.value)} placeholder="Not set" />
             </label>
             <label className="player-hub-edit-panel__wide">
               Bio
-              <textarea value={bio} maxLength={512} onChange={event => setBio(event.target.value)} placeholder="N/A" />
+              <textarea value={bio} maxLength={512} onChange={event => setBio(event.target.value)} placeholder="Not set" />
             </label>
           </div>
           <div className="player-hub-edit-panel__readonly">
@@ -679,7 +679,7 @@ function PlayerHubSettingsEditor({
             <label>
               Theme
               <select value={theme} onChange={event => setTheme(themeValue(event.target.value))}>
-                <option value="">N/A</option>
+                <option value="">Not set</option>
                 <option value="dark">Dark</option>
                 <option value="light">Light</option>
                 <option value="auto">Auto</option>
@@ -688,7 +688,7 @@ function PlayerHubSettingsEditor({
             <label>
               Notifications
               <select value={notifications} onChange={event => setNotifications(boolValue(event.target.value))}>
-                <option value="">N/A</option>
+                <option value="">Not set</option>
                 <option value="true">Enabled</option>
                 <option value="false">Disabled</option>
               </select>
@@ -696,22 +696,22 @@ function PlayerHubSettingsEditor({
             <label>
               Sound
               <select value={sound} onChange={event => setSound(boolValue(event.target.value))}>
-                <option value="">N/A</option>
+                <option value="">Not set</option>
                 <option value="true">Enabled</option>
                 <option value="false">Disabled</option>
               </select>
             </label>
             <label>
               Language
-              <input value={language} maxLength={16} onChange={event => setLanguage(event.target.value)} placeholder="N/A" />
+              <input value={language} maxLength={16} onChange={event => setLanguage(event.target.value)} placeholder="Not set" />
             </label>
             <label>
               Server region
-              <input value={region} maxLength={32} onChange={event => setRegion(event.target.value)} placeholder="N/A" />
+              <input value={region} maxLength={32} onChange={event => setRegion(event.target.value)} placeholder="Not set" />
             </label>
           </div>
           <div className="player-hub-edit-panel__readonly">
-            <span>AI, API, local server, browser model, and inference settings are managed from AI Setup.</span>
+            <span>AI, API, local server, browser model, and inference settings open in Settings.</span>
             <span>Settings here only apply account preferences that this form can update.</span>
           </div>
           <div className="player-hub-edit-panel__actions">
@@ -750,7 +750,7 @@ function PlayerHubAiSettingsDetailPanel({
           <div className="player-hub-data-panel player-hub-data-panel--ai">
             <div className="player-hub-data-panel__head">
               <h2>AI Setup</h2>
-              <span>Open Player Hub in the main app to configure live AI settings.</span>
+              <span>Open Settings in the main app to configure live AI settings.</span>
             </div>
             <div className="player-hub-data-panel__rows">
               {(content.rightDetails.ai ?? []).map(row => (
@@ -810,7 +810,7 @@ function detailPanelTitle(active: ShopRightDetailRenderProps['active'], content:
 }
 
 function detailPanelSubtitle(active: ShopRightDetailRenderProps['active'], content: ShopPageContentData): string {
-  if (active === 'ai') return 'Cloud API keys, local endpoints, browser-local models, and inference preferences live in Player Hub.';
+  if (active === 'ai') return 'Cloud API keys, local endpoints, browser-local models, and inference preferences open in Settings.';
   if (active === 'wallet') return content.infoDetails.arenaCredits.subtitle;
   if (active === 'pass') return content.infoDetails.eliteBenefits.subtitle;
   if (active === 'events') return 'Owned tickets, passes, check-ins, and official records appear only when account services return them.';

@@ -1,0 +1,145 @@
+{
+  system: {
+    guid: '2a70bddd-8361-4bcb-9aa5-9732ce882bda',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/pedro-sancho/pedro-sanchoPhaseFlowModel.asset',
+    gameId: 'pedro-sancho',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pedro-sancho',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'bid',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 6 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'bid',
+        label: 'Bid',
+        actor: 'each_player_clockwise',
+        legalActions: [
+          'bid',
+          'pass',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: 0,
+        totalLoops: 0,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Four to seven; four may play as two partnerships (partners opposite).',
+        deck: 'Standard 52-card deck.',
+        equipment: '',
+        dealing: 'Six cards each (most sources); some deal as far as cards go evenly. One round of bidding; dealer may take the bid by equalling the highest. High bidder declares trump.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: {
+        hasTricks: true,
+        tricksPerRound: 6,
+        mustFollowSuit: true,
+        mustOvertrump: false,
+        leadRestrictions: 'Bidder must lead a trump to the first trick.',
+        trickWinCondition: 'highest_trump_if_played_else_highest_led',
+        trickWinnerLeads: true,
+        scoredTricks: true,
+        bidding: {
+          hasBidding: true,
+          biddingSystem: 'pass_or_bid',
+          minBid: 0,
+          maxBid: 18,
+          passAllowed: true,
+          doubling: false,
+        },
+        pointValues: {
+          specificCards: [
+            {
+              card: 'A',
+              points: 1,
+            },
+            {
+              card: '2',
+              points: 1,
+            },
+            {
+              card: 'J',
+              points: 1,
+            },
+            {
+              card: '10',
+              points: 1,
+            },
+            {
+              card: '5',
+              points: 5,
+            },
+            {
+              card: '9',
+              points: 9,
+            },
+          ],
+        },
+      },
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'setup_round',
+      'bid',
+      'play',
+    ],
+    examples: [],
+  },
+}

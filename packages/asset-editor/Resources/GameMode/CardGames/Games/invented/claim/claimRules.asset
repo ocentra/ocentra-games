@@ -1,0 +1,378 @@
+{
+  "system": {
+    "guid": "cf9e22f2-20f0-2ebd-8ef0-ab878d52e8c5",
+    "assetType": "CardGameRules",
+    "schemaVersion": 1,
+    "displayName": "claim-rules",
+    "category": "Game",
+    "gameId": "claim",
+    "treePath": "Resources/GameMode/CardGames/Games/invented/claim/claimRules.asset"
+  },
+  "data": {
+    "rulesVersion": "claim-hoarder@2.0.0",
+    "ruleSetId": "claim.rules.hoarder.v2",
+    "mechanicsId": "claim-hoarder",
+    "mechanicsVersion": "2.0.0",
+    "familyKernel": "claim",
+    "familyVariant": "hoarder",
+    "executorId": "claim.hoarder.v1",
+    "objective": "Collect cards in one secretly declared suit, avoid negative off-suit liability, and call Showdown only when your final score is at least 27.",
+    "gameplay": "Each round deals three cards to every active player from one Standard 52-card French deck. On a turn, the active player may take at most one card from stock or discard, discard at most one card while keeping at least three cards, privately declare one suit once per round, end the turn, or call Showdown when declared and qualified. Acting while undeclared adds persistent debt equal to the highest card in hand. Showdown reveals all hands, scores declared-suit runs positive, scores off-suit or undeclared runs negative, subtracts debt, applies raw scores to bankrolls, and pays winner-difference bonuses when the top score is positive.",
+    "keyRules": [
+      "Claim is locked to exactly four active seats.",
+      "Each active player starts with three cards from one Standard 52-card French deck.",
+      "A player may declare one suit once per round, and the declaration remains secret until showdown.",
+      "Declared-suit cards score positive; off-suit cards and undeclared hands score negative.",
+      "If a player acts while undeclared and ends the turn, the highest-card debt persists even if that card is later discarded.",
+      "A player can call Showdown only when declared, holding at least three cards, and final score is at least 27."
+    ],
+    "turnFlow": "Run setup_round, then loop active-player turns until a qualified Showdown call or automatic exhaustion showdown. During a turn, the player may take once, discard once, declare once if eligible, end the turn, or call Showdown if declared with at least three cards and a final score of 27 or higher. Timeout safely advances the turn and applies undeclared debt only after an acted undeclared turn.",
+    "ruleGroups": [
+      {
+        "id": "claim.rules.identity",
+        "label": "Identity And Seats",
+        "ruleIds": [
+          "claim.players.four_only",
+          "claim.players.bankrupt_observer"
+        ]
+      },
+      {
+        "id": "claim.rules.setup",
+        "label": "Round Setup",
+        "ruleIds": [
+          "claim.setup.standard_52",
+          "claim.setup.three_cards",
+          "claim.setup.empty_discard"
+        ]
+      },
+      {
+        "id": "claim.rules.turn",
+        "label": "Turn Flow",
+        "ruleIds": [
+          "claim.turn.take_once",
+          "claim.turn.discard_once",
+          "claim.turn.declare_once",
+          "claim.turn.timer_60"
+        ]
+      },
+      {
+        "id": "claim.rules.scoring",
+        "label": "Scoring",
+        "ruleIds": [
+          "claim.score.declared_positive",
+          "claim.score.offsuit_negative",
+          "claim.score.undeclared_negative",
+          "claim.score.circular_runs",
+          "claim.score.debt"
+        ]
+      },
+      {
+        "id": "claim.rules.showdown",
+        "label": "Showdown And Settlement",
+        "ruleIds": [
+          "claim.showdown.minimum_27",
+          "claim.showdown.highest_score_wins",
+          "claim.settlement.raw_and_difference"
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "id": "claim.players.four_only",
+        "text": "Claim requires exactly four active seats, matching the four standard French suits."
+      },
+      {
+        "id": "claim.players.bankrupt_observer",
+        "text": "A player whose bankroll reaches zero or below becomes an observer for later rounds."
+      },
+      {
+        "id": "claim.setup.standard_52",
+        "text": "Each round uses one shuffled Standard_52 deck with StandardCardRanking."
+      },
+      {
+        "id": "claim.setup.three_cards",
+        "text": "Deal three cards to every active player at the start of the round."
+      },
+      {
+        "id": "claim.setup.empty_discard",
+        "text": "The discard starts empty; stock top and discard top are public when present."
+      },
+      {
+        "id": "claim.turn.take_once",
+        "text": "The current player may take at most one card from stock or discard each turn."
+      },
+      {
+        "id": "claim.turn.discard_once",
+        "text": "The current player may discard at most one card each turn and must keep at least three cards."
+      },
+      {
+        "id": "claim.turn.declare_once",
+        "text": "A player may privately declare one suit once per round if they hold at least one card of that suit."
+      },
+      {
+        "id": "claim.turn.timer_60",
+        "text": "Each turn has a 60 second timer; timeout after action resolves as ending undeclared."
+      },
+      {
+        "id": "claim.score.declared_positive",
+        "text": "Cards in the declared suit score positive."
+      },
+      {
+        "id": "claim.score.offsuit_negative",
+        "text": "Cards outside the declared suit score negative."
+      },
+      {
+        "id": "claim.score.undeclared_negative",
+        "text": "An undeclared hand scores all cards as negative."
+      },
+      {
+        "id": "claim.score.circular_runs",
+        "text": "Same-suit maximal circular runs score sum of values multiplied by run length; singles score face value."
+      },
+      {
+        "id": "claim.score.debt",
+        "text": "Acting while undeclared and ending or timing out after that action adds highest-card debt, and debt persists after discard."
+      },
+      {
+        "id": "claim.showdown.minimum_27",
+        "text": "A caller must be declared, hold at least three cards, and have final score at least 27."
+      },
+      {
+        "id": "claim.showdown.highest_score_wins",
+        "text": "If someone else has a higher final score after reveal, that higher scorer wins the round; the caller receives no extra penalty."
+      },
+      {
+        "id": "claim.settlement.raw_and_difference",
+        "text": "Raw final scores apply to bankrolls. A positive top score also receives winner-difference payouts; tied top scores share the payout pool."
+      }
+    ],
+    "actionRuleLinks": {
+      "take_stock": [
+        "claim.turn.take_once",
+        "claim.setup.standard_52"
+      ],
+      "take_discard": [
+        "claim.turn.take_once",
+        "claim.setup.empty_discard"
+      ],
+      "discard_card": [
+        "claim.turn.discard_once"
+      ],
+      "declare_suit": [
+        "claim.turn.declare_once"
+      ],
+      "end_turn": [
+        "claim.score.debt"
+      ],
+      "timeout_turn": [
+        "claim.turn.timer_60",
+        "claim.score.debt"
+      ],
+      "call_showdown": [
+        "claim.showdown.minimum_27",
+        "claim.showdown.highest_score_wins",
+        "claim.settlement.raw_and_difference"
+      ]
+    },
+    "phaseRuleLinks": {
+      "setup_round": [
+        "claim.setup.standard_52",
+        "claim.setup.three_cards",
+        "claim.setup.empty_discard"
+      ],
+      "turn_loop": [
+        "claim.turn.take_once",
+        "claim.turn.discard_once",
+        "claim.turn.declare_once",
+        "claim.turn.timer_60",
+        "claim.score.debt"
+      ],
+      "score_round": [
+        "claim.score.declared_positive",
+        "claim.score.offsuit_negative",
+        "claim.score.undeclared_negative",
+        "claim.score.circular_runs",
+        "claim.settlement.raw_and_difference"
+      ]
+    },
+    "ruleExampleLinks": {
+      "claim.score.declared_positive": [
+        "claim.score.spades_akq",
+        "claim.score.hearts_56",
+        "claim.score.clubs_8910"
+      ],
+      "claim.score.offsuit_negative": [
+        "claim.score.mixed_declared_spades",
+        "claim.score.multiple_runs_with_offsuit"
+      ],
+      "claim.score.undeclared_negative": [
+        "claim.score.undeclared_spades_akq"
+      ],
+      "claim.score.circular_runs": [
+        "claim.score.spades_akq",
+        "claim.score.multiple_runs_with_offsuit"
+      ],
+      "claim.score.debt": [
+        "claim.score.debt_after_discard"
+      ]
+    },
+    "edgeCaseRules": [
+      {
+        "id": "claim.edge.discard_then_take_same_card",
+        "text": "Discard before taking is legal, so the same public top discard may be taken back during that turn."
+      },
+      {
+        "id": "claim.edge.no_max_hand",
+        "text": "There is no rules-level maximum hand size beyond physical card availability."
+      },
+      {
+        "id": "claim.edge.all_negative",
+        "text": "If every player has a negative final score, only raw scores apply and no winner-difference payout is created."
+      },
+      {
+        "id": "claim.edge.tied_top",
+        "text": "If multiple players tie for top positive score, they split one positive difference payout pool."
+      }
+    ],
+    "useTrump": false,
+    "playerCount": {
+      "min": 4,
+      "max": 4,
+      "reason": "Claim is locked to four seats, one for each standard French suit."
+    },
+    "setup": {
+      "deck": "standard_52_french",
+      "deckAsset": "Resources/GameMode/CardGames/Decks/Standard_52.asset",
+      "dealCountPerPlayer": 3,
+      "openingDiscard": false,
+      "publicStockTop": true,
+      "publicDiscardTop": true,
+      "startingBankroll": 1352,
+      "maxRounds": 10,
+      "rankingAsset": "Resources/GameMode/CardGames/CardRanking/StandardCardRanking.asset"
+    },
+    "cardSystem": {
+      "deckType": "Standard 52",
+      "deckFamily": "French",
+      "suits": [
+        "spades",
+        "hearts",
+        "diamonds",
+        "clubs"
+      ],
+      "rankValues": {
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "10": 10,
+        "J": 11,
+        "Q": 12,
+        "K": 13,
+        "A": 14
+      },
+      "scoringCycle": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "J",
+        "Q",
+        "K",
+        "A"
+      ],
+      "aceAdjacency": [
+        "K",
+        "2"
+      ]
+    },
+    "turnRules": {
+      "timerSeconds": 60,
+      "minHandSize": 3,
+      "maxHandSize": null,
+      "takeLimitPerTurn": 1,
+      "discardLimitPerTurn": 1,
+      "allowDiscardOnly": true,
+      "allowTakeOnly": true,
+      "allowDiscardThenTakeSameCard": true,
+      "noActionTimeoutPenalty": true,
+      "actionTimeoutCountsAsUndeclaredTurn": true
+    },
+    "declarationRules": {
+      "visibility": "secret_until_showdown",
+      "requiresCardInSuit": true,
+      "redeclareAllowed": false,
+      "multiplePlayersMayDeclareSameSuit": true,
+      "undeclaredTurnDebt": "highest_card_in_hand_after_acted_turn",
+      "debtPersistsAfterDiscard": true
+    },
+    "showdownRules": {
+      "callerMustBeDeclared": true,
+      "minCardsInHand": 3,
+      "minimumFinalScore": 27,
+      "autoRevealAllHands": true,
+      "autoShowdownWhenStockAndDiscardExhausted": true
+    },
+    "scoringRules": {
+      "rankCycle": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "aceBridgesKingAndTwo": true,
+      "declaredSuitScoresPositive": true,
+      "otherSuitsScoreNegative": true,
+      "undeclaredAllCardsScoreNegative": true,
+      "runFormula": "(sum of cards in same-suit run) * run length",
+      "singleCardFormula": "card face value",
+      "cardsCountOnceInMaximalRuns": true,
+      "debtSubtractedFromFinalScore": true
+    },
+    "settlementRules": {
+      "rawScoreAlwaysAppliesToBankroll": true,
+      "positiveWinnerDifferencePayout": true,
+      "tiedWinnersShareOnePool": true,
+      "noWinnerPayoutIfAllScoresAreNegative": true,
+      "bankruptPlayersBecomeObservers": true,
+      "gameEndsAtMaxRoundsOrOneActivePlayer": true
+    },
+    "moveValidityConditions": {
+      "take_stock": "Current active player only; at most one take this turn; stock must not be empty.",
+      "take_discard": "Current active player only; at most one take this turn; discard pile must not be empty.",
+      "discard_card": "Current active player only; at most one discard this turn; player must keep at least three cards.",
+      "declare_suit": "Current active player only; player must hold at least one card of the suit and must not already be declared.",
+      "end_turn": "Current active player only; applies undeclared debt only if the player acted this turn and is still undeclared.",
+      "timeout_turn": "No-action timeout advances safely; timeout after an action resolves like an undeclared end turn.",
+      "call_showdown": "Current active declared player only; final score must be at least 27 with at least three cards in hand."
+    },
+    "exampleHands": [
+      "Opening deal: 4 player(s), 3 card(s) per player, 1 deck, private hand visibility.",
+      "A K Q of Spades: declared as Spades scores (14 + 13 + 12) * 3 = 117.",
+      "5 6 of Hearts: declared as Hearts scores (5 + 6) * 2 = 22.",
+      "Spade run with off-suit liability: 117 declared-suit points minus 5 off-suit points = 112.",
+      "Undeclared A K Q of Spades: undeclared hands score every card group as negative, so the hand scores -117.",
+      "Debt persists after discard: 117 declared-suit points minus 14 persistent debt = 103."
+    ],
+    "LLM": "Claim is a four-player suit-collection card game. Each round deals three cards to every active player from a standard 52-card French deck. Players privately declare one suit, collect cards of that suit, and avoid holding other suits. On a turn, a player may take once from stock or discard, discard once, declare, and end the turn. Ending an acted turn while undeclared adds persistent debt equal to the highest card in hand. Showdown reveals all hands and scores declared-suit runs as positive, off-suit or undeclared runs as negative, then subtracts debt. Raw scores affect bankrolls and a positive top score also earns winner-difference payouts.",
+    "Player": "Collect one suit, secretly declare it, and build enough score to call Showdown. You start each round with three cards. You may take from stock or discard, discard a card while keeping at least three cards, or end your turn. If you act and stay undeclared, you add debt. Showdown needs a declared suit, at least three cards, and final score 27 or higher."
+  }
+}

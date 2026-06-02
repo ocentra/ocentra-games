@@ -1,0 +1,218 @@
+{
+  system: {
+    guid: '36ec3ad2-56f2-45b9-be24-5cb00635d21f',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/napalm/napalmRules.asset',
+    gameId: 'napalm',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+    Player: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+    objective: 'Be the first to collect five tokens to win the pot; players also compete in side bets matching the pot amount each time multiple players declare yes.',
+    gameplay: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+    keyRules: [
+      'Three-stage game (2-card/5-low/7-high)',
+      'Yes/No declaration each stage',
+      'Token collection for pot',
+      'Side bets = pot size',
+      'Rapid money movement',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: '52 cards. Aces high. Tokens (non-monetary) + chips for side bets.',
+      equipment: 'Cards, tokens, chips',
+      dealing: 'Staged dealing: 2+3+2 cards.',
+    },
+    turnFlow: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'See game rules.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first to collect five tokens to win the pot; players also compete in side bets matching the pot amount each time multiple players declare yes.',
+      'Turn-flow example: Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+      'Scoring example: Tokens: first to 5 wins pot. Side bets equal pot size. Collect 5 tokens to win the pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'napalm.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to collect five tokens to win the pot; players also compete in side bets matching the pot amount each time multiple players declare yes.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'napalm.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'napalm.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'napalm.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Aces high. Tokens (non-monetary) + chips for side bets.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'napalm.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, tokens, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'napalm.setup.dealing',
+        title: 'Deal',
+        text: 'Staged dealing: 2+3+2 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'napalm.score.win-condition',
+        title: 'Win condition',
+        text: 'Collect 5 tokens to win the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'napalm.score.description',
+        title: 'Scoring',
+        text: 'Tokens: first to 5 wins pot. Side bets equal pot size.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three-stage game (2-card/5-low/7-high)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Yes/No declaration each stage',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Token collection for pot',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Side bets = pot size',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Rapid money movement',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'napalm.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'napalm.rules.objective',
+          'napalm.rules.gameplay',
+        ],
+      },
+      {
+        id: 'napalm.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'napalm.setup.players',
+          'napalm.setup.deck',
+          'napalm.setup.equipment',
+          'napalm.setup.dealing',
+        ],
+      },
+      {
+        id: 'napalm.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'napalm.rules.key.1',
+          'napalm.rules.key.2',
+          'napalm.rules.key.3',
+          'napalm.rules.key.4',
+          'napalm.rules.key.5',
+        ],
+      },
+      {
+        id: 'napalm.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'napalm.score.description',
+          'napalm.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'napalm.setup.dealing',
+        'napalm.rules.objective',
+      ],
+      play_card: [
+        'napalm.rules.gameplay',
+      ],
+    },
+  },
+}

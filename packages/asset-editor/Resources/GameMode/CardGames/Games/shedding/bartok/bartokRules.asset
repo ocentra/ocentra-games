@@ -1,0 +1,219 @@
+{
+  system: {
+    guid: 'db961211-4edd-4c45-9824-29dcdc418a86',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/bartok/bartokRules.asset',
+    gameId: 'bartok',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'On your turn, you must play a card that matches either the **Suit** or the **Rank** of the top card on the discard pile. If you cannot play, you must draw one card from the deck. If that card is playable, you may play it immediately.',
+    Player: 'On your turn, you must play a card that matches either the **Suit** or the **Rank** of the top card on the discard pile. If you cannot play, you must draw one card from the deck. If that card is playable, you may play it immediately.',
+    objective: 'Be the first player to shed all cards from your hand in a round. The ultimate goal is to win the round and implement a rule that benefits you or hinders your rivals.',
+    gameplay: 'On your turn, you must play a card that matches either the **Suit** or the **Rank** of the top card on the discard pile. If you cannot play, you must draw one card from the deck. If that card is playable, you may play it immediately.',
+    keyRules: [
+      'Match Suit or Rank.',
+      "Call 'Bartok' on the penultimate card.",
+      'Winner creates a new rule; rules stack session-wide.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2-12 players. Best with 4-6.',
+      deck: 'One standard 52-card deck for 2-5 players. Two decks for 6 or more.',
+      equipment: 'Standard pack, score sheet, and a pen/paper to record the new rules.',
+      dealing: 'Dealer (rotating) deals 7 cards to each player. The next card is turned face up to start the discard pile; the remainder is the draw pile.',
+    },
+    turnFlow: 'On your turn, you must play a card that matches either the **Suit** or the **Rank** of the top card on the discard pile. If you cannot play, you must draw one card from the deck. If that card is playable, you may play it immediately.',
+    moveValidityConditions: {
+      ante: 'Bartok has no ante; shedding game only.',
+      deal: 'Dealer deals; no player deal.',
+      reveal_market: 'Dealer deals; no player deal.',
+      buy_market: 'No market in Bartok.',
+      buy_stock: 'No market; play or draw only.',
+      fold: 'Shedding game; no fold.',
+      check: 'No betting in Bartok.',
+      call: 'No betting in Bartok.',
+      bet: 'No betting in Bartok.',
+      raise: 'No betting in Bartok.',
+      declare: 'No declare in Bartok.',
+      reveal_hand: 'Hand revealed when empty only.',
+      award_pot: 'No pot; first to empty hand wins.',
+      play_card: 'Match suit or rank of top discard.',
+      draw: 'When cannot or decline to play.',
+      discard: 'Cards played to discard pile, not separate discard.',
+      pass: 'Must play or draw each turn; no pass.',
+      bid: 'No bidding in Bartok.',
+      meld: 'Shedding game; no melds.',
+      go_out: 'Going out is emptying hand; use play_card.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to shed all cards from your hand in a round. The ultimate goal is to win the round and implement a rule that benefits you or hinders your rivals.',
+      'Turn-flow example: On your turn, you must play a card that matches either the **Suit** or the **Rank** of the top card on the discard pile. If you cannot play, you must draw one card from the deck. If that card is playable, you may play it immediately.',
+      'Scoring example: Bartok is usually played as a series of independent rounds with no shared score track; players simply note who wins each round. Each round is won by the first player to empty their hand; tables may track number of rounds won, but there is no fixed overall score..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bartok.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to shed all cards from your hand in a round. The ultimate goal is to win the round and implement a rule that benefits you or hinders your rivals.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bartok.rules.gameplay',
+        title: 'Turn flow',
+        text: 'On your turn, you must play a card that matches either the **Suit** or the **Rank** of the top card on the discard pile. If you cannot play, you must draw one card from the deck. If that card is playable, you may play it immediately.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bartok.setup.players',
+        title: 'Players',
+        text: '2-12 players. Best with 4-6.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bartok.setup.deck',
+        title: 'Deck',
+        text: 'One standard 52-card deck for 2-5 players. Two decks for 6 or more.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bartok.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet, and a pen/paper to record the new rules.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bartok.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer (rotating) deals 7 cards to each player. The next card is turned face up to start the discard pile; the remainder is the draw pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bartok.score.win-condition',
+        title: 'Win condition',
+        text: 'Each round is won by the first player to empty their hand; tables may track number of rounds won, but there is no fixed overall score.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bartok.score.description',
+        title: 'Scoring',
+        text: 'Bartok is usually played as a series of independent rounds with no shared score track; players simply note who wins each round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bartok.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match Suit or Rank.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bartok.rules.key.2',
+        title: 'Key rule 2',
+        text: "Call 'Bartok' on the penultimate card.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bartok.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winner creates a new rule; rules stack session-wide.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bartok.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bartok.rules.objective',
+          'bartok.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bartok.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bartok.setup.players',
+          'bartok.setup.deck',
+          'bartok.setup.equipment',
+          'bartok.setup.dealing',
+        ],
+      },
+      {
+        id: 'bartok.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bartok.rules.key.1',
+          'bartok.rules.key.2',
+          'bartok.rules.key.3',
+        ],
+      },
+      {
+        id: 'bartok.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bartok.score.description',
+          'bartok.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bartok.setup.dealing',
+        'bartok.rules.objective',
+      ],
+      play_card: [
+        'bartok.rules.gameplay',
+      ],
+      draw: [
+        'bartok.rules.gameplay',
+      ],
+      deal_7_cards: [
+        'bartok.rules.gameplay',
+      ],
+      play_match: [
+        'bartok.rules.gameplay',
+      ],
+      draw_card: [
+        'bartok.rules.gameplay',
+      ],
+      call_bartok: [
+        'bartok.rules.gameplay',
+      ],
+      propose_new_rule: [
+        'bartok.rules.gameplay',
+      ],
+      calculate_hand_value: [
+        'bartok.rules.gameplay',
+      ],
+    },
+  },
+}

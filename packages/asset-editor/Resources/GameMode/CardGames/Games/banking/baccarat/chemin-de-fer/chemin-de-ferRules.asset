@@ -1,0 +1,258 @@
+{
+  system: {
+    guid: 'fb5de438-7a38-40c7-8ca4-b76d90e9409d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/baccarat/chemin-de-fer/chemin-de-ferRules.asset',
+    gameId: 'chemin-de-fer',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Initial Deal**: Both sides receive two cards face down. 2. **Naturals**: If either has 8 or 9, they show immediately and the round ends. 3. **The Player's Choice**: If the Player has 0-4, they MUST draw. If 6-7, they MUST stand. If 5, they can choose to draw or stand. 4. **The Banker's Move**: The Banker then acts, with similar choices, often guided by high-probability tables. 5. **Showdown**: Cards are compared; closest to 9 wins the pot.",
+    Player: "1. **Initial Deal**: Both sides receive two cards face down. 2. **Naturals**: If either has 8 or 9, they show immediately and the round ends. 3. **The Player's Choice**: If the Player has 0-4, they MUST draw. If 6-7, they MUST stand. If 5, they can choose to draw or stand. 4. **The Banker's Move**: The Banker then acts, with similar choices, often guided by high-probability tables. 5. **Showdown**: Cards are compared; closest to 9 wins the pot.",
+    objective: "Achieve a hand total as close to 9 as possible. Players bet against the Banker's bankroll.",
+    gameplay: "1. **Initial Deal**: Both sides receive two cards face down. 2. **Naturals**: If either has 8 or 9, they show immediately and the round ends. 3. **The Player's Choice**: If the Player has 0-4, they MUST draw. If 6-7, they MUST stand. If 5, they can choose to draw or stand. 4. **The Banker's Move**: The Banker then acts, with similar choices, often guided by high-probability tables. 5. **Showdown**: Cards are compared; closest to 9 wins the pot.",
+    keyRules: [
+      'Rotating Bank: If the Banker wins, they can choose to stay Banker and keep the winnings in the bank, or pass the shoe.',
+      '5% Tax: The house typically takes 5% of all winning Banker bets as a hosting fee.',
+      'Totaling: Use Modulo 10 logic (only the last digit of the sum counts).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: "Variable, typically 8 to 12. One player acts as Banker; others are 'Punters'.",
+      deck: 'Six decks shuffled together.',
+      equipment: "Special oval Baccarat table, a 'Sabot' (shoe) for dealing, a 'Palette' for moving cards, and a discard cylinder.",
+      dealing: "The Banker deals two face-down hands: one for 'The Player' (representing all Punters) and one for 'The Banker'.",
+    },
+    turnFlow: "1. **Initial Deal**: Both sides receive two cards face down. 2. **Naturals**: If either has 8 or 9, they show immediately and the round ends. 3. **The Player's Choice**: If the Player has 0-4, they MUST draw. If 6-7, they MUST stand. If 5, they can choose to draw or stand. 4. **The Banker's Move**: The Banker then acts, with similar choices, often guided by high-probability tables. 5. **Showdown**: Cards are compared; closest to 9 wins the pot.",
+    moveValidityConditions: {
+      ante: 'Chemin de Fer uses fixed bets against the bank; there is no ante phase.',
+      deal: 'Only the actor with the banker role during the deal phase.',
+      reveal_market: 'Banking game with no market or tableau reveal mechanic.',
+      buy_market: 'Cards are dealt from the shoe only; there is no market to buy from.',
+      buy_stock: 'Third card is dealt on request; players do not buy from stock.',
+      fold: 'Players commit to bets before the deal and cannot fold.',
+      check: 'No check; punters either bet or pass when the bank is offered.',
+      call: 'No raise or call; bets are placed once per coup.',
+      bet: "Betting phase. Counter-clockwise from banker's right.",
+      raise: 'Single betting opportunity per coup; no raising.',
+      declare: 'Naturals (8 or 9) are shown by turning cards; no separate declare phase.',
+      reveal_hand: 'Natural check or showdown phase.',
+      award_pot: 'Resolution phase after both hands are final.',
+      play_card: 'Hands are dealt and optionally draw a third card; no card-by-card play.',
+      draw: 'Player or banker choice phase when total is 7 or less.',
+      discard: 'No discard pile; only draw or stand on the third card.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Setting the bank or when taking over the bank.',
+      meld: 'Hands are valued by total modulo 10; no melds.',
+      go_out: 'Coup ends by comparing totals; no go-out mechanic.',
+    },
+    exampleHands: [
+      'Setup example: 2 card(s) per player.',
+      "Rule example: Achieve a hand total as close to 9 as possible. Players bet against the Banker's bankroll.",
+      "Turn-flow example: 1. **Initial Deal**: Both sides receive two cards face down. 2. **Naturals**: If either has 8 or 9, they show immediately and the round ends. 3. **The Player's Choice**: If the Player has 0-4, they MUST draw. If 6-7, they MUST stand. If 5, they can choose to draw or stand. 4. **The Banker's Move**: The Banker then acts, with similar choices, often guided by high-probability tables. 5. **Showdown**: Cards are compared; closest to 9 wins the pot.",
+      'Scoring example: Pot-based; Banker pays out punters or collects from them. Highest score (modulo 10)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'chemin-de-fer.rules.objective',
+        title: 'Objective',
+        text: "Achieve a hand total as close to 9 as possible. Players bet against the Banker's bankroll.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Initial Deal**: Both sides receive two cards face down. 2. **Naturals**: If either has 8 or 9, they show immediately and the round ends. 3. **The Player's Choice**: If the Player has 0-4, they MUST draw. If 6-7, they MUST stand. If 5, they can choose to draw or stand. 4. **The Banker's Move**: The Banker then acts, with similar choices, often guided by high-probability tables. 5. **Showdown**: Cards are compared; closest to 9 wins the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.setup.players',
+        title: 'Players',
+        text: "Variable, typically 8 to 12. One player acts as Banker; others are 'Punters'.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.setup.deck',
+        title: 'Deck',
+        text: 'Six decks shuffled together.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.setup.equipment',
+        title: 'Equipment',
+        text: "Special oval Baccarat table, a 'Sabot' (shoe) for dealing, a 'Palette' for moving cards, and a discard cylinder.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.setup.dealing',
+        title: 'Deal',
+        text: "The Banker deals two face-down hands: one for 'The Player' (representing all Punters) and one for 'The Banker'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score (modulo 10).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.score.description',
+        title: 'Scoring',
+        text: 'Pot-based; Banker pays out punters or collects from them.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Rotating Bank: If the Banker wins, they can choose to stay Banker and keep the winnings in the bank, or pass the shoe.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.rules.key.2',
+        title: 'Key rule 2',
+        text: '5% Tax: The house typically takes 5% of all winning Banker bets as a hosting fee.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Totaling: Use Modulo 10 logic (only the last digit of the sum counts).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chemin-de-fer.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chemin-de-fer.rules.objective',
+          'chemin-de-fer.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chemin-de-fer.setup.players',
+          'chemin-de-fer.setup.deck',
+          'chemin-de-fer.setup.equipment',
+          'chemin-de-fer.setup.dealing',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chemin-de-fer.rules.key.1',
+          'chemin-de-fer.rules.key.2',
+          'chemin-de-fer.rules.key.3',
+        ],
+      },
+      {
+        id: 'chemin-de-fer.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chemin-de-fer.score.description',
+          'chemin-de-fer.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chemin-de-fer.setup.dealing',
+        'chemin-de-fer.rules.objective',
+      ],
+      deal: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      bet: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      reveal_hand: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      award_pot: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      draw: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      pass: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      bid: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      declare_bank_amount: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      place_bet: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      banco: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      pass_punt: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      deal_hole_cards: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      check_for_8_or_9: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      draw_on_5: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      stand_on_5: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      auto_draw: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      auto_stand: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      draw_final: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      stand_final: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      resolve_bets: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+      shift_shoe_if_lost: [
+        'chemin-de-fer.rules.gameplay',
+      ],
+    },
+  },
+}

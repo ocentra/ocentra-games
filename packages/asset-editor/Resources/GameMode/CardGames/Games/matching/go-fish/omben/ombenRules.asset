@@ -1,0 +1,234 @@
+{
+  system: {
+    guid: 'b4841e54-7ca3-442e-80fd-40766421aece',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/matching/go-fish/omben/ombenRules.asset',
+    gameId: 'omben',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Players take turns asking the opponent for a specific rank (e.g. 8 or king). 2. The asker must hold at least one card of that rank. 3. If the opponent has cards of that rank, they give all of them to the asker. 4. If the opponent has none, the asker 'drinks': draw from the stock until finding a card of the requested rank. 5. Whenever a player has four of a kind, they discard it face up. 6. Winner is the first to empty their hand. If the stock runs out, the player with fewer cards wins. 7. Turns alternate regardless of whether the request was successful.",
+    Player: "1. Players take turns asking the opponent for a specific rank (e.g. 8 or king). 2. The asker must hold at least one card of that rank. 3. If the opponent has cards of that rank, they give all of them to the asker. 4. If the opponent has none, the asker 'drinks': draw from the stock until finding a card of the requested rank. 5. Whenever a player has four of a kind, they discard it face up. 6. Winner is the first to empty their hand. If the stock runs out, the player with fewer cards wins. 7. Turns alternate regardless of whether the request was successful.",
+    objective: 'Be the first to get rid of all your cards by forming and discarding books (four of a kind).',
+    gameplay: "1. Players take turns asking the opponent for a specific rank (e.g. 8 or king). 2. The asker must hold at least one card of that rank. 3. If the opponent has cards of that rank, they give all of them to the asker. 4. If the opponent has none, the asker 'drinks': draw from the stock until finding a card of the requested rank. 5. Whenever a player has four of a kind, they discard it face up. 6. Winner is the first to empty their hand. If the stock runs out, the player with fewer cards wins. 7. Turns alternate regardless of whether the request was successful.",
+    keyRules: [
+      'Must hold at least one card of the rank you ask for.',
+      'Opponent gives all cards of that rank if they have any.',
+      "If opponent has none, asker draws until finding one (the 'drink').",
+      'Four of a kind must be discarded immediately.',
+      'First to empty hand wins; if stock exhausted, fewer cards wins.',
+      'Turns alternate every ask.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two players. Omben (Indonesian Go Fish) is played by exactly two players; each begins with 4 or 5 cards by agreement drawn from a 52-card pack, and the remainder forms the face-down stock.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Standard deck.',
+      dealing: 'Each player receives 4 or 5 cards (by agreement). Remaining cards form a face-down stock.',
+    },
+    turnFlow: "1. Players take turns asking the opponent for a specific rank (e.g. 8 or king). 2. The asker must hold at least one card of that rank. 3. If the opponent has cards of that rank, they give all of them to the asker. 4. If the opponent has none, the asker 'drinks': draw from the stock until finding a card of the requested rank. 5. Whenever a player has four of a kind, they discard it face up. 6. Winner is the first to empty their hand. If the stock runs out, the player with fewer cards wins. 7. Turns alternate regardless of whether the request was successful.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Omben uses ask-for-rank and discard-book actions, not trick or card play.',
+      draw: 'Only when opponent has none of the requested rank; draw until the requested rank is found.',
+      discard: 'Only when holding four cards of the same rank; must be discarded immediately.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Be the first to get rid of all your cards by forming and discarding books (four of a kind).',
+      "Turn-flow example: 1. Players take turns asking the opponent for a specific rank (e.g. 8 or king). 2. The asker must hold at least one card of that rank. 3. If the opponent has cards of that rank, they give all of them to the asker. 4. If the opponent has none, the asker 'drinks': draw from the stock until finding a card of the requested rank. 5. Whenever a player has four of a kind, they discard it face up. 6. Winner is the first to empty their hand. If the stock runs out, the player with fewer cards wins. 7. Turns alternate regardless of whether the request was successful.",
+      'Scoring example: No point scoring; first to empty hand wins. If stock runs out, player with fewer cards wins. First to discard all cards, or fewer cards when stock is exhausted..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'omben.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to get rid of all your cards by forming and discarding books (four of a kind).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'omben.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players take turns asking the opponent for a specific rank (e.g. 8 or king). 2. The asker must hold at least one card of that rank. 3. If the opponent has cards of that rank, they give all of them to the asker. 4. If the opponent has none, the asker 'drinks': draw from the stock until finding a card of the requested rank. 5. Whenever a player has four of a kind, they discard it face up. 6. Winner is the first to empty their hand. If the stock runs out, the player with fewer cards wins. 7. Turns alternate regardless of whether the request was successful.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'omben.setup.players',
+        title: 'Players',
+        text: 'Two players. Omben (Indonesian Go Fish) is played by exactly two players; each begins with 4 or 5 cards by agreement drawn from a 52-card pack, and the remainder forms the face-down stock.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'omben.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'omben.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'omben.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 4 or 5 cards (by agreement). Remaining cards form a face-down stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'omben.score.win-condition',
+        title: 'Win condition',
+        text: 'First to discard all cards, or fewer cards when stock is exhausted.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'omben.score.description',
+        title: 'Scoring',
+        text: 'No point scoring; first to empty hand wins. If stock runs out, player with fewer cards wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'omben.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must hold at least one card of the rank you ask for.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'omben.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Opponent gives all cards of that rank if they have any.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'omben.rules.key.3',
+        title: 'Key rule 3',
+        text: "If opponent has none, asker draws until finding one (the 'drink').",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'omben.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Four of a kind must be discarded immediately.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'omben.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to empty hand wins; if stock exhausted, fewer cards wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'omben.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Turns alternate every ask.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'omben.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'omben.rules.objective',
+          'omben.rules.gameplay',
+        ],
+      },
+      {
+        id: 'omben.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'omben.setup.players',
+          'omben.setup.deck',
+          'omben.setup.equipment',
+          'omben.setup.dealing',
+        ],
+      },
+      {
+        id: 'omben.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'omben.rules.key.1',
+          'omben.rules.key.2',
+          'omben.rules.key.3',
+          'omben.rules.key.4',
+          'omben.rules.key.5',
+          'omben.rules.key.6',
+        ],
+      },
+      {
+        id: 'omben.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'omben.score.description',
+          'omben.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'omben.setup.dealing',
+        'omben.rules.objective',
+      ],
+      draw: [
+        'omben.rules.gameplay',
+      ],
+      discard: [
+        'omben.rules.gameplay',
+      ],
+      ask_rank: [
+        'omben.rules.gameplay',
+      ],
+    },
+  },
+}

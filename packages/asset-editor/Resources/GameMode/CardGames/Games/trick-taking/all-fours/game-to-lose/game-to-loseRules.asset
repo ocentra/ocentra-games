@@ -1,0 +1,204 @@
+{
+  system: {
+    guid: 'c2039850-d666-4149-904f-d2412fec4744',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/game-to-lose/game-to-loseRules.asset',
+    gameId: 'game-to-lose',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'The pitcher leads to the first trick; the suit led becomes trump for the hand. Players must follow suit if able, otherwise may play any card. Highest card of led suit wins unless trump is played, then highest trump wins. Trick winner leads next trick. Points are pegged during play for certain trump cards and all fives; after all 13 tricks, card points are counted and the player with highest total pegs the Eight bonus.',
+    Player: 'The pitcher leads to the first trick; the suit led becomes trump for the hand. Players must follow suit if able, otherwise may play any card. Highest card of led suit wins unless trump is played, then highest trump wins. Trick winner leads next trick. Points are pegged during play for certain trump cards and all fives; after all 13 tricks, card points are counted and the player with highest total pegs the Eight bonus.',
+    objective: 'Avoid winning tricks that contain point-bearing cards. The first player to reach 121 points loses the match.',
+    gameplay: 'The pitcher leads to the first trick; the suit led becomes trump for the hand. Players must follow suit if able, otherwise may play any card. Highest card of led suit wins unless trump is played, then highest trump wins. Trick winner leads next trick. Points are pegged during play for certain trump cards and all fives; after all 13 tricks, card points are counted and the player with highest total pegs the Eight bonus.',
+    keyRules: [
+      'Trump is not preselected: it is set by the suit of the first card led by the pitcher.',
+      'A 13-card dummy hand is out of play each deal and can contain scoring cards.',
+      'If pegging from a trick takes a player to 121 or more, the game ends immediately and that player loses.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 players, playing individually.',
+      deck: 'Standard 52-card deck. Rank high to low: A K Q J 10 9 8 7 6 5 4 3 2.',
+      equipment: 'Score pegs or cribbage board lanes are commonly used.',
+      dealing: 'Dealer deals four clockwise 13-card hands one card at a time: pitcher, next player, dealer, and a dummy hand. The dummy hand is set aside face down as sleeping cards.',
+    },
+    turnFlow: 'The pitcher leads to the first trick; the suit led becomes trump for the hand. Players must follow suit if able, otherwise may play any card. Highest card of led suit wins unless trump is played, then highest trump wins. Trick winner leads next trick. Points are pegged during play for certain trump cards and all fives; after all 13 tricks, card points are counted and the player with highest total pegs the Eight bonus.',
+    moveValidityConditions: {
+      ante: 'Game to Lose has no ante contribution phase.',
+      deal: 'Dealer only at the start of each hand.',
+      reveal_market: 'This game has no market reveal mechanic.',
+      buy_market: 'Cards are never bought from a market.',
+      buy_stock: 'There is no draw stock purchase action.',
+      fold: 'All players must play through the hand and cannot fold.',
+      check: 'There are no betting rounds in Game to Lose.',
+      call: 'No wager-matching call action exists.',
+      bet: 'The game does not use a betting pot.',
+      raise: 'There is no raise action because betting is absent.',
+      declare: 'Core gameplay has no declaration phase.',
+      reveal_hand: 'Hands remain private during play.',
+      award_pot: 'System action during scoring phases.',
+      play_card: "Pitcher's first lead sets trump for the hand.",
+      draw: 'All cards are dealt at hand start; no draw step exists.',
+      discard: 'Cards leave hand only by being played to tricks.',
+      pass: 'Players cannot pass; they must play one card each trick.',
+      bid: 'No bidding system is used in this ruleset.',
+      meld: 'Game to Lose does not include meld declarations.',
+      go_out: 'Hands end after 13 tricks, not via a go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Avoid winning tricks that contain point-bearing cards. The first player to reach 121 points loses the match.',
+      'Turn-flow example: The pitcher leads to the first trick; the suit led becomes trump for the hand. Players must follow suit if able, otherwise may play any card. Highest card of led suit wins unless trump is played, then highest trump wins. Trick winner leads next trick. Points are pegged during play for certain trump cards and all fives; after all 13 tricks, card points are counted and the player with highest total pegs the Eight bonus.',
+      'Scoring example: Immediate pegging during trick play: trump A=4, K=3, Q=2, J=1, 9=9, 5=10, and non-trump 5s=5 each. After 13 tricks, count A/K/Q/J/10 in won cards; highest count pegs 8 (or 4 each in a two-way tie). First player whose total reaches 121 or more loses..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'game-to-lose.rules.objective',
+        title: 'Objective',
+        text: 'Avoid winning tricks that contain point-bearing cards. The first player to reach 121 points loses the match.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'game-to-lose.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The pitcher leads to the first trick; the suit led becomes trump for the hand. Players must follow suit if able, otherwise may play any card. Highest card of led suit wins unless trump is played, then highest trump wins. Trick winner leads next trick. Points are pegged during play for certain trump cards and all fives; after all 13 tricks, card points are counted and the player with highest total pegs the Eight bonus.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'game-to-lose.setup.players',
+        title: 'Players',
+        text: '3 players, playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'game-to-lose.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Rank high to low: A K Q J 10 9 8 7 6 5 4 3 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'game-to-lose.setup.equipment',
+        title: 'Equipment',
+        text: 'Score pegs or cribbage board lanes are commonly used.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'game-to-lose.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals four clockwise 13-card hands one card at a time: pitcher, next player, dealer, and a dummy hand. The dummy hand is set aside face down as sleeping cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'game-to-lose.score.win-condition',
+        title: 'Win condition',
+        text: 'First player whose total reaches 121 or more loses.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'game-to-lose.score.description',
+        title: 'Scoring',
+        text: 'Immediate pegging during trick play: trump A=4, K=3, Q=2, J=1, 9=9, 5=10, and non-trump 5s=5 each. After 13 tricks, count A/K/Q/J/10 in won cards; highest count pegs 8 (or 4 each in a two-way tie).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'game-to-lose.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump is not preselected: it is set by the suit of the first card led by the pitcher.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'game-to-lose.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A 13-card dummy hand is out of play each deal and can contain scoring cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'game-to-lose.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If pegging from a trick takes a player to 121 or more, the game ends immediately and that player loses.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'game-to-lose.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'game-to-lose.rules.objective',
+          'game-to-lose.rules.gameplay',
+        ],
+      },
+      {
+        id: 'game-to-lose.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'game-to-lose.setup.players',
+          'game-to-lose.setup.deck',
+          'game-to-lose.setup.equipment',
+          'game-to-lose.setup.dealing',
+        ],
+      },
+      {
+        id: 'game-to-lose.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'game-to-lose.rules.key.1',
+          'game-to-lose.rules.key.2',
+          'game-to-lose.rules.key.3',
+        ],
+      },
+      {
+        id: 'game-to-lose.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'game-to-lose.score.description',
+          'game-to-lose.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'game-to-lose.setup.dealing',
+        'game-to-lose.rules.objective',
+      ],
+      deal: [
+        'game-to-lose.rules.gameplay',
+      ],
+      award_pot: [
+        'game-to-lose.rules.gameplay',
+      ],
+      play_card: [
+        'game-to-lose.rules.gameplay',
+      ],
+    },
+  },
+}

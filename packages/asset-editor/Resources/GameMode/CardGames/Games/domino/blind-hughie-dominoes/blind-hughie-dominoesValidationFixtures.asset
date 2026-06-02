@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '42ecc5ad-7132-47e3-bfe1-5d314f6d9744',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/blind-hughie-dominoes/blind-hughie-dominoesValidationFixtures.asset',
+    gameId: 'blind-hughie-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'blind-hughie-dominoes',
+    familyVariant: 'Block / Line Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'blind-hughie-dominoes.core-runtime-contracts',
+        title: 'Blind Hughie Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'blind-hughie-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Blind Hughie must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'blind-hughie-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'blind-hughie-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'dealing',
+            supportedActionIds: [
+              'setup_round',
+              'deal_tiles_facedown',
+              'flip_rightmost_tile',
+              'place_on_line',
+              'cycle_to_left',
+            ],
+            explanation: 'Blind Hughie must run setup_round first, then enter dealing with the processed legal actions.',
+            linkedRuleIds: [
+              'blind-hughie-dominoes.setup.initial-deal',
+              'blind-hughie-dominoes.flow.dealing',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_tiles_facedown',
+            ],
+          },
+          {
+            id: 'blind-hughie-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'high_wins',
+            targetScore: 100,
+            cardValues: {},
+            explanation: "Winner scores sum of losers' pip totals minus their own remaining pips. Game to 100 (2-player) or 61 (3-4 player).",
+            linkedRuleIds: [
+              'blind-hughie-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'blind-hughie-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,17 +1,16 @@
+import { defaultAvatarImageUrl } from '@ocentra/app-assets/avatars';
 import {
-  shopPageAvatarsImageUrl,
-  shopPageChampionPassImageUrl,
-  shopPageEarnFreeAcImageUrl,
-  shopPagePlayersAccessImageUrl,
-  shopPagePrivateTableImageUrl,
-  shopPageProfileFrameImageUrl,
-  shopPagePublicTableImageUrl,
-  shopPageQualifierEntryImageUrl,
-  shopPageTableThemesImageUrl,
-  shopPageTreasuryImageUrl,
-  shopPageVaultImageUrl,
-} from '@ocentra/app-assets/shop-page';
-import { getLobbyPlaceholderImageUrl } from '@ocentra/app-assets/lobby-placeholders';
+  bannerAIBenchmarkingImageUrl,
+  bannerGlobalLeaderboardImageUrl,
+  bannerIntelligentAIImageUrl,
+  bannerPlayAnywhereImageUrl,
+  bannerPlayYourWayImageUrl,
+  bannerProvablyFairImageUrl,
+  bannerRewardingEconomyImageUrl,
+  bannerTrackYourProgressImageUrl,
+  bannerTrueMultiplayerImageUrl,
+  bannerWalletFreedomImageUrl,
+} from '@ocentra/app-assets/banners';
 import {
   PartialPlayerHubPageContentDataSchema,
   PlayerHubPageContentDataSchema,
@@ -51,7 +50,20 @@ export type {
   PlayerHubTone,
 };
 
-export const PLAYER_HUB_EMPTY_VALUE = 'N/A';
+export const PLAYER_HUB_EMPTY_VALUE = 'No data';
+
+const playerHubProfileImageUrl = defaultAvatarImageUrl;
+const playerHubSettingsImageUrl = bannerWalletFreedomImageUrl;
+const playerHubAiImageUrl = bannerIntelligentAIImageUrl;
+const playerHubAiReviewImageUrl = bannerAIBenchmarkingImageUrl;
+const playerHubBalancesImageUrl = bannerRewardingEconomyImageUrl;
+const playerHubMatchesImageUrl = bannerTrueMultiplayerImageUrl;
+const playerHubRoomHandoffImageUrl = bannerPlayYourWayImageUrl;
+const playerHubLearningImageUrl = bannerTrackYourProgressImageUrl;
+const playerHubCompetitionImageUrl = bannerGlobalLeaderboardImageUrl;
+const playerHubProgramsImageUrl = bannerProvablyFairImageUrl;
+const playerHubInventoryImageUrl = bannerPlayAnywhereImageUrl;
+const playerHubRewardsImageUrl = bannerRewardingEconomyImageUrl;
 
 const overviewCards: PlayerHubCard[] = [
   {
@@ -60,7 +72,7 @@ const overviewCards: PlayerHubCard[] = [
     subtitle: 'Display name, avatar, account status, privacy, and profile-safe values are managed inside Player Hub.',
     tone: 'cyan',
     icon: 'lock',
-    imageUrl: shopPageProfileFrameImageUrl,
+    imageUrl: playerHubProfileImageUrl,
     targetDetail: 'account',
     badge: 'Profile',
     cta: 'Details',
@@ -69,22 +81,22 @@ const overviewCards: PlayerHubCard[] = [
   {
     id: 'settings-privacy',
     title: 'Settings & Privacy',
-    subtitle: 'Notification preferences, theme, security state, and privacy controls belong here.',
+    subtitle: 'Account-level privacy and identity controls are summarized here. Device, provider, and runtime settings open in Settings.',
     tone: 'gold',
     icon: 'shield',
-    imageUrl: shopPageTableThemesImageUrl,
+    imageUrl: playerHubSettingsImageUrl,
     targetDetail: 'settings',
     badge: 'Account',
     cta: 'Manage',
-    bullets: ['One account hub.', 'No separate settings-page handoff.', 'Editor-authored copy and controls.'],
+    bullets: ['Player Hub keeps the account summary.', 'Dedicated Settings owns runtime controls.', 'Editor-authored copy and controls.'],
   },
   {
     id: 'ai-runtime-setup',
     title: 'AI Runtime Setup',
-    subtitle: 'Cloud API keys, local server endpoints, browser models, inference settings, and per-device AI runtime choices are managed here.',
+    subtitle: 'Saved AI runtime state is summarized here. Provider, local server, browser model, and inference controls open in Settings.',
     tone: 'green',
     icon: 'shield',
-    imageUrl: getLobbyPlaceholderImageUrl('aiShowdown'),
+    imageUrl: playerHubAiImageUrl,
     targetDetail: 'ai',
     badge: 'AI',
     cta: 'Configure',
@@ -96,11 +108,11 @@ const overviewCards: PlayerHubCard[] = [
     subtitle: 'GP, AC, owned items, rewards, tickets, passes, and account history appear only when real services return them.',
     tone: 'violet',
     icon: 'coins',
-    imageUrl: shopPageTreasuryImageUrl,
+    imageUrl: playerHubBalancesImageUrl,
     targetDetail: 'balances',
     badge: 'Owned',
     cta: 'Review',
-    bullets: ['Real account inventory only.', 'Checkout stays in Shop.', 'Competition passes stay account-owned.'],
+    bullets: ['Real account inventory only.', 'Purchases stay outside Player Hub.', 'Competition passes stay account-owned.'],
   },
 ];
 
@@ -111,7 +123,7 @@ const matchCards: PlayerHubCard[] = [
     subtitle: 'Finished public or private room records will appear here after real match history is connected.',
     tone: 'cyan',
     icon: 'cards',
-    imageUrl: shopPagePrivateTableImageUrl,
+    imageUrl: playerHubMatchesImageUrl,
     targetDetail: 'recent',
     badge: 'No records',
     cta: 'History',
@@ -119,11 +131,11 @@ const matchCards: PlayerHubCard[] = [
   },
   {
     id: 'match-handoff',
-    title: 'Match Handoff',
+    title: 'Room Handoff',
     subtitle: 'Player Hub summarizes account match activity. Live public room discovery belongs to the game lobby.',
     tone: 'green',
     icon: 'link',
-    imageUrl: shopPagePublicTableImageUrl,
+    imageUrl: playerHubRoomHandoffImageUrl,
     targetDetail: 'recent',
     badge: 'Handoff',
     cta: 'View',
@@ -138,7 +150,7 @@ const learningCards: PlayerHubCard[] = [
     subtitle: 'Lessons, AI review, mistake tracking, and recommended drills will appear after learning programs are enabled.',
     tone: 'violet',
     icon: 'shield',
-    imageUrl: getLobbyPlaceholderImageUrl('aiCoach'),
+    imageUrl: playerHubLearningImageUrl,
     targetDetail: 'learning',
     badge: 'Planned',
     cta: 'View',
@@ -150,7 +162,7 @@ const learningCards: PlayerHubCard[] = [
     subtitle: 'No skill score is fabricated. Recommendations appear only after the learning service returns real account data.',
     tone: 'cyan',
     icon: 'shield',
-    imageUrl: getLobbyPlaceholderImageUrl('aiShowdown'),
+    imageUrl: playerHubAiReviewImageUrl,
     targetDetail: 'learning',
     badge: 'Pending',
     cta: 'Later',
@@ -162,10 +174,10 @@ const aiCards: PlayerHubCard[] = [
   {
     id: 'ai-setup-controls',
     title: 'AI Setup',
-    subtitle: 'Configure cloud provider keys, local AI servers, browser models, and inference defaults from Player Hub.',
+    subtitle: 'Review saved AI setup from Player Hub. Edit provider keys, local servers, browser models, and inference defaults in Settings.',
     tone: 'green',
     icon: 'shield',
-    imageUrl: getLobbyPlaceholderImageUrl('aiShowdown'),
+    imageUrl: playerHubAiImageUrl,
     targetDetail: 'ai',
     badge: 'Configure',
     cta: 'Setup',
@@ -174,10 +186,10 @@ const aiCards: PlayerHubCard[] = [
   {
     id: 'ai-runtime-sources',
     title: 'Runtime Sources',
-    subtitle: 'Ollama, LM Studio, vLLM, LocalAI, KoboldCpp, native app, and browser-local model choices belong here.',
+    subtitle: 'Ollama, LM Studio, vLLM, LocalAI, KoboldCpp, native app, and browser-local model choices are surfaced here when saved.',
     tone: 'cyan',
     icon: 'link',
-    imageUrl: getLobbyPlaceholderImageUrl('aiCoach'),
+    imageUrl: playerHubAiReviewImageUrl,
     targetDetail: 'ai',
     badge: 'Models',
     cta: 'Manage',
@@ -192,7 +204,7 @@ const competitionCards: PlayerHubCard[] = [
     subtitle: 'Official entries, check-in windows, tournament passes, and past competition records appear after real ownership exists.',
     tone: 'gold',
     icon: 'trophy',
-    imageUrl: shopPageQualifierEntryImageUrl,
+    imageUrl: playerHubCompetitionImageUrl,
     targetDetail: 'competition',
     badge: 'No passes',
     cta: 'Competition',
@@ -204,7 +216,7 @@ const competitionCards: PlayerHubCard[] = [
     subtitle: 'Open events and tournaments are published on Competition. Player Hub summarizes owned participation.',
     tone: 'orange',
     icon: 'crown',
-    imageUrl: shopPageChampionPassImageUrl,
+    imageUrl: playerHubProgramsImageUrl,
     targetDetail: 'competition',
     badge: 'Schedule',
     cta: 'Open',
@@ -219,10 +231,10 @@ const inventoryCards: PlayerHubCard[] = [
     subtitle: 'Decks, cosmetics, badges, tickets, and passes appear here after they are earned, granted, or purchased.',
     tone: 'orange',
     icon: 'chest',
-    imageUrl: shopPageVaultImageUrl,
+    imageUrl: playerHubInventoryImageUrl,
     targetDetail: 'balances',
     badge: 'Empty',
-    cta: 'Open Shop',
+    cta: 'View Inventory',
     bullets: ['Inventory uses entitlement data.', 'No placeholder items.', 'Images and card copy are authored in this asset.'],
   },
 ];
@@ -234,7 +246,7 @@ const rewardCards: PlayerHubCard[] = [
     subtitle: 'Daily rewards, badges, achievements, and competition prizes appear here when real grants exist.',
     tone: 'green',
     icon: 'coins',
-    imageUrl: shopPageEarnFreeAcImageUrl,
+    imageUrl: playerHubRewardsImageUrl,
     targetDetail: 'recent',
     badge: 'Rewards',
     cta: 'View',
@@ -257,21 +269,21 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
     { key: 'gamesPlayed', label: 'Played', fallbackValue: PLAYER_HUB_EMPTY_VALUE },
   ],
   navigation: [
-    { id: 'overview', title: 'Overview', subtitle: 'Profile and account snapshot', icon: 'crown', tone: 'cyan', imageUrl: shopPageProfileFrameImageUrl },
-    { id: 'matches', title: 'Matches', subtitle: 'History and room handoff', icon: 'cards', tone: 'cyan', imageUrl: shopPagePlayersAccessImageUrl },
-    { id: 'learning', title: 'Learning', subtitle: 'Lessons and AI review', icon: 'shield', tone: 'violet', imageUrl: getLobbyPlaceholderImageUrl('aiCoach') },
-    { id: 'ai', title: 'AI Setup', subtitle: 'Models and runtime', icon: 'shield', tone: 'green', imageUrl: getLobbyPlaceholderImageUrl('aiShowdown') },
-    { id: 'competition', title: 'Competition', subtitle: 'Tickets and passes', icon: 'trophy', tone: 'gold', imageUrl: shopPageQualifierEntryImageUrl },
-    { id: 'inventory', title: 'Inventory', subtitle: 'Owned account items', icon: 'chest', tone: 'orange', imageUrl: shopPageVaultImageUrl },
-    { id: 'rewards', title: 'Rewards', subtitle: 'Daily and earned grants', icon: 'coins', tone: 'green', imageUrl: shopPageEarnFreeAcImageUrl },
-    { id: 'account', title: 'Account', subtitle: 'Profile and preferences', icon: 'lock', tone: 'cyan', imageUrl: shopPageAvatarsImageUrl },
+    { id: 'overview', title: 'Overview', subtitle: 'Profile and account snapshot', icon: 'crown', tone: 'cyan', imageUrl: playerHubProfileImageUrl },
+    { id: 'matches', title: 'Matches', subtitle: 'History and room handoff', icon: 'cards', tone: 'cyan', imageUrl: playerHubMatchesImageUrl },
+    { id: 'learning', title: 'Learning', subtitle: 'Lessons and AI review', icon: 'shield', tone: 'violet', imageUrl: playerHubLearningImageUrl },
+    { id: 'ai', title: 'AI Setup', subtitle: 'Models and runtime', icon: 'shield', tone: 'green', imageUrl: playerHubAiImageUrl },
+    { id: 'competition', title: 'Competition', subtitle: 'Tickets and passes', icon: 'trophy', tone: 'gold', imageUrl: playerHubCompetitionImageUrl },
+    { id: 'inventory', title: 'Inventory', subtitle: 'Owned account items', icon: 'chest', tone: 'orange', imageUrl: playerHubInventoryImageUrl },
+    { id: 'rewards', title: 'Rewards', subtitle: 'Daily and earned grants', icon: 'coins', tone: 'green', imageUrl: playerHubRewardsImageUrl },
+    { id: 'account', title: 'Account', subtitle: 'Profile and preferences', icon: 'lock', tone: 'cyan', imageUrl: playerHubProfileImageUrl },
   ],
   sections: {
     overview: {
       title: 'PLAYER OVERVIEW',
-      subtitle: 'Profile, settings, balances, account status, rewards, and ownership.',
+      subtitle: 'Profile, balances, account status, rewards, and ownership.',
       footerTitle: 'Hub areas:',
-      footerItems: ['Profile', 'Settings', 'AI', 'API', 'Balances', 'Ownership'],
+      footerItems: ['Profile', 'Privacy', 'AI summary', 'Balances', 'Ownership'],
       summaryCards: overviewCards.map(cloneCard),
       detailCards: [],
     },
@@ -325,9 +337,9 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
     },
     account: {
       title: 'ACCOUNT SETTINGS',
-      subtitle: 'Profile, privacy, notifications, AI settings, API settings, and local runtime controls.',
+      subtitle: 'Profile-safe account controls, privacy summary, and settings handoff.',
       footerTitle: 'Account areas:',
-      footerItems: ['Identity', 'Privacy', 'Notifications', 'AI', 'API', 'Local AI'],
+      footerItems: ['Identity', 'Privacy', 'Settings link', 'AI summary'],
       summaryCards: overviewCards.slice(0, 3).map(cloneCard),
       detailCards: [],
     },
@@ -340,7 +352,7 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
       tone: 'orange',
       icon: 'chest',
       badge: 'Owned',
-      heroImageUrl: shopPageVaultImageUrl,
+      heroImageUrl: playerHubInventoryImageUrl,
       items: inventoryCards.map(cloneCard),
     },
     {
@@ -350,19 +362,19 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
       tone: 'green',
       icon: 'coins',
       badge: 'Rewards',
-      heroImageUrl: shopPageEarnFreeAcImageUrl,
+      heroImageUrl: playerHubRewardsImageUrl,
       items: rewardCards.map(cloneCard),
     },
   ],
   previews: [
-    { title: 'PLAYER OVERVIEW', sectionId: 'overview', subtitle: 'Profile, settings, AI, balances, and account status', items: overviewCards.map(card => card.title), accent: '#54e2ff', imageUrls: overviewCards.map(card => card.imageUrl) },
+    { title: 'PLAYER OVERVIEW', sectionId: 'overview', subtitle: 'Profile, AI summary, balances, and account status', items: overviewCards.map(card => card.title), accent: '#54e2ff', imageUrls: overviewCards.map(card => card.imageUrl) },
     { title: 'MATCH HISTORY', sectionId: 'matches', subtitle: 'Real completed games appear here', items: matchCards.map(card => card.title), accent: '#20e39d', imageUrls: matchCards.map(card => card.imageUrl) },
     { title: 'LEARNING', sectionId: 'learning', subtitle: 'Lessons and AI review when enabled', items: learningCards.map(card => card.title), accent: '#bd76ff', imageUrls: learningCards.map(card => card.imageUrl) },
-    { title: 'AI SETUP', sectionId: 'ai', subtitle: 'Cloud, local, browser, and inference settings', items: aiCards.map(card => card.title), accent: '#20e39d', imageUrls: aiCards.map(card => card.imageUrl) },
+    { title: 'AI SETUP', sectionId: 'ai', subtitle: 'Cloud, local, browser, and inference status', items: aiCards.map(card => card.title), accent: '#20e39d', imageUrls: aiCards.map(card => card.imageUrl) },
     { title: 'COMPETITION', sectionId: 'competition', subtitle: 'Tickets, passes, and official records', items: competitionCards.map(card => card.title), accent: '#ffd36a', imageUrls: competitionCards.map(card => card.imageUrl) },
     { title: 'INVENTORY', sectionId: 'inventory', subtitle: 'Owned items and rewards', items: inventoryCards.map(card => card.title), accent: '#de4fe8', imageUrls: inventoryCards.map(card => card.imageUrl) },
     { title: 'REWARD HISTORY', sectionId: 'rewards', subtitle: 'Daily rewards, badges, achievements, and competition prizes', items: rewardCards.map(card => card.title), accent: '#20e39d', imageUrls: rewardCards.map(card => card.imageUrl) },
-    { title: 'ACCOUNT', sectionId: 'account', subtitle: 'Profile, settings, and AI controls', items: overviewCards.slice(0, 3).map(card => card.title), accent: '#54e2ff', imageUrls: overviewCards.slice(0, 3).map(card => card.imageUrl) },
+    { title: 'ACCOUNT', sectionId: 'account', subtitle: 'Profile, privacy, and settings handoff', items: overviewCards.slice(0, 3).map(card => card.title), accent: '#54e2ff', imageUrls: overviewCards.slice(0, 3).map(card => card.imageUrl) },
   ],
   rewardActions: [
     {
@@ -374,7 +386,7 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
       tone: 'green',
       icon: 'coins',
       action: 'View Rewards',
-      imageUrl: shopPageEarnFreeAcImageUrl,
+      imageUrl: playerHubRewardsImageUrl,
       description: rewardCards[0].subtitle,
       details: rewardCards[0].bullets ? [...rewardCards[0].bullets] : [],
     },
@@ -387,7 +399,7 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
     { id: 'recent', title: 'RECENT', accent: '#20e39d' },
   ],
   rightRows: {
-    balances: [['GP', PLAYER_HUB_EMPTY_VALUE], ['AC', PLAYER_HUB_EMPTY_VALUE], ['Owned items', PLAYER_HUB_EMPTY_VALUE], ['Shop listings', PLAYER_HUB_EMPTY_VALUE], ['Status', PLAYER_HUB_EMPTY_VALUE]],
+    balances: [['GP', PLAYER_HUB_EMPTY_VALUE], ['AC', PLAYER_HUB_EMPTY_VALUE], ['Owned items', PLAYER_HUB_EMPTY_VALUE], ['Catalog items', PLAYER_HUB_EMPTY_VALUE], ['Status', PLAYER_HUB_EMPTY_VALUE]],
     competition: [['Tickets / passes', PLAYER_HUB_EMPTY_VALUE, 'Open Competition'], ['Check-in', PLAYER_HUB_EMPTY_VALUE, 'View'], ['Programs', PLAYER_HUB_EMPTY_VALUE, 'Open']],
     recent: [['Matches', PLAYER_HUB_EMPTY_VALUE], ['Rewards', PLAYER_HUB_EMPTY_VALUE], ['Services', PLAYER_HUB_EMPTY_VALUE]],
   },
@@ -396,9 +408,9 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
       { label: 'Profile', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Signed-in profile name appears when it is safe to display.' },
       { label: 'Account ID', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Private account identifier.' },
       { label: 'Display name', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Editable player-facing name belongs in Player Hub account controls.' },
-      { label: 'Theme', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Loaded from Player Hub account settings.' },
-      { label: 'Notifications', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Notification preferences are managed in this hub.' },
-      { label: 'AI setup', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Cloud API keys, local endpoints, browser models, and inference settings are managed in AI Setup.' },
+      { label: 'Theme', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Loaded from the account settings service when available.' },
+      { label: 'Notifications', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Notification preference summary from account settings.' },
+      { label: 'AI setup', value: PLAYER_HUB_EMPTY_VALUE, detail: 'AI runtime state is summarized here and edited in Settings.' },
       { label: 'Privacy', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Private player data stays owner-only unless a future public profile is explicitly built.' },
     ],
     settings: [
@@ -418,7 +430,7 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
       { label: 'Game Points', value: PLAYER_HUB_EMPTY_VALUE, detail: 'GP balance from account data.' },
       { label: 'Arena Credits', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Spendable AC balance for Shop and entries.' },
       { label: 'Owned items', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Real inventory item count.' },
-      { label: 'Shop listings', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Shop remains the browsing and checkout surface.' },
+      { label: 'Catalog items', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Catalog browsing and checkout remain outside Player Hub.' },
       { label: 'Status', value: PLAYER_HUB_EMPTY_VALUE, detail: 'Account status appears only when profile services return it.' },
     ],
     learning: [
@@ -489,9 +501,9 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
     },
     detailView: {
       accountTitle: 'PLAYER ACCOUNT',
-      accountSubtitle: 'Profile, settings, privacy, AI, API, local AI, balances, and ownership are managed from Player Hub.',
+      accountSubtitle: 'Player Hub manages profile-safe account data and summarizes settings that are edited on the Settings page.',
       accountCta: 'Back To Hub',
-      accountBullets: ['Player Hub is the account surface.', 'Profile and settings should not split across duplicate pages.', 'No fake account fields are generated by the UI.'],
+      accountBullets: ['Player Hub is the account summary surface.', 'Dedicated Settings owns device and runtime controls.', 'No fake account fields are generated by the UI.'],
       learningTitle: 'PLAYER LEARNING',
       learningSubtitle: 'Lessons and AI review appear only when enabled for the signed-in player.',
       learningCta: 'Back To Learning',
@@ -512,7 +524,7 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
       itemOptionsSuffix: 'options',
       noItemData: 'No item preview available.',
       missingImage: 'Missing image',
-      priceUnavailable: PLAYER_HUB_EMPTY_VALUE,
+      priceUnavailable: 'No price',
       previousImage: 'Previous',
       nextImage: 'Next',
       closeDetail: 'Close',
@@ -534,9 +546,9 @@ export const DEFAULT_PLAYER_HUB_PAGE_CONTENT: PlayerHubPageContentData = {
       check: 'Check',
     },
     footer: [
-      { title: 'Player Hub', sub: 'Profile, settings, and account data', icon: 'lock', tone: 'green' },
+      { title: 'Player Hub', sub: 'Profile and account data', icon: 'lock', tone: 'green' },
       { title: 'Match History', sub: 'Completed games return here', icon: 'cards', tone: 'cyan' },
-      { title: 'Shop Handoff', sub: 'Checkout stays in Shop', icon: 'link', tone: 'green' },
+      { title: 'Catalog Handoff', sub: 'Purchases stay outside the hub', icon: 'link', tone: 'green' },
       { title: 'Competition', sub: 'Tickets and passes when owned', icon: 'trophy', tone: 'gold' },
     ],
   },
@@ -568,6 +580,72 @@ function asRecord(value: unknown): JsonRecord {
 
 function cloneDefaultContent(): PlayerHubPageContentData {
   return JSON.parse(JSON.stringify(DEFAULT_PLAYER_HUB_PAGE_CONTENT)) as PlayerHubPageContentData;
+}
+
+const STALE_PLAYER_HUB_COPY = new Map<string, string>([
+  ['N/A', PLAYER_HUB_EMPTY_VALUE],
+  ['NA', PLAYER_HUB_EMPTY_VALUE],
+  ['Email N/A', 'Email unavailable'],
+  ['Your private player profile, settings, progress, matches, inventory, rewards, and account controls.', 'Your private player profile, progress, matches, inventory, rewards, and account controls.'],
+  ['Profile preferences, notification settings, wallet status, AI settings, API settings, local runtime choices, and privacy controls belong inside Player Hub.', 'Profile-safe account controls stay in Player Hub. Device, provider, API, local runtime, and privacy settings open in Settings.'],
+  ['Cloud keys, local endpoints, browser models, and inference defaults are managed from Player Hub.', 'Saved AI runtime status is summarized here. Provider, local endpoint, browser model, and inference defaults open in Settings.'],
+  ['No separate settings-page handoff.', 'Dedicated Settings owns runtime controls.'],
+  ['Profile and settings should not split across duplicate pages.', 'Dedicated Settings owns device and runtime controls.'],
+  ['Profile, settings, balances, account status, rewards, and ownership.', 'Profile, balances, account status, rewards, and ownership.'],
+  ['Notification preferences, theme, security state, API settings, local AI settings, and privacy controls belong here.', 'Account-level privacy and identity controls are summarized here. Device, provider, and runtime settings open in Settings.'],
+  ['Cloud API keys, local server endpoints, browser models, inference settings, and per-device AI runtime choices are managed here.', 'Saved AI runtime state is summarized here. Provider, local server, browser model, and inference controls open in Settings.'],
+  ['Configure cloud provider keys, local AI servers, browser models, and inference defaults from Player Hub.', 'Review saved AI setup from Player Hub. Edit provider keys, local servers, browser models, and inference defaults in Settings.'],
+  ['Ollama, LM Studio, vLLM, LocalAI, KoboldCpp, native app, and browser-local model choices belong here.', 'Ollama, LM Studio, vLLM, LocalAI, KoboldCpp, native app, and browser-local model choices are surfaced here when saved.'],
+  ['Profile, privacy, notifications, AI settings, API settings, and local runtime controls.', 'Profile-safe account controls, privacy summary, and settings handoff.'],
+  ['Provider keys, local servers, browser models, and inference settings for the signed-in player.', 'Provider keys, local servers, browser models, and inference status for the signed-in player.'],
+  ['Profile, settings, AI, balances, and account status', 'Profile, AI summary, balances, and account status'],
+  ['Cloud, local, browser, and inference settings', 'Cloud, local, browser, and inference status'],
+  ['Profile, settings, and AI controls', 'Profile, privacy, and settings handoff'],
+  ['Profile, settings, and account data', 'Profile and account data'],
+  ['Shop listings', 'Catalog items'],
+  ['Loaded from Player Hub account settings.', 'Loaded from the account settings service when available.'],
+  ['Notification preferences are managed in this hub.', 'Notification preference summary from account settings.'],
+  ['Cloud API keys, local endpoints, browser models, and inference settings are managed in AI Setup.', 'AI runtime state is summarized here and edited in Settings.'],
+  ['Shop remains the browsing and checkout surface.', 'Catalog browsing and checkout remain outside Player Hub.'],
+  ['Private account hub for profile, settings, matches, learning, inventory, rewards, and competition ownership.', 'Private account hub for profile, matches, learning, inventory, rewards, and competition ownership.'],
+  ['Profile, settings, privacy, AI, API, local AI, balances, and ownership are managed from Player Hub.', 'Player Hub manages profile-safe account data and summarizes settings that are edited on the Settings page.'],
+  ['Player Hub is the account surface.', 'Player Hub is the account summary surface.'],
+  ['Shop Handoff', 'Catalog Handoff'],
+  ['Checkout stays in Shop', 'Purchases stay outside the hub'],
+  ['Checkout stays in Shop.', 'Purchases stay outside Player Hub.'],
+  ['Shop can sell tickets and passes.', 'Competition and catalog services own tickets and passes.'],
+  ['/packages/app-assets/src/images/ShopPage/Profileframe.png', playerHubProfileImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/Avatars.png', playerHubProfileImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/TableThemes.png', playerHubSettingsImageUrl],
+  ['/packages/app-assets/src/images/LobbyPlaceholders/AI_Showdown.png', playerHubAiImageUrl],
+  ['/packages/app-assets/src/images/LobbyPlaceholders/AI_Coach.png', playerHubLearningImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/Treasury.png', playerHubBalancesImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/PrivateTable.png', playerHubMatchesImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/PublicTable.png', playerHubRoomHandoffImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/QualifierEntry.png', playerHubCompetitionImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/ChamPionPass.png', playerHubProgramsImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/Vault.png', playerHubInventoryImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/EarnFreeAC.png', playerHubRewardsImageUrl],
+  ['/packages/app-assets/src/images/ShopPage/PlayersAccess.png', playerHubMatchesImageUrl],
+]);
+
+function normalizePlayerHubString(value: string): string {
+  return STALE_PLAYER_HUB_COPY.get(value.trim()) ?? value;
+}
+
+function normalizePlayerHubStrings<T>(value: T): T {
+  if (typeof value === 'string') {
+    return normalizePlayerHubString(value) as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map(normalizePlayerHubStrings) as T;
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as JsonRecord).map(([key, child]) => [key, normalizePlayerHubStrings(child)]),
+    ) as T;
+  }
+  return value;
 }
 
 function assertKnownKeys(source: unknown, fallback: unknown, path: string) {
@@ -926,7 +1004,7 @@ export function normalizePlayerHubPageContent(
     PartialPlayerHubPageContentDataSchema.parse(content);
   }
   const merged = mergeKnownValue(fallback, content);
-  return PlayerHubPageContentDataSchema.parse(merged);
+  return PlayerHubPageContentDataSchema.parse(normalizePlayerHubStrings(merged));
 }
 
 export function parsePlayerHubPageContent(content: unknown): PlayerHubPageContentData {

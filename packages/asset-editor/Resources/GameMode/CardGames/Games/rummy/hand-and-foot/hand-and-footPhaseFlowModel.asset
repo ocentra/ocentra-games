@@ -1,0 +1,134 @@
+{
+  system: {
+    guid: 'a34c043d-15db-4968-90d4-10a68c8e19c2',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/hand-and-foot/hand-and-footPhaseFlowModel.asset',
+    gameId: 'hand-and-foot',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hand-and-foot',
+    familyVariant: 'Canasta Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 11 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'role:dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Deal 11 cards for Hand + 11 cards for Foot to each player. Foot remains face-down until Hand is depleted.',
+      },
+      {
+        id: 'play',
+        label: 'Play',
+        actor: 'role:all',
+        legalActions: [
+          'draw',
+          'meld',
+          'discard',
+        ],
+        nextPhase: 'scoring',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_goes_out',
+            nextPhase: 'scoring',
+          },
+        ],
+        cardVisibilityChanges: {
+          meld: 'face_up',
+        },
+        notes: 'Players draw 2 from stock or pick up discard pile, meld cards, then discard 1.',
+      },
+      {
+        id: 'scoring',
+        label: 'Scoring',
+        actor: 'role:system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Calculate scores: meld points + canasta bonuses + Red Threes - unmelded cards.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'clockwise',
+      startsWith: 'left_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2-6 players. Best with 4 in partnerships (partners sit opposite).',
+        deck: '5-6 standard 52-card decks + Jokers (typically 5 decks for 4 players).',
+        equipment: 'Two denominations of chips or counters for scoring.',
+        dealing: 'Each player receives TWO sets of cards: Hand (11-15 cards) and Foot (11-15 cards face-down). Remaining cards form the stock. Top card turned face-up to start discard pile (if Red Three or Wild, bury it and turn another).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'clockwise',
+        startsWith: 'left_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'canasta_validation',
+        'partnership_meld_sharing',
+      ],
+    },
+    progression: [
+      'setup_round',
+      'deal',
+      'play',
+      'scoring',
+    ],
+    examples: [],
+  },
+}

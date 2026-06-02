@@ -1,0 +1,226 @@
+{
+  system: {
+    guid: 'fb9854d0-6dba-4607-b585-60e6eaac3718',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/combat/cuttle/cuttleRules.asset',
+    gameId: 'cuttle',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Draw 1 at turn start. Play card as point (face-up to your tableau) or effect (use its ability vs opponent). Kings lower win target by 7 each. Queens protect from Jack/scuttle. First to reach win target wins.',
+    Player: 'Draw 1 at turn start. Play card as point (face-up to your tableau) or effect (use its ability vs opponent). Kings lower win target by 7 each. Queens protect from Jack/scuttle. First to reach win target wins.',
+    objective: 'Be the first to have 21 or more points in your tableau (point cards face-up in front of you).',
+    gameplay: 'Draw 1 at turn start. Play card as point (face-up to your tableau) or effect (use its ability vs opponent). Kings lower win target by 7 each. Queens protect from Jack/scuttle. First to reach win target wins.',
+    keyRules: [
+      'Draw a card at the START of every turn (not optional).',
+      'Win condition: 21+ points in tableau.',
+      'Kings permanently lower the winning total: each King â†’ -7 from current threshold.',
+      'Queens protect your cards from being scuttled or Jacked.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: '52 standard cards. No jokers.',
+      equipment: "52-card deck. Play area for each player's tableau.",
+      dealing: '5 cards each. Remaining deck is the draw pile.',
+    },
+    turnFlow: 'Draw 1 at turn start. Play card as point (face-up to your tableau) or effect (use its ability vs opponent). Kings lower win target by 7 each. Queens protect from Jack/scuttle. First to reach win target wins.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'Allowed only when draw timing and source rules permit.',
+      discard: 'This game has no discard pile.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first to have 21 or more points in your tableau (point cards face-up in front of you).',
+      'Turn-flow example: Draw 1 at turn start. Play card as point (face-up to your tableau) or effect (use its ability vs opponent). Kings lower win target by 7 each. Queens protect from Jack/scuttle. First to reach win target wins.',
+      'Scoring example: First to 21+ points wins (modified by Kings). 21+ points in tableau (or lower if Kings played: 14, 10, 7)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'cuttle.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to have 21 or more points in your tableau (point cards face-up in front of you).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cuttle.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Draw 1 at turn start. Play card as point (face-up to your tableau) or effect (use its ability vs opponent). Kings lower win target by 7 each. Queens protect from Jack/scuttle. First to reach win target wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cuttle.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cuttle.setup.deck',
+        title: 'Deck',
+        text: '52 standard cards. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cuttle.setup.equipment',
+        title: 'Equipment',
+        text: "52-card deck. Play area for each player's tableau.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cuttle.setup.dealing',
+        title: 'Deal',
+        text: '5 cards each. Remaining deck is the draw pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cuttle.score.win-condition',
+        title: 'Win condition',
+        text: '21+ points in tableau (or lower if Kings played: 14, 10, 7).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cuttle.score.description',
+        title: 'Scoring',
+        text: 'First to 21+ points wins (modified by Kings).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cuttle.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw a card at the START of every turn (not optional).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cuttle.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Win condition: 21+ points in tableau.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cuttle.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Kings permanently lower the winning total: each King â†’ -7 from current threshold.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'cuttle.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Queens protect your cards from being scuttled or Jacked.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cuttle.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cuttle.rules.objective',
+          'cuttle.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cuttle.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cuttle.setup.players',
+          'cuttle.setup.deck',
+          'cuttle.setup.equipment',
+          'cuttle.setup.dealing',
+        ],
+      },
+      {
+        id: 'cuttle.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cuttle.rules.key.1',
+          'cuttle.rules.key.2',
+          'cuttle.rules.key.3',
+          'cuttle.rules.key.4',
+        ],
+      },
+      {
+        id: 'cuttle.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cuttle.score.description',
+          'cuttle.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cuttle.setup.dealing',
+        'cuttle.rules.objective',
+      ],
+      draw: [
+        'cuttle.rules.gameplay',
+      ],
+      pass: [
+        'cuttle.rules.gameplay',
+      ],
+      deal_5: [
+        'cuttle.rules.gameplay',
+      ],
+      play_as_point: [
+        'cuttle.rules.gameplay',
+      ],
+      play_as_scuttle: [
+        'cuttle.rules.gameplay',
+      ],
+      play_effect_one_shot: [
+        'cuttle.rules.gameplay',
+      ],
+      play_effect_permanent: [
+        'cuttle.rules.gameplay',
+      ],
+    },
+  },
+}

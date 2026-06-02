@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: 'e0d0fedb-9334-43c3-9b99-5445d2838f59',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/buraco/burako-argentinean/burako-argentineanValidationFixtures.asset',
+    gameId: 'burako-argentinean',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'burako-argentinean',
+    familyVariant: 'Rummy / Set-Collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'burako-argentinean.core-runtime-contracts',
+        title: 'Burako Argentinean Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'burako-argentinean.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Burako Argentinean must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'burako-argentinean.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'burako-argentinean.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Burako Argentinean must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'burako-argentinean.setup.initial-deal',
+              'burako-argentinean.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'burako-argentinean.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '3000',
+            scoringDirection: 'high_wins',
+            targetScore: 3000,
+            cardValues: {
+              '1': '15',
+              '2': '20',
+              Joker: '50',
+              '8-13': '10',
+              '3-7': '5',
+            },
+            explanation: 'At the end of each hand both teams total the tile values of all tiles in their melds, subtract the values of tiles left in hand, and apply bonuses and penalties for canastas, going out, and unused muertos.',
+            linkedRuleIds: [
+              'burako-argentinean.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'burako-argentinean.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

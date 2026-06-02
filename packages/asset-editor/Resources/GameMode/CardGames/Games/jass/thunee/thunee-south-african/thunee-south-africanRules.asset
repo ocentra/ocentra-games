@@ -1,0 +1,208 @@
+{
+  system: {
+    guid: '589c136d-3ba7-4db4-abf3-e28061ba416d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/thunee/thunee-south-african/thunee-south-africanRules.asset',
+    gameId: 'thunee-south-african',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Deal 4. 2. Bidding (10, 20, etc., or Thunee). Highest bidder sets Trump. 3. Deal 2. 4. Play tricks. Must follow suit. Trumping allowed if void. 5. Scoring: Card values: J=30, 9=20, A=11, 10=10, K=3, Q=2. Total 104 points (plus bonus?).',
+    Player: '1. Deal 4. 2. Bidding (10, 20, etc., or Thunee). Highest bidder sets Trump. 3. Deal 2. 4. Play tricks. Must follow suit. Trumping allowed if void. 5. Scoring: Card values: J=30, 9=20, A=11, 10=10, K=3, Q=2. Total 104 points (plus bonus?).',
+    objective: 'Win tricks to score points (Balls). First to 12/13 Balls wins.',
+    gameplay: '1. Deal 4. 2. Bidding (10, 20, etc., or Thunee). Highest bidder sets Trump. 3. Deal 2. 4. Play tricks. Must follow suit. Trumping allowed if void. 5. Scoring: Card values: J=30, 9=20, A=11, 10=10, K=3, Q=2. Total 104 points (plus bonus?).',
+    keyRules: [
+      'J > 9 > A > 10 > K > Q',
+      'Thunee call = All tricks',
+      'Khanock = Penalty/Double',
+      'Ball scoring',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 in partnerships (2–6 with variants).',
+      deck: '24 cards. Remove 2-8. Rank: J-9-A-10-K-Q.',
+      equipment: 'Cards, score counters (balls)',
+      dealing: 'Deal 4 cards. Bid. Deal 2 more (total 6).',
+    },
+    turnFlow: '1. Deal 4. 2. Bidding (10, 20, etc., or Thunee). Highest bidder sets Trump. 3. Deal 2. 4. Play tricks. Must follow suit. Trumping allowed if void. 5. Scoring: Card values: J=30, 9=20, A=11, 10=10, K=3, Q=2. Total 104 points (plus bonus?).',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win tricks to score points (Balls). First to 12/13 Balls wins.',
+      'Turn-flow example: 1. Deal 4. 2. Bidding (10, 20, etc., or Thunee). Highest bidder sets Trump. 3. Deal 2. 4. Play tricks. Must follow suit. Trumping allowed if void. 5. Scoring: Card values: J=30, 9=20, A=11, 10=10, K=3, Q=2. Total 104 points (plus bonus?).',
+      "Scoring example: Teams score 'Balls' based on points taken vs bid. 'Thunee' call wins 4 balls if successful (all tricks). 'Khanock' is a double penalty. Win tricks to score points (Balls). First to 12/13 Balls wins..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'thunee-south-african.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks to score points (Balls). First to 12/13 Balls wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'thunee-south-african.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal 4. 2. Bidding (10, 20, etc., or Thunee). Highest bidder sets Trump. 3. Deal 2. 4. Play tricks. Must follow suit. Trumping allowed if void. 5. Scoring: Card values: J=30, 9=20, A=11, 10=10, K=3, Q=2. Total 104 points (plus bonus?).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'thunee-south-african.setup.players',
+        title: 'Players',
+        text: '4 in partnerships (2–6 with variants).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'thunee-south-african.setup.deck',
+        title: 'Deck',
+        text: '24 cards. Remove 2-8. Rank: J-9-A-10-K-Q.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'thunee-south-african.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score counters (balls)',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'thunee-south-african.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 4 cards. Bid. Deal 2 more (total 6).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'thunee-south-african.score.win-condition',
+        title: 'Win condition',
+        text: 'Win tricks to score points (Balls). First to 12/13 Balls wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'thunee-south-african.score.description',
+        title: 'Scoring',
+        text: "Teams score 'Balls' based on points taken vs bid. 'Thunee' call wins 4 balls if successful (all tricks). 'Khanock' is a double penalty.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'thunee-south-african.rules.key.1',
+        title: 'Key rule 1',
+        text: 'J > 9 > A > 10 > K > Q',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'thunee-south-african.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Thunee call = All tricks',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'thunee-south-african.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Khanock = Penalty/Double',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'thunee-south-african.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Ball scoring',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'thunee-south-african.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'thunee-south-african.rules.objective',
+          'thunee-south-african.rules.gameplay',
+        ],
+      },
+      {
+        id: 'thunee-south-african.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'thunee-south-african.setup.players',
+          'thunee-south-african.setup.deck',
+          'thunee-south-african.setup.equipment',
+          'thunee-south-african.setup.dealing',
+        ],
+      },
+      {
+        id: 'thunee-south-african.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'thunee-south-african.rules.key.1',
+          'thunee-south-african.rules.key.2',
+          'thunee-south-african.rules.key.3',
+          'thunee-south-african.rules.key.4',
+        ],
+      },
+      {
+        id: 'thunee-south-african.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'thunee-south-african.score.description',
+          'thunee-south-african.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'thunee-south-african.setup.dealing',
+        'thunee-south-african.rules.objective',
+      ],
+      play_card: [
+        'thunee-south-african.rules.gameplay',
+      ],
+    },
+  },
+}

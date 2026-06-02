@@ -1,0 +1,207 @@
+{
+  system: {
+    guid: '65f761fa-bae5-4a93-8e43-f82d56a984f3',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bisca/biscaRules.asset',
+    gameId: 'bisca',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Phase 1 (Draw Phase): 1. Non-dealer leads. 2. No obligation to follow suitâ€”play any card. 3. Trick is won by highest trump, or highest of led suit if no trump. 4. Winner takes trick, draws a card from stock. Loser draws next. 5. Winner leads next trick. Phase 2 (Final Phase): When stock is empty, players play out remaining cards with normal trick-taking rules.',
+    Player: 'Phase 1 (Draw Phase): 1. Non-dealer leads. 2. No obligation to follow suitâ€”play any card. 3. Trick is won by highest trump, or highest of led suit if no trump. 4. Winner takes trick, draws a card from stock. Loser draws next. 5. Winner leads next trick. Phase 2 (Final Phase): When stock is empty, players play out remaining cards with normal trick-taking rules.',
+    objective: 'Win the deal by capturing 61 or more of the 120 card points in tricks. The pack has 120 points in total; the player or team with the majority (61+) wins. Often a match is played as best of seven games.',
+    gameplay: 'Phase 1 (Draw Phase): 1. Non-dealer leads. 2. No obligation to follow suitâ€”play any card. 3. Trick is won by highest trump, or highest of led suit if no trump. 4. Winner takes trick, draws a card from stock. Loser draws next. 5. Winner leads next trick. Phase 2 (Final Phase): When stock is empty, players play out remaining cards with normal trick-taking rules.',
+    keyRules: [
+      'There is NO obligation to follow suit during the draw phase.',
+      'Trump cards always beat non-trump cards.',
+      'The trump-indicator card is the last card drawn from the stock (taken by the winner of the last draw-phase trick).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 (standard) or 4 (partnership, 2v2).',
+      deck: '40 cards: A, 7, K, J, Q, 6, 5, 4, 3, 2 in each suit. Remove 8s, 9s, and 10s from a standard deck.',
+      equipment: 'None beyond cards.',
+      dealing: "Deal 3 cards to each player (or more in variants). Turn the next card face-upâ€”this card's suit is Trump. Place the remaining deck crosswise on top of the trump-indicator card.",
+    },
+    turnFlow: 'Phase 1 (Draw Phase): 1. Non-dealer leads. 2. No obligation to follow suitâ€”play any card. 3. Trick is won by highest trump, or highest of led suit if no trump. 4. Winner takes trick, draws a card from stock. Loser draws next. 5. Winner leads next trick. Phase 2 (Final Phase): When stock is empty, players play out remaining cards with normal trick-taking rules.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'Bisca uses winner-then-loser draw order from stock after each trick; implemented as custom action draw_from_stock.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win the deal by capturing 61 or more of the 120 card points in tricks. The pack has 120 points in total; the player or team with the majority (61+) wins. Often a match is played as best of seven games.',
+      'Turn-flow example: Phase 1 (Draw Phase): 1. Non-dealer leads. 2. No obligation to follow suitâ€”play any card. 3. Trick is won by highest trump, or highest of led suit if no trump. 4. Winner takes trick, draws a card from stock. Loser draws next. 5. Winner leads next trick. Phase 2 (Final Phase): When stock is empty, players play out remaining cards with normal trick-taking rules.',
+      "Scoring example: Count card points in won tricks. First to 61 card points wins the deal. Alternatively, best of 7 deals ('Partida')..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bisca.rules.objective',
+        title: 'Objective',
+        text: 'Win the deal by capturing 61 or more of the 120 card points in tricks. The pack has 120 points in total; the player or team with the majority (61+) wins. Often a match is played as best of seven games.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bisca.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Phase 1 (Draw Phase): 1. Non-dealer leads. 2. No obligation to follow suitâ€”play any card. 3. Trick is won by highest trump, or highest of led suit if no trump. 4. Winner takes trick, draws a card from stock. Loser draws next. 5. Winner leads next trick. Phase 2 (Final Phase): When stock is empty, players play out remaining cards with normal trick-taking rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bisca.setup.players',
+        title: 'Players',
+        text: '2 (standard) or 4 (partnership, 2v2).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bisca.setup.deck',
+        title: 'Deck',
+        text: '40 cards: A, 7, K, J, Q, 6, 5, 4, 3, 2 in each suit. Remove 8s, 9s, and 10s from a standard deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bisca.setup.equipment',
+        title: 'Equipment',
+        text: 'None beyond cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bisca.setup.dealing',
+        title: 'Deal',
+        text: "Deal 3 cards to each player (or more in variants). Turn the next card face-upâ€”this card's suit is Trump. Place the remaining deck crosswise on top of the trump-indicator card.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bisca.score.win-condition',
+        title: 'Win condition',
+        text: "First to 61 card points wins the deal. Alternatively, best of 7 deals ('Partida').",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bisca.score.description',
+        title: 'Scoring',
+        text: 'Count card points in won tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bisca.rules.key.1',
+        title: 'Key rule 1',
+        text: 'There is NO obligation to follow suit during the draw phase.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bisca.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump cards always beat non-trump cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bisca.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The trump-indicator card is the last card drawn from the stock (taken by the winner of the last draw-phase trick).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bisca.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bisca.rules.objective',
+          'bisca.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bisca.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bisca.setup.players',
+          'bisca.setup.deck',
+          'bisca.setup.equipment',
+          'bisca.setup.dealing',
+        ],
+      },
+      {
+        id: 'bisca.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bisca.rules.key.1',
+          'bisca.rules.key.2',
+          'bisca.rules.key.3',
+        ],
+      },
+      {
+        id: 'bisca.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bisca.score.description',
+          'bisca.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bisca.setup.dealing',
+        'bisca.rules.objective',
+      ],
+      play_card: [
+        'bisca.rules.gameplay',
+      ],
+      deal_3_each_turn_trump: [
+        'bisca.rules.gameplay',
+      ],
+      play_any_card: [
+        'bisca.rules.gameplay',
+      ],
+      draw_from_stock: [
+        'bisca.rules.gameplay',
+      ],
+    },
+  },
+}

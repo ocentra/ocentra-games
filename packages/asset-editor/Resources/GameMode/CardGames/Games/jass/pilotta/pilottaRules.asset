@@ -1,0 +1,220 @@
+{
+  system: {
+    guid: 'cc7c8092-69aa-4d5e-9ca8-bb2dadcd45b7',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/pilotta/pilottaRules.asset',
+    gameId: 'pilotta',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'As Belote/Jass: deal, bid or pass for trump, play tricks. Follow suit; trump when void. Ace-ten point values. Marriage declarations. See Ioannis Zapitis rules for full detail.',
+    Player: 'As Belote/Jass: deal, bid or pass for trump, play tricks. Follow suit; trump when void. Ace-ten point values. Marriage declarations. See Ioannis Zapitis rules for full detail.',
+    objective: 'Score points for tricks and declarations. Target score (variant).',
+    gameplay: 'As Belote/Jass: deal, bid or pass for trump, play tricks. Follow suit; trump when void. Ace-ten point values. Marriage declarations. See Ioannis Zapitis rules for full detail.',
+    keyRules: [
+      'Point-trick game. Jass family.',
+      'Similar to Belote.',
+      'Partnerships. Trump bidding.',
+      'Ace-ten scoring.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 in partnerships. Partners opposite.',
+      deck: 'Jass pack (32 or 52 depending on variant).',
+      equipment: 'Jass pack.',
+      dealing: 'Standard Jass deal.',
+    },
+    turnFlow: 'As Belote/Jass: deal, bid or pass for trump, play tricks. Follow suit; trump when void. Ace-ten point values. Marriage declarations. See Ioannis Zapitis rules for full detail.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Allowed only in phases that list this action as legal.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score points for tricks and declarations. Target score (variant).',
+      'Turn-flow example: As Belote/Jass: deal, bid or pass for trump, play tricks. Follow suit; trump when void. Ace-ten point values. Marriage declarations. See Ioannis Zapitis rules for full detail.',
+      'Scoring example: Ace-ten point values. Marriage bonuses. First team to target (variant)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'pilotta.rules.objective',
+        title: 'Objective',
+        text: 'Score points for tricks and declarations. Target score (variant).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pilotta.rules.gameplay',
+        title: 'Turn flow',
+        text: 'As Belote/Jass: deal, bid or pass for trump, play tricks. Follow suit; trump when void. Ace-ten point values. Marriage declarations. See Ioannis Zapitis rules for full detail.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pilotta.setup.players',
+        title: 'Players',
+        text: '4 in partnerships. Partners opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pilotta.setup.deck',
+        title: 'Deck',
+        text: 'Jass pack (32 or 52 depending on variant).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pilotta.setup.equipment',
+        title: 'Equipment',
+        text: 'Jass pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pilotta.setup.dealing',
+        title: 'Deal',
+        text: 'Standard Jass deal.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pilotta.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to target (variant).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pilotta.score.description',
+        title: 'Scoring',
+        text: 'Ace-ten point values. Marriage bonuses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pilotta.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Point-trick game. Jass family.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pilotta.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Similar to Belote.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pilotta.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Partnerships. Trump bidding.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pilotta.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Ace-ten scoring.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pilotta.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pilotta.rules.objective',
+          'pilotta.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pilotta.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pilotta.setup.players',
+          'pilotta.setup.deck',
+          'pilotta.setup.equipment',
+          'pilotta.setup.dealing',
+        ],
+      },
+      {
+        id: 'pilotta.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pilotta.rules.key.1',
+          'pilotta.rules.key.2',
+          'pilotta.rules.key.3',
+          'pilotta.rules.key.4',
+        ],
+      },
+      {
+        id: 'pilotta.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pilotta.score.description',
+          'pilotta.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pilotta.setup.dealing',
+        'pilotta.rules.objective',
+      ],
+      deal: [
+        'pilotta.rules.gameplay',
+      ],
+      play_card: [
+        'pilotta.rules.gameplay',
+      ],
+      pass: [
+        'pilotta.rules.gameplay',
+      ],
+      bid: [
+        'pilotta.rules.gameplay',
+      ],
+      lead: [
+        'pilotta.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,235 @@
+{
+  system: {
+    guid: 'f3a8ad4b-ec63-442f-87b8-5504ac86e234',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/amerikaner/amerikanerRules.asset',
+    gameId: 'amerikaner',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Bidding**: Staring left of the dealer, players bid a number of tricks from 6 to 12. Each bid must be higher than the last. 2. **Amerikaner Bid**: The highest possible bid, an commitment to win all 12 tricks without a partner. 3. **The Kitty**: The high bidder takes the 4 kitty cards and discards any 4 cards face down. 4. **Calling the Partner**: The bidder leads the first card. The suit of this card becomes trumps. As they lead, they name a specific card of that suit (e.g., 'The Ace of Spades'). The player holding that card is the secret partner. 5. **Play**: Standard trick-taking rules. Highest card of led suit or highest trump wins the trick.",
+    Player: "1. **Bidding**: Staring left of the dealer, players bid a number of tricks from 6 to 12. Each bid must be higher than the last. 2. **Amerikaner Bid**: The highest possible bid, an commitment to win all 12 tricks without a partner. 3. **The Kitty**: The high bidder takes the 4 kitty cards and discards any 4 cards face down. 4. **Calling the Partner**: The bidder leads the first card. The suit of this card becomes trumps. As they lead, they name a specific card of that suit (e.g., 'The Ace of Spades'). The player holding that card is the secret partner. 5. **Play**: Standard trick-taking rules. Highest card of led suit or highest trump wins the trick.",
+    objective: 'High bidder must win at least the number of tricks they bid (with their secret partner), or all 12 tricks (if bidding Amerikaner).',
+    gameplay: "1. **Bidding**: Staring left of the dealer, players bid a number of tricks from 6 to 12. Each bid must be higher than the last. 2. **Amerikaner Bid**: The highest possible bid, an commitment to win all 12 tricks without a partner. 3. **The Kitty**: The high bidder takes the 4 kitty cards and discards any 4 cards face down. 4. **Calling the Partner**: The bidder leads the first card. The suit of this card becomes trumps. As they lead, they name a specific card of that suit (e.g., 'The Ace of Spades'). The player holding that card is the secret partner. 5. **Play**: Standard trick-taking rules. Highest card of led suit or highest trump wins the trick.",
+    keyRules: [
+      'Trump Suit: Always the suit of the very first lead made by the bidder.',
+      'Grand: An optional bid in some variations where there is no trump suit.',
+      'Secret Partner: Must play the called card to the first trick if possible.',
+      'Amerikaner Win: If the bidder takes all 12 tricks alone, it is a massive score (+52).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Exactly 4 players (standard).',
+      deck: 'Standard 52-card deck. Ace is high.',
+      equipment: 'Standard deck, score sheet.',
+      dealing: "Each player is dealt 12 cards, one at a time. The remaining 4 cards are placed face down in the center to form the 'Kitty'.",
+    },
+    turnFlow: "1. **Bidding**: Staring left of the dealer, players bid a number of tricks from 6 to 12. Each bid must be higher than the last. 2. **Amerikaner Bid**: The highest possible bid, an commitment to win all 12 tricks without a partner. 3. **The Kitty**: The high bidder takes the 4 kitty cards and discards any 4 cards face down. 4. **Calling the Partner**: The bidder leads the first card. The suit of this card becomes trumps. As they lead, they name a specific card of that suit (e.g., 'The Ace of Spades'). The player holding that card is the secret partner. 5. **Play**: Standard trick-taking rules. Highest card of led suit or highest trump wins the trick.",
+    moveValidityConditions: {
+      ante: 'Amerikaner uses trick bids and kitty; no ante.',
+      deal: 'Deal via customActions deal_cards and create_kitty.',
+      reveal_market: "No market; trump set by bidder's first lead.",
+      buy_market: 'No market; high bidder takes kitty via take_kitty.',
+      buy_stock: 'No stock purchase; kitty is taken once by bidder.',
+      fold: 'Partnership trick-taking; all play every trick.',
+      check: 'No betting; scoring by tricks and bid outcome.',
+      call: 'No betting; partner called by card name on lead.',
+      bet: 'Amerikaner scores by tricks and bid, not chips.',
+      raise: 'No betting rounds.',
+      declare: 'Partner declared via custom call_partner_card.',
+      reveal_hand: 'Trick-taking; no showdown.',
+      award_pot: 'Scoring via custom apply_bid_outcome.',
+      play_card: 'Standard trick taking.',
+      draw: 'No draw pile; bidder takes kitty once via take_kitty.',
+      discard: 'Kitty discard via custom discard_four after take_kitty.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Bidding via custom bid_number or bid_amerikaner.',
+      meld: 'Trick-taking; no meld.',
+      go_out: 'Hand ends when all 12 tricks are played.',
+    },
+    exampleHands: [
+      'Setup example: 12 card(s) per player.',
+      'Rule example: High bidder must win at least the number of tricks they bid (with their secret partner), or all 12 tricks (if bidding Amerikaner).',
+      "Turn-flow example: 1. **Bidding**: Staring left of the dealer, players bid a number of tricks from 6 to 12. Each bid must be higher than the last. 2. **Amerikaner Bid**: The highest possible bid, an commitment to win all 12 tricks without a partner. 3. **The Kitty**: The high bidder takes the 4 kitty cards and discards any 4 cards face down. 4. **Calling the Partner**: The bidder leads the first card. The suit of this card becomes trumps. As they lead, they name a specific card of that suit (e.g., 'The Ace of Spades'). The player holding that card is the secret partner. 5. **Play**: Standard trick-taking rules. Highest card of led suit or highest trump wins the trick.",
+      'Scoring example: Points are awarded based on whether the bid was successful. The bidder and partner score the bid amount if successful. Opponents score 1 point for every trick they capture..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'amerikaner.rules.objective',
+        title: 'Objective',
+        text: 'High bidder must win at least the number of tricks they bid (with their secret partner), or all 12 tricks (if bidding Amerikaner).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'amerikaner.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding**: Staring left of the dealer, players bid a number of tricks from 6 to 12. Each bid must be higher than the last. 2. **Amerikaner Bid**: The highest possible bid, an commitment to win all 12 tricks without a partner. 3. **The Kitty**: The high bidder takes the 4 kitty cards and discards any 4 cards face down. 4. **Calling the Partner**: The bidder leads the first card. The suit of this card becomes trumps. As they lead, they name a specific card of that suit (e.g., 'The Ace of Spades'). The player holding that card is the secret partner. 5. **Play**: Standard trick-taking rules. Highest card of led suit or highest trump wins the trick.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'amerikaner.setup.players',
+        title: 'Players',
+        text: 'Exactly 4 players (standard).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'amerikaner.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ace is high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'amerikaner.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'amerikaner.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 12 cards, one at a time. The remaining 4 cards are placed face down in the center to form the 'Kitty'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'amerikaner.score.win-condition',
+        title: 'Win condition',
+        text: 'The bidder and partner score the bid amount if successful. Opponents score 1 point for every trick they capture.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'amerikaner.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded based on whether the bid was successful.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'amerikaner.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump Suit: Always the suit of the very first lead made by the bidder.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'amerikaner.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Grand: An optional bid in some variations where there is no trump suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'amerikaner.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Secret Partner: Must play the called card to the first trick if possible.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'amerikaner.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Amerikaner Win: If the bidder takes all 12 tricks alone, it is a massive score (+52).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'amerikaner.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'amerikaner.rules.objective',
+          'amerikaner.rules.gameplay',
+        ],
+      },
+      {
+        id: 'amerikaner.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'amerikaner.setup.players',
+          'amerikaner.setup.deck',
+          'amerikaner.setup.equipment',
+          'amerikaner.setup.dealing',
+        ],
+      },
+      {
+        id: 'amerikaner.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'amerikaner.rules.key.1',
+          'amerikaner.rules.key.2',
+          'amerikaner.rules.key.3',
+          'amerikaner.rules.key.4',
+        ],
+      },
+      {
+        id: 'amerikaner.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'amerikaner.score.description',
+          'amerikaner.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'amerikaner.setup.dealing',
+        'amerikaner.rules.objective',
+      ],
+      play_card: [
+        'amerikaner.rules.gameplay',
+      ],
+      pass: [
+        'amerikaner.rules.gameplay',
+      ],
+      deal_cards: [
+        'amerikaner.rules.gameplay',
+      ],
+      create_kitty: [
+        'amerikaner.rules.gameplay',
+      ],
+      bid_number: [
+        'amerikaner.rules.gameplay',
+      ],
+      bid_amerikaner: [
+        'amerikaner.rules.gameplay',
+      ],
+      take_kitty: [
+        'amerikaner.rules.gameplay',
+      ],
+      discard_four: [
+        'amerikaner.rules.gameplay',
+      ],
+      call_partner_card: [
+        'amerikaner.rules.gameplay',
+      ],
+      apply_bid_outcome: [
+        'amerikaner.rules.gameplay',
+      ],
+    },
+  },
+}

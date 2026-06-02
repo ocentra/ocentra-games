@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '8fd433b5-927f-4968-b634-40e82543a7cc',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/cuckoo/slabberjan/slabberjanValidationFixtures.asset',
+    gameId: 'slabberjan',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'slabberjan',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'slabberjan.core-runtime-contracts',
+        title: 'Slabberjan Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'slabberjan.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 1,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 15,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 15,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Slabberjan must start by giving each active player 1 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'slabberjan.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'slabberjan.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal_one_each',
+              'stand',
+              'swap_with_left',
+              'reveal_piece',
+              'settle_round',
+            ],
+            explanation: 'Slabberjan must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'slabberjan.setup.initial-deal',
+              'slabberjan.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_one_each',
+            ],
+          },
+          {
+            id: 'slabberjan.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Avoid having the lowest piece. Survive with chips.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Avoid having the lowest piece. Survive with chips.',
+            linkedRuleIds: [
+              'slabberjan.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'slabberjan.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 1,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 15,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,213 @@
+{
+  system: {
+    guid: '366088f1-a899-419f-9825-108bed38317b',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/fifty-six/fifty-sixRules.asset',
+    gameId: 'fifty-six',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+    Player: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+    objective: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+    gameplay: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+    keyRules: [
+      "No Trump revealed: Until revealed, cards of the 'secret' trump suit have no special power.",
+      'Thani: A bid where a player promises to win every single trick alone.',
+      'Tables: Match scoring is tracked by transferring low-value cards (2, 3, 4...) between teams.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4, 6, or 8 players in two fixed teams. Partners sit alternately.',
+      deck: 'Two standard decks stripped of all cards below 9. Total 48 cards (A, K, Q, J, 10, 9 of each suit, twice). For 8 players, Sevens and Eights are added (Total 64).',
+      equipment: 'Two standard decks stripped of all cards below 9. Total 48 cards (A, K, Q, J, 10, 9 of each suit, twice). For 8 players, Sevens and Eights are added (Total 64).',
+      dealing: 'Cards are dealt in three rounds: 8 cards per player initially. Bidding occurs during the dealing process.',
+    },
+    turnFlow: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+    moveValidityConditions: {
+      ante: 'Game has no ante mechanic.',
+      deal: 'Dealer manages distribution.',
+      reveal_market: 'Game has no market mechanic.',
+      buy_market: 'Game has no market mechanic.',
+      buy_stock: 'Game has no stock buying.',
+      fold: 'Game has no folding mechanic.',
+      check: 'Game has no check action.',
+      call: 'Game has no call mechanic.',
+      bet: 'Game has no betting mechanic.',
+      raise: 'Game has no raise mechanic.',
+      declare: 'Game has no declaration phase.',
+      reveal_hand: 'Game has no showdown.',
+      award_pot: 'Winner determined by mechanics.',
+      play_card: 'Only when it is your turn to play to the current trick. Must follow suit when you hold a card of the suit led.',
+      draw: 'Game has no draw mechanic.',
+      discard: 'Game has no discard pile.',
+      pass: 'Only during the bidding phase when it is your turn.',
+      bid: 'Only on your turn during the bidding phase. Minimum bid 28, maximum 56. Must name a suit or no trumps.',
+      meld: 'Game has no meld mechanic.',
+      go_out: 'Game has no going out mechanic.',
+    },
+    exampleHands: [
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+      "Turn-flow example: 1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+      'Scoring example: Win tricks to capture card points. The bidding team must reach their declared point total to win the round. Win tricks to capture card points. The bidding team must reach their declared point total to win the round..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'fifty-six.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fifty-six.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fifty-six.setup.players',
+        title: 'Players',
+        text: '4, 6, or 8 players in two fixed teams. Partners sit alternately.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fifty-six.setup.deck',
+        title: 'Deck',
+        text: 'Two standard decks stripped of all cards below 9. Total 48 cards (A, K, Q, J, 10, 9 of each suit, twice). For 8 players, Sevens and Eights are added (Total 64).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fifty-six.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard decks stripped of all cards below 9. Total 48 cards (A, K, Q, J, 10, 9 of each suit, twice). For 8 players, Sevens and Eights are added (Total 64).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fifty-six.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt in three rounds: 8 cards per player initially. Bidding occurs during the dealing process.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fifty-six.score.win-condition',
+        title: 'Win condition',
+        text: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fifty-six.score.description',
+        title: 'Scoring',
+        text: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fifty-six.rules.key.1',
+        title: 'Key rule 1',
+        text: "No Trump revealed: Until revealed, cards of the 'secret' trump suit have no special power.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fifty-six.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Thani: A bid where a player promises to win every single trick alone.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fifty-six.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tables: Match scoring is tracked by transferring low-value cards (2, 3, 4...) between teams.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fifty-six.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fifty-six.rules.objective',
+          'fifty-six.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fifty-six.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fifty-six.setup.players',
+          'fifty-six.setup.deck',
+          'fifty-six.setup.equipment',
+          'fifty-six.setup.dealing',
+        ],
+      },
+      {
+        id: 'fifty-six.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fifty-six.rules.key.1',
+          'fifty-six.rules.key.2',
+          'fifty-six.rules.key.3',
+        ],
+      },
+      {
+        id: 'fifty-six.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fifty-six.score.description',
+          'fifty-six.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fifty-six.setup.dealing',
+        'fifty-six.rules.objective',
+      ],
+      play_card: [
+        'fifty-six.rules.gameplay',
+      ],
+      pass: [
+        'fifty-six.rules.gameplay',
+      ],
+      bid: [
+        'fifty-six.rules.gameplay',
+      ],
+      deal_56_batches: [
+        'fifty-six.rules.gameplay',
+      ],
+      double_bid: [
+        'fifty-six.rules.gameplay',
+      ],
+      redouble_bid: [
+        'fifty-six.rules.gameplay',
+      ],
+    },
+  },
+}

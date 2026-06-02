@@ -1,0 +1,70 @@
+{
+  system: {
+    guid: '9dd2e2b0-d01b-4d01-bafc-2b2aa411d45f',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/ta-gou-ta-doi/ta-gou-ta-doiStateEventModel.asset',
+    gameId: 'ta-gou-ta-doi',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ta-gou-ta-doi',
+    familyVariant: 'Draw and Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 32,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 32,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 32,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: 'face_up',
+        tableauCards: null,
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'first_turn',
+        'turn_draw',
+        'after_draw',
+      ],
+      actions: [
+        'setup_round',
+        'declare',
+        'draw',
+        'discard',
+      ],
+    },
+    examples: [],
+  },
+}

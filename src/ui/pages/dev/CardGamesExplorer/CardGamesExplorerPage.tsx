@@ -5,6 +5,7 @@ import { GamesCatalogSvgShowcase } from '@ocentra/core-ui/GamesExplorer/GamesCat
 import type { GamesExplorerDetailSection, GamesExplorerGame } from '@ocentra/core-ui/GamesExplorer/types';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
+import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
 import { APP_VERSION } from '@/constants/version';
 import { BrandedLoadingSpinner } from '@/ui/components/Loading/BrandedLoadingSpinner';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
@@ -42,7 +43,7 @@ function categoryMatchesSlug(category: string, slug: string): boolean {
 }
 
 function getGamePageRouteId(game: GamesExplorerGame): string {
-  return game.source === 'asset' && game.guid ? `${game.slug}:${game.guid}` : game.slug;
+  return game.guid ? `${game.slug}:${game.guid}` : game.slug;
 }
 
 export function CardGamesExplorerPage({
@@ -96,7 +97,7 @@ export function CardGamesExplorerPage({
   const { selectedGame, gameDetail, detailLoading, openDetail, closeDetail } = useGameDetail();
 
   const availableCount = useMemo(
-    () => games.filter(game => game.source === 'asset').length,
+    () => games.filter(game => game.releaseStatus === GameModeStatus.Available).length,
     [games],
   );
   const routeCategory = useMemo(() => {
@@ -180,11 +181,11 @@ export function CardGamesExplorerPage({
     : routeCategory
       ? `${filteredGames.length.toLocaleString()} ${routeCategory.toLowerCase()} records in the catalog`
     : catalogScope === 'all'
-      ? `${games.length.toLocaleString()} games ready for catalog browsing`
-      : `${games.length.toLocaleString()} finished card games in the catalog`;
+      ? `${games.length.toLocaleString()} authored games ready for status browsing`
+      : `${games.length.toLocaleString()} authored card games in the catalog`;
   const seoDescription = routeCategory
-    ? `Browse ${routeCategory.toLowerCase()} card games from the Ocentra catalog. These records expose researched rules, deck notes, history, player counts, and authoring status while playable pilots move into full game assets.`
-    : 'Browse the Ocentra card games catalog as real HTML and as the SVG explorer. The catalog combines playable authored pilots with researched guide records for rules, history, decks, categories, and future gameplay migration.';
+    ? `Browse ${routeCategory.toLowerCase()} card games from authored Ocentra game assets. These records expose rules, deck notes, history, player counts, and release status.`
+    : 'Browse the Ocentra card games catalog from authored game assets as real HTML and as the SVG explorer. The catalog shows available, coming soon, and work in progress statuses from the assets.';
 
   const content =
     loading && games.length === 0 ? (

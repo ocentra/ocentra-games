@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: 'f0079d61-2b92-417f-a067-e09bdbf2cf09',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/spite-and-malice/spite-and-maliceValidationFixtures.asset',
+    gameId: 'spite-and-malice',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'spite-and-malice',
+    familyVariant: 'Two-Deck Patience',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'spite-and-malice.core-runtime-contracts',
+        title: 'Spite and Malice Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'spite-and-malice.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_down',
+            explanation: 'Spite and Malice must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'spite-and-malice.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'spite-and-malice.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+              'discard',
+            ],
+            explanation: 'Spite and Malice must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'spite-and-malice.setup.initial-deal',
+              'spite-and-malice.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'draw',
+              'play_card',
+              'discard',
+            ],
+          },
+          {
+            id: 'spite-and-malice.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Empty your Pay-off Pile.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Empty your Pay-off Pile.',
+            linkedRuleIds: [
+              'spite-and-malice.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'spite-and-malice.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

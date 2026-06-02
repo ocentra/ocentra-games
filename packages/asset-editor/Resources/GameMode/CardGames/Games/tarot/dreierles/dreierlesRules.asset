@@ -1,0 +1,220 @@
+{
+  system: {
+    guid: '8ad6c3b9-d9a9-4d70-98d7-147fc07fcb34',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/dreierles/dreierlesRules.asset',
+    gameId: 'dreierles',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Bidding: Players bid for the right to be the declarer. The highest bid wins.\n2. The Draw: The declarer takes any 3 cards from the 6-card blind and discards 3 non-scoring cards (Leere) in their place.\n3. Trick Play: Standard Tarock rules. Trumps (Tarocks) always win against suit cards. You MUST follow suit or play a trump if void.',
+    Player: '1. Bidding: Players bid for the right to be the declarer. The highest bid wins.\n2. The Draw: The declarer takes any 3 cards from the 6-card blind and discards 3 non-scoring cards (Leere) in their place.\n3. Trick Play: Standard Tarock rules. Trumps (Tarocks) always win against suit cards. You MUST follow suit or play a trump if void.',
+    objective: 'Score more than 35 points (out of 70 total) for the declarer, or prevent the declarer from doing so for the defenders.',
+    gameplay: '1. Bidding: Players bid for the right to be the declarer. The highest bid wins.\n2. The Draw: The declarer takes any 3 cards from the 6-card blind and discards 3 non-scoring cards (Leere) in their place.\n3. Trick Play: Standard Tarock rules. Trumps (Tarocks) always win against suit cards. You MUST follow suit or play a trump if void.',
+    keyRules: [
+      'Red suits (Hearts/Diamonds) rank: King (High), Queen, Cavalier, Jack, 1, 2, 3, 4 (Low).',
+      'Black suits (Spades/Clubs) rank: King (High), Queen, Cavalier, Jack, 10, 9, 8, 7 (Low).',
+      'The GstieÃŸ (Fool) is the highest trump.',
+      'Pfeife (trump 1) bonus: if the declarer wins the last trick with the Pfeife, they receive extra game points from each opponent; if it loses, they pay.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Usually 3 players. If 4 play, the dealer sits out the hand.',
+      deck: '54-card Cego pack. Consists of 22 Tarocks (Trumps), 16 Court cards (K, Q, C, J), and 16 pip cards (Leere).',
+      equipment: 'Cego deck, score sheet.',
+      dealing: "Each player receives 16 cards (in batches of 4). 6 cards are dealt face-down to the center to form the 'Blind' (Talon).",
+    },
+    turnFlow: '1. Bidding: Players bid for the right to be the declarer. The highest bid wins.\n2. The Draw: The declarer takes any 3 cards from the 6-card blind and discards 3 non-scoring cards (Leere) in their place.\n3. Trick Play: Standard Tarock rules. Trumps (Tarocks) always win against suit cards. You MUST follow suit or play a trump if void.',
+    moveValidityConditions: {
+      ante: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; ante is not a core player action in its documented rules.',
+      deal: 'Dealer only at hand start.',
+      reveal_market: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; reveal market is not a core player action in its documented rules.',
+      buy_market: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; buy market is not a core player action in its documented rules.',
+      buy_stock: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; buy stock is not a core player action in its documented rules.',
+      fold: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; fold is not a core player action in its documented rules.',
+      check: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; check is not a core player action in its documented rules.',
+      call: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; call is not a core player action in its documented rules.',
+      bet: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; bet is not a core player action in its documented rules.',
+      raise: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; raise is not a core player action in its documented rules.',
+      declare: 'Only valid declarations are accepted.',
+      reveal_hand: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; reveal hand is not a core player action in its documented rules.',
+      award_pot: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; award pot is not a core player action in its documented rules.',
+      play_card: 'Must obey follow-suit, rank, or placement constraints.',
+      draw: 'Only from permitted draw sources during draw timing.',
+      discard: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; discard is not a core player action in its documented rules.',
+      pass: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; pass is not a core player action in its documented rules.',
+      bid: 'Must be within allowed bid range and step.',
+      meld: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; meld is not a core player action in its documented rules.',
+      go_out: 'Dreierles (Baden Tarock) is modeled as a Trick-taking flow; go out is not a core player action in its documented rules.',
+    },
+    exampleHands: [
+      'Setup example: 16 card(s) per player.',
+      'Rule example: Score more than 35 points (out of 70 total) for the declarer, or prevent the declarer from doing so for the defenders.',
+      'Turn-flow example: 1. Bidding: Players bid for the right to be the declarer. The highest bid wins.\n2. The Draw: The declarer takes any 3 cards from the 6-card blind and discards 3 non-scoring cards (Leere) in their place.\n3. Trick Play: Standard Tarock rules. Trumps (Tarocks) always win against suit cards. You MUST follow suit or play a trump if void.',
+      'Scoring example: Scoring uses the documented rules for Dreierles (Baden Tarock) and determines round or match winners accordingly. Score more than 35 points (out of 70 total) for the declarer, or prevent the declarer from doing so for the defenders..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'dreierles.rules.objective',
+        title: 'Objective',
+        text: 'Score more than 35 points (out of 70 total) for the declarer, or prevent the declarer from doing so for the defenders.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dreierles.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Bidding: Players bid for the right to be the declarer. The highest bid wins.\n2. The Draw: The declarer takes any 3 cards from the 6-card blind and discards 3 non-scoring cards (Leere) in their place.\n3. Trick Play: Standard Tarock rules. Trumps (Tarocks) always win against suit cards. You MUST follow suit or play a trump if void.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dreierles.setup.players',
+        title: 'Players',
+        text: 'Usually 3 players. If 4 play, the dealer sits out the hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dreierles.setup.deck',
+        title: 'Deck',
+        text: '54-card Cego pack. Consists of 22 Tarocks (Trumps), 16 Court cards (K, Q, C, J), and 16 pip cards (Leere).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dreierles.setup.equipment',
+        title: 'Equipment',
+        text: 'Cego deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dreierles.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives 16 cards (in batches of 4). 6 cards are dealt face-down to the center to form the 'Blind' (Talon).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dreierles.score.win-condition',
+        title: 'Win condition',
+        text: 'Score more than 35 points (out of 70 total) for the declarer, or prevent the declarer from doing so for the defenders.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dreierles.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Dreierles (Baden Tarock) and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dreierles.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Red suits (Hearts/Diamonds) rank: King (High), Queen, Cavalier, Jack, 1, 2, 3, 4 (Low).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dreierles.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Black suits (Spades/Clubs) rank: King (High), Queen, Cavalier, Jack, 10, 9, 8, 7 (Low).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dreierles.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The GstieÃŸ (Fool) is the highest trump.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'dreierles.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pfeife (trump 1) bonus: if the declarer wins the last trick with the Pfeife, they receive extra game points from each opponent; if it loses, they pay.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dreierles.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dreierles.rules.objective',
+          'dreierles.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dreierles.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dreierles.setup.players',
+          'dreierles.setup.deck',
+          'dreierles.setup.equipment',
+          'dreierles.setup.dealing',
+        ],
+      },
+      {
+        id: 'dreierles.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dreierles.rules.key.1',
+          'dreierles.rules.key.2',
+          'dreierles.rules.key.3',
+          'dreierles.rules.key.4',
+        ],
+      },
+      {
+        id: 'dreierles.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dreierles.score.description',
+          'dreierles.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dreierles.setup.dealing',
+        'dreierles.rules.objective',
+      ],
+      deal: [
+        'dreierles.rules.gameplay',
+      ],
+      declare: [
+        'dreierles.rules.gameplay',
+      ],
+      play_card: [
+        'dreierles.rules.gameplay',
+      ],
+      draw: [
+        'dreierles.rules.gameplay',
+      ],
+      bid: [
+        'dreierles.rules.gameplay',
+      ],
+    },
+  },
+}

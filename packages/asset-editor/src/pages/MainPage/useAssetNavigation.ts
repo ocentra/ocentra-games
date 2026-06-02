@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import type { AssetData } from '@/types/assets';
 import { EditorImageCache } from '@/lib/cache/EditorImageCache';
 import { ImageVariant } from '@/lib/cache/editorImageTypes';
-import { isTauri } from '@/adapters/assets/TauriAssetAdapter';
 import type { AssetSelectInfo } from '@/pages/ResourceTree/types';
 import type { AssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
@@ -45,11 +44,11 @@ export function useAssetNavigation(
       isGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
       isHash = /^[a-f0-9]{64}$/i.test(identifier);
     } else {
-      if (info.path && isTauri()) {
-        identifier = info.path;
-      } else if (info.hash) {
+      if (info.hash) {
         identifier = info.hash;
         isHash = true;
+      } else if (info.path) {
+        identifier = info.path;
       } else if (info.guid) {
         identifier = info.guid;
         isGuid = true;

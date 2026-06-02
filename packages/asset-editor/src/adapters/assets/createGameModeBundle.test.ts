@@ -7,6 +7,8 @@ import { OperationResult } from '@ocentra/eventing-domain/core/OperationResult';
 import { createTestEventBus } from '@ocentra/eventing-domain/testing/createTestEventBus';
 import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
 import { validateAssetFile } from '@ocentra/game-asset-domain/schemas/asset/asset-file-schema';
+import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
+import { parseGameModeAssetCategoryPath } from '@ocentra/game-asset-domain/factories/GameModeAssetCategoryPath';
 
 const uuidSequence = [
   '00000000-0000-4000-8000-000000000001',
@@ -68,6 +70,8 @@ const repoRoot = path.resolve(__dirname, '../../../../..');
 const threeCardBragPath = path.join(repoRoot, 'packages/card-games/src/processed-games/vying/brag-3-card.json');
 
 describe('createGameModeBundle', () => {
+  const cardGamesCategory = parseGameModeAssetCategoryPath('CardGames');
+
   const originalCrypto = globalThis.crypto;
 
   beforeEach(() => {
@@ -89,7 +93,7 @@ describe('createGameModeBundle', () => {
     const bundle = await createGameModeBundle({
       gameId: 'Claim',
       displayName: 'Claim',
-      category: 'CardGames',
+      category: cardGamesCategory,
     });
 
     expect(bundle.files).toHaveLength(18);
@@ -138,7 +142,7 @@ describe('createGameModeBundle', () => {
     const bundle = await createGameModeBundle({
       gameId: 'Whist',
       displayName: 'Whist',
-      category: 'CardGames',
+      category: cardGamesCategory,
       copyFromTemplate: {
         baseBet: 25,
         minPlayers: 3,
@@ -161,7 +165,7 @@ describe('createGameModeBundle', () => {
     const bundle = await createGameModeBundle({
       gameId: 'Solitaire',
       displayName: 'Solitaire',
-      category: 'CardGames',
+      category: cardGamesCategory,
     });
 
     expect(bundle.files).toHaveLength(18);
@@ -258,7 +262,7 @@ describe('createGameModeBundle', () => {
       processedGamePath: threeCardBragPath,
     });
 
-    expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/Imported/brag-3-card/brag-3-card.asset');
+    expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/Games/vying/brag-3-card/brag-3-card.asset');
     expect(bundle.files).toHaveLength(18);
 
     const assetTypes = bundle.files.map((file) => {
@@ -277,6 +281,9 @@ describe('createGameModeBundle', () => {
 
     const parsedMain = JSON5.parse(mainAsset!.content) as {
       data?: {
+        releaseStatus?: string;
+        released?: boolean;
+        bannerImage?: string;
         deckAsset?: { assetType?: string; path?: string };
         mechanicsAsset?: { assetType?: string; checksum?: string | null };
         gameInfoAsset?: { checksum?: string | null };
@@ -285,6 +292,9 @@ describe('createGameModeBundle', () => {
       };
     };
 
+    expect(parsedMain.data?.releaseStatus).toBe(GameModeStatus.WorkInProgress);
+    expect(parsedMain.data?.released).toBe(false);
+    expect(parsedMain.data?.bannerImage).toMatch(/^[0-9a-f]{64}$/);
     expect(parsedMain.data?.deckAsset?.assetType).toBe('Deck');
     expect(parsedMain.data?.deckAsset?.path).toContain('GameMode/CardGames/Decks/');
     expect(parsedMain.data?.mechanicsAsset?.assetType).toBe('CardGameMechanics');
@@ -292,5 +302,20 @@ describe('createGameModeBundle', () => {
     expect(parsedMain.data?.gameInfoAsset?.checksum).toMatch(/^[0-9a-f]{64}$/);
     expect(parsedMain.data?.selectedGameLayoutAsset?.assetType).toBe('PageLayout');
     expect(parsedMain.data?.lobbyLayoutAsset?.assetType).toBe('PageLayout');
+
+    const carouselAsset = bundle.files.find((file) => file.metadata.assetType === 'ImageCarousel');
+    const parsedCarousel = JSON5.parse(carouselAsset!.content) as {
+      data?: {
+        slides?: Array<{ imageHash?: string }>;
+        visualAssetStatus?: string;
+        visualAssetSource?: string;
+        visualAssetReplacementRequired?: boolean;
+      };
+    };
+    expect(parsedCarousel.data?.slides?.length).toBeGreaterThan(0);
+    expect(parsedCarousel.data?.slides?.[0]?.imageHash).toBe(parsedMain.data?.bannerImage);
+    expect(parsedCarousel.data?.visualAssetStatus).toBe('needs_final_art');
+    expect(parsedCarousel.data?.visualAssetSource).toBe('shared_fallback_art');
+    expect(parsedCarousel.data?.visualAssetReplacementRequired).toBe(true);
   });
 });

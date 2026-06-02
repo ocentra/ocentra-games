@@ -33,7 +33,7 @@ import type { LayoutPreset } from '@/ui/layout/tableLayoutTypes';
 import { getLocalPilotStatus } from './localPilotCatalog';
 import { asAssetType } from '@ocentra/asset-domain/types/assetType';
 
-const SUPPORTED_PILOT_FAMILY = 'claim';
+const SUPPORTED_PILOT_FAMILIES = new Set(['claim', 'briscola', 'three-card-brag']);
 const ASSET_LOAD_TIMEOUT_MS = 10000;
 
 interface ParsedIdentifier {
@@ -178,13 +178,6 @@ export async function loadLocalPlayableGame(
     };
   }
 
-  if (mechanics.familyKernel !== SUPPORTED_PILOT_FAMILY) {
-    return {
-      bundle: null,
-      error: `Claim is the only ready local pilot. "${parsed.slug}" uses "${mechanics.familyKernel}".`,
-    };
-  }
-
   const baseSpec = toMechanicsSpec(mechanics as unknown as Parameters<typeof toMechanicsSpec>[0]);
   const modelAssets = await withTimeout(
     resolveMechanicsModelAssets(baseSpec.modelRefs),
@@ -197,10 +190,19 @@ export async function loadLocalPlayableGame(
       error: compiled.issues.map((issue) => `${issue.path}: ${issue.message}`).join('\n'),
     };
   }
-  const strategyProfile = await withTimeout(
-    resolveClaimStrategyProfile(gameMode.strategyAsset),
-    `Game "${parsed.slug}" timed out loading the strategy asset.`,
-  );
+  if (!SUPPORTED_PILOT_FAMILIES.has(compiled.spec.familyKernel)) {
+    return {
+      bundle: null,
+      error: `${gameMode.displayName || parsed.slug} uses "${compiled.spec.familyKernel}", which does not have a local runtime resolver yet.`,
+    };
+  }
+
+  const strategyProfile = compiled.spec.familyKernel === 'claim'
+    ? await withTimeout(
+      resolveClaimStrategyProfile(gameMode.strategyAsset),
+      `Game "${parsed.slug}" timed out loading the strategy asset.`,
+    )
+    : null;
   const spec = strategyProfile
     ? withClaimStrategyProfile(compiled.spec, strategyProfile)
     : compiled.spec;

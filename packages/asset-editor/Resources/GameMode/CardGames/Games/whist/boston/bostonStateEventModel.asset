@@ -1,0 +1,70 @@
+{
+  system: {
+    guid: '0ebdf70e-4ddb-4402-9180-31bb6914d842',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/boston/bostonStateEventModel.asset',
+    gameId: 'boston',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'boston',
+    familyVariant: 'Auction Whist',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 13,
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        deck_count: 1,
+        hand_size: 13,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'dealing',
+        'auction',
+        'trick_play',
+        'scoring',
+      ],
+      actions: [
+        'setup_round',
+        'play_card',
+        'pass',
+        'bid',
+        'deal_13_each',
+        'bid_contract',
+        'calculate_boston_score',
+      ],
+    },
+    examples: [],
+  },
+}

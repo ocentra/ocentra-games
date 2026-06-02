@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '7afc46ae-95cb-4aaf-a677-519a1839ead3',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/russi-icelandic-layout-whist/russi-icelandic-layout-whistValidationFixtures.asset',
+    gameId: 'russi-icelandic-layout-whist',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'russi-icelandic-layout-whist',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'russi-icelandic-layout-whist.core-runtime-contracts',
+        title: 'RÃºssi Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'russi-icelandic-layout-whist.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 16,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'RÃºssi must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'russi-icelandic-layout-whist.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'russi-icelandic-layout-whist.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'RÃºssi must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'russi-icelandic-layout-whist.setup.initial-deal',
+              'russi-icelandic-layout-whist.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'russi-icelandic-layout-whist.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win more tricks than the opponent (majority of 26 tricks).',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'No point scoring; the player who wins more tricks wins the game.',
+            linkedRuleIds: [
+              'russi-icelandic-layout-whist.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'russi-icelandic-layout-whist.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

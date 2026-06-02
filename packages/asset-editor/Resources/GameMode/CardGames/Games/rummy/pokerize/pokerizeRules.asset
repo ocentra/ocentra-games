@@ -1,0 +1,226 @@
+{
+  system: {
+    guid: '78f40319-ccca-4b3d-b4cf-539cdc6d9f52',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/pokerize/pokerizeRules.asset',
+    gameId: 'pokerize',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Draw one card from the stock or the top of the discard pile. 2. Optionally meld sets (3–4 of a rank) or runs (3+ consecutive same suit). 3. Optionally lay off cards on existing melds. 4. Discard one card face up to end your turn. 5. First to empty their hand ends the hand; hands are then evaluated or scored using poker hand rankings.',
+    Player: '1. Draw one card from the stock or the top of the discard pile. 2. Optionally meld sets (3–4 of a rank) or runs (3+ consecutive same suit). 3. Optionally lay off cards on existing melds. 4. Discard one card face up to end your turn. 5. First to empty their hand ends the hand; hands are then evaluated or scored using poker hand rankings.',
+    objective: 'Dispose of all cards by melding and discarding; when a hand ends, outcome or scoring is determined using standard poker hand rankings (e.g. best five-card poker hand from melds or deadwood).',
+    gameplay: '1. Draw one card from the stock or the top of the discard pile. 2. Optionally meld sets (3–4 of a rank) or runs (3+ consecutive same suit). 3. Optionally lay off cards on existing melds. 4. Discard one card face up to end your turn. 5. First to empty their hand ends the hand; hands are then evaluated or scored using poker hand rankings.',
+    keyRules: [
+      'Melds are sets (3–4 of a rank) or runs (3+ in suit).',
+      'Lay off is allowed on any meld on the table.',
+      'One draw and one discard per turn.',
+      'Poker hand rankings (high card through straight flush) determine scoring or winner when applied to the hand result.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 to 6 players.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'One standard deck; score sheet if playing to a target score.',
+      dealing: 'Deal 10 cards each for 2 players, 7 for 3–4 players, or 6 for 5–6 players, one at a time. Remaining cards form the stock; turn one card face up to start the discard pile.',
+    },
+    turnFlow: '1. Draw one card from the stock or the top of the discard pile. 2. Optionally meld sets (3–4 of a rank) or runs (3+ consecutive same suit). 3. Optionally lay off cards on existing melds. 4. Discard one card face up to end your turn. 5. First to empty their hand ends the hand; hands are then evaluated or scored using poker hand rankings.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Pokerize uses draw, meld, lay off, and discard; not single play_card.',
+      draw: 'Allowed at start of turn; one card from stock or discard_top.',
+      discard: 'Required once per turn after draw; cannot discard the same card just drawn from discard if pile would be unchanged.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'Optional; allowed in play phase; melds must be valid sets or runs.',
+      go_out: 'Going out is achieved by melding and discarding until hand is empty; no separate go_out action.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Dispose of all cards by melding and discarding; when a hand ends, outcome or scoring is determined using standard poker hand rankings (e.g. best five-card poker hand from melds or deadwood).',
+      'Turn-flow example: 1. Draw one card from the stock or the top of the discard pile. 2. Optionally meld sets (3–4 of a rank) or runs (3+ consecutive same suit). 3. Optionally lay off cards on existing melds. 4. Discard one card face up to end your turn. 5. First to empty their hand ends the hand; hands are then evaluated or scored using poker hand rankings.',
+      'Scoring example: When a player goes out, hands are evaluated using standard poker hand rankings (high card, pair, two pair, flush, full house, etc.); winner or scores determined by agreed variant (e.g. best poker hand from melds or deadwood). First to reach agreed target score or win the most hands; each hand outcome determined by poker hand ranking..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'pokerize.rules.objective',
+        title: 'Objective',
+        text: 'Dispose of all cards by melding and discarding; when a hand ends, outcome or scoring is determined using standard poker hand rankings (e.g. best five-card poker hand from melds or deadwood).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pokerize.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Draw one card from the stock or the top of the discard pile. 2. Optionally meld sets (3–4 of a rank) or runs (3+ consecutive same suit). 3. Optionally lay off cards on existing melds. 4. Discard one card face up to end your turn. 5. First to empty their hand ends the hand; hands are then evaluated or scored using poker hand rankings.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pokerize.setup.players',
+        title: 'Players',
+        text: '2 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pokerize.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pokerize.setup.equipment',
+        title: 'Equipment',
+        text: 'One standard deck; score sheet if playing to a target score.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pokerize.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 10 cards each for 2 players, 7 for 3–4 players, or 6 for 5–6 players, one at a time. Remaining cards form the stock; turn one card face up to start the discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pokerize.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reach agreed target score or win the most hands; each hand outcome determined by poker hand ranking.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pokerize.score.description',
+        title: 'Scoring',
+        text: 'When a player goes out, hands are evaluated using standard poker hand rankings (high card, pair, two pair, flush, full house, etc.); winner or scores determined by agreed variant (e.g. best poker hand from melds or deadwood).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pokerize.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Melds are sets (3–4 of a rank) or runs (3+ in suit).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pokerize.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Lay off is allowed on any meld on the table.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pokerize.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One draw and one discard per turn.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pokerize.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Poker hand rankings (high card through straight flush) determine scoring or winner when applied to the hand result.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pokerize.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pokerize.rules.objective',
+          'pokerize.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pokerize.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pokerize.setup.players',
+          'pokerize.setup.deck',
+          'pokerize.setup.equipment',
+          'pokerize.setup.dealing',
+        ],
+      },
+      {
+        id: 'pokerize.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pokerize.rules.key.1',
+          'pokerize.rules.key.2',
+          'pokerize.rules.key.3',
+          'pokerize.rules.key.4',
+        ],
+      },
+      {
+        id: 'pokerize.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pokerize.score.description',
+          'pokerize.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pokerize.setup.dealing',
+        'pokerize.rules.objective',
+      ],
+      deal: [
+        'pokerize.rules.gameplay',
+      ],
+      draw: [
+        'pokerize.rules.gameplay',
+      ],
+      discard: [
+        'pokerize.rules.gameplay',
+      ],
+      meld: [
+        'pokerize.rules.gameplay',
+      ],
+      lay_off: [
+        'pokerize.rules.gameplay',
+      ],
+      count_deadwood: [
+        'pokerize.rules.gameplay',
+      ],
+      add_to_winner: [
+        'pokerize.rules.gameplay',
+      ],
+    },
+  },
+}

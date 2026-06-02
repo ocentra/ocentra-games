@@ -1,0 +1,85 @@
+{
+  system: {
+    guid: '8f05e416-6bb1-4d0b-b349-ba2168b99c21',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/escoba-de-15/escoba-de-15PhaseFlowModel.asset',
+    gameId: 'escoba-de-15',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'escoba-de-15',
+    familyVariant: 'Arithmetic Capture / Sweep',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'play_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 3 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'play_round',
+        label: 'Play Card',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Player plays a card to capture table cards summing to 15, make an escoba sweep, or trail',
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'right_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '2 or 4 (teams of 2).',
+        deck: '40-card Spanish baraja (A, 2, 3, 4, 5, 6, 7, J, Q, K in 4 suits: Coins, Cups, Swords, Clubs). Values: A=1, 2-7=face, J=8, Q=9, K=10.',
+        equipment: '40-card Spanish deck.',
+        dealing: '3 cards each; 4 cards face-up on table. Redeal 3 when hands empty until deck done.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'right_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [],
+      authoritativeServer: false,
+      customLogicNeeded: [],
+    },
+    progression: [
+      'setup_round',
+      'play_round',
+    ],
+    examples: [],
+  },
+}

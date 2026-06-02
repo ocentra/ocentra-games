@@ -1,0 +1,219 @@
+{
+  system: {
+    guid: 'c47c9e1b-340e-47ca-9a27-ea3c0c28bd2b',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/commerce/bastard-brag/bastard-bragRules.asset',
+    gameId: 'bastard-brag',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Players take turns clockwise. On your turn, you may: 1. **Swap One**: Trade one card from your hand with one card from the Widow. 2. **Swap All**: Trade your entire 3-card hand with the Widow. 3. **Pass/Knock**: If you are happy with your hand, you knock on the table.',
+    Player: 'Players take turns clockwise. On your turn, you may: 1. **Swap One**: Trade one card from your hand with one card from the Widow. 2. **Swap All**: Trade your entire 3-card hand with the Widow. 3. **Pass/Knock**: If you are happy with your hand, you knock on the table.',
+    objective: 'Avoid having the lowest hand when the game stops (Lives version) or win the pot with the best hand (Betting version).',
+    gameplay: 'Players take turns clockwise. On your turn, you may: 1. **Swap One**: Trade one card from your hand with one card from the Widow. 2. **Swap All**: Trade your entire 3-card hand with the Widow. 3. **Pass/Knock**: If you are happy with your hand, you knock on the table.',
+    keyRules: [
+      'You cannot swap and knock in the same turn (usually).',
+      'Prial of 3s is the highest hand (Classic Brag rule).',
+      'Aces are high in runs (A-K-Q) but low in 3-2-A (Run) or A-2-3 (Running Flush) depending on house rules.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3-10 players. Best with 4-7.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Chips or tokens (3 Lives each for the Lives version).',
+      dealing: 'Each player receives 3 cards face down. Three cards are dealt face up (or face down in some variants) to the center of the table (The Widow).',
+    },
+    turnFlow: 'Players take turns clockwise. On your turn, you may: 1. **Swap One**: Trade one card from your hand with one card from the Widow. 2. **Swap All**: Trade your entire 3-card hand with the Widow. 3. **Pass/Knock**: If you are happy with your hand, you knock on the table.',
+    moveValidityConditions: {
+      ante: 'Bastard Brag typically uses a Lives-based elimination system rather than standard pot antes.',
+      deal: 'The initial distribution of hand cards and the widow is performed by the system automated dealer.',
+      reveal_market: 'The three cards in the widow are revealed simultaneously during the setup phase by the dealer.',
+      buy_market: 'Cards in the widow are swapped for hand cards for free; they cannot be purchased with chips.',
+      buy_stock: 'Players only interact with the widow hand; they do not have the option to buy or draw from the stock pile.',
+      fold: 'Every player remains in the game until the knock occurs to determine who loses a life for the round.',
+      check: 'The game uses a swapping mechanic rather than a vying structure with checks and betting intervals.',
+      call: 'There is no bet to call in the Lives version; competition is based on hand strength at the stop.',
+      bet: 'Success is determined by survival and hand ranking rather than the placement of bets or wagers.',
+      raise: 'The stakes of the game do not increase through betting; only through the loss of lives at showdown.',
+      declare: 'The knock action serves as the declaration to stop the hand; no separate declaration phase is needed.',
+      reveal_hand: 'Hands are revealed by the system during the showdown logic once the final orbit of swaps is completed.',
+      award_pot: 'In the Lives version, the loser is penalized rather than a winner being awarded a central pot.',
+      play_card: 'Cards are swapped with the widow or held in the hand; they are not played to tricks or a shared tableau.',
+      draw: 'New cards are only acquired through the swap-one or swap-all actions with the shared widow hand.',
+      discard: 'Swapped cards move directly to the widow for use by other players; there is no separate discard pile.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Bastard Brag does not use a bidding system to determine the dealer, trump, or game contract.',
+      meld: 'Resolution depends on three-card brag hand rankings rather than forming or laying down melds.',
+      go_out: 'The hand terminates for everyone simultaneously once the knock and final orbit are finished.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Avoid having the lowest hand when the game stops (Lives version) or win the pot with the best hand (Betting version).',
+      'Turn-flow example: Players take turns clockwise. On your turn, you may: 1. **Swap One**: Trade one card from your hand with one card from the Widow. 2. **Swap All**: Trade your entire 3-card hand with the Widow. 3. **Pass/Knock**: If you are happy with your hand, you knock on the table.',
+      'Scoring example: Lives-based elimination or Pot winner. Be the last player with lives remaining..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bastard-brag.rules.objective',
+        title: 'Objective',
+        text: 'Avoid having the lowest hand when the game stops (Lives version) or win the pot with the best hand (Betting version).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bastard-brag.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns clockwise. On your turn, you may: 1. **Swap One**: Trade one card from your hand with one card from the Widow. 2. **Swap All**: Trade your entire 3-card hand with the Widow. 3. **Pass/Knock**: If you are happy with your hand, you knock on the table.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bastard-brag.setup.players',
+        title: 'Players',
+        text: '3-10 players. Best with 4-7.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bastard-brag.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bastard-brag.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips or tokens (3 Lives each for the Lives version).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bastard-brag.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 3 cards face down. Three cards are dealt face up (or face down in some variants) to the center of the table (The Widow).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bastard-brag.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the last player with lives remaining.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bastard-brag.score.description',
+        title: 'Scoring',
+        text: 'Lives-based elimination or Pot winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bastard-brag.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You cannot swap and knock in the same turn (usually).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bastard-brag.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Prial of 3s is the highest hand (Classic Brag rule).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bastard-brag.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Aces are high in runs (A-K-Q) but low in 3-2-A (Run) or A-2-3 (Running Flush) depending on house rules.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bastard-brag.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bastard-brag.rules.objective',
+          'bastard-brag.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bastard-brag.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bastard-brag.setup.players',
+          'bastard-brag.setup.deck',
+          'bastard-brag.setup.equipment',
+          'bastard-brag.setup.dealing',
+        ],
+      },
+      {
+        id: 'bastard-brag.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bastard-brag.rules.key.1',
+          'bastard-brag.rules.key.2',
+          'bastard-brag.rules.key.3',
+        ],
+      },
+      {
+        id: 'bastard-brag.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bastard-brag.score.description',
+          'bastard-brag.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bastard-brag.setup.dealing',
+        'bastard-brag.rules.objective',
+      ],
+      pass: [
+        'bastard-brag.rules.gameplay',
+      ],
+      deal_3_each: [
+        'bastard-brag.rules.gameplay',
+      ],
+      deal_widow: [
+        'bastard-brag.rules.gameplay',
+      ],
+      swap_one: [
+        'bastard-brag.rules.gameplay',
+      ],
+      swap_all: [
+        'bastard-brag.rules.gameplay',
+      ],
+      knock: [
+        'bastard-brag.rules.gameplay',
+      ],
+      evaluate_brag_hands: [
+        'bastard-brag.rules.gameplay',
+      ],
+      remove_life: [
+        'bastard-brag.rules.gameplay',
+      ],
+    },
+  },
+}

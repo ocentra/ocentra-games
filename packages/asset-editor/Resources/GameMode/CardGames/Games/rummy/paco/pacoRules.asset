@@ -1,0 +1,232 @@
+{
+  system: {
+    guid: '845f77c3-4490-41f2-9085-99bcaf29fd54',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/paco/pacoRules.asset',
+    gameId: 'paco',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Deal**: Ten cards each. 2. **Cambio**: Each player passes one card face down to the player on their right. 3. **Play**: Each turn, a player may take the card left by the previous player (if it fits a meld) or turn up a new card from the stock. 4. **Melding**: A card taken from the center must be melded immediately with cards from the hand or added to existing melds. It cannot be taken into the hand. 5. **Forcing**: Players can force an opponent to meld the center card if it fits their existing tableau. 6. **Winning**: First to meld an 11th card wins.',
+    Player: '1. **Deal**: Ten cards each. 2. **Cambio**: Each player passes one card face down to the player on their right. 3. **Play**: Each turn, a player may take the card left by the previous player (if it fits a meld) or turn up a new card from the stock. 4. **Melding**: A card taken from the center must be melded immediately with cards from the hand or added to existing melds. It cannot be taken into the hand. 5. **Forcing**: Players can force an opponent to meld the center card if it fits their existing tableau. 6. **Winning**: First to meld an 11th card wins.',
+    objective: "Be the first to meld 11 cards in valid combinations. The winner is paid by each opponent according to the 'pay cards' in the winner's melds.",
+    gameplay: '1. **Deal**: Ten cards each. 2. **Cambio**: Each player passes one card face down to the player on their right. 3. **Play**: Each turn, a player may take the card left by the previous player (if it fits a meld) or turn up a new card from the stock. 4. **Melding**: A card taken from the center must be melded immediately with cards from the hand or added to existing melds. It cannot be taken into the hand. 5. **Forcing**: Players can force an opponent to meld the center card if it fits their existing tableau. 6. **Winning**: First to meld an 11th card wins.',
+    keyRules: [
+      'Valid melds: (1) Run of 3+ consecutive cards in the same suit (7 is adjacent to 10); (2) Set of 3+ identical cards (same rank and suit).',
+      'Pay cards: 1, 3, 5, 7, 10, 12.',
+      'Values: coins=1, cups=2, swords=3, batons=4 pesos per card.',
+      'Cards from stock/discard can only be taken if immediately melded.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2â€“12 players. Deal and play are anticlockwise.',
+      deck: '200 cards from five identical Spanish 40-card packs (suits: swords, clubs, cups, coins; ranks 1â€“7, 10â€“12).',
+      equipment: 'Five Spanish 40-card packs, chips or money for stakes.',
+      dealing: 'Ten cards dealt to each player, one at a time. Remainder forms a face-down stock.',
+    },
+    turnFlow: '1. **Deal**: Ten cards each. 2. **Cambio**: Each player passes one card face down to the player on their right. 3. **Play**: Each turn, a player may take the card left by the previous player (if it fits a meld) or turn up a new card from the stock. 4. **Melding**: A card taken from the center must be melded immediately with cards from the hand or added to existing melds. It cannot be taken into the hand. 5. **Forcing**: Players can force an opponent to meld the center card if it fits their existing tableau. 6. **Winning**: First to meld an 11th card wins.',
+    moveValidityConditions: {
+      ante: 'Payment is post-game based on melds; no initial ante is required.',
+      deal: 'Initial deal is performed by the engine rather than as a player action.',
+      reveal_market: 'This game does not utilize a market zone for card selection.',
+      buy_market: 'There is no mechanic for purchasing cards from a market in Paco.',
+      buy_stock: 'Stock cards are turned face-up rather than purchased by players.',
+      fold: 'Players must remain in the game until a winner is determined.',
+      check: 'There are no betting rounds involving checking in this game.',
+      call: 'There are no betting rounds involving calling in this game.',
+      bet: 'Traditional gambling stakes are paid post-game based on melds.',
+      raise: 'There are no betting rounds involving raising in this game.',
+      declare: 'Melding is handled as a physical board action rather than declaration.',
+      reveal_hand: 'Hands are only fully revealed when a player has won the game.',
+      award_pot: "Winning payments are collected directly from each opponent's stake.",
+      play_card: 'Paco is a melding game and does not utilize trick-taking card play.',
+      draw: 'Cards are never drawn into the hand; they are melded immediately.',
+      discard: 'Required after melding unless going out.',
+      pass: 'Can only pass if not forced to meld.',
+      bid: 'This game does not feature a bidding phase or bidding mechanism.',
+      meld: 'Must include the card just turned or taken from previous player.',
+      go_out: 'Must have exactly 11 cards in melds with no cards remaining in hand.',
+    },
+    exampleHands: [
+      'Setup example: 10 card(s) per player.',
+      "Rule example: Be the first to meld 11 cards in valid combinations. The winner is paid by each opponent according to the 'pay cards' in the winner's melds.",
+      'Turn-flow example: 1. **Deal**: Ten cards each. 2. **Cambio**: Each player passes one card face down to the player on their right. 3. **Play**: Each turn, a player may take the card left by the previous player (if it fits a meld) or turn up a new card from the stock. 4. **Melding**: A card taken from the center must be melded immediately with cards from the hand or added to existing melds. It cannot be taken into the hand. 5. **Forcing**: Players can force an opponent to meld the center card if it fits their existing tableau. 6. **Winning**: First to meld an 11th card wins.',
+      "Scoring example: Payment is based on pay cards in the winner's melds. Each opponent pays the winner the sum of pay-card values (Coins=1, Cups=2, Swords=3, Batons=4). First player to meld 11 cards wins the deal and collects from each opponent..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'paco.rules.objective',
+        title: 'Objective',
+        text: "Be the first to meld 11 cards in valid combinations. The winner is paid by each opponent according to the 'pay cards' in the winner's melds.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'paco.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Deal**: Ten cards each. 2. **Cambio**: Each player passes one card face down to the player on their right. 3. **Play**: Each turn, a player may take the card left by the previous player (if it fits a meld) or turn up a new card from the stock. 4. **Melding**: A card taken from the center must be melded immediately with cards from the hand or added to existing melds. It cannot be taken into the hand. 5. **Forcing**: Players can force an opponent to meld the center card if it fits their existing tableau. 6. **Winning**: First to meld an 11th card wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'paco.setup.players',
+        title: 'Players',
+        text: '2â€“12 players. Deal and play are anticlockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'paco.setup.deck',
+        title: 'Deck',
+        text: '200 cards from five identical Spanish 40-card packs (suits: swords, clubs, cups, coins; ranks 1â€“7, 10â€“12).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'paco.setup.equipment',
+        title: 'Equipment',
+        text: 'Five Spanish 40-card packs, chips or money for stakes.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'paco.setup.dealing',
+        title: 'Deal',
+        text: 'Ten cards dealt to each player, one at a time. Remainder forms a face-down stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'paco.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to meld 11 cards wins the deal and collects from each opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'paco.score.description',
+        title: 'Scoring',
+        text: "Payment is based on pay cards in the winner's melds. Each opponent pays the winner the sum of pay-card values (Coins=1, Cups=2, Swords=3, Batons=4).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'paco.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Valid melds: (1) Run of 3+ consecutive cards in the same suit (7 is adjacent to 10); (2) Set of 3+ identical cards (same rank and suit).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'paco.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Pay cards: 1, 3, 5, 7, 10, 12.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'paco.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Values: coins=1, cups=2, swords=3, batons=4 pesos per card.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'paco.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cards from stock/discard can only be taken if immediately melded.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'paco.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'paco.rules.objective',
+          'paco.rules.gameplay',
+        ],
+      },
+      {
+        id: 'paco.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'paco.setup.players',
+          'paco.setup.deck',
+          'paco.setup.equipment',
+          'paco.setup.dealing',
+        ],
+      },
+      {
+        id: 'paco.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'paco.rules.key.1',
+          'paco.rules.key.2',
+          'paco.rules.key.3',
+          'paco.rules.key.4',
+        ],
+      },
+      {
+        id: 'paco.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'paco.score.description',
+          'paco.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'paco.setup.dealing',
+        'paco.rules.objective',
+      ],
+      discard: [
+        'paco.rules.gameplay',
+      ],
+      pass: [
+        'paco.rules.gameplay',
+      ],
+      meld: [
+        'paco.rules.gameplay',
+      ],
+      go_out: [
+        'paco.rules.gameplay',
+      ],
+      deal_initial: [
+        'paco.rules.gameplay',
+      ],
+      pass_card_right: [
+        'paco.rules.gameplay',
+      ],
+      turn_stock: [
+        'paco.rules.gameplay',
+      ],
+      take_and_meld: [
+        'paco.rules.gameplay',
+      ],
+      force_meld: [
+        'paco.rules.gameplay',
+      ],
+    },
+  },
+}

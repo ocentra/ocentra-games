@@ -21,6 +21,7 @@ export interface GameSummary {
   file_exists?: boolean;
   link_valid?: string;
   source?: 'asset' | 'catalog';
+  releaseStatus?: string | null;
 }
 
 export interface GameMetadata {
@@ -47,6 +48,7 @@ export interface GameDetail {
   sources?: unknown;
   pagat?: unknown;
   source?: 'asset' | 'catalog';
+  releaseStatus?: string | null;
   cursorFind?: unknown;
 }
 

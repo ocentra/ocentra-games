@@ -1,0 +1,232 @@
+{
+  system: {
+    guid: '7de4d13e-d567-4bc0-a793-56940528d2ac',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/bergen/bergenRules.asset',
+    gameId: 'bergen',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Players take turns extending the line of dominoes from either end. Scoring occurs when the end values match. If a player cannot move, they draw from the boneyard (leaving two tiles). The first to empty their hand scores a bonus.',
+    Player: 'Players take turns extending the line of dominoes from either end. Scoring occurs when the end values match. If a player cannot move, they draw from the boneyard (leaving two tiles). The first to empty their hand scores a bonus.',
+    objective: 'Be the first player to reach 15 points (2-player) or 10 points (3–4 player).',
+    gameplay: 'Players take turns extending the line of dominoes from either end. Scoring occurs when the end values match. If a player cannot move, they draw from the boneyard (leaving two tiles). The first to empty their hand scores a bonus.',
+    keyRules: [
+      'Doubles are played crosswise but are NOT spinners — the line extends only from the two ends, not from the sides of the double.',
+      'Two tiles must always remain in the boneyard and cannot be drawn.',
+      'Score immediately when a double header or triple header is formed.',
+      'First player to reach target score (15 or 10) wins; the current hand is completed before checking the total.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: "Bergen is played by two to four players using a standard double-six set. With more than four players, two or more double-six sets can be combined. Each player's initial draw and boneyard size depend on the count: two players get six tiles each (boneyard 16), three get six each (boneyard 10), four get five each (boneyard 8). Two boneyard tiles are reserved and never drawn.",
+      deck: 'Standard double-6 domino set (28 tiles). For 5+ players, two double-6 sets can be combined.',
+      equipment: '28 dominoes (double-6 set). Chips or score sheet for tracking points.',
+      dealing: '2 players: each draws 6 tiles. 3–4 players: each draws 6 tiles. Remaining tiles form the boneyard (2 tiles reserved and never drawn as a convention). Player with the lowest double plays first.',
+    },
+    turnFlow: 'Players take turns extending the line of dominoes from either end. Scoring occurs when the end values match. If a player cannot move, they draw from the boneyard (leaving two tiles). The first to empty their hand scores a bonus.',
+    moveValidityConditions: {
+      ante: 'Bergen is a traditional domino scoring game and does not utilize a monetary or chip-based ante.',
+      deal: 'Initial tile distribution is performed by the players drawing from the boneyard simultaneously.',
+      reveal_market: 'The boneyard is a face-down stock of tiles; there is no public market of revealed tiles in this game.',
+      buy_market: 'Tiles cannot be purchased from a market; they are only acquired through drawing from the stock.',
+      buy_stock: 'Drawing from the boneyard is a free mandatory action when no play is possible, not a stock purchase.',
+      fold: 'Players must participate in the hand until a player goes domino or the boneyard is restricted to two tiles.',
+      check: 'The game uses a matching-line structure rather than a vying structure where checking would be an option.',
+      call: 'There is no pot to match in this game; competition is based on creating specific matching configurations.',
+      bet: 'Bergen is scored via point accumulation on a scorecard rather than through the wagering of assets.',
+      raise: 'There are no wagering rounds in this game, so the value of the deal cannot be increased via raises.',
+      declare: 'Points are awarded automatically based on the resulting line state rather than through formal declaration.',
+      reveal_hand: "Hand tiles remain private until they are played onto the shared line during the player's turn.",
+      award_pot: 'Winners are determined by game points on a scorecard rather than by awarding a central pot of assets.',
+      play_card: 'Bergen is a domino game where tiles are placed on a line; card playing engine logic does not apply.',
+      draw: 'Only when unable to play and more than two tiles remain in boneyard.',
+      discard: 'Tiles must be placed on the line to be removed from the hand; no separate discard pile exists.',
+      pass: 'Only when no legal play and boneyard draw is forbidden.',
+      bid: 'The game does not use a bidding system to determine the dealer or game objectives.',
+      meld: 'This is a line-matching game rather than a set-collection game requiring the creation of melds.',
+      go_out: 'Going domino occurs automatically when the last tile is played from a hand; no separate action is used.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be the first player to reach 15 points (2-player) or 10 points (3–4 player).',
+      'Turn-flow example: Players take turns extending the line of dominoes from either end. Scoring occurs when the end values match. If a player cannot move, they draw from the boneyard (leaving two tiles). The first to empty their hand scores a bonus.',
+      'Scoring example: Double header (both ends match) = 2 pts. Triple header (both ends match, one is a double tile) = 3 pts. Going domino = 2 pts. Blocked game = 2 pts to lightest hand. First player to reach 15 points (2-player) or 10 points (3–4 player)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bergen.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to reach 15 points (2-player) or 10 points (3–4 player).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bergen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns extending the line of dominoes from either end. Scoring occurs when the end values match. If a player cannot move, they draw from the boneyard (leaving two tiles). The first to empty their hand scores a bonus.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bergen.setup.players',
+        title: 'Players',
+        text: "Bergen is played by two to four players using a standard double-six set. With more than four players, two or more double-six sets can be combined. Each player's initial draw and boneyard size depend on the count: two players get six tiles each (boneyard 16), three get six each (boneyard 10), four get five each (boneyard 8). Two boneyard tiles are reserved and never drawn.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bergen.setup.deck',
+        title: 'Deck',
+        text: 'Standard double-6 domino set (28 tiles). For 5+ players, two double-6 sets can be combined.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bergen.setup.equipment',
+        title: 'Equipment',
+        text: '28 dominoes (double-6 set). Chips or score sheet for tracking points.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bergen.setup.dealing',
+        title: 'Deal',
+        text: '2 players: each draws 6 tiles. 3–4 players: each draws 6 tiles. Remaining tiles form the boneyard (2 tiles reserved and never drawn as a convention). Player with the lowest double plays first.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bergen.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 15 points (2-player) or 10 points (3–4 player).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bergen.score.description',
+        title: 'Scoring',
+        text: 'Double header (both ends match) = 2 pts. Triple header (both ends match, one is a double tile) = 3 pts. Going domino = 2 pts. Blocked game = 2 pts to lightest hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bergen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Doubles are played crosswise but are NOT spinners — the line extends only from the two ends, not from the sides of the double.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bergen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two tiles must always remain in the boneyard and cannot be drawn.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bergen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Score immediately when a double header or triple header is formed.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bergen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First player to reach target score (15 or 10) wins; the current hand is completed before checking the total.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bergen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bergen.rules.objective',
+          'bergen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bergen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bergen.setup.players',
+          'bergen.setup.deck',
+          'bergen.setup.equipment',
+          'bergen.setup.dealing',
+        ],
+      },
+      {
+        id: 'bergen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bergen.rules.key.1',
+          'bergen.rules.key.2',
+          'bergen.rules.key.3',
+          'bergen.rules.key.4',
+        ],
+      },
+      {
+        id: 'bergen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bergen.score.description',
+          'bergen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bergen.setup.dealing',
+        'bergen.rules.objective',
+      ],
+      draw: [
+        'bergen.rules.gameplay',
+      ],
+      pass: [
+        'bergen.rules.gameplay',
+      ],
+      draw_from_stock: [
+        'bergen.rules.gameplay',
+      ],
+      pass_turn: [
+        'bergen.rules.gameplay',
+      ],
+      start_new_round: [
+        'bergen.rules.gameplay',
+      ],
+      place_tile_left: [
+        'bergen.rules.gameplay',
+      ],
+      place_tile_right: [
+        'bergen.rules.gameplay',
+      ],
+      draw_from_boneyard: [
+        'bergen.rules.gameplay',
+      ],
+      award_points: [
+        'bergen.rules.gameplay',
+      ],
+    },
+  },
+}

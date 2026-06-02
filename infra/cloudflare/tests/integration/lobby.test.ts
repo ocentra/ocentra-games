@@ -643,6 +643,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         reconnectWs.send(JSON.stringify({ type: 'reconnect', payload: { reconnectToken: guestWelcome.reconnectToken } }));
         const reconnectWelcome = await waitForWebSocketMessageType(reconnectWs, 'welcome');
         expect(reconnectWelcome.roomId).toBe(roomId);
+        const reconnectHistory = reconnectWelcome.chatHistory as Array<{ content?: string }> | undefined;
+        expect(reconnectHistory?.some(message => message.content === 'ready for claim')).toBe(true);
       } finally {
         await closeSocket(reconnectWs);
       }
@@ -688,7 +690,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(joinData.room?.currentPlayers).toBe(2);
   });
 
-  it(testName('Lobby side services: friends, party invite, lobby chat, settings, and reward balance are durable'), async () => {
+  it(testName('Lobby side services: friends, party invite, direct message, settings, and reward balance are durable'), async () => {
     const token = getTokenForFetch();
     const friendId = `friend-side-${crypto.randomUUID().slice(0, 8)}`;
     const conversationId = `lobby-side-${crypto.randomUUID().slice(0, 8)}`;

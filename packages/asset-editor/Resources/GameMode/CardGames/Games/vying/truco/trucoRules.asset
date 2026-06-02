@@ -1,0 +1,218 @@
+{
+  system: {
+    guid: '6b311aa4-51d9-4b3b-a4b4-8fddfb653583',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/truco/trucoRules.asset',
+    gameId: 'truco',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Win 2/3 tricks. Three lances: 1) ENVIDO (2 same-suit values + 20, higher wins, 2 pts). 2) TRUCO (raise trick value: Truco=2, Retruco=3, Vale Cuatro=4). 3) FLOR (3 same suit, 3 pts, cancels Envido). Respond Quiero/No Quiero. Massive bluffing.',
+    Player: 'Win 2/3 tricks. Three lances: 1) ENVIDO (2 same-suit values + 20, higher wins, 2 pts). 2) TRUCO (raise trick value: Truco=2, Retruco=3, Vale Cuatro=4). 3) FLOR (3 same suit, 3 pts, cancels Envido). Respond Quiero/No Quiero. Massive bluffing.',
+    objective: 'The objective is to be the first team to reach 30 points. Points are split into two halves: the lower half (malas, 1 to 15) and the higher half (buenas, 16 to 30); the first team to complete 30 points wins the game.',
+    gameplay: 'Win 2/3 tricks. Three lances: 1) ENVIDO (2 same-suit values + 20, higher wins, 2 pts). 2) TRUCO (raise trick value: Truco=2, Retruco=3, Vale Cuatro=4). 3) FLOR (3 same suit, 3 pts, cancels Envido). Respond Quiero/No Quiero. Massive bluffing.',
+    keyRules: [
+      'Aâ™  is highest card',
+      '3 betting lances',
+      'Flor cancels Envido',
+      'Quiero/No Quiero responses',
+      'Malas/Buenas scoring',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2-6 (4 in partnerships)',
+      deck: '40 Spanish cards (no 8s, 9s, 10s). Special ranking: Aâ™  > Aâ™£ > 7â™  > 7â™¦ > 3s > 2s > False As > 12s > 11s > 10s > False 7s > 6s > 5s > 4s.',
+      equipment: 'Cards',
+      dealing: 'Each player is dealt three cards from the 40-card deck; no further cards are drawn during play. The deal rotates counterclockwise; the player to the right of the dealer (mano) plays first, the dealer (pie) plays last.',
+    },
+    turnFlow: 'Win 2/3 tricks. Three lances: 1) ENVIDO (2 same-suit values + 20, higher wins, 2 pts). 2) TRUCO (raise trick value: Truco=2, Retruco=3, Vale Cuatro=4). 3) FLOR (3 same suit, 3 pts, cancels Envido). Respond Quiero/No Quiero. Massive bluffing.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: The objective is to be the first team to reach 30 points. Points are split into two halves: the lower half (malas, 1 to 15) and the higher half (buenas, 16 to 30); the first team to complete 30 points wins the game.',
+      'Turn-flow example: Win 2/3 tricks. Three lances: 1) ENVIDO (2 same-suit values + 20, higher wins, 2 pts). 2) TRUCO (raise trick value: Truco=2, Retruco=3, Vale Cuatro=4). 3) FLOR (3 same suit, 3 pts, cancels Envido). Respond Quiero/No Quiero. Massive bluffing.',
+      'Scoring example: Envido: 2-pts base. Truco: 1-4 pts. Flor: 3 pts. Falta Envido: remaining pts to win. First to 30 points (15 malas + 15 buenas)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'truco.rules.objective',
+        title: 'Objective',
+        text: 'The objective is to be the first team to reach 30 points. Points are split into two halves: the lower half (malas, 1 to 15) and the higher half (buenas, 16 to 30); the first team to complete 30 points wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'truco.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Win 2/3 tricks. Three lances: 1) ENVIDO (2 same-suit values + 20, higher wins, 2 pts). 2) TRUCO (raise trick value: Truco=2, Retruco=3, Vale Cuatro=4). 3) FLOR (3 same suit, 3 pts, cancels Envido). Respond Quiero/No Quiero. Massive bluffing.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'truco.setup.players',
+        title: 'Players',
+        text: '2-6 (4 in partnerships)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'truco.setup.deck',
+        title: 'Deck',
+        text: '40 Spanish cards (no 8s, 9s, 10s). Special ranking: Aâ™  > Aâ™£ > 7â™  > 7â™¦ > 3s > 2s > False As > 12s > 11s > 10s > False 7s > 6s > 5s > 4s.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'truco.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'truco.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt three cards from the 40-card deck; no further cards are drawn during play. The deal rotates counterclockwise; the player to the right of the dealer (mano) plays first, the dealer (pie) plays last.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'truco.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 30 points (15 malas + 15 buenas).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'truco.score.description',
+        title: 'Scoring',
+        text: 'Envido: 2-pts base. Truco: 1-4 pts. Flor: 3 pts. Falta Envido: remaining pts to win.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'truco.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aâ™  is highest card',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'truco.rules.key.2',
+        title: 'Key rule 2',
+        text: '3 betting lances',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'truco.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Flor cancels Envido',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'truco.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Quiero/No Quiero responses',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'truco.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Malas/Buenas scoring',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'truco.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'truco.rules.objective',
+          'truco.rules.gameplay',
+        ],
+      },
+      {
+        id: 'truco.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'truco.setup.players',
+          'truco.setup.deck',
+          'truco.setup.equipment',
+          'truco.setup.dealing',
+        ],
+      },
+      {
+        id: 'truco.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'truco.rules.key.1',
+          'truco.rules.key.2',
+          'truco.rules.key.3',
+          'truco.rules.key.4',
+          'truco.rules.key.5',
+        ],
+      },
+      {
+        id: 'truco.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'truco.score.description',
+          'truco.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'truco.setup.dealing',
+        'truco.rules.objective',
+      ],
+      play_card: [
+        'truco.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -20,11 +20,12 @@ export const ProcessedGameTransferReportSchema = schema.object({
 export type ProcessedGameTransferIssue = schema.infer<typeof ProcessedGameTransferIssueSchema>;
 export type ProcessedGameTransferReport = schema.infer<typeof ProcessedGameTransferReportSchema>;
 
-type TransferMatch = 'presence' | 'exact';
+type TransferMatch = 'presence' | 'exact' | 'publicVariationList';
 
 interface TransferCheck {
   sourcePath: string;
   targetPath: string;
+  alternateTargetPaths?: string[];
   match?: TransferMatch;
   severity?: ProcessedGameTransferIssue['severity'];
   message: string;
@@ -32,8 +33,10 @@ interface TransferCheck {
 
 const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
   { sourcePath: 'name', targetPath: 'displayName', match: 'exact', message: 'Game name must become the generated game display name.' },
+  { sourcePath: 'name', targetPath: 'assetDataOverrides.gameInfo.hero.title', match: 'exact', message: 'Game name must become the public GameInfo hero title.' },
   { sourcePath: 'overview.description', targetPath: 'assetDataOverrides.gameInfo.description', match: 'exact', message: 'Overview description must land in GameInfo.' },
-  { sourcePath: 'overview.description', targetPath: 'assetDataOverrides.gameInfo.Player', message: 'Player-facing overview must land in GameInfo.' },
+  { sourcePath: 'overview.description', targetPath: 'assetDataOverrides.gameInfo.Player', match: 'exact', message: 'Player-facing overview must land in GameInfo.' },
+  { sourcePath: 'overview.description', targetPath: 'assetDataOverrides.gameInfo.LLM', match: 'exact', message: 'LLM overview must land in GameInfo.' },
   { sourcePath: 'overview.origin', targetPath: 'assetDataOverrides.gameInfo.origin', match: 'exact', message: 'Origin must land in GameInfo.' },
   { sourcePath: 'overview.originName', targetPath: 'assetDataOverrides.gameInfo.originName', match: 'exact', message: 'Origin name must land in GameInfo.' },
   { sourcePath: 'overview.players.minPlayers', targetPath: 'assetDataOverrides.gameInfo.minPlayers', match: 'exact', message: 'Minimum player count must land in GameInfo.' },
@@ -46,9 +49,10 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
   { sourcePath: 'setup.deck', targetPath: 'assetDataOverrides.gameInfo.setupContent.deck', match: 'exact', message: 'Setup deck must land in GameInfo setupContent.' },
   { sourcePath: 'setup.equipment', targetPath: 'assetDataOverrides.gameInfo.setupContent.equipment', match: 'exact', message: 'Setup equipment must land in GameInfo setupContent.' },
   { sourcePath: 'setup.dealing', targetPath: 'assetDataOverrides.gameInfo.setupContent.dealing', match: 'exact', message: 'Setup dealing must land in GameInfo setupContent.' },
-  { sourcePath: 'variations.list', targetPath: 'assetDataOverrides.gameInfo.variationsContent.list', match: 'exact', message: 'Variations must land in GameInfo variationsContent.' },
+  { sourcePath: 'variations.list', targetPath: 'assetDataOverrides.gameInfo.variationsContent.list', match: 'publicVariationList', message: 'Public variations must land in GameInfo variationsContent without editor-only override metadata.' },
   { sourcePath: 'ai.difficulty', targetPath: 'assetDataOverrides.gameInfo.aiContent.difficulty', match: 'exact', message: 'AI difficulty notes must land in GameInfo aiContent.' },
   { sourcePath: 'ai.considerations', targetPath: 'assetDataOverrides.gameInfo.aiContent.considerations', match: 'exact', message: 'AI considerations must land in GameInfo aiContent.' },
+  { sourcePath: 'sources.primary', targetPath: 'assetDataOverrides.gameInfo.sourcesContent.primary', message: 'Primary source records must land in GameInfo sourcesContent.' },
   { sourcePath: 'rules.objective', targetPath: 'assetDataOverrides.rules.objective', match: 'exact', message: 'Rule objective must land in CardGameRules.' },
   { sourcePath: 'rules.gameplay', targetPath: 'assetDataOverrides.rules.gameplay', match: 'exact', message: 'Gameplay rules must land in CardGameRules.' },
   { sourcePath: 'rules.keyRules', targetPath: 'assetDataOverrides.rules.keyRules', match: 'exact', message: 'Key rules must land in CardGameRules.' },
@@ -58,7 +62,12 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
   { sourcePath: 'strategy.tips', targetPath: 'assetDataOverrides.strategy.tips', message: 'Strategy tips must land in Strategy.' },
   { sourcePath: 'scoring.description', targetPath: 'assetDataOverrides.scoring.description', match: 'exact', message: 'Scoring description must land in CardGameScoring.' },
   { sourcePath: 'scoring.winCondition', targetPath: 'assetDataOverrides.scoring.winCondition', match: 'exact', message: 'Win condition must land in CardGameScoring.' },
-  { sourcePath: 'scoring.cardValues', targetPath: 'assetDataOverrides.scoring.cardValues', message: 'Card values must land in CardGameScoring.' },
+  {
+    sourcePath: 'scoring.cardValues',
+    targetPath: 'assetDataOverrides.scoring.cardValues',
+    alternateTargetPaths: ['assetDataOverrides.scoring.scoringRules.sourceCardValues'],
+    message: 'Card values must land in CardGameScoring.',
+  },
   { sourcePath: 'engine.deckType', targetPath: 'mechanicsModelDataOverrides.deck.deckType', match: 'exact', message: 'Engine deck type must land in the deck model asset.' },
   { sourcePath: 'engine.suitSet', targetPath: 'mechanicsModelDataOverrides.deck.suitSet', match: 'exact', message: 'Engine suit set must land in the deck model asset.' },
   { sourcePath: 'engine.rankSet', targetPath: 'mechanicsModelDataOverrides.deck.rankSet', match: 'exact', message: 'Engine rank set must land in the deck model asset.' },
@@ -78,6 +87,7 @@ const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
 ];
 
 const EDITOR_ONLY_CHECKS: TransferCheck[] = [
+  { sourcePath: '', targetPath: 'assetDataOverrides.gameInfo.editorOnly.processedSource', match: 'exact', message: 'The full processed source JSON must be retained in editor-only migration metadata so no source field is lost.' },
   { sourcePath: 'sources', targetPath: 'assetDataOverrides.gameInfo.editorOnly.sources', message: 'Sources must stay in GameInfo editorOnly metadata.' },
   { sourcePath: 'evidence', targetPath: 'assetDataOverrides.gameInfo.editorOnly.evidence', message: 'Evidence must stay in GameInfo editorOnly metadata.' },
   { sourcePath: 'extraction', targetPath: 'assetDataOverrides.gameInfo.editorOnly.extraction', message: 'Extraction audit data must stay in GameInfo editorOnly metadata.' },
@@ -105,6 +115,7 @@ const REQUIRED_LINKED_ASSET_KEYS = [
   'stateEventModel',
   'validationFixtures',
 ] as const;
+const PUBLIC_JUNK_TEXT_PATTERN = /\[.{1,120}\]|\b(T\.?B\.?D\.?|T\.?B\.?A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
 
 export function validateProcessedGameTransferCoverage(
   game: Game,
@@ -177,17 +188,22 @@ function validateCheck(
   check: TransferCheck,
   issues: ProcessedGameTransferIssue[],
 ): void {
-  const source = readPath(game, check.sourcePath);
+  const rawSource = readPath(game, check.sourcePath);
+  const source = check.match === 'publicVariationList'
+    ? normalizePublicVariationList(rawSource)
+    : rawSource;
   if (!isMeaningful(source)) {
     return;
   }
 
-  const target = readPath(options, check.targetPath);
+  const targetPaths = [check.targetPath, ...(check.alternateTargetPaths ?? [])];
+  const targetPath = targetPaths.find((candidatePath) => isMeaningful(readPath(options, candidatePath))) ?? check.targetPath;
+  const target = readPath(options, targetPath);
   if (!isMeaningful(target)) {
     issues.push({
       severity: check.severity ?? 'error',
       sourcePath: check.sourcePath,
-      targetPath: check.targetPath,
+      targetPath,
       message: check.message,
     });
     return;
@@ -197,13 +213,16 @@ function validateCheck(
     issues.push({
       severity: check.severity ?? 'error',
       sourcePath: check.sourcePath,
-      targetPath: check.targetPath,
+      targetPath,
       message: `${check.message} Expected ${stringifyComparable(source)} but got ${stringifyComparable(target)}.`,
     });
   }
 }
 
 function readPath(value: unknown, path: string): unknown {
+  if (path === '') {
+    return value;
+  }
   return path.split('.').reduce((current: unknown, segment) => {
     if (!current || typeof current !== 'object') {
       return undefined;
@@ -229,6 +248,37 @@ function isMeaningful(value: unknown): boolean {
     return Object.values(value).some(isMeaningful);
   }
   return false;
+}
+
+function normalizePublicVariationList(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.flatMap((variation) => {
+    if (!variation || typeof variation !== 'object' || Array.isArray(variation)) {
+      return [];
+    }
+    const record = variation as Record<string, unknown>;
+    const name = publicText(record.name);
+    const description = publicText(record.description);
+    if (!name || !description) {
+      return [];
+    }
+    const id = publicText(record.id);
+    return [{
+      ...(id ? { id } : {}),
+      name,
+      description,
+    }];
+  });
+}
+
+function publicText(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const trimmed = value.trim();
+  return trimmed && !PUBLIC_JUNK_TEXT_PATTERN.test(trimmed) ? trimmed : '';
 }
 
 function valuesEqual(left: unknown, right: unknown): boolean {
@@ -263,14 +313,14 @@ function stringifyPublicTransferPayload(options: CreateGameModeOptions): string 
 
 function collectBlockedPublicTokens(game: Game): string[] {
   const tokens = new Set<string>();
-  const sourceCandidates = [
-    ...Object.values(game.sources ?? {}).flatMap((value) => Array.isArray(value) ? value : [value]),
-    ...game.evidence,
-  ];
-  for (const candidate of sourceCandidates) {
-    for (const value of Object.values(asRecord(candidate))) {
+  const sourceCandidates = Object.values(game.sources ?? {}).flatMap((value) => Array.isArray(value) ? value : [value]);
+  for (const candidate of [...sourceCandidates, ...game.evidence]) {
+    for (const [key, value] of Object.entries(asRecord(candidate))) {
       if (typeof value === 'string' && value.length >= 12) {
-        tokens.add(value);
+        const normalizedKey = key.toLowerCase();
+        if (normalizedKey.includes('url') || normalizedKey.includes('html') || normalizedKey === 'id' || normalizedKey === 'path' || normalizedKey === 'sourcepath') {
+          tokens.add(value);
+        }
       }
     }
   }

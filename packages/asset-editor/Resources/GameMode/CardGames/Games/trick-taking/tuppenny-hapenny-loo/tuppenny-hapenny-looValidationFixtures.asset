@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '78d84d52-5cd0-41c5-85b9-dd8c34443357',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/tuppenny-hapenny-loo/tuppenny-hapenny-looValidationFixtures.asset',
+    gameId: 'tuppenny-hapenny-loo',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tuppenny-hapenny-loo',
+    familyVariant: 'Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tuppenny-hapenny-loo.core-runtime-contracts',
+        title: "Tuppenny Ha'penny Loo Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'tuppenny-hapenny-loo.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "Tuppenny Ha'penny Loo must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'tuppenny-hapenny-loo.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tuppenny-hapenny-loo.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: "Tuppenny Ha'penny Loo must run setup_round first, then enter play with the processed legal actions.",
+            linkedRuleIds: [
+              'tuppenny-hapenny-loo.setup.initial-deal',
+              'tuppenny-hapenny-loo.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'tuppenny-hapenny-loo.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "Don't run out of buttons.",
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Buttons as currency. Match = penalty to previous player.',
+            linkedRuleIds: [
+              'tuppenny-hapenny-loo.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tuppenny-hapenny-loo.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '0600a0c3-b0cb-4680-8765-3d5d2b7db6d3',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/beggar-my-neighbour/beggar-my-neighbourValidationFixtures.asset',
+    gameId: 'beggar-my-neighbour',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'beggar-my-neighbour',
+    familyVariant: 'War / Accumulation',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'beggar-my-neighbour.core-runtime-contracts',
+        title: 'Beggar My Neighbour Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'beggar-my-neighbour.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Beggar My Neighbour must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'beggar-my-neighbour.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'beggar-my-neighbour.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'turning_round',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Beggar My Neighbour must run setup_round first, then enter turning_round with the processed legal actions.',
+            linkedRuleIds: [
+              'beggar-my-neighbour.setup.initial-deal',
+              'beggar-my-neighbour.flow.turning_round',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'turning_round',
+            firstPlayableLegalActions: [
+              'flip_top_card',
+            ],
+          },
+          {
+            id: 'beggar-my-neighbour.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '52',
+            scoringDirection: 'high_wins',
+            targetScore: 52,
+            cardValues: {},
+            explanation: 'No points are awarded; victory is determined by total card possession.',
+            linkedRuleIds: [
+              'beggar-my-neighbour.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'beggar-my-neighbour.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

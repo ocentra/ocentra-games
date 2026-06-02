@@ -1,0 +1,241 @@
+{
+  system: {
+    guid: '3895c5c2-5e13-4c17-8617-2772456eaff7',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/italian-poker/italian-pokerRules.asset',
+    gameId: 'italian-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Ante; optional blind (buio, controbuio, over) before deal. Deal 5 cards each. First betting round: pass or open (with pair of Jacks or better, or 4-card straight-flush draw); then fold, call, raise. Draw: each surviving player may exchange 0–4 cards. Second betting round: bet, check, or parol (throw in and carry pot); then fold, call, raise. Showdown: highest hand wins; flush beats full house; straight flush has min/medium/max with min beating max.',
+    Player: 'Ante; optional blind (buio, controbuio, over) before deal. Deal 5 cards each. First betting round: pass or open (with pair of Jacks or better, or 4-card straight-flush draw); then fold, call, raise. Draw: each surviving player may exchange 0–4 cards. Second betting round: bet, check, or parol (throw in and carry pot); then fold, call, raise. Showdown: highest hand wins; flush beats full house; straight flush has min/medium/max with min beating max.',
+    objective: 'Win the pot by having the highest-ranking hand at showdown, or by being the last player standing when all others have folded.',
+    gameplay: 'Ante; optional blind (buio, controbuio, over) before deal. Deal 5 cards each. First betting round: pass or open (with pair of Jacks or better, or 4-card straight-flush draw); then fold, call, raise. Draw: each surviving player may exchange 0–4 cards. Second betting round: bet, check, or parol (throw in and carry pot); then fold, call, raise. Showdown: highest hand wins; flush beats full house; straight flush has min/medium/max with min beating max.',
+    keyRules: [
+      'Opening requires pair of Jacks or better, or four consecutive cards of a suit (no Ace) that can extend to straight flush.',
+      'Flush ranks above full house. Straight flush: minimum beats maximum, maximum beats medium, medium beats minimum.',
+      'Ties broken by suit order: hearts highest, then diamonds, clubs, spades.',
+      'Direction of play is clockwise.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4, 5, or 6 players.',
+      deck: 'Short deck of 32 (4 players), 36 (5) or 40 (6) cards from a standard 52-card pack; lowest rank is 11 minus number of players.',
+      equipment: 'Standard deck (short pack), chips for betting; ante amount and min/max limits agreed before play.',
+      dealing: "All players ante (invito). Optionally the first player may open blind (buio) before the deal; then dealer gives 5 cards each, one at a time clockwise starting to dealer's left.",
+    },
+    turnFlow: 'Ante; optional blind (buio, controbuio, over) before deal. Deal 5 cards each. First betting round: pass or open (with pair of Jacks or better, or 4-card straight-flush draw); then fold, call, raise. Draw: each surviving player may exchange 0–4 cards. Second betting round: bet, check, or parol (throw in and carry pot); then fold, call, raise. Showdown: highest hand wins; flush beats full house; straight flush has min/medium/max with min beating max.',
+    moveValidityConditions: {
+      ante: 'Before deal; required to compete; amount agreed before play (invito).',
+      deal: 'At start of round',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'During betting round',
+      check: 'When no bet to call',
+      call: 'When facing a bet; match amount to stay in.',
+      bet: 'When no bet has been made; subject to table stakes.',
+      raise: 'When facing a bet',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'At showdown when two or more players remain.',
+      award_pot: 'After showdown or when only one player remains.',
+      play_card: 'Italian Poker is draw poker; players bet, draw, and showdown rather than playing cards to a trick.',
+      draw: 'During draw phase; discard first then receive same number from stock.',
+      discard: 'During draw phase; each player in turn states how many, discards that many, receives same number.',
+      pass: 'First player(s) in first betting round until someone opens.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the highest-ranking hand at showdown, or by being the last player standing when all others have folded.',
+      'Turn-flow example: Ante; optional blind (buio, controbuio, over) before deal. Deal 5 cards each. First betting round: pass or open (with pair of Jacks or better, or 4-card straight-flush draw); then fold, call, raise. Draw: each surviving player may exchange 0–4 cards. Second betting round: bet, check, or parol (throw in and carry pot); then fold, call, raise. Showdown: highest hand wins; flush beats full house; straight flush has min/medium/max with min beating max.',
+      'Scoring example: Pot is won by the player with the highest-ranking hand at showdown, or by the last player left when all others fold. Three-way straight flush (min, medium, max) splits the pot. Highest-ranking hand at showdown wins the pot; or the last player standing when all others have folded..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'italian-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest-ranking hand at showdown, or by being the last player standing when all others have folded.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'italian-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Ante; optional blind (buio, controbuio, over) before deal. Deal 5 cards each. First betting round: pass or open (with pair of Jacks or better, or 4-card straight-flush draw); then fold, call, raise. Draw: each surviving player may exchange 0–4 cards. Second betting round: bet, check, or parol (throw in and carry pot); then fold, call, raise. Showdown: highest hand wins; flush beats full house; straight flush has min/medium/max with min beating max.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'italian-poker.setup.players',
+        title: 'Players',
+        text: '4, 5, or 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'italian-poker.setup.deck',
+        title: 'Deck',
+        text: 'Short deck of 32 (4 players), 36 (5) or 40 (6) cards from a standard 52-card pack; lowest rank is 11 minus number of players.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'italian-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck (short pack), chips for betting; ante amount and min/max limits agreed before play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'italian-poker.setup.dealing',
+        title: 'Deal',
+        text: "All players ante (invito). Optionally the first player may open blind (buio) before the deal; then dealer gives 5 cards each, one at a time clockwise starting to dealer's left.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'italian-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest-ranking hand at showdown wins the pot; or the last player standing when all others have folded.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'italian-poker.score.description',
+        title: 'Scoring',
+        text: 'Pot is won by the player with the highest-ranking hand at showdown, or by the last player left when all others fold. Three-way straight flush (min, medium, max) splits the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'italian-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Opening requires pair of Jacks or better, or four consecutive cards of a suit (no Ace) that can extend to straight flush.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'italian-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Flush ranks above full house. Straight flush: minimum beats maximum, maximum beats medium, medium beats minimum.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'italian-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Ties broken by suit order: hearts highest, then diamonds, clubs, spades.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'italian-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Direction of play is clockwise.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'italian-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'italian-poker.rules.objective',
+          'italian-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'italian-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'italian-poker.setup.players',
+          'italian-poker.setup.deck',
+          'italian-poker.setup.equipment',
+          'italian-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'italian-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'italian-poker.rules.key.1',
+          'italian-poker.rules.key.2',
+          'italian-poker.rules.key.3',
+          'italian-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'italian-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'italian-poker.score.description',
+          'italian-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'italian-poker.setup.dealing',
+        'italian-poker.rules.objective',
+      ],
+      ante: [
+        'italian-poker.rules.gameplay',
+      ],
+      deal: [
+        'italian-poker.rules.gameplay',
+      ],
+      fold: [
+        'italian-poker.rules.gameplay',
+      ],
+      check: [
+        'italian-poker.rules.gameplay',
+      ],
+      call: [
+        'italian-poker.rules.gameplay',
+      ],
+      bet: [
+        'italian-poker.rules.gameplay',
+      ],
+      raise: [
+        'italian-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'italian-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'italian-poker.rules.gameplay',
+      ],
+      draw: [
+        'italian-poker.rules.gameplay',
+      ],
+      discard: [
+        'italian-poker.rules.gameplay',
+      ],
+      pass: [
+        'italian-poker.rules.gameplay',
+      ],
+    },
+  },
+}

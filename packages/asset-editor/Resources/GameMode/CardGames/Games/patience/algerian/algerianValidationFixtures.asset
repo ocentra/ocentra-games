@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '4d18b867-202e-4549-adbd-00f97b35c700',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/algerian/algerianValidationFixtures.asset',
+    gameId: 'algerian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'algerian',
+    familyVariant: 'Two-Deck Patience',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'algerian.core-runtime-contracts',
+        title: 'Algerian Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'algerian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Algerian must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'algerian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'algerian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'setup',
+            supportedActionIds: [
+              'setup_round',
+              'deal_tableau',
+              'deal_reserve',
+              'move_to_foundation',
+              'move_to_tableau',
+              'deal_from_stock',
+              'evaluate_completion',
+            ],
+            explanation: 'Algerian must run setup_round first, then enter setup with the processed legal actions.',
+            linkedRuleIds: [
+              'algerian.setup.initial-deal',
+              'algerian.flow.setup',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal_tableau',
+              'deal_reserve',
+            ],
+          },
+          {
+            id: 'algerian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '104',
+            scoringDirection: 'high_wins',
+            targetScore: 104,
+            cardValues: {},
+            explanation: 'Scoring is based on the total cards moved to foundations.',
+            linkedRuleIds: [
+              'algerian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'algerian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

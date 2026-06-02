@@ -1,0 +1,234 @@
+{
+  system: {
+    guid: 'e00e937b-c669-459c-a145-27c9520e1c88',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/brag-6-card/brag-6-cardRules.asset',
+    gameId: 'brag-6-card',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Partition**: Players divide 6 cards into Hand A and Hand B. 2. **Vying**: Betting rounds proceed as in standard Brag. 3. **Comparison**: Showdown involves comparing corresponding hands. 4. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.',
+    Player: '1. **Partition**: Players divide 6 cards into Hand A and Hand B. 2. **Vying**: Betting rounds proceed as in standard Brag. 3. **Comparison**: Showdown involves comparing corresponding hands. 4. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.',
+    objective: 'Win the pot by having the highest-ranked hands across the partition or by forcing others to fold.',
+    gameplay: '1. **Partition**: Players divide 6 cards into Hand A and Hand B. 2. **Vying**: Betting rounds proceed as in standard Brag. 3. **Comparison**: Showdown involves comparing corresponding hands. 4. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.',
+    keyRules: [
+      'Both three-card hands must be legal Brag combinations.',
+      'In many variants, you must win both hand comparisons to take the entire pot; otherwise, it carries over.',
+      'Blind betting applies to the entire 6-card set before viewing and partitioning.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Typically 3 to 6 players playing individually.',
+      deck: 'Standard 52-card French pack (No Jokers).',
+      equipment: 'Standard pack, betting chips or currency.',
+      dealing: 'Ante into pot. Deal six cards face-down to each player. Players divide their six cards into two separate three-card hands.',
+    },
+    turnFlow: '1. **Partition**: Players divide 6 cards into Hand A and Hand B. 2. **Vying**: Betting rounds proceed as in standard Brag. 3. **Comparison**: Showdown involves comparing corresponding hands. 4. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.',
+    moveValidityConditions: {
+      ante: 'Allowed only during the ante phase.',
+      deal: 'The distribution of six cards face-down to all players is handled by the system dealer.',
+      reveal_market: '6-Card Brag is a hole-card game where all cards are held privately; no community market exists.',
+      buy_market: 'Players cannot purchase cards from a market; hand optimization is restricted to the initial partition.',
+      buy_stock: 'There is no drawing or buying from the stock during play; the round uses the six cards dealt at the start.',
+      fold: 'Allowed during the vying phase when facing a bet.',
+      check: 'Standard Brag requires an active bet to remain in the hand; checking is generally not permitted.',
+      call: 'Allowed only during the vying phase.',
+      bet: 'Seeing players must bet at least double the Blind bet amount.',
+      raise: 'Allowed during the vying phase.',
+      declare: 'Hand results are established during the showdown comparison rather than through a separate declaration.',
+      reveal_hand: "The system automatically reveals partitions at the request of a player who pays the 'See' double-cost.",
+      award_pot: 'System only.',
+      play_card: '6-Card Brag is a partition vying game where cards are held rather than played to tricks.',
+      draw: 'All six cards are received at the start; no drawing phase exists during the play of the hand.',
+      discard: 'Every card must be partitioned into the two hands; no cards are discarded to a muck pile.',
+      pass: 'Players must either bet, see, or fold during their turn; a simple pass is not supported.',
+      bid: 'Brag uses a wagering system rather than an auction-style bidding system for contracts.',
+      meld: 'Hand resolution is based strictly on three-card poker hierarchies rather than forming melds.',
+      go_out: 'The hand terminates only after a showdown occurs or all but one player have folded.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Win the pot by having the highest-ranked hands across the partition or by forcing others to fold.',
+      'Turn-flow example: 1. **Partition**: Players divide 6 cards into Hand A and Hand B. 2. **Vying**: Betting rounds proceed as in standard Brag. 3. **Comparison**: Showdown involves comparing corresponding hands. 4. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.',
+      'Scoring example: Standard pot-based resolution across dual-hand comparisons. Win both hand comparisons OR be the last player not to fold..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'brag-6-card.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest-ranked hands across the partition or by forcing others to fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'brag-6-card.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Partition**: Players divide 6 cards into Hand A and Hand B. 2. **Vying**: Betting rounds proceed as in standard Brag. 3. **Comparison**: Showdown involves comparing corresponding hands. 4. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'brag-6-card.setup.players',
+        title: 'Players',
+        text: 'Typically 3 to 6 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'brag-6-card.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'brag-6-card.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, betting chips or currency.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'brag-6-card.setup.dealing',
+        title: 'Deal',
+        text: 'Ante into pot. Deal six cards face-down to each player. Players divide their six cards into two separate three-card hands.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'brag-6-card.score.win-condition',
+        title: 'Win condition',
+        text: 'Win both hand comparisons OR be the last player not to fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'brag-6-card.score.description',
+        title: 'Scoring',
+        text: 'Standard pot-based resolution across dual-hand comparisons.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'brag-6-card.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Both three-card hands must be legal Brag combinations.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'brag-6-card.rules.key.2',
+        title: 'Key rule 2',
+        text: 'In many variants, you must win both hand comparisons to take the entire pot; otherwise, it carries over.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'brag-6-card.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Blind betting applies to the entire 6-card set before viewing and partitioning.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'brag-6-card.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'brag-6-card.rules.objective',
+          'brag-6-card.rules.gameplay',
+        ],
+      },
+      {
+        id: 'brag-6-card.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'brag-6-card.setup.players',
+          'brag-6-card.setup.deck',
+          'brag-6-card.setup.equipment',
+          'brag-6-card.setup.dealing',
+        ],
+      },
+      {
+        id: 'brag-6-card.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'brag-6-card.rules.key.1',
+          'brag-6-card.rules.key.2',
+          'brag-6-card.rules.key.3',
+        ],
+      },
+      {
+        id: 'brag-6-card.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'brag-6-card.score.description',
+          'brag-6-card.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'brag-6-card.setup.dealing',
+        'brag-6-card.rules.objective',
+      ],
+      ante: [
+        'brag-6-card.rules.gameplay',
+      ],
+      fold: [
+        'brag-6-card.rules.gameplay',
+      ],
+      call: [
+        'brag-6-card.rules.gameplay',
+      ],
+      bet: [
+        'brag-6-card.rules.gameplay',
+      ],
+      raise: [
+        'brag-6-card.rules.gameplay',
+      ],
+      award_pot: [
+        'brag-6-card.rules.gameplay',
+      ],
+      deal_6_each: [
+        'brag-6-card.rules.gameplay',
+      ],
+      split_into_two_hands: [
+        'brag-6-card.rules.gameplay',
+      ],
+      bet_blind: [
+        'brag-6-card.rules.gameplay',
+      ],
+      see_cards: [
+        'brag-6-card.rules.gameplay',
+      ],
+      bet_seeing: [
+        'brag-6-card.rules.gameplay',
+      ],
+      request_showdown: [
+        'brag-6-card.rules.gameplay',
+      ],
+      compare_partitions: [
+        'brag-6-card.rules.gameplay',
+      ],
+    },
+  },
+}

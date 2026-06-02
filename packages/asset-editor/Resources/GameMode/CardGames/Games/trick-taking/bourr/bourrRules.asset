@@ -1,0 +1,225 @@
+{
+  system: {
+    guid: 'd450dfa3-18fa-4ca0-a8b5-45cca61a7747',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bourr/bourrRules.asset',
+    gameId: 'bourr',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Ante**: Mandatory contribution. 2. **Deal**: 5 cards each + trump reveal. 3. **Participation**: Players choose to 'Play' or 'Fold'. 4. **Exchange**: Active players may discard and draw new cards from the stock. 5. **Play**: Must follow suit; if void, MUST trump; if trumps are led, MUST over-trump. 6. **Settlement**: Winner takes pot. Non-winners with 0 tricks match the pot.",
+    Player: "1. **Ante**: Mandatory contribution. 2. **Deal**: 5 cards each + trump reveal. 3. **Participation**: Players choose to 'Play' or 'Fold'. 4. **Exchange**: Active players may discard and draw new cards from the stock. 5. **Play**: Must follow suit; if void, MUST trump; if trumps are led, MUST over-trump. 6. **Settlement**: Winner takes pot. Non-winners with 0 tricks match the pot.",
+    objective: 'Win the most tricks to claim the pot, while ensuring you win at least one trick to avoid the penalty.',
+    gameplay: "1. **Ante**: Mandatory contribution. 2. **Deal**: 5 cards each + trump reveal. 3. **Participation**: Players choose to 'Play' or 'Fold'. 4. **Exchange**: Active players may discard and draw new cards from the stock. 5. **Play**: Must follow suit; if void, MUST trump; if trumps are led, MUST over-trump. 6. **Settlement**: Winner takes pot. Non-winners with 0 tricks match the pot.",
+    keyRules: [
+      "If you choose to Play and win 0 tricks, you are 'Bourréd' and pay the whole pot.",
+      'Dealer must play if all other players fold.',
+      'Aces are high; 2s are low.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 to 8 players playing individually (5 is optimal for suit distribution).',
+      deck: 'Standard 52-card French pack (No Jokers).',
+      equipment: 'Standard pack, large central pot for chips or currency.',
+      dealing: 'Each player contributes an ante. Deal 5 cards each clockwise. Turn the next card face-up to set the trump suit.',
+    },
+    turnFlow: "1. **Ante**: Mandatory contribution. 2. **Deal**: 5 cards each + trump reveal. 3. **Participation**: Players choose to 'Play' or 'Fold'. 4. **Exchange**: Active players may discard and draw new cards from the stock. 5. **Play**: Must follow suit; if void, MUST trump; if trumps are led, MUST over-trump. 6. **Settlement**: Winner takes pot. Non-winners with 0 tricks match the pot.",
+    moveValidityConditions: {
+      ante: 'Mandatory for all players at the start of the round.',
+      deal: 'The initial distribution of five cards and the trump reveal are handled by the system dealer.',
+      reveal_market: 'The only public card is the trump proposal; no shared market of playable cards exists.',
+      buy_market: 'Players cannot purchase cards from a market; hand improvement is restricted to the exchange phase.',
+      buy_stock: 'Drawing new cards during the exchange phase is free and does not involve a stock purchase cost.',
+      fold: 'Allowed during the participation phase only.',
+      check: 'The game uses a participation choice (Play or Fold) rather than a vying structure with checks.',
+      call: 'There is no intermediate bet to match; competition is based on trick results and fixed penalties.',
+      bet: 'Wagering is restricted to the initial ante and the penalty for taking zero tricks during play.',
+      raise: 'There are no wagering rounds where players can increase the current value of the pot.',
+      declare: 'Winning combinations are determined by trick capture rather than a formal declaration phase.',
+      reveal_hand: 'Hands stay private until cards are played into tricks; no separate reveal phase occurs.',
+      award_pot: 'System only.',
+      play_card: 'Must follow suit; must trump if void; must over-trump if trumps are led.',
+      draw: 'Allowed only during the exchange phase after discarding.',
+      discard: 'Allowed only during the exchange phase.',
+      pass: 'Players must either choose to Play or Fold during the participation phase; they cannot simply pass.',
+      bid: 'The trump suit is determined by a random flip from the deck rather than a bidding auction.',
+      meld: 'Bourré is a trick-taking game based on single cards rather than forming sequences or melds.',
+      go_out: 'The hand terminates for all active players simultaneously after the fifth trick is finished.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the most tricks to claim the pot, while ensuring you win at least one trick to avoid the penalty.',
+      "Turn-flow example: 1. **Ante**: Mandatory contribution. 2. **Deal**: 5 cards each + trump reveal. 3. **Participation**: Players choose to 'Play' or 'Fold'. 4. **Exchange**: Active players may discard and draw new cards from the stock. 5. **Play**: Must follow suit; if void, MUST trump; if trumps are led, MUST over-trump. 6. **Settlement**: Winner takes pot. Non-winners with 0 tricks match the pot.",
+      'Scoring example: Zero-sum gambling chips. Pot winner takes all; Bourréd players match the pot for the next deal. Win the most tricks in the hand..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bourr.rules.objective',
+        title: 'Objective',
+        text: 'Win the most tricks to claim the pot, while ensuring you win at least one trick to avoid the penalty.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bourr.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Ante**: Mandatory contribution. 2. **Deal**: 5 cards each + trump reveal. 3. **Participation**: Players choose to 'Play' or 'Fold'. 4. **Exchange**: Active players may discard and draw new cards from the stock. 5. **Play**: Must follow suit; if void, MUST trump; if trumps are led, MUST over-trump. 6. **Settlement**: Winner takes pot. Non-winners with 0 tricks match the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bourr.setup.players',
+        title: 'Players',
+        text: '3 to 8 players playing individually (5 is optimal for suit distribution).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bourr.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bourr.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, large central pot for chips or currency.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bourr.setup.dealing',
+        title: 'Deal',
+        text: 'Each player contributes an ante. Deal 5 cards each clockwise. Turn the next card face-up to set the trump suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bourr.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the most tricks in the hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bourr.score.description',
+        title: 'Scoring',
+        text: 'Zero-sum gambling chips. Pot winner takes all; Bourréd players match the pot for the next deal.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bourr.rules.key.1',
+        title: 'Key rule 1',
+        text: "If you choose to Play and win 0 tricks, you are 'Bourréd' and pay the whole pot.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bourr.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Dealer must play if all other players fold.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bourr.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Aces are high; 2s are low.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bourr.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bourr.rules.objective',
+          'bourr.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bourr.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bourr.setup.players',
+          'bourr.setup.deck',
+          'bourr.setup.equipment',
+          'bourr.setup.dealing',
+        ],
+      },
+      {
+        id: 'bourr.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bourr.rules.key.1',
+          'bourr.rules.key.2',
+          'bourr.rules.key.3',
+        ],
+      },
+      {
+        id: 'bourr.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bourr.score.description',
+          'bourr.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bourr.setup.dealing',
+        'bourr.rules.objective',
+      ],
+      ante: [
+        'bourr.rules.gameplay',
+      ],
+      fold: [
+        'bourr.rules.gameplay',
+      ],
+      award_pot: [
+        'bourr.rules.gameplay',
+      ],
+      play_card: [
+        'bourr.rules.gameplay',
+      ],
+      draw: [
+        'bourr.rules.gameplay',
+      ],
+      discard: [
+        'bourr.rules.gameplay',
+      ],
+      deal_5_turn_trump: [
+        'bourr.rules.gameplay',
+      ],
+      play: [
+        'bourr.rules.gameplay',
+      ],
+      apply_bourre_penalty: [
+        'bourr.rules.gameplay',
+      ],
+      draw_from_stock: [
+        'bourr.rules.gameplay',
+      ],
+    },
+  },
+}

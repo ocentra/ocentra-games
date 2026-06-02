@@ -7,6 +7,7 @@ const ClipboardOrigin = 'http://localhost:3000';
 async function openClaimLobby(page: Page) {
   await page.goto(ClaimLobbyPath);
   await expect(page.getByRole('button', { name: 'QUICK JOIN' })).toBeVisible({ timeout: 30000 });
+  await expect(page.getByLabel('Table chat message')).toBeDisabled({ timeout: 30000 });
 }
 
 async function acceptGuestPrompt(page: Page) {
@@ -38,9 +39,10 @@ async function joinTableByCode(page: Page, joinCode: string) {
 }
 
 async function joinPublicTableFromList(page: Page) {
-  await expect(page.getByText('Master Table').first()).toBeVisible({ timeout: 30000 });
   await page.getByRole('button', { name: 'ALL TABLES', exact: true }).click();
-  await page.locator('.lobby-all-table-row').first().getByRole('button', { name: 'JOIN TABLE', exact: true }).click();
+  const firstTable = page.locator('.lobby-all-table-row').first();
+  await expect(firstTable).toBeVisible({ timeout: 30000 });
+  await firstTable.getByRole('button', { name: 'JOIN TABLE', exact: true }).click();
   await acceptGuestPrompt(page);
   await expect(page.getByText(/CODE\s+[A-Z0-9]+/).first()).toBeVisible({ timeout: 30000 });
 }
@@ -58,17 +60,18 @@ async function exerciseSideServices(page: Page, joinCode: string) {
   await page.getByRole('button', { name: 'INVITE' }).first().click();
   await expect(page.getByRole('button', { name: 'SENT' }).first()).toBeVisible({ timeout: 15000 });
 
-  const lobbyMessage = `global lobby ${Date.now()}`;
-  await page.getByLabel('Lobby chat message').fill(lobbyMessage);
-  await page.locator('form').filter({ has: page.getByLabel('Lobby chat message') }).locator('button').click();
-  await expect(page.getByText(lobbyMessage).first()).toBeVisible({ timeout: 15000 });
+  const tableMessage = `Claim table ready ${Date.now().toString(36)}`;
+  await page.getByLabel('Table chat message').fill(tableMessage);
+  await page.locator('form').filter({ has: page.getByLabel('Table chat message') }).locator('button').click();
+  await expect(page.getByText(tableMessage).first()).toBeVisible({ timeout: 15000 });
 
   await page.getByRole('button', { name: /Server:/ }).click();
   await page.getByRole('button', { name: 'Select server NA West' }).click();
   await expect(page.getByRole('button', { name: /Server: NA West/ })).toBeVisible({ timeout: 15000 });
 
   await page.getByRole('button', { name: 'DAILY REWARD' }).click();
-  await expect(page.getByText(/GP \/ .*AC|CLAIMED/).first()).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('button', { name: 'CLOSE' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'CLOSE' }).click();
 
   await page.getByRole('button', { name: 'SHARE' }).click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()), { timeout: 15000 }).toContain(joinCode);

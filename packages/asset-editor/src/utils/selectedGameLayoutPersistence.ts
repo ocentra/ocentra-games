@@ -37,6 +37,16 @@ function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
 }
 
+function normalizeContentPlan(value: SelectedGameContentPlan | undefined): SelectedGameContentPlan {
+  return {
+    tabs: DEFAULT_SELECTED_GAME_CONTENT_PLAN.tabs.map((defaultTab) => ({
+      ...defaultTab,
+      ...(value?.tabs.find((tab) => tab.id === defaultTab.id) ?? {}),
+      tip: asString(value?.tabs.find((tab) => tab.id === defaultTab.id)?.tip) || defaultTab.tip,
+    })),
+  };
+}
+
 function normalizeEnvelope(value: unknown): AssetEnvelope {
   const record = asRecord(value);
   return {
@@ -52,7 +62,7 @@ export function normalizeSelectedGameLayoutConfig(
   const sampleGameRef = asRecord(preview.sampleGameRef);
   return {
     layoutControls: asRecord(document?.layoutControls),
-    contentPlan: document?.contentPlan ?? DEFAULT_SELECTED_GAME_CONTENT_PLAN,
+    contentPlan: normalizeContentPlan(document?.contentPlan),
     previewSampleGameId: asString(sampleGameRef.gameId) || 'claim',
     debugBounds: preview.debugBounds === true,
   };

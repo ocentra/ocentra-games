@@ -1,0 +1,70 @@
+{
+  system: {
+    guid: '419c282a-2006-42ee-9dcd-dfc97c1b3df3',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bid-euchre/bid-euchreStateEventModel.asset',
+    gameId: 'bid-euchre',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bid-euchre',
+    familyVariant: 'Euchre / Auction',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 6,
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        hand_size: 6,
+        target_score: 32,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'bidding',
+        'name_trump',
+        'play_loop',
+      ],
+      actions: [
+        'setup_round',
+        'play_card',
+        'pass',
+        'bid',
+        'deal_6_each',
+        'name_suit',
+        'name_no_trump',
+      ],
+    },
+    examples: [],
+  },
+}

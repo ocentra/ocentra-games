@@ -1,0 +1,235 @@
+{
+  system: {
+    guid: '76d64ffa-a25d-48ab-9d71-1b574cd0a756',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/turkish-poker/turkish-pokerRules.asset',
+    gameId: 'turkish-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Ante: All players post an equal ante. 2. Deal: Five cards each, one at a time, clockwise. 3. First betting round: Minimum to open is a pair of Kings; players with less must pass; opener may pass. Once someone opens, others may call, raise, or fold. 4. Draw: Starting left of dealer, each player may exchange 0–4 cards (discard face down, receive replacements from stock). 5. Second betting round: Opener (or next active player) may check or bet; others fold, call, or raise. 6. Showdown: Remaining players reveal hands; highest hand wins. If nobody opens, hands are thrown in, pot stays, players ante again and the next dealer deals.',
+    Player: '1. Ante: All players post an equal ante. 2. Deal: Five cards each, one at a time, clockwise. 3. First betting round: Minimum to open is a pair of Kings; players with less must pass; opener may pass. Once someone opens, others may call, raise, or fold. 4. Draw: Starting left of dealer, each player may exchange 0–4 cards (discard face down, receive replacements from stock). 5. Second betting round: Opener (or next active player) may check or bet; others fold, call, or raise. 6. Showdown: Remaining players reveal hands; highest hand wins. If nobody opens, hands are thrown in, pot stays, players ante again and the next dealer deals.',
+    objective: 'Win the pot by having the highest-ranked five-card hand at showdown or by being the last player left after all others fold.',
+    gameplay: '1. Ante: All players post an equal ante. 2. Deal: Five cards each, one at a time, clockwise. 3. First betting round: Minimum to open is a pair of Kings; players with less must pass; opener may pass. Once someone opens, others may call, raise, or fold. 4. Draw: Starting left of dealer, each player may exchange 0–4 cards (discard face down, receive replacements from stock). 5. Second betting round: Opener (or next active player) may check or bet; others fold, call, or raise. 6. Showdown: Remaining players reveal hands; highest hand wins. If nobody opens, hands are thrown in, pot stays, players ante again and the next dealer deals.',
+    keyRules: [
+      'Opening requirement: pair of Kings (oyunu açmak); less must pass (pas).',
+      'Draw: 0–4 cards exchanged; if requesting four, only three given initially then the fourth after all others served; discards shuffled and reused if stock runs out.',
+      'Hand order differs from international: flush beats full house; three of a kind beats straight; Ace can be low in minor straight; suits break ties (Hearts > Spades > Diamonds > Clubs).',
+      'Opener who folds or wins without showdown may be required to show cards to prove legal open (pair of Kings or better).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 to 5 players.',
+      deck: 'Short deck: 24 cards (2 players) through 36 cards (5 players), made by removing low cards from a standard 52-card pack.',
+      equipment: 'Cards and chips.',
+      dealing: 'First dealer chosen at random; deal rotates left. Before each deal all players ante an equal amount. Cards are shuffled, cut, and dealt clockwise one at a time until each player has five cards.',
+    },
+    turnFlow: '1. Ante: All players post an equal ante. 2. Deal: Five cards each, one at a time, clockwise. 3. First betting round: Minimum to open is a pair of Kings; players with less must pass; opener may pass. Once someone opens, others may call, raise, or fold. 4. Draw: Starting left of dealer, each player may exchange 0–4 cards (discard face down, receive replacements from stock). 5. Second betting round: Opener (or next active player) may check or bet; others fold, call, or raise. 6. Showdown: Remaining players reveal hands; highest hand wins. If nobody opens, hands are thrown in, pot stays, players ante again and the next dealer deals.',
+    moveValidityConditions: {
+      ante: 'Mandatory at start of each hand before cards are dealt.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Legal in any betting round when you do not wish to call or raise.',
+      check: 'Legal in the second betting round when no one has bet yet in that round.',
+      call: 'Legal after another player has opened or bet; stakes must become equal to continue.',
+      bet: 'First round: opening requires pair of Kings or better; may pass with openers. Second round: opener or next active may check or bet.',
+      raise: 'Legal after someone has opened or bet; once opened, players may raise or re-raise without holding pair of Kings.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Required when more than one player remains after the second betting round.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Cards are not played to a table; players discard and draw, then reveal at showdown.',
+      draw: 'Legal in draw phase; number of cards received equals number discarded (0–4); if requesting four, three given initially then fourth after all others served.',
+      discard: 'Legal in draw phase; 0 to 4 cards; discards are face down; if opener discards the opening combination, dealer keeps those discards aside for proof.',
+      pass: 'First betting round only; players with less than pair of Kings must pass; players may pass even with openers.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the highest-ranked five-card hand at showdown or by being the last player left after all others fold.',
+      'Turn-flow example: 1. Ante: All players post an equal ante. 2. Deal: Five cards each, one at a time, clockwise. 3. First betting round: Minimum to open is a pair of Kings; players with less must pass; opener may pass. Once someone opens, others may call, raise, or fold. 4. Draw: Starting left of dealer, each player may exchange 0–4 cards (discard face down, receive replacements from stock). 5. Second betting round: Opener (or next active player) may check or bet; others fold, call, or raise. 6. Showdown: Remaining players reveal hands; highest hand wins. If nobody opens, hands are thrown in, pot stays, players ante again and the next dealer deals.',
+      'Scoring example: Highest-ranked five-card hand at showdown wins the pot; last player remaining after all others fold wins without showdown. Highest hand at showdown wins the pot; or win by being the only player left in the hand..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'turkish-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest-ranked five-card hand at showdown or by being the last player left after all others fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'turkish-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Ante: All players post an equal ante. 2. Deal: Five cards each, one at a time, clockwise. 3. First betting round: Minimum to open is a pair of Kings; players with less must pass; opener may pass. Once someone opens, others may call, raise, or fold. 4. Draw: Starting left of dealer, each player may exchange 0–4 cards (discard face down, receive replacements from stock). 5. Second betting round: Opener (or next active player) may check or bet; others fold, call, or raise. 6. Showdown: Remaining players reveal hands; highest hand wins. If nobody opens, hands are thrown in, pot stays, players ante again and the next dealer deals.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'turkish-poker.setup.players',
+        title: 'Players',
+        text: '2 to 5 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'turkish-poker.setup.deck',
+        title: 'Deck',
+        text: 'Short deck: 24 cards (2 players) through 36 cards (5 players), made by removing low cards from a standard 52-card pack.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'turkish-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'turkish-poker.setup.dealing',
+        title: 'Deal',
+        text: 'First dealer chosen at random; deal rotates left. Before each deal all players ante an equal amount. Cards are shuffled, cut, and dealt clockwise one at a time until each player has five cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'turkish-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest hand at showdown wins the pot; or win by being the only player left in the hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'turkish-poker.score.description',
+        title: 'Scoring',
+        text: 'Highest-ranked five-card hand at showdown wins the pot; last player remaining after all others fold wins without showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'turkish-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Opening requirement: pair of Kings (oyunu açmak); less must pass (pas).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'turkish-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Draw: 0–4 cards exchanged; if requesting four, only three given initially then the fourth after all others served; discards shuffled and reused if stock runs out.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'turkish-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand order differs from international: flush beats full house; three of a kind beats straight; Ace can be low in minor straight; suits break ties (Hearts > Spades > Diamonds > Clubs).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'turkish-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Opener who folds or wins without showdown may be required to show cards to prove legal open (pair of Kings or better).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'turkish-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'turkish-poker.rules.objective',
+          'turkish-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'turkish-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'turkish-poker.setup.players',
+          'turkish-poker.setup.deck',
+          'turkish-poker.setup.equipment',
+          'turkish-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'turkish-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'turkish-poker.rules.key.1',
+          'turkish-poker.rules.key.2',
+          'turkish-poker.rules.key.3',
+          'turkish-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'turkish-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'turkish-poker.score.description',
+          'turkish-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'turkish-poker.setup.dealing',
+        'turkish-poker.rules.objective',
+      ],
+      ante: [
+        'turkish-poker.rules.gameplay',
+      ],
+      fold: [
+        'turkish-poker.rules.gameplay',
+      ],
+      check: [
+        'turkish-poker.rules.gameplay',
+      ],
+      call: [
+        'turkish-poker.rules.gameplay',
+      ],
+      bet: [
+        'turkish-poker.rules.gameplay',
+      ],
+      raise: [
+        'turkish-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'turkish-poker.rules.gameplay',
+      ],
+      draw: [
+        'turkish-poker.rules.gameplay',
+      ],
+      discard: [
+        'turkish-poker.rules.gameplay',
+      ],
+      pass: [
+        'turkish-poker.rules.gameplay',
+      ],
+    },
+  },
+}

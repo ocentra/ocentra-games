@@ -41,6 +41,12 @@ type LobbySocketMessage = {
     content?: string;
     timestamp?: number;
   };
+  chatHistory?: Array<{
+    senderName?: string;
+    senderId?: string;
+    content?: string;
+    timestamp?: number;
+  }>;
   reconnectToken?: string;
   roomId?: string;
   gameStatus?: string;
@@ -66,6 +72,13 @@ function chatMessageFromSocket(message: LobbySocketMessage['message']): LobbyRoo
     msg: message.content,
     ago: 'Now',
   };
+}
+
+function chatMessagesFromSocketHistory(messages: LobbySocketMessage['chatHistory']): LobbyRoomChatMessage[] {
+  return (messages ?? [])
+    .map(message => chatMessageFromSocket(message))
+    .filter((message): message is LobbyRoomChatMessage => Boolean(message))
+    .slice(-MaxChatMessages);
 }
 
 function reconnectStorageKey(roomId: string): string {
@@ -148,6 +161,7 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
   const handleSocketMessage = useCallback((payload: LobbySocketMessage) => {
     if (payload.type === 'welcome') {
       setSocketConnected(true);
+      setChatMessages(chatMessagesFromSocketHistory(payload.chatHistory));
       if (payload.roomId && payload.reconnectToken) {
         writeReconnectToken(payload.roomId, payload.reconnectToken);
       }
@@ -208,6 +222,7 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
   useEffect(() => {
     if (!joinedRoom?.roomId || !sessionUser?.userId) {
       setSocketConnected(false);
+      setChatMessages([]);
       return undefined;
     }
 

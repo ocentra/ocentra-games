@@ -1,0 +1,220 @@
+{
+  system: {
+    guid: '2554b7fd-c82d-426f-9f0c-4d8977ec8db2',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/kleurenwiezen/kleurenwiezenRules.asset',
+    gameId: 'kleurenwiezen',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Standard trick-taking. Must follow suit. If unable, play any card or trump.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Pass**: If everyone passes, a 'General Point-less' hand (Vuile) is played where the goal is simply to win as many tricks as possible, or a redeal occurs.",
+    Player: "1. Standard trick-taking. Must follow suit. If unable, play any card or trump.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Pass**: If everyone passes, a 'General Point-less' hand (Vuile) is played where the goal is simply to win as many tricks as possible, or a redeal occurs.",
+    objective: "Score points by fulfilling a bid contract. Scores are calculated in 'fiches' or chips.",
+    gameplay: "1. Standard trick-taking. Must follow suit. If unable, play any card or trump.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Pass**: If everyone passes, a 'General Point-less' hand (Vuile) is played where the goal is simply to win as many tricks as possible, or a redeal occurs.",
+    keyRules: [
+      'Bidding hierarchy: Prop/Mee, Troel, Abondance, MisÃ¨re, Solo, Piccolo, Grote MisÃ¨re',
+      'Must follow suit',
+      'Partnerships form during bidding',
+      'Troel: automatic partnership if player has 3+ Aces',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players playing individually until partnerships are formed during bidding.',
+      deck: 'Standard 52-card deck. Aces are high, 2s are low.',
+      equipment: 'Standard 52-card deck. Aces are high, 2s are low.',
+      dealing: 'Each player receives 13 cards (dealt 4-4-5 or 3-3-3-4).',
+    },
+    turnFlow: "1. Standard trick-taking. Must follow suit. If unable, play any card or trump.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Pass**: If everyone passes, a 'General Point-less' hand (Vuile) is played where the goal is simply to win as many tricks as possible, or a redeal occurs.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if possible',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Must be higher than previous bid',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      "Rule example: Score points by fulfilling a bid contract. Scores are calculated in 'fiches' or chips.",
+      "Turn-flow example: 1. Standard trick-taking. Must follow suit. If unable, play any card or trump.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Pass**: If everyone passes, a 'General Point-less' hand (Vuile) is played where the goal is simply to win as many tricks as possible, or a redeal occurs.",
+      "Scoring example: Points awarded based on contract fulfillment. Scores in 'fiches' or chips. Reach target score through successful contracts.",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'kleurenwiezen.rules.objective',
+        title: 'Objective',
+        text: "Score points by fulfilling a bid contract. Scores are calculated in 'fiches' or chips.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Standard trick-taking. Must follow suit. If unable, play any card or trump.\n2. Highest trump wins; if no trump, highest card of led suit wins.\n3. **Pass**: If everyone passes, a 'General Point-less' hand (Vuile) is played where the goal is simply to win as many tricks as possible, or a redeal occurs.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.setup.players',
+        title: 'Players',
+        text: '4 players playing individually until partnerships are formed during bidding.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Aces are high, 2s are low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Aces are high, 2s are low.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 cards (dealt 4-4-5 or 3-3-3-4).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach target score through successful contracts',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.score.description',
+        title: 'Scoring',
+        text: "Points awarded based on contract fulfillment. Scores in 'fiches' or chips.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bidding hierarchy: Prop/Mee, Troel, Abondance, MisÃ¨re, Solo, Piccolo, Grote MisÃ¨re',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must follow suit',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Partnerships form during bidding',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Troel: automatic partnership if player has 3+ Aces',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kleurenwiezen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kleurenwiezen.rules.objective',
+          'kleurenwiezen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kleurenwiezen.setup.players',
+          'kleurenwiezen.setup.deck',
+          'kleurenwiezen.setup.equipment',
+          'kleurenwiezen.setup.dealing',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kleurenwiezen.rules.key.1',
+          'kleurenwiezen.rules.key.2',
+          'kleurenwiezen.rules.key.3',
+          'kleurenwiezen.rules.key.4',
+        ],
+      },
+      {
+        id: 'kleurenwiezen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kleurenwiezen.score.description',
+          'kleurenwiezen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kleurenwiezen.setup.dealing',
+        'kleurenwiezen.rules.objective',
+      ],
+      deal: [
+        'kleurenwiezen.rules.gameplay',
+      ],
+      play_card: [
+        'kleurenwiezen.rules.gameplay',
+      ],
+      pass: [
+        'kleurenwiezen.rules.gameplay',
+      ],
+      bid: [
+        'kleurenwiezen.rules.gameplay',
+      ],
+      score_round: [
+        'kleurenwiezen.rules.gameplay',
+      ],
+    },
+  },
+}

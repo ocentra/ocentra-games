@@ -1,0 +1,213 @@
+{
+  system: {
+    guid: '7b00dfd5-536f-4bd4-ba94-d14e78ded5a5',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/australian-patience/australian-patienceRules.asset',
+    gameId: 'australian-patience',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Deal: 7 columns of 4 cards each, face-up (28 cards). Stock = 24 cards. 2. Play: Build tableau down in suit only. Move cards (and any cards on top) to other columns or to foundations. Flip stock one at a time to waste; top of waste is playable. 3. Foundations: Aces up in suit (A-2-3...K). 4. Win when all 52 cards are on foundations.',
+    Player: '1. Deal: 7 columns of 4 cards each, face-up (28 cards). Stock = 24 cards. 2. Play: Build tableau down in suit only. Move cards (and any cards on top) to other columns or to foundations. Flip stock one at a time to waste; top of waste is playable. 3. Foundations: Aces up in suit (A-2-3...K). 4. Win when all 52 cards are on foundations.',
+    objective: 'Move all 52 cards to the four foundation piles, organized by suit from Ace to King.',
+    gameplay: '1. Deal: 7 columns of 4 cards each, face-up (28 cards). Stock = 24 cards. 2. Play: Build tableau down in suit only. Move cards (and any cards on top) to other columns or to foundations. Flip stock one at a time to waste; top of waste is playable. 3. Foundations: Aces up in suit (A-2-3...K). 4. Win when all 52 cards are on foundations.',
+    keyRules: [
+      "Suit Building: You MUST follow suit in the tableau (unlike Klondike's alternating colors).",
+      'Visibility: All 28 starting cards are visible; use this to plan 3-4 moves ahead.',
+      'No Redeal: If the stock is empty and no moves remain, the game is lost.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'One player for the standard solitaire game. The player shuffles and deals their own tableau; there is no dealer or opponent. Australian Patience can also be played competitively by two players (each with their own 52-card pack and tableau), but the primary form documented here is single-player.',
+      deck: 'Standard 52 cards (Aces low).',
+      equipment: 'Standard pack, ample table surface.',
+      dealing: '7 columns of 4 cards are dealt face-up, slightly overlapped. This uses 28 cards. The remaining 24 cards form the draw pile (stock).',
+    },
+    turnFlow: '1. Deal: 7 columns of 4 cards each, face-up (28 cards). Stock = 24 cards. 2. Play: Build tableau down in suit only. Move cards (and any cards on top) to other columns or to foundations. Flip stock one at a time to waste; top of waste is playable. 3. Foundations: Aces up in suit (A-2-3...K). 4. Win when all 52 cards are on foundations.',
+    moveValidityConditions: {
+      ante: 'Australian Patience is solitaire with no betting or ante.',
+      deal: 'Dealing is done via custom setup_7x4 action; no generic deal action.',
+      reveal_market: 'No market pile; only stock and waste in this solitaire.',
+      buy_market: 'There is no market or purchase mechanic in this patience game.',
+      buy_stock: 'Cards are flipped from stock to waste only; no buying from stock.',
+      fold: 'Single-player solitaire; no fold or surrender action.',
+      check: 'No betting rounds; check does not apply to this game.',
+      call: 'No betting; call is not used in Australian Patience.',
+      bet: 'Patience has no wagering or bet action.',
+      raise: 'No betting; raise does not apply to this solitaire.',
+      declare: 'No declaration phase; players build foundations only.',
+      reveal_hand: 'Tableau cards are always face-up; no reveal-hand phase.',
+      award_pot: 'No pot or wager pool; win is by clearing all cards to foundations.',
+      play_card: 'Moves use custom actions move_tableau_group and move_to_foundation.',
+      draw: 'Drawing is flipping stock to waste via custom flip_stock action.',
+      discard: 'Waste is a flip target only; no discard-from-hand in this game.',
+      pass: 'Player always acts on tableau or waste; no pass action.',
+      bid: 'No bidding; single player builds foundations only.',
+      meld: 'No melding; cards move to tableau or foundations only.',
+      go_out: 'Win is verified by system via verify_win when foundations are full.',
+    },
+    exampleHands: [
+      'Setup example: 28 card(s) per player.',
+      'Rule example: Move all 52 cards to the four foundation piles, organized by suit from Ace to King.',
+      'Turn-flow example: 1. Deal: 7 columns of 4 cards each, face-up (28 cards). Stock = 24 cards. 2. Play: Build tableau down in suit only. Move cards (and any cards on top) to other columns or to foundations. Flip stock one at a time to waste; top of waste is playable. 3. Foundations: Aces up in suit (A-2-3...K). 4. Win when all 52 cards are on foundations.',
+      'Scoring example: Standard solitaire scoring (points per card moved to foundation) or simple win/loss. Clearing the tableau and stock into the foundations..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'australian-patience.rules.objective',
+        title: 'Objective',
+        text: 'Move all 52 cards to the four foundation piles, organized by suit from Ace to King.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'australian-patience.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal: 7 columns of 4 cards each, face-up (28 cards). Stock = 24 cards. 2. Play: Build tableau down in suit only. Move cards (and any cards on top) to other columns or to foundations. Flip stock one at a time to waste; top of waste is playable. 3. Foundations: Aces up in suit (A-2-3...K). 4. Win when all 52 cards are on foundations.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'australian-patience.setup.players',
+        title: 'Players',
+        text: 'One player for the standard solitaire game. The player shuffles and deals their own tableau; there is no dealer or opponent. Australian Patience can also be played competitively by two players (each with their own 52-card pack and tableau), but the primary form documented here is single-player.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'australian-patience.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards (Aces low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'australian-patience.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, ample table surface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'australian-patience.setup.dealing',
+        title: 'Deal',
+        text: '7 columns of 4 cards are dealt face-up, slightly overlapped. This uses 28 cards. The remaining 24 cards form the draw pile (stock).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'australian-patience.score.win-condition',
+        title: 'Win condition',
+        text: 'Clearing the tableau and stock into the foundations.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'australian-patience.score.description',
+        title: 'Scoring',
+        text: 'Standard solitaire scoring (points per card moved to foundation) or simple win/loss.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'australian-patience.rules.key.1',
+        title: 'Key rule 1',
+        text: "Suit Building: You MUST follow suit in the tableau (unlike Klondike's alternating colors).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'australian-patience.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Visibility: All 28 starting cards are visible; use this to plan 3-4 moves ahead.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'australian-patience.rules.key.3',
+        title: 'Key rule 3',
+        text: 'No Redeal: If the stock is empty and no moves remain, the game is lost.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'australian-patience.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'australian-patience.rules.objective',
+          'australian-patience.rules.gameplay',
+        ],
+      },
+      {
+        id: 'australian-patience.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'australian-patience.setup.players',
+          'australian-patience.setup.deck',
+          'australian-patience.setup.equipment',
+          'australian-patience.setup.dealing',
+        ],
+      },
+      {
+        id: 'australian-patience.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'australian-patience.rules.key.1',
+          'australian-patience.rules.key.2',
+          'australian-patience.rules.key.3',
+        ],
+      },
+      {
+        id: 'australian-patience.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'australian-patience.score.description',
+          'australian-patience.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'australian-patience.setup.dealing',
+        'australian-patience.rules.objective',
+      ],
+      setup_7x4: [
+        'australian-patience.rules.gameplay',
+      ],
+      move_tableau_group: [
+        'australian-patience.rules.gameplay',
+      ],
+      move_to_foundation: [
+        'australian-patience.rules.gameplay',
+      ],
+      flip_stock: [
+        'australian-patience.rules.gameplay',
+      ],
+      move_waste_to_tableau: [
+        'australian-patience.rules.gameplay',
+      ],
+      verify_win: [
+        'australian-patience.rules.gameplay',
+      ],
+    },
+  },
+}

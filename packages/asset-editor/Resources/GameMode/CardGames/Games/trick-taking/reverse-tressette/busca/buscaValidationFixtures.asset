@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '9f4bfe62-24ae-4e7a-949d-a411e78603af',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/reverse-tressette/busca/buscaValidationFixtures.asset',
+    gameId: 'busca',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'busca',
+    familyVariant: 'Trick Avoidance / Reverse',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'busca.core-runtime-contracts',
+        title: 'Busca Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'busca.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 10,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 40,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Busca must start by giving each active player 10 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'busca.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'busca.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Busca must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'busca.setup.initial-deal',
+              'busca.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'busca.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'low_wins',
+            targetScore: 'NA',
+            cardValues: {
+              'Threes, twos and picture cards': '1 point each',
+              'Aces (except Ace of Coins)': '3 points each',
+              'Ace of Coins (Pita)': '8 points',
+              'Sevens, sixes, fives and fours': '0 points',
+            },
+            explanation: 'Penalty points called busche accumulate from deal to deal. Card points in tricks are converted into busche based on how many points each player has and whether anyone took no points or the most points.',
+            linkedRuleIds: [
+              'busca.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'busca.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 10,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

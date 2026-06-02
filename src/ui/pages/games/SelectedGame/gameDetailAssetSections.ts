@@ -2,6 +2,7 @@ import type { ContentBlock, Page, PageSection } from '@ocentra/game-asset-domain
 import type { SelectedGameLayoutControls } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
+import { repairDisplayText, repairDisplayValue } from '@/utils/displayTextRepair';
 
 type LooseRecord = Record<string, unknown>;
 type LoadAssetDocumentOptions = { cache?: RequestCache };
@@ -63,7 +64,8 @@ export async function loadSelectedGameAssetBundle(gameGuid: string): Promise<Sel
   const actionSetDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.actionSet), resources)
     ?? await loadAssetDocumentFromRef(modelRefs.actionSet, resources)
     ?? await loadAssetDocumentFromRef(modelRefs.actions, resources);
-  const layoutDocument = await loadAssetDocumentByPath(SELECTED_GAME_LAYOUT_ASSET_PATH, resources, 'PageLayout', { cache: 'no-store' });
+  const layoutDocument = await loadAssetDocumentFromRef(gameData.selectedGameLayoutAsset, resources)
+    ?? await loadAssetDocumentByPath(SELECTED_GAME_LAYOUT_ASSET_PATH, resources, 'PageLayout', { cache: 'no-store' });
 
   return {
     layout: layoutDocument,
@@ -199,7 +201,8 @@ async function loadAssetDocumentByGuid(
   options: LoadAssetDocumentOptions = {},
 ): Promise<LooseRecord | null> {
   const checksum = resources.find((resource) => resource.guid === guid)?.checksum ?? undefined;
-  return await loadRawAssetDocumentByGuid(guid, { ...options, checksum });
+  const document = await loadRawAssetDocumentByGuid(guid, { ...options, checksum });
+  return document ? repairDisplayValue(document) as LooseRecord : null;
 }
 
 async function loadAssetDocumentByCandidateGuids(
@@ -277,7 +280,7 @@ function normalizeBlock(value: unknown): ContentBlock {
 }
 
 function cleanText(value: string): string {
-  return value
+  return repairDisplayText(value)
     .replace(/minimum viable playable table/gi, 'playable table')
     .replace(/local pilot/gi, 'local match')
     .replace(/playable pilot/gi, 'playable match')
@@ -289,18 +292,22 @@ function cleanText(value: string): string {
 function buildSummary(gameData: LooseRecord, infoData: LooseRecord, rulesData: LooseRecord, scoringData: LooseRecord): GameDetailAssetSummary {
   const playerCount = asRecord(rulesData.playerCount);
   const setup = asRecord(rulesData.setup);
+  const targetScore = asNumber(scoringData.targetScore) ?? asNumber(asRecord(rulesData.showdownRules).minimumFinalScore);
+  const maxRounds = asNumber(setup.maxRounds) ?? asNumber(gameData.maxRounds);
+  const timerSeconds = asNumber(asRecord(rulesData.turnRules).timerSeconds) ?? asNumber(gameData.turnDuration);
+  const bankroll = asNumber(setup.startingBankroll) ?? asNumber(gameData.initialPlayerCoins);
   return {
-    title: asText(asRecord(infoData.hero).title) || asText(gameData.displayName) || 'Claim',
+    title: asText(asRecord(infoData.hero).title) || asText(gameData.displayName),
     subtitle: cleanText(asText(infoData.tagline) || asText(asRecord(infoData.hero).subtitle) || asText(gameData.tagline)),
     description: cleanText(asText(infoData.description) || asText(gameData.description)),
     tags: asArray(infoData.tags).map(asText).filter(Boolean),
     metrics: [
       metric('Players', formatRange(asNumber(playerCount.min) ?? asNumber(gameData.minPlayers), asNumber(playerCount.max) ?? asNumber(gameData.maxPlayers))),
-      metric('Deck', asText(setup.deck) || asText(asRecord(asRecord(scoringData.scoringRules).deckAsset).displayName) || 'Standard 52'),
-      metric('Goal', `Final score ${asNumber(scoringData.targetScore) ?? asNumber(asRecord(rulesData.showdownRules).minimumFinalScore) ?? 27}+`),
-      metric('Rounds', `${asNumber(setup.maxRounds) ?? asNumber(gameData.maxRounds) ?? 10}`),
-      metric('Timer', `${asNumber(asRecord(rulesData.turnRules).timerSeconds) ?? asNumber(gameData.turnDuration) ?? 60}s`),
-      metric('Bankroll', `${asNumber(setup.startingBankroll) ?? asNumber(gameData.initialPlayerCoins) ?? 1352}`),
+      metric('Deck', asText(setup.deck) || asText(asRecord(asRecord(scoringData.scoringRules).deckAsset).displayName)),
+      metric('Goal', targetScore === null ? '' : `Final score ${targetScore}+`),
+      metric('Rounds', maxRounds === null ? '' : `${maxRounds}`),
+      metric('Timer', timerSeconds === null ? '' : `${timerSeconds}s`),
+      metric('Bankroll', bankroll === null ? '' : `${bankroll}`),
     ].filter((item) => item.value),
   };
 }

@@ -24,6 +24,7 @@ export class PlayingCard extends ScriptableObject {
       pieceKind: PieceKind.PlayingCard,
       cardId: '',
       imageHash: '',
+      imagePath: '',
       playingCardRankingAsset: undefined,
     };
   }
@@ -39,6 +40,9 @@ export class PlayingCard extends ScriptableObject {
   @required('Image Hash is required')
   @serializable({ label: 'Image Hash' })
   imageHash: ImageHash = '' as ImageHash;
+
+  @serializable({ label: 'Image Path' })
+  imagePath?: string;
 
   @required('Playing card ranking asset is required')
   @serializable({ label: 'Playing Card Ranking Asset', elementType: AssetResourceEntry })

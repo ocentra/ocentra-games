@@ -1,0 +1,121 @@
+{
+  system: {
+    guid: '5cc13129-4ef3-4e72-9fed-bf4f2cd23bfe',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/buraco/buraco-brazilian/buraco-brazilianValidationFixtures.asset',
+    gameId: 'buraco-brazilian',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'buraco-brazilian',
+    familyVariant: 'Rummy / Set-Collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'buraco-brazilian.core-runtime-contracts',
+        title: 'Buraco Brazilian Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'buraco-brazilian.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_up',
+            explanation: 'Buraco Brazilian must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'buraco-brazilian.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'buraco-brazilian.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Buraco Brazilian must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'buraco-brazilian.setup.initial-deal',
+              'buraco-brazilian.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'buraco-brazilian.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '3000',
+            scoringDirection: 'high_wins',
+            targetScore: 3000,
+            cardValues: {
+              Joker: '20 points per joker in melds.',
+              'Two (wild)': '10 points per 2 used as a wild or natural card.',
+              Ace: '15 points per ace.',
+              '8-K': '10 points per 8, 9, 10, J, Q, or K.',
+              '3-7': '5 points per 3, 4, 5, 6, or 7.',
+            },
+            explanation: 'Scoring uses point values per card plus bonuses for canastras: clean (no wild) sequences of seven or more cards score 200 points, dirty sequences with a wild score 100 points, clean 13-card sequences score 500 points, clean 14-card sequences score 1000 points, and going out scores 100 points; card values from Pagat are added for melded cards and subtracted for cards left in hand, with penalties for unused mortos.',
+            linkedRuleIds: [
+              'buraco-brazilian.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'buraco-brazilian.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

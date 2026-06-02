@@ -1,0 +1,213 @@
+{
+  system: {
+    guid: 'dd0f46f6-0751-400a-977f-175b634a6227',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/spot/spotRules.asset',
+    gameId: 'spot',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Each turn: draw one card from stock or top of discard pile; optionally drop up to four cards as new groups or runs or add to existing table melds (groups of 3–4 equal rank, runs of 3+ same suit, Aces low); discard one card face up. First player does not draw, only drops and discards. No player may drop more than four cards in one turn. Play ends when a player goes out by discarding their last card, or when stock is exhausted.',
+    Player: 'Each turn: draw one card from stock or top of discard pile; optionally drop up to four cards as new groups or runs or add to existing table melds (groups of 3–4 equal rank, runs of 3+ same suit, Aces low); discard one card face up. First player does not draw, only drops and discards. No player may drop more than four cards in one turn. Play ends when a player goes out by discarding their last card, or when stock is exhausted.',
+    objective: 'Go out (Shed all cards) or have lowest spot count.',
+    gameplay: 'Each turn: draw one card from stock or top of discard pile; optionally drop up to four cards as new groups or runs or add to existing table melds (groups of 3–4 equal rank, runs of 3+ same suit, Aces low); discard one card face up. First player does not draw, only drops and discards. No player may drop more than four cards in one turn. Play ends when a player goes out by discarding their last card, or when stock is exhausted.',
+    keyRules: [
+      'Max four cards may be dropped in one turn; only one new group or run per turn.',
+      'Aces are always low; Q-K-A is not a valid run.',
+      'Going out requires a final discard; a player with two cards who draws a completing card must discard one and cannot go out that turn.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Usually 4; same rules allow more or fewer.',
+      deck: 'Standard 52-card pack, no jokers; Aces low.',
+      equipment: 'Agreed stake (traditionally 1 unit per spot, 5-unit ante).',
+      dealing: 'Ante to pot. Deal 8 cards each. 9th card to player left of dealer (start).',
+    },
+    turnFlow: 'Each turn: draw one card from stock or top of discard pile; optionally drop up to four cards as new groups or runs or add to existing table melds (groups of 3–4 equal rank, runs of 3+ same suit, Aces low); discard one card face up. First player does not draw, only drops and discards. No player may drop more than four cards in one turn. Play ends when a player goes out by discarding their last card, or when stock is exhausted.',
+    moveValidityConditions: {
+      ante: 'Ante is placed before each deal by all players as part of setup; not a turn action.',
+      deal: 'Only the dealer performs the deal at start of each hand.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'Resolved at end of hand in resolution phase.',
+      play_card: 'Spot uses draw, meld, and discard; there is no single play_card action.',
+      draw: 'One draw per turn at start of turn; first player does not draw.',
+      discard: 'Must discard exactly one card after any meld; going out is by discarding the last card.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'Optional after draw; max four cards per turn; Aces low only.',
+      go_out: 'Legal when meld and discard leave hand empty; must have one card to discard.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Go out (Shed all cards) or have lowest spot count.',
+      'Turn-flow example: Each turn: draw one card from stock or top of discard pile; optionally drop up to four cards as new groups or runs or add to existing table melds (groups of 3–4 equal rank, runs of 3+ same suit, Aces low); discard one card face up. First player does not draw, only drops and discards. No player may drop more than four cards in one turn. Play ends when a player goes out by discarding their last card, or when stock is exhausted.',
+      'Scoring example: Ace=1, 2-10=Face Value, J/Q/K=10. Pay winner 1 unit per spot. Go out (Shed all cards) or have lowest spot count..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'spot.rules.objective',
+        title: 'Objective',
+        text: 'Go out (Shed all cards) or have lowest spot count.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spot.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each turn: draw one card from stock or top of discard pile; optionally drop up to four cards as new groups or runs or add to existing table melds (groups of 3–4 equal rank, runs of 3+ same suit, Aces low); discard one card face up. First player does not draw, only drops and discards. No player may drop more than four cards in one turn. Play ends when a player goes out by discarding their last card, or when stock is exhausted.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spot.setup.players',
+        title: 'Players',
+        text: 'Usually 4; same rules allow more or fewer.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spot.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack, no jokers; Aces low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spot.setup.equipment',
+        title: 'Equipment',
+        text: 'Agreed stake (traditionally 1 unit per spot, 5-unit ante).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spot.setup.dealing',
+        title: 'Deal',
+        text: 'Ante to pot. Deal 8 cards each. 9th card to player left of dealer (start).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spot.score.win-condition',
+        title: 'Win condition',
+        text: 'Go out (Shed all cards) or have lowest spot count.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spot.score.description',
+        title: 'Scoring',
+        text: 'Ace=1, 2-10=Face Value, J/Q/K=10. Pay winner 1 unit per spot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spot.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Max four cards may be dropped in one turn; only one new group or run per turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spot.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces are always low; Q-K-A is not a valid run.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spot.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Going out requires a final discard; a player with two cards who draws a completing card must discard one and cannot go out that turn.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spot.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spot.rules.objective',
+          'spot.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spot.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spot.setup.players',
+          'spot.setup.deck',
+          'spot.setup.equipment',
+          'spot.setup.dealing',
+        ],
+      },
+      {
+        id: 'spot.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spot.rules.key.1',
+          'spot.rules.key.2',
+          'spot.rules.key.3',
+        ],
+      },
+      {
+        id: 'spot.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spot.score.description',
+          'spot.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spot.setup.dealing',
+        'spot.rules.objective',
+      ],
+      deal: [
+        'spot.rules.gameplay',
+      ],
+      award_pot: [
+        'spot.rules.gameplay',
+      ],
+      draw: [
+        'spot.rules.gameplay',
+      ],
+      discard: [
+        'spot.rules.gameplay',
+      ],
+      meld: [
+        'spot.rules.gameplay',
+      ],
+      go_out: [
+        'spot.rules.gameplay',
+      ],
+    },
+  },
+}

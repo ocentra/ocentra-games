@@ -1,0 +1,220 @@
+{
+  system: {
+    guid: 'b311cc68-9e49-4b4a-8c71-3683167c6431',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/l-hombre/l-hombreRules.asset',
+    gameId: 'l-hombre',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Must follow suit if possible.\n2. Highest Matador wins any trick, followed by other trumps, then high cards of led suit.\n3. **Puesta**: If the Hombre doesn't win more tricks than one opponent, they 'lose' and must pay the pot.",
+    Player: "1. Must follow suit if possible.\n2. Highest Matador wins any trick, followed by other trumps, then high cards of led suit.\n3. **Puesta**: If the Hombre doesn't win more tricks than one opponent, they 'lose' and must pay the pot.",
+    objective: 'Win more tricks than either of the other two players individually.',
+    gameplay: "1. Must follow suit if possible.\n2. Highest Matador wins any trick, followed by other trumps, then high cards of led suit.\n3. **Puesta**: If the Hombre doesn't win more tricks than one opponent, they 'lose' and must pay the pot.",
+    keyRules: [
+      'Must follow suit if possible; if void, may play any card.',
+      'In game contracts, Spadille (A of spades) and Basta (A of clubs) are permanent trumps; Manille is second highest (2 in black trumps, 7 in red).',
+      'Matadors have limited follow-suit exemptions: when a trump is led, you need not play a matador unless a higher matador was led and you have no other trumps.',
+      'Declarer wins by taking more tricks than either defender; nolo contracts: declarer must take no tricks.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 players (The Hombre plays against the other two).',
+      deck: '40 cards. 8s, 9s, 10s removed. Rank (Non-trump): K, Q, J, 7-2, A (in black suits) or 2-4, K, Q, J, A (in red suits).',
+      equipment: '40 cards. 8s, 9s, 10s removed. Rank (Non-trump): K, Q, J, 7-2, A (in black suits) or 2-4, K, Q, J, A (in red suits).',
+      dealing: 'Each player receives 9 cards. 13 cards form a talon (Pila).',
+    },
+    turnFlow: "1. Must follow suit if possible.\n2. Highest Matador wins any trick, followed by other trumps, then high cards of led suit.\n3. **Puesta**: If the Hombre doesn't win more tricks than one opponent, they 'lose' and must pay the pot.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if able; highest card of the led suit wins unless trumped, then highest trump wins. Winner of the trick leads to the next.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Legal during the auction when it is your turn to call.',
+      bid: 'Legal during the auction; your bid must outrank the current high bid.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Win more tricks than either of the other two players individually.',
+      "Turn-flow example: 1. Must follow suit if possible.\n2. Highest Matador wins any trick, followed by other trumps, then high cards of led suit.\n3. **Puesta**: If the Hombre doesn't win more tricks than one opponent, they 'lose' and must pay the pot.",
+      'Scoring example: Win more tricks than either of the other two players individually. Win more tricks than either of the other two players individually..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'l-hombre.rules.objective',
+        title: 'Objective',
+        text: 'Win more tricks than either of the other two players individually.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'l-hombre.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Must follow suit if possible.\n2. Highest Matador wins any trick, followed by other trumps, then high cards of led suit.\n3. **Puesta**: If the Hombre doesn't win more tricks than one opponent, they 'lose' and must pay the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'l-hombre.setup.players',
+        title: 'Players',
+        text: '3 players (The Hombre plays against the other two).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'l-hombre.setup.deck',
+        title: 'Deck',
+        text: '40 cards. 8s, 9s, 10s removed. Rank (Non-trump): K, Q, J, 7-2, A (in black suits) or 2-4, K, Q, J, A (in red suits).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'l-hombre.setup.equipment',
+        title: 'Equipment',
+        text: '40 cards. 8s, 9s, 10s removed. Rank (Non-trump): K, Q, J, 7-2, A (in black suits) or 2-4, K, Q, J, A (in red suits).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'l-hombre.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 9 cards. 13 cards form a talon (Pila).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'l-hombre.score.win-condition',
+        title: 'Win condition',
+        text: 'Win more tricks than either of the other two players individually.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'l-hombre.score.description',
+        title: 'Scoring',
+        text: 'Win more tricks than either of the other two players individually.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'l-hombre.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible; if void, may play any card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'l-hombre.rules.key.2',
+        title: 'Key rule 2',
+        text: 'In game contracts, Spadille (A of spades) and Basta (A of clubs) are permanent trumps; Manille is second highest (2 in black trumps, 7 in red).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'l-hombre.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Matadors have limited follow-suit exemptions: when a trump is led, you need not play a matador unless a higher matador was led and you have no other trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'l-hombre.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Declarer wins by taking more tricks than either defender; nolo contracts: declarer must take no tricks.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'l-hombre.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'l-hombre.rules.objective',
+          'l-hombre.rules.gameplay',
+        ],
+      },
+      {
+        id: 'l-hombre.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'l-hombre.setup.players',
+          'l-hombre.setup.deck',
+          'l-hombre.setup.equipment',
+          'l-hombre.setup.dealing',
+        ],
+      },
+      {
+        id: 'l-hombre.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'l-hombre.rules.key.1',
+          'l-hombre.rules.key.2',
+          'l-hombre.rules.key.3',
+          'l-hombre.rules.key.4',
+        ],
+      },
+      {
+        id: 'l-hombre.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'l-hombre.score.description',
+          'l-hombre.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'l-hombre.setup.dealing',
+        'l-hombre.rules.objective',
+      ],
+      play_card: [
+        'l-hombre.rules.gameplay',
+      ],
+      pass: [
+        'l-hombre.rules.gameplay',
+      ],
+      bid: [
+        'l-hombre.rules.gameplay',
+      ],
+      self: [
+        'l-hombre.rules.gameplay',
+      ],
+      exchange_talon: [
+        'l-hombre.rules.gameplay',
+      ],
+    },
+  },
+}

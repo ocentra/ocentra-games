@@ -1,0 +1,207 @@
+{
+  system: {
+    guid: 'a660929e-928b-448e-b57d-477ef285ca95',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/canasta/canastaRules.asset',
+    gameId: 'canasta',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Draw from stock or take discard pile (if top matches meld). Meld 3+ same rank; canasta = 7+ card meld. Jokers and 2s wild. Red 3s: lay face-up, draw replacement. Opening meld: 50/90/120 pts by team score. Go out: meld all, discard last. Target 5000.',
+    Player: 'Draw from stock or take discard pile (if top matches meld). Meld 3+ same rank; canasta = 7+ card meld. Jokers and 2s wild. Red 3s: lay face-up, draw replacement. Opening meld: 50/90/120 pts by team score. Go out: meld all, discard last. Target 5000.',
+    objective: 'Score 5000 points across multiple rounds by building melds, especially canastas (7-card melds).',
+    gameplay: 'Draw from stock or take discard pile (if top matches meld). Meld 3+ same rank; canasta = 7+ card meld. Jokers and 2s wild. Red 3s: lay face-up, draw replacement. Opening meld: 50/90/120 pts by team score. Go out: meld all, discard last. Target 5000.',
+    keyRules: [
+      'Initial meld minimum: 0-1499 pts (50 pts min), 1500-2999 pts (90 pts min), 3000+ pts (120 pts min).',
+      'Wild cards cannot form a meld by themselves.',
+      'Going out scores 100-point bonus.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 in fixed partnerships (partners sit opposite). Variants for 2, 3, or 6.',
+      deck: '108 cards (2Ã—52-card packs + 4 Jokers). Jokers and 2s are wild.',
+      equipment: 'Two shuffled 52-card decks + 4 jokers. Score sheet.',
+      dealing: '11 cards each (Classic). Remainder is stock. Top card turned face-up to start discard pile (if red 3 or wild, bury and turn another).',
+    },
+    turnFlow: 'Draw from stock or take discard pile (if top matches meld). Meld 3+ same rank; canasta = 7+ card meld. Jokers and 2s wild. Red 3s: lay face-up, draw replacement. Opening meld: 50/90/120 pts by team score. Go out: meld all, discard last. Target 5000.',
+    moveValidityConditions: {
+      ante: 'Canasta is a meld game; no betting or antes.',
+      deal: 'Dealer only; once per round.',
+      reveal_market: 'No market; draw from stock or take discard pile.',
+      buy_market: 'No market purchase; rummy draw and discard only.',
+      buy_stock: 'No stock purchase; draw from stock or take discard pile.',
+      fold: 'No folding; partnership meld game to 5000 points.',
+      check: 'No betting; score by melds and canastas only.',
+      call: 'No betting or calling; draw-meld-discard only.',
+      bet: 'No betting; points from melds and going out.',
+      raise: 'No betting or raising; rummy-style play only.',
+      declare: 'No declarations; meld and discard in turn.',
+      reveal_hand: 'No showdown; game ends when a team goes out.',
+      award_pot: 'No pot; partnership score from melds and bonuses.',
+      play_card: 'Rummy game; use draw, meld, and discard not play to tricks.',
+      draw: 'One draw per turn; must draw before meld or discard.',
+      discard: 'Allowed only when discard timing and count rules permit.',
+      pass: 'No pass; must draw then meld and/or discard each turn.',
+      bid: 'No bidding; fixed partnerships and target score.',
+      meld: 'Allowed only in phases that list this action as legal.',
+      go_out: 'Going out is by melding all and discarding last; no separate action.',
+    },
+    exampleHands: [
+      'Setup example: 11 card(s) per player.',
+      'Rule example: Score 5000 points across multiple rounds by building melds, especially canastas (7-card melds).',
+      'Turn-flow example: Draw from stock or take discard pile (if top matches meld). Meld 3+ same rank; canasta = 7+ card meld. Jokers and 2s wild. Red 3s: lay face-up, draw replacement. Opening meld: 50/90/120 pts by team score. Go out: meld all, discard last. Target 5000.',
+      'Scoring example: Card values + canasta bonuses + going out bonus. First partnership to 5000 points across rounds..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'canasta.rules.objective',
+        title: 'Objective',
+        text: 'Score 5000 points across multiple rounds by building melds, especially canastas (7-card melds).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'canasta.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Draw from stock or take discard pile (if top matches meld). Meld 3+ same rank; canasta = 7+ card meld. Jokers and 2s wild. Red 3s: lay face-up, draw replacement. Opening meld: 50/90/120 pts by team score. Go out: meld all, discard last. Target 5000.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'canasta.setup.players',
+        title: 'Players',
+        text: '4 in fixed partnerships (partners sit opposite). Variants for 2, 3, or 6.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'canasta.setup.deck',
+        title: 'Deck',
+        text: '108 cards (2Ã—52-card packs + 4 Jokers). Jokers and 2s are wild.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'canasta.setup.equipment',
+        title: 'Equipment',
+        text: 'Two shuffled 52-card decks + 4 jokers. Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'canasta.setup.dealing',
+        title: 'Deal',
+        text: '11 cards each (Classic). Remainder is stock. Top card turned face-up to start discard pile (if red 3 or wild, bury and turn another).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'canasta.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to 5000 points across rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'canasta.score.description',
+        title: 'Scoring',
+        text: 'Card values + canasta bonuses + going out bonus.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'canasta.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Initial meld minimum: 0-1499 pts (50 pts min), 1500-2999 pts (90 pts min), 3000+ pts (120 pts min).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'canasta.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Wild cards cannot form a meld by themselves.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'canasta.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Going out scores 100-point bonus.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'canasta.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'canasta.rules.objective',
+          'canasta.rules.gameplay',
+        ],
+      },
+      {
+        id: 'canasta.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'canasta.setup.players',
+          'canasta.setup.deck',
+          'canasta.setup.equipment',
+          'canasta.setup.dealing',
+        ],
+      },
+      {
+        id: 'canasta.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'canasta.rules.key.1',
+          'canasta.rules.key.2',
+          'canasta.rules.key.3',
+        ],
+      },
+      {
+        id: 'canasta.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'canasta.score.description',
+          'canasta.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'canasta.setup.dealing',
+        'canasta.rules.objective',
+      ],
+      deal: [
+        'canasta.rules.gameplay',
+      ],
+      draw: [
+        'canasta.rules.gameplay',
+      ],
+      discard: [
+        'canasta.rules.gameplay',
+      ],
+      meld: [
+        'canasta.rules.gameplay',
+      ],
+    },
+  },
+}

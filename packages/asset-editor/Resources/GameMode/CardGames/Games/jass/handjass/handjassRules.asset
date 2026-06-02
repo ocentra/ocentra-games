@@ -1,0 +1,224 @@
+{
+  system: {
+    guid: '2bd9a358-8bee-474c-8952-dfe6b58bceb1',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/handjass/handjassRules.asset',
+    gameId: 'handjass',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Players follow suit if possible. If they cannot follow suit, they may play any card (including a trump). 2. Trump Rules: In Jass, the 'Trump Under' (Jack) and 'Trump Nell' (Nine) are the highest cards. 3. A player may 'trump in' even if they can follow suit, unless they are playing the 'Jack of Trumps' (Pur). 4. Points are counted from cards taken in tricks.",
+    Player: "1. Players follow suit if possible. If they cannot follow suit, they may play any card (including a trump). 2. Trump Rules: In Jass, the 'Trump Under' (Jack) and 'Trump Nell' (Nine) are the highest cards. 3. A player may 'trump in' even if they can follow suit, unless they are playing the 'Jack of Trumps' (Pur). 4. Points are counted from cards taken in tricks.",
+    objective: 'Be the first player to reach a target number of strokes (e.g., 7 or 9) without falling below the minimum point threshold in any given hand.',
+    gameplay: "1. Players follow suit if possible. If they cannot follow suit, they may play any card (including a trump). 2. Trump Rules: In Jass, the 'Trump Under' (Jack) and 'Trump Nell' (Nine) are the highest cards. 3. A player may 'trump in' even if they can follow suit, unless they are playing the 'Jack of Trumps' (Pur). 4. Points are counted from cards taken in tricks.",
+    keyRules: [
+      'Must follow suit if possible.',
+      'Trump Jack (Under) and Trump 9 (Nell) are the highest trumps.',
+      'Total card points per hand = 157.',
+      "Need at least 26 points to avoid a 'null' (penalty).",
+      '26-100 points = 1 stroke; over 100 points (match) = 2 strokes.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '2, 3, or 4 players playing individually.',
+      deck: '36-card Jass deck (6-10, Jack, Queen, King, Ace). In German-speaking areas, the suits are Roses, Bells, Acorns and Shields. In French-speaking areas, standard French suits are used.',
+      equipment: "A slate or score sheet to mark 'strokes' (points).",
+      dealing: "Deal all cards (9 per player in a 4-player game). For 2-3 players, a 'blind hand' or 'besern' mechanic may be used.",
+    },
+    turnFlow: "1. Players follow suit if possible. If they cannot follow suit, they may play any card (including a trump). 2. Trump Rules: In Jass, the 'Trump Under' (Jack) and 'Trump Nell' (Nine) are the highest cards. 3. A player may 'trump in' even if they can follow suit, unless they are playing the 'Jack of Trumps' (Pur). 4. Points are counted from cards taken in tricks.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only. All cards dealt.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'System action at end of hand.',
+      play_card: 'Must follow suit if possible. May trump if cannot follow.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Be the first player to reach a target number of strokes (e.g., 7 or 9) without falling below the minimum point threshold in any given hand.',
+      "Turn-flow example: 1. Players follow suit if possible. If they cannot follow suit, they may play any card (including a trump). 2. Trump Rules: In Jass, the 'Trump Under' (Jack) and 'Trump Nell' (Nine) are the highest cards. 3. A player may 'trump in' even if they can follow suit, unless they are playing the 'Jack of Trumps' (Pur). 4. Points are counted from cards taken in tricks.",
+      'Scoring example: Points from cards in tricks. Total 157 points per hand. 26-100 points = 1 stroke; over 100 = 2 strokes; under 26 = none (penalty). First player to reach target strokes (typically 7 or 9) wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'handjass.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to reach a target number of strokes (e.g., 7 or 9) without falling below the minimum point threshold in any given hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'handjass.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players follow suit if possible. If they cannot follow suit, they may play any card (including a trump). 2. Trump Rules: In Jass, the 'Trump Under' (Jack) and 'Trump Nell' (Nine) are the highest cards. 3. A player may 'trump in' even if they can follow suit, unless they are playing the 'Jack of Trumps' (Pur). 4. Points are counted from cards taken in tricks.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'handjass.setup.players',
+        title: 'Players',
+        text: '2, 3, or 4 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'handjass.setup.deck',
+        title: 'Deck',
+        text: '36-card Jass deck (6-10, Jack, Queen, King, Ace). In German-speaking areas, the suits are Roses, Bells, Acorns and Shields. In French-speaking areas, standard French suits are used.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'handjass.setup.equipment',
+        title: 'Equipment',
+        text: "A slate or score sheet to mark 'strokes' (points).",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'handjass.setup.dealing',
+        title: 'Deal',
+        text: "Deal all cards (9 per player in a 4-player game). For 2-3 players, a 'blind hand' or 'besern' mechanic may be used.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'handjass.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach target strokes (typically 7 or 9) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'handjass.score.description',
+        title: 'Scoring',
+        text: 'Points from cards in tricks. Total 157 points per hand. 26-100 points = 1 stroke; over 100 = 2 strokes; under 26 = null (penalty).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'handjass.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'handjass.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump Jack (Under) and Trump 9 (Nell) are the highest trumps.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'handjass.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Total card points per hand = 157.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'handjass.rules.key.4',
+        title: 'Key rule 4',
+        text: "Need at least 26 points to avoid a 'null' (penalty).",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'handjass.rules.key.5',
+        title: 'Key rule 5',
+        text: '26-100 points = 1 stroke; over 100 points (match) = 2 strokes.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'handjass.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'handjass.rules.objective',
+          'handjass.rules.gameplay',
+        ],
+      },
+      {
+        id: 'handjass.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'handjass.setup.players',
+          'handjass.setup.deck',
+          'handjass.setup.equipment',
+          'handjass.setup.dealing',
+        ],
+      },
+      {
+        id: 'handjass.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'handjass.rules.key.1',
+          'handjass.rules.key.2',
+          'handjass.rules.key.3',
+          'handjass.rules.key.4',
+          'handjass.rules.key.5',
+        ],
+      },
+      {
+        id: 'handjass.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'handjass.score.description',
+          'handjass.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'handjass.setup.dealing',
+        'handjass.rules.objective',
+      ],
+      deal: [
+        'handjass.rules.gameplay',
+      ],
+      award_pot: [
+        'handjass.rules.gameplay',
+      ],
+      play_card: [
+        'handjass.rules.gameplay',
+      ],
+    },
+  },
+}

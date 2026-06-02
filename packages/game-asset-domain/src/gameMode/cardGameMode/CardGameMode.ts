@@ -109,6 +109,10 @@ function normalizeGameHomeBadges(value: unknown): GameHomeBadge[] | undefined {
   return badges.length > 0 ? badges : undefined;
 }
 
+function gameIsPubliclyEnabled(releaseStatus: GameModeStatus | undefined): boolean {
+  return releaseStatus === GameModeStatus.Available || releaseStatus === GameModeStatus.ComingSoon;
+}
+
 export interface CardGameAssetLinks {
   rules: AssetResourceEntry<CardGameRules>;
   strategy: AssetResourceEntry<Strategy>;
@@ -487,7 +491,7 @@ export class CardGameMode extends TurnBasedGameMode {
     const gameId = asGameId(gameIdRaw);
     const gameModeGuid = this.guid ? (String(this.guid) as AssetGUIDType) : ('' as AssetGUIDType);
     const displayName = this.gameInfoAsset?.asset?.hero?.title || gameIdRaw;
-    const enabled = this.releaseStatus !== GameModeStatus.Deprecated;
+    const enabled = gameIsPubliclyEnabled(this.releaseStatus);
     const tags = this.gameInfoAsset?.asset?.tags && Array.isArray(this.gameInfoAsset.asset.tags) && this.gameInfoAsset.asset.tags.length > 0
       ? this.gameInfoAsset.asset.tags
       : undefined;
@@ -588,7 +592,7 @@ export class CardGameMode extends TurnBasedGameMode {
     let featuredTopBadges: GameHomeBadge[] | undefined;
     let featuredBottomBadges: GameHomeBadge[] | undefined;
     let comingSoon = this.releaseStatus === GameModeStatus.ComingSoon;
-    const enabled = this.releaseStatus !== GameModeStatus.Deprecated;
+    const enabled = gameIsPubliclyEnabled(this.releaseStatus);
     let bannerImage: ImageHash | undefined;
     let carouselImages: ImageHash[] | undefined;
     let gameIcon: ImageHash | undefined;

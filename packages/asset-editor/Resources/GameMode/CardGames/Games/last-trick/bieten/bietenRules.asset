@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: 'f7d664cd-12fe-4728-b124-cbf7b7e2443c',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/bieten/bietenRules.asset',
+    gameId: 'bieten',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Starting with best hand, players may 'Bieten' (bet) on any category they wish to contest. Any opposing player can either: Concede (auto-lose the category, worth its base value) OR Call (match the bet, escalating the point value). At showdown, the best hand wins the doubled/escalated value.",
+    Player: "Starting with best hand, players may 'Bieten' (bet) on any category they wish to contest. Any opposing player can either: Concede (auto-lose the category, worth its base value) OR Call (match the bet, escalating the point value). At showdown, the best hand wins the doubled/escalated value.",
+    objective: 'Score the most points across 5 categories: Best Heart (Rot), Best Leaf (GrÃ¼n), Best Pair/Triple (Gleich), Best Sequence (Hanger), and the Last Trick (Spiel).',
+    gameplay: "Starting with best hand, players may 'Bieten' (bet) on any category they wish to contest. Any opposing player can either: Concede (auto-lose the category, worth its base value) OR Call (match the bet, escalating the point value). At showdown, the best hand wins the doubled/escalated value.",
+    keyRules: [
+      'WELI is wild: its owner declares what card it represents.',
+      'A player may bet on a category they cannot possibly win as a bluff.',
+      'Game targets a fixed score (e.g., 15 points).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 to 5 players.',
+      deck: '33-card German-suited pack: A, K, Over (O), Under (U), 10, 9, 8, 7 in 4 suits (Hearts/Rot, Leaves/GrÃ¼n, Bells/Schellen, Acorns/Eichel) + WELI (special 6 of Bells wild card).',
+      equipment: 'Chips or coins for betting.',
+      dealing: 'Deal 3 cards to each player. No trump is established. No kitty.',
+    },
+    turnFlow: "Starting with best hand, players may 'Bieten' (bet) on any category they wish to contest. Any opposing player can either: Concede (auto-lose the category, worth its base value) OR Call (match the bet, escalating the point value). At showdown, the best hand wins the doubled/escalated value.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'Call/hold is via concede_category (Ich halte); no standard call action.',
+      bet: 'Betting is via bet_category (Bieten) and concede_category (Gut/Halten); no standard bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Score the most points across 5 categories: Best Heart (Rot), Best Leaf (GrÃ¼n), Best Pair/Triple (Gleich), Best Sequence (Hanger), and the Last Trick (Spiel).',
+      "Turn-flow example: Starting with best hand, players may 'Bieten' (bet) on any category they wish to contest. Any opposing player can either: Concede (auto-lose the category, worth its base value) OR Call (match the bet, escalating the point value). At showdown, the best hand wins the doubled/escalated value.",
+      'Scoring example: Each category is worth 1 base point (or more if contested/bet up). First to 15 points (house rule)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bieten.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points across 5 categories: Best Heart (Rot), Best Leaf (GrÃ¼n), Best Pair/Triple (Gleich), Best Sequence (Hanger), and the Last Trick (Spiel).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bieten.rules.gameplay',
+        title: 'Turn flow',
+        text: "Starting with best hand, players may 'Bieten' (bet) on any category they wish to contest. Any opposing player can either: Concede (auto-lose the category, worth its base value) OR Call (match the bet, escalating the point value). At showdown, the best hand wins the doubled/escalated value.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bieten.setup.players',
+        title: 'Players',
+        text: '3 to 5 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bieten.setup.deck',
+        title: 'Deck',
+        text: '33-card German-suited pack: A, K, Over (O), Under (U), 10, 9, 8, 7 in 4 suits (Hearts/Rot, Leaves/GrÃ¼n, Bells/Schellen, Acorns/Eichel) + WELI (special 6 of Bells wild card).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bieten.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips or coins for betting.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bieten.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 3 cards to each player. No trump is established. No kitty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bieten.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 15 points (house rule).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bieten.score.description',
+        title: 'Scoring',
+        text: 'Each category is worth 1 base point (or more if contested/bet up).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bieten.rules.key.1',
+        title: 'Key rule 1',
+        text: 'WELI is wild: its owner declares what card it represents.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bieten.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A player may bet on a category they cannot possibly win as a bluff.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bieten.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Game targets a fixed score (e.g., 15 points).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bieten.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bieten.rules.objective',
+          'bieten.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bieten.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bieten.setup.players',
+          'bieten.setup.deck',
+          'bieten.setup.equipment',
+          'bieten.setup.dealing',
+        ],
+      },
+      {
+        id: 'bieten.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bieten.rules.key.1',
+          'bieten.rules.key.2',
+          'bieten.rules.key.3',
+        ],
+      },
+      {
+        id: 'bieten.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bieten.score.description',
+          'bieten.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bieten.setup.dealing',
+        'bieten.rules.objective',
+      ],
+      play_card: [
+        'bieten.rules.gameplay',
+      ],
+      deal_3_each: [
+        'bieten.rules.gameplay',
+      ],
+      bet_category: [
+        'bieten.rules.gameplay',
+      ],
+      concede_category: [
+        'bieten.rules.gameplay',
+      ],
+      evaluate_categories: [
+        'bieten.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: 'c65d84a6-34f7-4d19-8e63-0b22c9dd237e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/si-se-pai/si-se-paiValidationFixtures.asset',
+    gameId: 'si-se-pai',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'si-se-pai',
+    familyVariant: 'Draw-and-Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'si-se-pai.core-runtime-contracts',
+        title: 'Sì Sè Pái Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'si-se-pai.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 20,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 80,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sì Sè Pái must start by giving each active player 20 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'si-se-pai.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'si-se-pai.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'award_pot',
+              'draw',
+              'discard',
+              'meld',
+              'go_out',
+            ],
+            explanation: 'Sì Sè Pái must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'si-se-pai.setup.initial-deal',
+              'si-se-pai.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'si-se-pai.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Go Out (Hu) by melding all cards.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {
+              General: '4',
+              Advisor: '2',
+              Elephant: '2',
+              Chariot: '2',
+              Horse: '2',
+              Cannon: '2',
+              Soldier: '1',
+            },
+            explanation: 'Go Out (Hu) by melding all cards.',
+            linkedRuleIds: [
+              'si-se-pai.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'si-se-pai.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 20,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

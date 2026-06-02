@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: 'bb8fbb42-ba74-4a0e-937b-460b2c834106',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/social/commercial/legends-of-the-three-kingdoms/legends-of-the-three-kingdomsValidationFixtures.asset',
+    gameId: 'legends-of-the-three-kingdoms',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'legends-of-the-three-kingdoms',
+    familyVariant: 'Social / Party',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'legends-of-the-three-kingdoms.core-runtime-contracts',
+        title: 'Legends of the Three Kingdoms Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'legends-of-the-three-kingdoms.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 10,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Legends of the Three Kingdoms must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'legends-of-the-three-kingdoms.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'legends-of-the-three-kingdoms.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'turning_round',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'flip_top_card',
+            ],
+            explanation: 'Legends of the Three Kingdoms must run setup_round first, then enter turning_round with the processed legal actions.',
+            linkedRuleIds: [
+              'legends-of-the-three-kingdoms.setup.initial-deal',
+              'legends-of-the-three-kingdoms.flow.turning_round',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'turning_round',
+            firstPlayableLegalActions: [
+              'flip_top_card',
+            ],
+          },
+          {
+            id: 'legends-of-the-three-kingdoms.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win through the objective assigned to your role or faction while using character powers and cards.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Published scoring or victory conditions determine the winner.',
+            linkedRuleIds: [
+              'legends-of-the-three-kingdoms.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'legends-of-the-three-kingdoms.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 10,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

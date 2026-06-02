@@ -1,0 +1,264 @@
+{
+  system: {
+    guid: '84d1b36a-a8fe-4530-ac45-6bd3cb4fff50',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/commercial/bonanza-pai-gow/bonanza-pai-gowRules.asset',
+    gameId: 'bonanza-pai-gow',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Each player receives 4 tiles and must split them into a High Hand (2 tiles) and a Low Hand (2 tiles). The High Hand must rank at least equal to the Low Hand according to standard Pai Gow tile rankings. After all players have set their hands, the Banker reveals their 4 tiles and forms their high and low hands.',
+    Player: 'Each player receives 4 tiles and must split them into a High Hand (2 tiles) and a Low Hand (2 tiles). The High Hand must rank at least equal to the Low Hand according to standard Pai Gow tile rankings. After all players have set their hands, the Banker reveals their 4 tiles and forms their high and low hands.',
+    objective: "Form two hands (high hand and low hand) from your 4 tiles that both beat the Banker's corresponding hands.",
+    gameplay: 'Each player receives 4 tiles and must split them into a High Hand (2 tiles) and a Low Hand (2 tiles). The High Hand must rank at least equal to the Low Hand according to standard Pai Gow tile rankings. After all players have set their hands, the Banker reveals their 4 tiles and forms their high and low hands.',
+    keyRules: [
+      'High Hand must rank â‰¥ Low Hand (standard Pai Gow rule).',
+      'Main bet: win both = win, lose both = lose, split = push.',
+      'Bonus bet: pays on hand strength independent of banker.',
+      'Tie bet: pays on push outcomes.',
+      'Main bet is NOT mandatory â€” players can play Bonus and/or Tie bets alone.',
+      "House edge on Bonus and Tie bets doesn't change whether players bank or not.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '1 to 6 players, each playing against the Banker (house or rotating player-banker).',
+      deck: 'Chinese domino set: 32 tiles arranged in 16 pairs. Each tile has a specific ranking in the Pai Gow system.',
+      equipment: "Chinese domino set. Three dice (for determining deal order). Blackjack-sized table with three betting circles per player: main bet (seat number), Bonus bet ('B'), and Tie bet ('T').",
+      dealing: 'Tiles are shuffled and stacked. Three dice are rolled to determine dealing order. Each player and the banker receive 4 tiles.',
+    },
+    turnFlow: 'Each player receives 4 tiles and must split them into a High Hand (2 tiles) and a Low Hand (2 tiles). The High Hand must rank at least equal to the Low Hand according to standard Pai Gow tile rankings. After all players have set their hands, the Banker reveals their 4 tiles and forms their high and low hands.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'Bonanza Pai Gow uses specific bet actions (place_main_bet, place_bonus_bet, place_tie_bet) not a generic bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Form two hands (high hand and low hand) from your 4 tiles that both beat the Banker's corresponding hands.",
+      'Turn-flow example: Each player receives 4 tiles and must split them into a High Hand (2 tiles) and a Low Hand (2 tiles). The High Hand must rank at least equal to the Low Hand according to standard Pai Gow tile rankings. After all players have set their hands, the Banker reveals their 4 tiles and forms their high and low hands.',
+      "Scoring example: Standard Pai Gow tile rankings determine hand strength. Bonus and Tie bets pay according to fixed paytables. Beat banker's high and low hands (main bet). Hit paytable thresholds (side bets)..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bonanza-pai-gow.rules.objective',
+        title: 'Objective',
+        text: "Form two hands (high hand and low hand) from your 4 tiles that both beat the Banker's corresponding hands.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each player receives 4 tiles and must split them into a High Hand (2 tiles) and a Low Hand (2 tiles). The High Hand must rank at least equal to the Low Hand according to standard Pai Gow tile rankings. After all players have set their hands, the Banker reveals their 4 tiles and forms their high and low hands.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.setup.players',
+        title: 'Players',
+        text: '1 to 6 players, each playing against the Banker (house or rotating player-banker).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.setup.deck',
+        title: 'Deck',
+        text: 'Chinese domino set: 32 tiles arranged in 16 pairs. Each tile has a specific ranking in the Pai Gow system.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.setup.equipment',
+        title: 'Equipment',
+        text: "Chinese domino set. Three dice (for determining deal order). Blackjack-sized table with three betting circles per player: main bet (seat number), Bonus bet ('B'), and Tie bet ('T').",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles are shuffled and stacked. Three dice are rolled to determine dealing order. Each player and the banker receive 4 tiles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.score.win-condition',
+        title: 'Win condition',
+        text: "Beat banker's high and low hands (main bet). Hit paytable thresholds (side bets).",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.score.description',
+        title: 'Scoring',
+        text: 'Standard Pai Gow tile rankings determine hand strength. Bonus and Tie bets pay according to fixed paytables.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.rules.key.1',
+        title: 'Key rule 1',
+        text: 'High Hand must rank â‰¥ Low Hand (standard Pai Gow rule).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Main bet: win both = win, lose both = lose, split = push.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bonus bet: pays on hand strength independent of banker.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Tie bet: pays on push outcomes.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Main bet is NOT mandatory â€” players can play Bonus and/or Tie bets alone.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.rules.key.6',
+        title: 'Key rule 6',
+        text: "House edge on Bonus and Tie bets doesn't change whether players bank or not.",
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bonanza-pai-gow.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bonanza-pai-gow.rules.objective',
+          'bonanza-pai-gow.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bonanza-pai-gow.setup.players',
+          'bonanza-pai-gow.setup.deck',
+          'bonanza-pai-gow.setup.equipment',
+          'bonanza-pai-gow.setup.dealing',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bonanza-pai-gow.rules.key.1',
+          'bonanza-pai-gow.rules.key.2',
+          'bonanza-pai-gow.rules.key.3',
+          'bonanza-pai-gow.rules.key.4',
+          'bonanza-pai-gow.rules.key.5',
+          'bonanza-pai-gow.rules.key.6',
+        ],
+      },
+      {
+        id: 'bonanza-pai-gow.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bonanza-pai-gow.score.description',
+          'bonanza-pai-gow.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bonanza-pai-gow.setup.dealing',
+        'bonanza-pai-gow.rules.objective',
+      ],
+      place_main_bet: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      place_bonus_bet: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      place_tie_bet: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      skip_main_bet: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      roll_dice: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      deal_tiles: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      split_tiles_high_low: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      set_banker_hands: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      compare_high: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      compare_low: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      settle_main: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      settle_bonus: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+      settle_tie: [
+        'bonanza-pai-gow.rules.gameplay',
+      ],
+    },
+  },
+}

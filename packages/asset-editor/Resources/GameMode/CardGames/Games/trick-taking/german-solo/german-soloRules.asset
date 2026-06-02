@@ -1,0 +1,223 @@
+{
+  system: {
+    guid: '2964bd25-3107-4d24-9244-363549dc8f8d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/german-solo/german-soloRules.asset',
+    gameId: 'german-solo',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Players bid once in turn with higher contracts over lower. Some contracts create a temporary partner via called ace or king; others are solo contracts. Winning bid determines trump suit and contract objective. Play 8 tricks with follow-suit required. If void in led suit, player may trump or discard. Highest trump wins trick; otherwise highest of led suit. Trick winner leads next.',
+    Player: 'Players bid once in turn with higher contracts over lower. Some contracts create a temporary partner via called ace or king; others are solo contracts. Winning bid determines trump suit and contract objective. Play 8 tricks with follow-suit required. If void in led suit, player may trump or discard. Highest trump wins trick; otherwise highest of led suit. Trick winner leads next.',
+    objective: 'As bidder or bidder side, complete contract trick target; as defenders, set the contract.',
+    gameplay: 'Players bid once in turn with higher contracts over lower. Some contracts create a temporary partner via called ace or king; others are solo contracts. Winning bid determines trump suit and contract objective. Play 8 tricks with follow-suit required. If void in led suit, player may trump or discard. Highest trump wins trick; otherwise highest of led suit. Trick winner leads next.',
+    keyRules: [
+      'Matador order is fixed: club queen highest, then seven of trump, then spade queen, followed by remaining trump hierarchy.',
+      'Contracts form a ladder and determine target tricks, trump regime, and whether bidder plays alone or with called partner.',
+      'Each player bids at most once per hand in the common four-player form.',
+      'Settlement is by bid value transfer with optional table bonuses such as mackers and first-and-last.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in the core ruleset.',
+      deck: '32-card stripped pack: A, K, Q, J, 10, 9, 8, 7 in each suit.',
+      equipment: 'Score sheet or chips for bid-value settlement.',
+      dealing: 'Deal 8 cards to each player, commonly in a 3-2-3 or 4-2-2 pattern.',
+    },
+    turnFlow: 'Players bid once in turn with higher contracts over lower. Some contracts create a temporary partner via called ace or king; others are solo contracts. Winning bid determines trump suit and contract objective. Play 8 tricks with follow-suit required. If void in led suit, player may trump or discard. Highest trump wins trick; otherwise highest of led suit. Trick winner leads next.',
+    moveValidityConditions: {
+      ante: 'German Solo uses contract settlement, not ante betting.',
+      deal: 'Dealer action at hand start.',
+      reveal_market: 'No market mechanic exists in German Solo.',
+      buy_market: 'No market purchase mechanic exists in German Solo.',
+      buy_stock: 'No stock buying mechanic exists in German Solo.',
+      fold: 'Players do not fold after bidding; they complete all tricks.',
+      check: 'No check action exists outside poker-style betting games.',
+      call: 'No call action exists outside poker-style betting games.',
+      bet: 'No per-turn betting; only pre-play contract bidding is used.',
+      raise: 'No per-turn betting; only pre-play contract bidding is used.',
+      declare: 'Only winning bidder may declare; called card must satisfy contract limits.',
+      reveal_hand: 'No showdown reveal occurs; all cards are played in tricks.',
+      award_pot: 'Resolution phase only.',
+      play_card: 'Must follow led suit if able; otherwise may trump or discard.',
+      draw: 'No draw phase exists after initial deal.',
+      discard: 'Cards leave play only through tricks, not dedicated discard actions.',
+      pass: 'Bidding phase only.',
+      bid: 'One bid opportunity per player in core four-player cycle.',
+      meld: 'German Solo has no meld declaration mechanic.',
+      go_out: 'Hand ends after fixed trick count, not when a player goes out early.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      'Rule example: As bidder or bidder side, complete contract trick target; as defenders, set the contract.',
+      'Turn-flow example: Players bid once in turn with higher contracts over lower. Some contracts create a temporary partner via called ace or king; others are solo contracts. Winning bid determines trump suit and contract objective. Play 8 tricks with follow-suit required. If void in led suit, player may trump or discard. Highest trump wins trick; otherwise highest of led suit. Trick winner leads next.',
+      'Scoring example: Contract winner side wins or loses hand value based on meeting trick target; many tables include optional macker and first-last bonuses. Complete your declared contract target; otherwise defenders set and collect..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'german-solo.rules.objective',
+        title: 'Objective',
+        text: 'As bidder or bidder side, complete contract trick target; as defenders, set the contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'german-solo.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players bid once in turn with higher contracts over lower. Some contracts create a temporary partner via called ace or king; others are solo contracts. Winning bid determines trump suit and contract objective. Play 8 tricks with follow-suit required. If void in led suit, player may trump or discard. Highest trump wins trick; otherwise highest of led suit. Trick winner leads next.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'german-solo.setup.players',
+        title: 'Players',
+        text: '4 players in the core ruleset.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'german-solo.setup.deck',
+        title: 'Deck',
+        text: '32-card stripped pack: A, K, Q, J, 10, 9, 8, 7 in each suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'german-solo.setup.equipment',
+        title: 'Equipment',
+        text: 'Score sheet or chips for bid-value settlement.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'german-solo.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 8 cards to each player, commonly in a 3-2-3 or 4-2-2 pattern.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'german-solo.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete your declared contract target; otherwise defenders set and collect.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'german-solo.score.description',
+        title: 'Scoring',
+        text: 'Contract winner side wins or loses hand value based on meeting trick target; many tables include optional macker and first-last bonuses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'german-solo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Matador order is fixed: club queen highest, then seven of trump, then spade queen, followed by remaining trump hierarchy.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'german-solo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Contracts form a ladder and determine target tricks, trump regime, and whether bidder plays alone or with called partner.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'german-solo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each player bids at most once per hand in the common four-player form.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'german-solo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Settlement is by bid value transfer with optional table bonuses such as mackers and first-and-last.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'german-solo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'german-solo.rules.objective',
+          'german-solo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'german-solo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'german-solo.setup.players',
+          'german-solo.setup.deck',
+          'german-solo.setup.equipment',
+          'german-solo.setup.dealing',
+        ],
+      },
+      {
+        id: 'german-solo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'german-solo.rules.key.1',
+          'german-solo.rules.key.2',
+          'german-solo.rules.key.3',
+          'german-solo.rules.key.4',
+        ],
+      },
+      {
+        id: 'german-solo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'german-solo.score.description',
+          'german-solo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'german-solo.setup.dealing',
+        'german-solo.rules.objective',
+      ],
+      deal: [
+        'german-solo.rules.gameplay',
+      ],
+      declare: [
+        'german-solo.rules.gameplay',
+      ],
+      award_pot: [
+        'german-solo.rules.gameplay',
+      ],
+      play_card: [
+        'german-solo.rules.gameplay',
+      ],
+      pass: [
+        'german-solo.rules.gameplay',
+      ],
+      bid: [
+        'german-solo.rules.gameplay',
+      ],
+    },
+  },
+}

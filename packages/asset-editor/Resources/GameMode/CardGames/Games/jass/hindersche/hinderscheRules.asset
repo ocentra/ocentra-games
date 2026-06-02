@@ -1,0 +1,204 @@
+{
+  system: {
+    guid: '608dfd25-c9b0-4f4f-b856-b207960c393e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/hindersche/hinderscheRules.asset',
+    gameId: 'hindersche',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. The player to the right of the dealer leads.\n2. You must follow suit if possible.\n3. **Trumps**: The last card dealt to the dealer determines the trump suit.\n4. **The Reverse Rule**: If you cannot follow suit, you MUST play a trump if you have one.',
+    Player: '1. The player to the right of the dealer leads.\n2. You must follow suit if possible.\n3. **Trumps**: The last card dealt to the dealer determines the trump suit.\n4. **The Reverse Rule**: If you cannot follow suit, you MUST play a trump if you have one.',
+    objective: 'Avoid taking tricks with high point values. The player with the MOST points in a round loses a point (mark on the slate).',
+    gameplay: '1. The player to the right of the dealer leads.\n2. You must follow suit if possible.\n3. **Trumps**: The last card dealt to the dealer determines the trump suit.\n4. **The Reverse Rule**: If you cannot follow suit, you MUST play a trump if you have one.',
+    keyRules: [
+      'Follow the legal action constraints defined for Hindersche.',
+      'Round outcome is resolved by the scoring method: Ace-Ten scoring (A=11, 10=10, K=4, O/Q=3, U/J=2).',
+      'Winning condition: Avoid taking tricks with high point values.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players playing individually (non-partnership).',
+      deck: '36-card German-suited pack (A, K, O, U, 10, 9, 8, 7, 6). Ranking: A > K > O > U > 9 > 8 > 7 > 6 > 10 (Note the low Ten!).',
+      equipment: '36-card German-suited pack (A, K, O, U, 10, 9, 8, 7, 6). Ranking: A > K > O > U > 9 > 8 > 7 > 6 > 10 (Note the low Ten!).',
+      dealing: 'Play and dealing are ANTICLOCKWISE. Dealing varies but usually involves batches of cards to reach 9 cards per player.',
+    },
+    turnFlow: '1. The player to the right of the dealer leads.\n2. You must follow suit if possible.\n3. **Trumps**: The last card dealt to the dealer determines the trump suit.\n4. **The Reverse Rule**: If you cannot follow suit, you MUST play a trump if you have one.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: "Allowed only in deal phase. Forehand is the player to dealer's right.",
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if holding a card of the led suit; otherwise may play any card. Legal when it is your turn in trick play.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Avoid taking tricks with high point values. The player with the MOST points in a round loses a point (mark on the slate).',
+      'Turn-flow example: 1. The player to the right of the dealer leads.\n2. You must follow suit if possible.\n3. **Trumps**: The last card dealt to the dealer determines the trump suit.\n4. **The Reverse Rule**: If you cannot follow suit, you MUST play a trump if you have one.',
+      'Scoring example: Ace-Ten scoring. A=11, 10=10, K=4, O/Q=3, U/J=2. Total=120 points. Highest scorer in round gets a stroke. 4 strokes = lose. Last player without 4 strokes wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'hindersche.rules.objective',
+        title: 'Objective',
+        text: 'Avoid taking tricks with high point values. The player with the MOST points in a round loses a point (mark on the slate).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hindersche.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. The player to the right of the dealer leads.\n2. You must follow suit if possible.\n3. **Trumps**: The last card dealt to the dealer determines the trump suit.\n4. **The Reverse Rule**: If you cannot follow suit, you MUST play a trump if you have one.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hindersche.setup.players',
+        title: 'Players',
+        text: '4 players playing individually (non-partnership).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hindersche.setup.deck',
+        title: 'Deck',
+        text: '36-card German-suited pack (A, K, O, U, 10, 9, 8, 7, 6). Ranking: A > K > O > U > 9 > 8 > 7 > 6 > 10 (Note the low Ten!).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hindersche.setup.equipment',
+        title: 'Equipment',
+        text: '36-card German-suited pack (A, K, O, U, 10, 9, 8, 7, 6). Ranking: A > K > O > U > 9 > 8 > 7 > 6 > 10 (Note the low Ten!).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hindersche.setup.dealing',
+        title: 'Deal',
+        text: 'Play and dealing are ANTICLOCKWISE. Dealing varies but usually involves batches of cards to reach 9 cards per player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hindersche.score.win-condition',
+        title: 'Win condition',
+        text: 'Last player without 4 strokes wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hindersche.score.description',
+        title: 'Scoring',
+        text: 'Ace-Ten scoring. A=11, 10=10, K=4, O/Q=3, U/J=2. Total=120 points. Highest scorer in round gets a stroke. 4 strokes = lose.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hindersche.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hindersche.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hindersche.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Ace-Ten scoring (A=11, 10=10, K=4, O/Q=3, U/J=2).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hindersche.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Avoid taking tricks with high point values.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hindersche.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hindersche.rules.objective',
+          'hindersche.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hindersche.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hindersche.setup.players',
+          'hindersche.setup.deck',
+          'hindersche.setup.equipment',
+          'hindersche.setup.dealing',
+        ],
+      },
+      {
+        id: 'hindersche.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hindersche.rules.key.1',
+          'hindersche.rules.key.2',
+          'hindersche.rules.key.3',
+        ],
+      },
+      {
+        id: 'hindersche.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hindersche.score.description',
+          'hindersche.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hindersche.setup.dealing',
+        'hindersche.rules.objective',
+      ],
+      deal: [
+        'hindersche.rules.gameplay',
+      ],
+      play_card: [
+        'hindersche.rules.gameplay',
+      ],
+      score_round: [
+        'hindersche.rules.gameplay',
+      ],
+    },
+  },
+}

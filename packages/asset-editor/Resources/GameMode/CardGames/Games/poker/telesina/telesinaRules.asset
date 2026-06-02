@@ -1,0 +1,213 @@
+{
+  system: {
+    guid: '4555748f-8d87-48e3-9034-5d64e92358e3',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/telesina/telesinaRules.asset',
+    gameId: 'telesina',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Ante: Each player pays an agreed ante to the pot. 2. Initial deal: Each player receives two cards (one face down, one face up), dealt clockwise. 3. First betting round: Player with highest face-up card starts; ties broken by suit (hearts highest, then diamonds, clubs, spades). 4. Further deal and betting: Another face-up card is dealt to each active player, then a betting round (opener: best pair showing, or highest card, then second card; suits break ties). This repeats until each player has four face-up and one face-down card. 5. Showdown: After the final betting round, active players reveal hands; highest hand wins the pot.',
+    Player: '1. Ante: Each player pays an agreed ante to the pot. 2. Initial deal: Each player receives two cards (one face down, one face up), dealt clockwise. 3. First betting round: Player with highest face-up card starts; ties broken by suit (hearts highest, then diamonds, clubs, spades). 4. Further deal and betting: Another face-up card is dealt to each active player, then a betting round (opener: best pair showing, or highest card, then second card; suits break ties). This repeats until each player has four face-up and one face-down card. 5. Showdown: After the final betting round, active players reveal hands; highest hand wins the pot.',
+    objective: 'Win the pot by having the highest hand at showdown.',
+    gameplay: '1. Ante: Each player pays an agreed ante to the pot. 2. Initial deal: Each player receives two cards (one face down, one face up), dealt clockwise. 3. First betting round: Player with highest face-up card starts; ties broken by suit (hearts highest, then diamonds, clubs, spades). 4. Further deal and betting: Another face-up card is dealt to each active player, then a betting round (opener: best pair showing, or highest card, then second card; suits break ties). This repeats until each player has four face-up and one face-down card. 5. Showdown: After the final betting round, active players reveal hands; highest hand wins the pot.',
+    keyRules: [
+      'Variable stripped deck: lowest rank = 11 minus number of players (e.g. 5 players use 6 to Ace, 36 cards).',
+      'Hand ranking: flush ranks above full house (Italian order). Straight flush, four of a kind, flush, full house, straight, three of a kind, two pair, pair, high card.',
+      'First bettor each round: best visible hand; ties broken by suit order.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+      deck: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+      equipment: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+      dealing: 'Ante first. Each player receives two cards (one down, one up), dealt clockwise. After first betting round, one face-up card per active player, then betting; repeat until each has four face-up and one face-down (five cards total). Dealing pattern: clockwise.',
+    },
+    turnFlow: '1. Ante: Each player pays an agreed ante to the pot. 2. Initial deal: Each player receives two cards (one face down, one face up), dealt clockwise. 3. First betting round: Player with highest face-up card starts; ties broken by suit (hearts highest, then diamonds, clubs, spades). 4. Further deal and betting: Another face-up card is dealt to each active player, then a betting round (opener: best pair showing, or highest card, then second card; suits break ties). This repeats until each player has four face-up and one face-down card. 5. Showdown: After the final betting round, active players reveal hands; highest hand wins the pot.',
+    moveValidityConditions: {
+      ante: 'At start of game before any cards are dealt; all players must ante.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Legal during any betting round when it is your turn to act.',
+      check: 'Legal only when no one has bet in the current round.',
+      call: 'Legal when there is an unmatched bet; must match the current bet amount.',
+      bet: 'Legal when it is your turn and no bet has been made, or after a bet to open the action.',
+      raise: 'Legal when there is an existing bet to raise.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Telesina is stud poker; cards are dealt by the dealer, not played from hand to table.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the highest hand at showdown.',
+      'Turn-flow example: 1. Ante: Each player pays an agreed ante to the pot. 2. Initial deal: Each player receives two cards (one face down, one face up), dealt clockwise. 3. First betting round: Player with highest face-up card starts; ties broken by suit (hearts highest, then diamonds, clubs, spades). 4. Further deal and betting: Another face-up card is dealt to each active player, then a betting round (opener: best pair showing, or highest card, then second card; suits break ties). This repeats until each player has four face-up and one face-down card. 5. Showdown: After the final betting round, active players reveal hands; highest hand wins the pot.',
+      'Scoring example: Pot is won by the player with the highest hand at showdown; no point target. Highest hand at showdown wins the pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'telesina.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest hand at showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'telesina.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Ante: Each player pays an agreed ante to the pot. 2. Initial deal: Each player receives two cards (one face down, one face up), dealt clockwise. 3. First betting round: Player with highest face-up card starts; ties broken by suit (hearts highest, then diamonds, clubs, spades). 4. Further deal and betting: Another face-up card is dealt to each active player, then a betting round (opener: best pair showing, or highest card, then second card; suits break ties). This repeats until each player has four face-up and one face-down card. 5. Showdown: After the final betting round, active players reveal hands; highest hand wins the pot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'telesina.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'telesina.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'telesina.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'telesina.setup.dealing',
+        title: 'Deal',
+        text: 'Ante first. Each player receives two cards (one down, one up), dealt clockwise. After first betting round, one face-up card per active player, then betting; repeat until each has four face-up and one face-down (five cards total). Dealing pattern: clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'telesina.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest hand at showdown wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'telesina.score.description',
+        title: 'Scoring',
+        text: 'Pot is won by the player with the highest hand at showdown; no point target.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'telesina.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Variable stripped deck: lowest rank = 11 minus number of players (e.g. 5 players use 6 to Ace, 36 cards).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'telesina.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Hand ranking: flush ranks above full house (Italian order). Straight flush, four of a kind, flush, full house, straight, three of a kind, two pair, pair, high card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'telesina.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First bettor each round: best visible hand; ties broken by suit order.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'telesina.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'telesina.rules.objective',
+          'telesina.rules.gameplay',
+        ],
+      },
+      {
+        id: 'telesina.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'telesina.setup.players',
+          'telesina.setup.deck',
+          'telesina.setup.equipment',
+          'telesina.setup.dealing',
+        ],
+      },
+      {
+        id: 'telesina.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'telesina.rules.key.1',
+          'telesina.rules.key.2',
+          'telesina.rules.key.3',
+        ],
+      },
+      {
+        id: 'telesina.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'telesina.score.description',
+          'telesina.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'telesina.setup.dealing',
+        'telesina.rules.objective',
+      ],
+      ante: [
+        'telesina.rules.gameplay',
+      ],
+      fold: [
+        'telesina.rules.gameplay',
+      ],
+      check: [
+        'telesina.rules.gameplay',
+      ],
+      call: [
+        'telesina.rules.gameplay',
+      ],
+      bet: [
+        'telesina.rules.gameplay',
+      ],
+      raise: [
+        'telesina.rules.gameplay',
+      ],
+    },
+  },
+}

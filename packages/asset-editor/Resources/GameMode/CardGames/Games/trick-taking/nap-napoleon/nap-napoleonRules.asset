@@ -1,0 +1,230 @@
+{
+  system: {
+    guid: 'cc3592cf-808f-4609-90e3-460f8fa7b75e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/nap-napoleon/nap-napoleonRules.asset',
+    gameId: 'nap-napoleon',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Bidding: Each player has one chance to bid, starting left of dealer. Must pass or bid higher than previous. Bids in ascending order: Three (3 tricks), Four (4 tricks), Nap (5 tricks), Wellington (5 tricks, higher stakesâ€”can only bid after Nap), BlÃ¼cher (5 tricks, highest stakesâ€”can only bid after Wellington). 2. High bidder leads first trick; suit of this card becomes trumps. 3. Players must follow suit if possible. 4. Highest trump wins trick; if no trumps, highest card of led suit wins. 5. Winner of trick leads next.',
+    Player: '1. Bidding: Each player has one chance to bid, starting left of dealer. Must pass or bid higher than previous. Bids in ascending order: Three (3 tricks), Four (4 tricks), Nap (5 tricks), Wellington (5 tricks, higher stakesâ€”can only bid after Nap), BlÃ¼cher (5 tricks, highest stakesâ€”can only bid after Wellington). 2. High bidder leads first trick; suit of this card becomes trumps. 3. Players must follow suit if possible. 4. Highest trump wins trick; if no trumps, highest card of led suit wins. 5. Winner of trick leads next.',
+    objective: 'Win at least the number of tricks bid. The bidder plays against all other players who form a temporary team.',
+    gameplay: '1. Bidding: Each player has one chance to bid, starting left of dealer. Must pass or bid higher than previous. Bids in ascending order: Three (3 tricks), Four (4 tricks), Nap (5 tricks), Wellington (5 tricks, higher stakesâ€”can only bid after Nap), BlÃ¼cher (5 tricks, highest stakesâ€”can only bid after Wellington). 2. High bidder leads first trick; suit of this card becomes trumps. 3. Players must follow suit if possible. 4. Highest trump wins trick; if no trumps, highest card of led suit wins. 5. Winner of trick leads next.',
+    keyRules: [
+      'Five cards each; high bidder names trumps by leading',
+      'Must follow suit if possible',
+      'One bidding round onlyâ€”pass or overcall',
+      'Wellington can only be bid after Nap; BlÃ¼cher only after Wellington',
+      'Cards often not shuffled between hands (just cut)',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '3-8 players; 4-5 is optimal. No permanent partnerships.',
+      deck: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2. Often reduced based on player count.',
+      equipment: 'Standard deck, poker chips or counters for stakes.',
+      dealing: 'Five cards to each playerâ€”either 3 then 2, or 2 then 3. Cards shuffled only at start and after successful Nap/Wellington/BlÃ¼cher.',
+    },
+    turnFlow: '1. Bidding: Each player has one chance to bid, starting left of dealer. Must pass or bid higher than previous. Bids in ascending order: Three (3 tricks), Four (4 tricks), Nap (5 tricks), Wellington (5 tricks, higher stakesâ€”can only bid after Nap), BlÃ¼cher (5 tricks, highest stakesâ€”can only bid after Wellington). 2. High bidder leads first trick; suit of this card becomes trumps. 3. Players must follow suit if possible. 4. Highest trump wins trick; if no trumps, highest card of led suit wins. 5. Winner of trick leads next.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if possible',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Cannot bid later in same round',
+      bid: 'Must exceed previous bid or pass',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win at least the number of tricks bid. The bidder plays against all other players who form a temporary team.',
+      'Turn-flow example: 1. Bidding: Each player has one chance to bid, starting left of dealer. Must pass or bid higher than previous. Bids in ascending order: Three (3 tricks), Four (4 tricks), Nap (5 tricks), Wellington (5 tricks, higher stakesâ€”can only bid after Nap), BlÃ¼cher (5 tricks, highest stakesâ€”can only bid after Wellington). 2. High bidder leads first trick; suit of this card becomes trumps. 3. Players must follow suit if possible. 4. Highest trump wins trick; if no trumps, highest card of led suit wins. 5. Winner of trick leads next.',
+      'Scoring example: Stake-based payment system. Bidder wins stakes from all opponents if successful; pays all opponents if unsuccessful. Win at least the number of tricks bid..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'nap-napoleon.rules.objective',
+        title: 'Objective',
+        text: 'Win at least the number of tricks bid. The bidder plays against all other players who form a temporary team.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'nap-napoleon.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Bidding: Each player has one chance to bid, starting left of dealer. Must pass or bid higher than previous. Bids in ascending order: Three (3 tricks), Four (4 tricks), Nap (5 tricks), Wellington (5 tricks, higher stakesâ€”can only bid after Nap), BlÃ¼cher (5 tricks, highest stakesâ€”can only bid after Wellington). 2. High bidder leads first trick; suit of this card becomes trumps. 3. Players must follow suit if possible. 4. Highest trump wins trick; if no trumps, highest card of led suit wins. 5. Winner of trick leads next.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'nap-napoleon.setup.players',
+        title: 'Players',
+        text: '3-8 players; 4-5 is optimal. No permanent partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'nap-napoleon.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2. Often reduced based on player count.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'nap-napoleon.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips or counters for stakes.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'nap-napoleon.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards to each playerâ€”either 3 then 2, or 2 then 3. Cards shuffled only at start and after successful Nap/Wellington/BlÃ¼cher.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'nap-napoleon.score.win-condition',
+        title: 'Win condition',
+        text: 'Win at least the number of tricks bid.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'nap-napoleon.score.description',
+        title: 'Scoring',
+        text: 'Stake-based payment system. Bidder wins stakes from all opponents if successful; pays all opponents if unsuccessful.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'nap-napoleon.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Five cards each; high bidder names trumps by leading',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'nap-napoleon.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must follow suit if possible',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'nap-napoleon.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One bidding round onlyâ€”pass or overcall',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'nap-napoleon.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Wellington can only be bid after Nap; BlÃ¼cher only after Wellington',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'nap-napoleon.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Cards often not shuffled between hands (just cut)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'nap-napoleon.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'nap-napoleon.rules.objective',
+          'nap-napoleon.rules.gameplay',
+        ],
+      },
+      {
+        id: 'nap-napoleon.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'nap-napoleon.setup.players',
+          'nap-napoleon.setup.deck',
+          'nap-napoleon.setup.equipment',
+          'nap-napoleon.setup.dealing',
+        ],
+      },
+      {
+        id: 'nap-napoleon.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'nap-napoleon.rules.key.1',
+          'nap-napoleon.rules.key.2',
+          'nap-napoleon.rules.key.3',
+          'nap-napoleon.rules.key.4',
+          'nap-napoleon.rules.key.5',
+        ],
+      },
+      {
+        id: 'nap-napoleon.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'nap-napoleon.score.description',
+          'nap-napoleon.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'nap-napoleon.setup.dealing',
+        'nap-napoleon.rules.objective',
+      ],
+      deal: [
+        'nap-napoleon.rules.gameplay',
+      ],
+      play_card: [
+        'nap-napoleon.rules.gameplay',
+      ],
+      pass: [
+        'nap-napoleon.rules.gameplay',
+      ],
+      bid: [
+        'nap-napoleon.rules.gameplay',
+      ],
+      settle_stakes: [
+        'nap-napoleon.rules.gameplay',
+      ],
+    },
+  },
+}

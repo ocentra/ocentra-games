@@ -1,0 +1,220 @@
+{
+  system: {
+    guid: 'c3c70d64-10be-4a32-8db2-adf0b191c8a5',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/scopa/asso-pigliatutto-scopa/asso-pigliatutto-scopaRules.asset',
+    gameId: 'asso-pigliatutto-scopa',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Play**: Player plays one card. 2. **Capture**: If the card matches the rank of a table card, it captures it. If it matches the sum of multiple table cards, it captures them. 3. **The Ace Rule**: If you play an Ace, you take ALL cards on the table (unless there is an Ace on the table, in which case you must capture only the Ace). 4. **Scopa**: Clearing the table earns 1 point (a 'Scopa'). Exception: Playing an Ace to clear the table usually does NOT award a Scopa point unless the Ace captured a single Ace. 5. **Refill**: When hands are empty, dealer deals 3 more. 6. **End**: Last player to take a trick collects any remaining table cards.",
+    Player: "1. **Play**: Player plays one card. 2. **Capture**: If the card matches the rank of a table card, it captures it. If it matches the sum of multiple table cards, it captures them. 3. **The Ace Rule**: If you play an Ace, you take ALL cards on the table (unless there is an Ace on the table, in which case you must capture only the Ace). 4. **Scopa**: Clearing the table earns 1 point (a 'Scopa'). Exception: Playing an Ace to clear the table usually does NOT award a Scopa point unless the Ace captured a single Ace. 5. **Refill**: When hands are empty, dealer deals 3 more. 6. **End**: Last player to take a trick collects any remaining table cards.",
+    objective: "Score 11 points (or 21) by capturing cards, specifically Coins, Sevens, and the 'Primiera'.",
+    gameplay: "1. **Play**: Player plays one card. 2. **Capture**: If the card matches the rank of a table card, it captures it. If it matches the sum of multiple table cards, it captures them. 3. **The Ace Rule**: If you play an Ace, you take ALL cards on the table (unless there is an Ace on the table, in which case you must capture only the Ace). 4. **Scopa**: Clearing the table earns 1 point (a 'Scopa'). Exception: Playing an Ace to clear the table usually does NOT award a Scopa point unless the Ace captured a single Ace. 5. **Refill**: When hands are empty, dealer deals 3 more. 6. **End**: Last player to take a trick collects any remaining table cards.",
+    keyRules: [
+      'Must Capture: If you can capture, you must. You cannot simply discard if a capture is possible (though you can choose WHICH capture if there are multiple).',
+      'Ace Priority: If an Ace is on the table, playing an Ace only captures that Ace (standard capture rule). If NO Ace is on the table, playing an Ace captures EVERYTHING.',
+      'Scopa Point: Awarded for clearing the table, marked by turning a card face-up in the trick pile. (Note: Ace-sweeps typically yield 0 points).',
+      'Scoring Categories: Settebello (7 of Coins), Denari (Most Coins), Carte (Most Cards), Primiera (Best 4-card set).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 players (heads-up) or 4 players (two partnerships).',
+      deck: '40-card Italian deck (Coins, Cups, Swords, Batons). If using a standard 52-card deck, remove 8s, 9s, and 10s. Kings=10, Queens=9, Jacks=8.',
+      equipment: 'Standard Italian deck, score sheet.',
+      dealing: 'Dealer gives 3 cards to each player and places 4 cards face-up on the table. When players run out of cards, 3 more are dealt until the deck is empty.',
+    },
+    turnFlow: "1. **Play**: Player plays one card. 2. **Capture**: If the card matches the rank of a table card, it captures it. If it matches the sum of multiple table cards, it captures them. 3. **The Ace Rule**: If you play an Ace, you take ALL cards on the table (unless there is an Ace on the table, in which case you must capture only the Ace). 4. **Scopa**: Clearing the table earns 1 point (a 'Scopa'). Exception: Playing an Ace to clear the table usually does NOT award a Scopa point unless the Ace captured a single Ace. 5. **Refill**: When hands are empty, dealer deals 3 more. 6. **End**: Last player to take a trick collects any remaining table cards.",
+    moveValidityConditions: {
+      ante: 'Scopa is a fishing game with no antes or betting.',
+      deal: 'Dealer deals in batches of three; not a player action.',
+      reveal_market: 'No market; four cards are dealt to the table at start.',
+      buy_market: 'Asso Pigliatutto has no market purchase; play or capture only.',
+      buy_stock: 'Players receive cards by deal refills only; no buying from stock.',
+      fold: 'Fishing game; no folding or dropping out of hands.',
+      check: 'No betting in Scopa; must play or capture each turn.',
+      call: 'No betting rounds in Asso Pigliatutto.',
+      bet: 'Scopa is played for points only; no chip bets.',
+      raise: 'No betting; scoring is by Coins, Settebello, Primiera.',
+      declare: 'No declaration phase; cards are played to table or captured.',
+      reveal_hand: 'Hands stay private; no showdown in this fishing game.',
+      award_pot: 'Winning by points to 11 or 21; no pot to award.',
+      play_card: 'Play is via custom actions play_card_capture or play_card_discard.',
+      draw: 'Cards come from refill deals only; no per-turn draw from stock.',
+      discard: 'Unplayable cards are laid on table; no discard pile in Scopa.',
+      pass: 'Must capture if possible or play one card; no pass option.',
+      bid: 'No bidding in Asso Pigliatutto.',
+      meld: 'Fishing game; no melds or sets.',
+      go_out: 'Game ends when deck and hands are empty and points tallied.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      "Rule example: Score 11 points (or 21) by capturing cards, specifically Coins, Sevens, and the 'Primiera'.",
+      "Turn-flow example: 1. **Play**: Player plays one card. 2. **Capture**: If the card matches the rank of a table card, it captures it. If it matches the sum of multiple table cards, it captures them. 3. **The Ace Rule**: If you play an Ace, you take ALL cards on the table (unless there is an Ace on the table, in which case you must capture only the Ace). 4. **Scopa**: Clearing the table earns 1 point (a 'Scopa'). Exception: Playing an Ace to clear the table usually does NOT award a Scopa point unless the Ace captured a single Ace. 5. **Refill**: When hands are empty, dealer deals 3 more. 6. **End**: Last player to take a trick collects any remaining table cards.",
+      'Scoring example: Standard Scopa scoring. First to 11 (or 21) points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'asso-pigliatutto-scopa.rules.objective',
+        title: 'Objective',
+        text: "Score 11 points (or 21) by capturing cards, specifically Coins, Sevens, and the 'Primiera'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Play**: Player plays one card. 2. **Capture**: If the card matches the rank of a table card, it captures it. If it matches the sum of multiple table cards, it captures them. 3. **The Ace Rule**: If you play an Ace, you take ALL cards on the table (unless there is an Ace on the table, in which case you must capture only the Ace). 4. **Scopa**: Clearing the table earns 1 point (a 'Scopa'). Exception: Playing an Ace to clear the table usually does NOT award a Scopa point unless the Ace captured a single Ace. 5. **Refill**: When hands are empty, dealer deals 3 more. 6. **End**: Last player to take a trick collects any remaining table cards.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.setup.players',
+        title: 'Players',
+        text: '2 players (heads-up) or 4 players (two partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.setup.deck',
+        title: 'Deck',
+        text: '40-card Italian deck (Coins, Cups, Swords, Batons). If using a standard 52-card deck, remove 8s, 9s, and 10s. Kings=10, Queens=9, Jacks=8.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Italian deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives 3 cards to each player and places 4 cards face-up on the table. When players run out of cards, 3 more are dealt until the deck is empty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 11 (or 21) points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.score.description',
+        title: 'Scoring',
+        text: 'Standard Scopa scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must Capture: If you can capture, you must. You cannot simply discard if a capture is possible (though you can choose WHICH capture if there are multiple).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ace Priority: If an Ace is on the table, playing an Ace only captures that Ace (standard capture rule). If NO Ace is on the table, playing an Ace captures EVERYTHING.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Scopa Point: Awarded for clearing the table, marked by turning a card face-up in the trick pile. (Note: Ace-sweeps typically yield 0 points).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Scoring Categories: Settebello (7 of Coins), Denari (Most Coins), Carte (Most Cards), Primiera (Best 4-card set).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'asso-pigliatutto-scopa.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'asso-pigliatutto-scopa.rules.objective',
+          'asso-pigliatutto-scopa.rules.gameplay',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'asso-pigliatutto-scopa.setup.players',
+          'asso-pigliatutto-scopa.setup.deck',
+          'asso-pigliatutto-scopa.setup.equipment',
+          'asso-pigliatutto-scopa.setup.dealing',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'asso-pigliatutto-scopa.rules.key.1',
+          'asso-pigliatutto-scopa.rules.key.2',
+          'asso-pigliatutto-scopa.rules.key.3',
+          'asso-pigliatutto-scopa.rules.key.4',
+        ],
+      },
+      {
+        id: 'asso-pigliatutto-scopa.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'asso-pigliatutto-scopa.score.description',
+          'asso-pigliatutto-scopa.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'asso-pigliatutto-scopa.setup.dealing',
+        'asso-pigliatutto-scopa.rules.objective',
+      ],
+      deal_3_cards: [
+        'asso-pigliatutto-scopa.rules.gameplay',
+      ],
+      play_card_capture: [
+        'asso-pigliatutto-scopa.rules.gameplay',
+      ],
+      play_card_discard: [
+        'asso-pigliatutto-scopa.rules.gameplay',
+      ],
+      refill_hands_or_end: [
+        'asso-pigliatutto-scopa.rules.gameplay',
+      ],
+      score_and_end_round: [
+        'asso-pigliatutto-scopa.rules.gameplay',
+      ],
+    },
+  },
+}

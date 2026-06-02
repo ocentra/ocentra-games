@@ -1,0 +1,237 @@
+{
+  system: {
+    guid: '1e3fb133-a172-4064-b602-dd83d3c1e4ff',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/brag-5-card/brag-5-cardRules.asset',
+    gameId: 'brag-5-card',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Selection**: Players receive 5 cards and discard 2. 2. **Vying**: Standard Brag betting follows. Players choose to play 'Blind' (without looking at their chosen 3) or 'See'. 3. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.",
+    Player: "1. **Selection**: Players receive 5 cards and discard 2. 2. **Vying**: Standard Brag betting follows. Players choose to play 'Blind' (without looking at their chosen 3) or 'See'. 3. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.",
+    objective: 'Win the pot by forming the best three-card hand from the five dealt, or by forcing others to fold.',
+    gameplay: "1. **Selection**: Players receive 5 cards and discard 2. 2. **Vying**: Standard Brag betting follows. Players choose to play 'Blind' (without looking at their chosen 3) or 'See'. 3. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.",
+    keyRules: [
+      'The choice of which three cards to keep is the primary skill element.',
+      'Blind players bet half the price of Seeing players.',
+      'Equal hands favor the player who remained Blind longer.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Typically 3 to 8 players playing individually.',
+      deck: 'Standard 52-card French pack (No Jokers).',
+      equipment: 'Standard pack, betting chips or currency.',
+      dealing: 'Every player contributes an ante. Dealer deals five cards face-down to each player. Players choose three to keep and place the other two face-down in a shared muck pile.',
+    },
+    turnFlow: "1. **Selection**: Players receive 5 cards and discard 2. 2. **Vying**: Standard Brag betting follows. Players choose to play 'Blind' (without looking at their chosen 3) or 'See'. 3. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.",
+    moveValidityConditions: {
+      ante: 'Allowed only during the ante phase.',
+      deal: 'The initial distribution of five cards to each player is performed automatically by the system dealer.',
+      reveal_market: '5-Card Brag is a hole-card game where all cards are held privately; no shared market exists.',
+      buy_market: 'Players cannot purchase cards from a market; hand optimization is restricted to the selection phase.',
+      buy_stock: 'There is no drawing or buying from the stock during play; the round uses the five cards dealt at the start.',
+      fold: 'Allowed during the vying phase when facing a bet.',
+      check: 'Standard Brag requires an active bet to remain in the hand; checking is generally not supported.',
+      call: 'Allowed only during the vying phase.',
+      bet: 'Seeing players must bet at least double the Blind bet amount.',
+      raise: 'Allowed during the vying phase.',
+      declare: 'Hand results are established during the showdown comparison rather than through a formal declaration.',
+      reveal_hand: "The system automatically reveals hands at the request of a player who pays the 'See' double-cost.",
+      award_pot: 'System only.',
+      play_card: '5-Card Brag is a vying/poker game where cards are held rather than played to a shared trick.',
+      draw: 'All five cards are received at the start; no drawing phase exists during the play of the hand.',
+      discard: 'Mandatory to reach the three-card hand size.',
+      pass: 'Players must either bet, see, or fold during their turn; a simple pass is not supported.',
+      bid: 'Brag uses a wagering system rather than an auction-style bidding system for contracts.',
+      meld: 'Hand resolution is based strictly on three-card poker hierarchies rather than forming melds.',
+      go_out: 'The hand terminates only after a showdown occurs or all but one player have folded.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by forming the best three-card hand from the five dealt, or by forcing others to fold.',
+      "Turn-flow example: 1. **Selection**: Players receive 5 cards and discard 2. 2. **Vying**: Standard Brag betting follows. Players choose to play 'Blind' (without looking at their chosen 3) or 'See'. 3. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.",
+      'Scoring example: Standard pot-based resolution. Last player standing or best three-card hand at showdown..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'brag-5-card.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by forming the best three-card hand from the five dealt, or by forcing others to fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'brag-5-card.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Selection**: Players receive 5 cards and discard 2. 2. **Vying**: Standard Brag betting follows. Players choose to play 'Blind' (without looking at their chosen 3) or 'See'. 3. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'brag-5-card.setup.players',
+        title: 'Players',
+        text: 'Typically 3 to 8 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'brag-5-card.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'brag-5-card.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, betting chips or currency.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'brag-5-card.setup.dealing',
+        title: 'Deal',
+        text: 'Every player contributes an ante. Dealer deals five cards face-down to each player. Players choose three to keep and place the other two face-down in a shared muck pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'brag-5-card.score.win-condition',
+        title: 'Win condition',
+        text: 'Last player standing or best three-card hand at showdown.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'brag-5-card.score.description',
+        title: 'Scoring',
+        text: 'Standard pot-based resolution.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'brag-5-card.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The choice of which three cards to keep is the primary skill element.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'brag-5-card.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Blind players bet half the price of Seeing players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'brag-5-card.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Equal hands favor the player who remained Blind longer.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'brag-5-card.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'brag-5-card.rules.objective',
+          'brag-5-card.rules.gameplay',
+        ],
+      },
+      {
+        id: 'brag-5-card.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'brag-5-card.setup.players',
+          'brag-5-card.setup.deck',
+          'brag-5-card.setup.equipment',
+          'brag-5-card.setup.dealing',
+        ],
+      },
+      {
+        id: 'brag-5-card.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'brag-5-card.rules.key.1',
+          'brag-5-card.rules.key.2',
+          'brag-5-card.rules.key.3',
+        ],
+      },
+      {
+        id: 'brag-5-card.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'brag-5-card.score.description',
+          'brag-5-card.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'brag-5-card.setup.dealing',
+        'brag-5-card.rules.objective',
+      ],
+      ante: [
+        'brag-5-card.rules.gameplay',
+      ],
+      fold: [
+        'brag-5-card.rules.gameplay',
+      ],
+      call: [
+        'brag-5-card.rules.gameplay',
+      ],
+      bet: [
+        'brag-5-card.rules.gameplay',
+      ],
+      raise: [
+        'brag-5-card.rules.gameplay',
+      ],
+      award_pot: [
+        'brag-5-card.rules.gameplay',
+      ],
+      discard: [
+        'brag-5-card.rules.gameplay',
+      ],
+      deal_5_each: [
+        'brag-5-card.rules.gameplay',
+      ],
+      choose_3_discard_2: [
+        'brag-5-card.rules.gameplay',
+      ],
+      bet_blind: [
+        'brag-5-card.rules.gameplay',
+      ],
+      see_cards: [
+        'brag-5-card.rules.gameplay',
+      ],
+      bet_seeing: [
+        'brag-5-card.rules.gameplay',
+      ],
+      request_showdown: [
+        'brag-5-card.rules.gameplay',
+      ],
+      evaluate_brag_hands: [
+        'brag-5-card.rules.gameplay',
+      ],
+    },
+  },
+}

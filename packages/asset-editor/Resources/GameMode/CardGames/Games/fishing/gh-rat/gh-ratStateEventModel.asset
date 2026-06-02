@@ -1,0 +1,78 @@
+{
+  system: {
+    guid: '661ab0e4-8685-456f-8af1-379104066702',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/gh-rat/gh-ratStateEventModel.asset',
+    gameId: 'gh-rat',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'gh-rat',
+    familyVariant: 'Casino / Capture',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'table',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'custom:capture',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'player',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 4,
+        target_score: 500,
+        hand_size: 4,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'play_loop',
+        'resolution',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'award_pot',
+        'play_card',
+      ],
+    },
+    examples: [],
+  },
+}

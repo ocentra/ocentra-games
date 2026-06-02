@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: '27a7b020-baf5-4e2d-9576-bf2764951ceb',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/tonk/tonkRules.asset',
+    gameId: 'tonk',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Check for Instant Win (49/50 points). 2. Draw (Stock/Discard). 3. Meld/Hit (Optional). 4. Discard. 5. Drop (Knock): Can be done before drawing if confident in low points. Opponents challenge.',
+    Player: '1. Check for Instant Win (49/50 points). 2. Draw (Stock/Discard). 3. Meld/Hit (Optional). 4. Discard. 5. Drop (Knock): Can be done before drawing if confident in low points. Opponents challenge.',
+    objective: 'By drawing and discarding, form your cards into spreads (books of equal rank or runs in suit) or add to existing spreads. You win by getting rid of all your cards (tonk out or run out) or by having the lowest point count when someone drops (knocks).',
+    gameplay: '1. Check for Instant Win (49/50 points). 2. Draw (Stock/Discard). 3. Meld/Hit (Optional). 4. Discard. 5. Drop (Knock): Can be done before drawing if confident in low points. Opponents challenge.',
+    keyRules: [
+      'Drop (Knock) mechanic',
+      'Hitting opponent spreads',
+      'Instant win hands (49/50)',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: 'Standard 52-card. Face=10, A=1, Num=Value.',
+      equipment: 'Cards, chips',
+      dealing: 'Deal 5 (or 7) cards to each.',
+    },
+    turnFlow: '1. Check for Instant Win (49/50 points). 2. Draw (Stock/Discard). 3. Meld/Hit (Optional). 4. Discard. 5. Drop (Knock): Can be done before drawing if confident in low points. Opponents challenge.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'At start of turn; must draw if not dropping.',
+      discard: 'Exactly one discard after draw and optional meld or hit, unless all cards were played out.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'After drawing, before discarding; optional.',
+      go_out: 'Drop allowed at start of turn before drawing; tonk out when no cards remain after meld or hit.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: By drawing and discarding, form your cards into spreads (books of equal rank or runs in suit) or add to existing spreads. You win by getting rid of all your cards (tonk out or run out) or by having the lowest point count when someone drops (knocks).',
+      'Turn-flow example: 1. Check for Instant Win (49/50 points). 2. Draw (Stock/Discard). 3. Meld/Hit (Optional). 4. Discard. 5. Drop (Knock): Can be done before drawing if confident in low points. Opponents challenge.',
+      'Scoring example: Winner takes pot/stake. Penalties for being caught (having higher points than someone else after dropping). Go out (Tonk) or Drop with lowest points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'tonk.rules.objective',
+        title: 'Objective',
+        text: 'By drawing and discarding, form your cards into spreads (books of equal rank or runs in suit) or add to existing spreads. You win by getting rid of all your cards (tonk out or run out) or by having the lowest point count when someone drops (knocks).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tonk.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Check for Instant Win (49/50 points). 2. Draw (Stock/Discard). 3. Meld/Hit (Optional). 4. Discard. 5. Drop (Knock): Can be done before drawing if confident in low points. Opponents challenge.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tonk.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tonk.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card. Face=10, A=1, Num=Value.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tonk.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tonk.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 5 (or 7) cards to each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tonk.score.win-condition',
+        title: 'Win condition',
+        text: 'Go out (Tonk) or Drop with lowest points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tonk.score.description',
+        title: 'Scoring',
+        text: 'Winner takes pot/stake. Penalties for being caught (having higher points than someone else after dropping).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tonk.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Drop (Knock) mechanic',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tonk.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Hitting opponent spreads',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tonk.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Instant win hands (49/50)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tonk.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tonk.rules.objective',
+          'tonk.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tonk.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tonk.setup.players',
+          'tonk.setup.deck',
+          'tonk.setup.equipment',
+          'tonk.setup.dealing',
+        ],
+      },
+      {
+        id: 'tonk.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tonk.rules.key.1',
+          'tonk.rules.key.2',
+          'tonk.rules.key.3',
+        ],
+      },
+      {
+        id: 'tonk.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tonk.score.description',
+          'tonk.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tonk.setup.dealing',
+        'tonk.rules.objective',
+      ],
+      play_card: [
+        'tonk.rules.gameplay',
+      ],
+      draw: [
+        'tonk.rules.gameplay',
+      ],
+      discard: [
+        'tonk.rules.gameplay',
+      ],
+      meld: [
+        'tonk.rules.gameplay',
+      ],
+      go_out: [
+        'tonk.rules.gameplay',
+      ],
+    },
+  },
+}

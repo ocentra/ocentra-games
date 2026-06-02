@@ -1,0 +1,251 @@
+{
+  system: {
+    guid: 'a9cb53d0-a9c6-4041-aeca-543e12a7fc0a',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/pass-the-trash/pass-the-trashRules.asset',
+    gameId: 'pass-the-trash',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Antes: All players post the ante. 2. Deal: Seven cards face down to each player. 3. First betting round: Player to dealer's left acts first. 4. Pass the trash: Each active player places three unwanted cards face down; when all are ready, each set of three is passed to the next active player to the left. 5. Second betting round. 6. Discard: Everyone discards two unwanted cards (each keeps five). 7. Arrange: Each player chooses an order for the five cards and stacks them face down. 8. Reveal and bet: Each player turns over the first card of their stack; betting round begun by the player with the highest hand showing. Repeat for second, third, and fourth cards (four cards face up, one face down). 9. Final betting round. 10. Showdown: Highest five-card hand wins the pot.",
+    Player: "1. Antes: All players post the ante. 2. Deal: Seven cards face down to each player. 3. First betting round: Player to dealer's left acts first. 4. Pass the trash: Each active player places three unwanted cards face down; when all are ready, each set of three is passed to the next active player to the left. 5. Second betting round. 6. Discard: Everyone discards two unwanted cards (each keeps five). 7. Arrange: Each player chooses an order for the five cards and stacks them face down. 8. Reveal and bet: Each player turns over the first card of their stack; betting round begun by the player with the highest hand showing. Repeat for second, third, and fourth cards (four cards face up, one face down). 9. Final betting round. 10. Showdown: Highest five-card hand wins the pot.",
+    objective: 'Win the pot by having the highest five-card poker hand at showdown after the pass, discard, and reveal phases.',
+    gameplay: "1. Antes: All players post the ante. 2. Deal: Seven cards face down to each player. 3. First betting round: Player to dealer's left acts first. 4. Pass the trash: Each active player places three unwanted cards face down; when all are ready, each set of three is passed to the next active player to the left. 5. Second betting round. 6. Discard: Everyone discards two unwanted cards (each keeps five). 7. Arrange: Each player chooses an order for the five cards and stacks them face down. 8. Reveal and bet: Each player turns over the first card of their stack; betting round begun by the player with the highest hand showing. Repeat for second, third, and fourth cards (four cards face up, one face down). 9. Final betting round. 10. Showdown: Highest five-card hand wins the pot.",
+    keyRules: [
+      'Seven cards dealt to each player; after passing and discarding, best five-card hand wins.',
+      'Three cards passed to the next active player to the left after the first betting round.',
+      'After receiving passed cards, each player discards two cards before ordering the remaining five.',
+      'Reveal is one card at a time with a betting round after each; first reveal betting is led by highest hand showing.',
+      'Standard poker hand ranking; high hand wins unless playing a high-low variation.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 to 7 players. Best with 4. No partnerships.',
+      deck: 'Standard 52-card deck. One deck. No jokers.',
+      equipment: 'Standard 52-card deck, poker chips for antes and betting.',
+      dealing: 'After antes are placed, seven cards are dealt face down to each player. Dealing is clockwise.',
+    },
+    turnFlow: "1. Antes: All players post the ante. 2. Deal: Seven cards face down to each player. 3. First betting round: Player to dealer's left acts first. 4. Pass the trash: Each active player places three unwanted cards face down; when all are ready, each set of three is passed to the next active player to the left. 5. Second betting round. 6. Discard: Everyone discards two unwanted cards (each keeps five). 7. Arrange: Each player chooses an order for the five cards and stacks them face down. 8. Reveal and bet: Each player turns over the first card of their stack; betting round begun by the player with the highest hand showing. Repeat for second, third, and fourth cards (four cards face up, one face down). 9. Final betting round. 10. Showdown: Highest five-card hand wins the pot.",
+    moveValidityConditions: {
+      ante: 'Mandatory at start of each deal; all active players must ante.',
+      deal: 'Performed by the dealer at the start of each round; one round of dealing.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Legal during any betting round when you do not wish to call or raise.',
+      check: 'Legal only when no bet has been made in the current round (or current bet has been matched).',
+      call: 'Legal when there is an unmatched bet; must match the full current bet.',
+      bet: 'First to act may bet or check; must be at least the minimum bet when betting.',
+      raise: 'Legal when there is a bet to raise; must meet minimum raise size.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Occurs at showdown; all active players reveal; hand ranking determines the winner.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'In reveal phases, exactly one card is turned face up from your stack in order; betting round follows.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'Mandatory in the discard_two phase; exactly two cards must be discarded; each player keeps five cards.',
+      pass: 'Card passing is implemented via custom action pass_trash_cards; standard pass is not used.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Win the pot by having the highest five-card poker hand at showdown after the pass, discard, and reveal phases.',
+      "Turn-flow example: 1. Antes: All players post the ante. 2. Deal: Seven cards face down to each player. 3. First betting round: Player to dealer's left acts first. 4. Pass the trash: Each active player places three unwanted cards face down; when all are ready, each set of three is passed to the next active player to the left. 5. Second betting round. 6. Discard: Everyone discards two unwanted cards (each keeps five). 7. Arrange: Each player chooses an order for the five cards and stacks them face down. 8. Reveal and bet: Each player turns over the first card of their stack; betting round begun by the player with the highest hand showing. Repeat for second, third, and fourth cards (four cards face up, one face down). 9. Final betting round. 10. Showdown: Highest five-card hand wins the pot.",
+      'Scoring example: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Highest five-card poker hand at showdown wins the pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'pass-the-trash.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest five-card poker hand at showdown after the pass, discard, and reveal phases.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pass-the-trash.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Antes: All players post the ante. 2. Deal: Seven cards face down to each player. 3. First betting round: Player to dealer's left acts first. 4. Pass the trash: Each active player places three unwanted cards face down; when all are ready, each set of three is passed to the next active player to the left. 5. Second betting round. 6. Discard: Everyone discards two unwanted cards (each keeps five). 7. Arrange: Each player chooses an order for the five cards and stacks them face down. 8. Reveal and bet: Each player turns over the first card of their stack; betting round begun by the player with the highest hand showing. Repeat for second, third, and fourth cards (four cards face up, one face down). 9. Final betting round. 10. Showdown: Highest five-card hand wins the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pass-the-trash.setup.players',
+        title: 'Players',
+        text: '2 to 7 players. Best with 4. No partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pass-the-trash.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. One deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pass-the-trash.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, poker chips for antes and betting.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pass-the-trash.setup.dealing',
+        title: 'Deal',
+        text: 'After antes are placed, seven cards are dealt face down to each player. Dealing is clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pass-the-trash.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest five-card poker hand at showdown wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pass-the-trash.score.description',
+        title: 'Scoring',
+        text: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pass-the-trash.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Seven cards dealt to each player; after passing and discarding, best five-card hand wins.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pass-the-trash.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Three cards passed to the next active player to the left after the first betting round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pass-the-trash.rules.key.3',
+        title: 'Key rule 3',
+        text: 'After receiving passed cards, each player discards two cards before ordering the remaining five.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pass-the-trash.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Reveal is one card at a time with a betting round after each; first reveal betting is led by highest hand showing.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pass-the-trash.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Standard poker hand ranking; high hand wins unless playing a high-low variation.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pass-the-trash.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pass-the-trash.rules.objective',
+          'pass-the-trash.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pass-the-trash.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pass-the-trash.setup.players',
+          'pass-the-trash.setup.deck',
+          'pass-the-trash.setup.equipment',
+          'pass-the-trash.setup.dealing',
+        ],
+      },
+      {
+        id: 'pass-the-trash.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pass-the-trash.rules.key.1',
+          'pass-the-trash.rules.key.2',
+          'pass-the-trash.rules.key.3',
+          'pass-the-trash.rules.key.4',
+          'pass-the-trash.rules.key.5',
+        ],
+      },
+      {
+        id: 'pass-the-trash.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pass-the-trash.score.description',
+          'pass-the-trash.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pass-the-trash.setup.dealing',
+        'pass-the-trash.rules.objective',
+      ],
+      ante: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      deal: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      fold: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      check: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      call: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      bet: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      raise: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      reveal_hand: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      play_card: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      discard: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      pass_trash_cards: [
+        'pass-the-trash.rules.gameplay',
+      ],
+      arrange_reveal_stack: [
+        'pass-the-trash.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,208 @@
+{
+  system: {
+    guid: 'a041e970-1e71-42c2-91f6-b66c58678a32',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/commercial/tuxedo/tuxedoRules.asset',
+    gameId: 'tuxedo',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Play 1 card per turn. Capture matching number or cards summing to your card's value. Can't capture = play to pond. Sweeps: Big Sweep (4+ cards) = 10 pts. Little Sweep (3 or fewer) = 5 pts. Orange call: Red+Yellow captured = 10 bonus (must call 'Orange!'). 5-value cards = 5 pts each. Most cards = 15 pts.",
+    Player: "Play 1 card per turn. Capture matching number or cards summing to your card's value. Can't capture = play to pond. Sweeps: Big Sweep (4+ cards) = 10 pts. Little Sweep (3 or fewer) = 5 pts. Orange call: Red+Yellow captured = 10 bonus (must call 'Orange!'). 5-value cards = 5 pts each. Most cards = 15 pts.",
+    objective: 'Score points by capturing cards (match number or sum to 14), sweeps, 5s, Orange call (red and yellow together), and most cards; first to 100 wins.',
+    gameplay: "Play 1 card per turn. Capture matching number or cards summing to your card's value. Can't capture = play to pond. Sweeps: Big Sweep (4+ cards) = 10 pts. Little Sweep (3 or fewer) = 5 pts. Orange call: Red+Yellow captured = 10 bonus (must call 'Orange!'). 5-value cards = 5 pts each. Most cards = 15 pts.",
+    keyRules: [
+      'Rook deck (no Rook card)',
+      'Capture by match or sum',
+      'Sweep bonuses',
+      'Orange call mechanic',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: '56-card Rook deck (no Rook card). 4 colors, values 1-14.',
+      equipment: 'Rook cards',
+      dealing: '4 each + 4 face-up (pond). Redeal 4 when hands empty.',
+    },
+    turnFlow: "Play 1 card per turn. Capture matching number or cards summing to your card's value. Can't capture = play to pond. Sweeps: Big Sweep (4+ cards) = 10 pts. Little Sweep (3 or fewer) = 5 pts. Orange call: Red+Yellow captured = 10 bonus (must call 'Orange!'). 5-value cards = 5 pts each. Most cards = 15 pts.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play when it is your turn; play one card to capture from pond or add to pond.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Score points by capturing cards (match number or sum to 14), sweeps, 5s, Orange call (red and yellow together), and most cards; first to 100 wins.',
+      "Turn-flow example: Play 1 card per turn. Capture matching number or cards summing to your card's value. Can't capture = play to pond. Sweeps: Big Sweep (4+ cards) = 10 pts. Little Sweep (3 or fewer) = 5 pts. Orange call: Red+Yellow captured = 10 bonus (must call 'Orange!'). 5-value cards = 5 pts each. Most cards = 15 pts.",
+      'Scoring example: Most cards=15. Sweeps=5/10. 5s=5. Orange=10. First to 100. First to 100 points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'tuxedo.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing cards (match number or sum to 14), sweeps, 5s, Orange call (red and yellow together), and most cards; first to 100 wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tuxedo.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play 1 card per turn. Capture matching number or cards summing to your card's value. Can't capture = play to pond. Sweeps: Big Sweep (4+ cards) = 10 pts. Little Sweep (3 or fewer) = 5 pts. Orange call: Red+Yellow captured = 10 bonus (must call 'Orange!'). 5-value cards = 5 pts each. Most cards = 15 pts.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tuxedo.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tuxedo.setup.deck',
+        title: 'Deck',
+        text: '56-card Rook deck (no Rook card). 4 colors, values 1-14.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tuxedo.setup.equipment',
+        title: 'Equipment',
+        text: 'Rook cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tuxedo.setup.dealing',
+        title: 'Deal',
+        text: '4 each + 4 face-up (pond). Redeal 4 when hands empty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tuxedo.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 100 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tuxedo.score.description',
+        title: 'Scoring',
+        text: 'Most cards=15. Sweeps=5/10. 5s=5. Orange=10. First to 100.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tuxedo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Rook deck (no Rook card)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tuxedo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Capture by match or sum',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tuxedo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Sweep bonuses',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tuxedo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Orange call mechanic',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tuxedo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tuxedo.rules.objective',
+          'tuxedo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tuxedo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tuxedo.setup.players',
+          'tuxedo.setup.deck',
+          'tuxedo.setup.equipment',
+          'tuxedo.setup.dealing',
+        ],
+      },
+      {
+        id: 'tuxedo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tuxedo.rules.key.1',
+          'tuxedo.rules.key.2',
+          'tuxedo.rules.key.3',
+          'tuxedo.rules.key.4',
+        ],
+      },
+      {
+        id: 'tuxedo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tuxedo.score.description',
+          'tuxedo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tuxedo.setup.dealing',
+        'tuxedo.rules.objective',
+      ],
+      play_card: [
+        'tuxedo.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'bed3856f-9265-47c9-9860-62c30d88951d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/fapfap/fapfapValidationFixtures.asset',
+    gameId: 'fapfap',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'fapfap',
+    familyVariant: 'Last-Trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'fapfap.core-runtime-contracts',
+        title: 'Fapfap Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'fapfap.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 25,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Fapfap must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'fapfap.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'fapfap.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'play_card',
+              'declare_winner',
+            ],
+            explanation: 'Fapfap must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'fapfap.setup.initial-deal',
+              'fapfap.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'fapfap.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player to win the final (5th or 6th) trick wins the round.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Winner is determined by final trick victory. Optional chip-based scoring modifies stakes based on the winning card rank.',
+            linkedRuleIds: [
+              'fapfap.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'fapfap.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

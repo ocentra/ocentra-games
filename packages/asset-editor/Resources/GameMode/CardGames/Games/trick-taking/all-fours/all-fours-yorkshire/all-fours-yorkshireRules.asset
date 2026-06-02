@@ -1,0 +1,227 @@
+{
+  system: {
+    guid: '6c6fd030-2747-43ba-8f4c-35e278900c59',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/all-fours-yorkshire/all-fours-yorkshireRules.asset',
+    gameId: 'all-fours-yorkshire',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. The player to dealer's left pitches the first card; its suit becomes trump. 2. The first trick is kept face up with a trump visible on top; later tricks are face down. 3. If a player has no trumps and no counting cards above 9 and is not winning the current trick, they may throw in their hand and take no further part while partner continues. 4. Score points in order High, Low, Jack, Game.",
+    Player: "1. The player to dealer's left pitches the first card; its suit becomes trump. 2. The first trick is kept face up with a trump visible on top; later tricks are face down. 3. If a player has no trumps and no counting cards above 9 and is not winning the current trick, they may throw in their hand and take no further part while partner continues. 4. Score points in order High, Low, Jack, Game.",
+    objective: 'First team to reach 11 points (or 15 in some leagues) by winning High, Low, Jack, and Game.',
+    gameplay: "1. The player to dealer's left pitches the first card; its suit becomes trump. 2. The first trick is kept face up with a trump visible on top; later tricks are face down. 3. If a player has no trumps and no counting cards above 9 and is not winning the current trick, they may throw in their hand and take no further part while partner continues. 4. Score points in order High, Low, Jack, Game.",
+    keyRules: [
+      'High (1 pt): Team dealt the highest trump.',
+      'Low (1 pt): Team dealt the lowest trump (unlike Lancashire, this is awarded to the holder).',
+      'Jack (1 pt): Winning the trick containing the Jack of trumps.',
+      'Game (1 pt): Higher pip total (A=4, K=3, Q=2, J=1, 10=10).',
+      "Pitcher's partner must keep their cards face down until the Pitch is made.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in two partnerships (North-South vs East-West).',
+      deck: 'Standard 52-card deck. Ace is high.',
+      equipment: 'Standard deck, All Fours pegging board (traditionally to 11 points).',
+      dealing: 'Each player receives 6 cards in batches of 3. No card is turned for trump.',
+    },
+    turnFlow: "1. The player to dealer's left pitches the first card; its suit becomes trump. 2. The first trick is kept face up with a trump visible on top; later tricks are face down. 3. If a player has no trumps and no counting cards above 9 and is not winning the current trick, they may throw in their hand and take no further part while partner continues. 4. Score points in order High, Low, Jack, Game.",
+    moveValidityConditions: {
+      ante: 'Yorkshire All Fours uses Pitch and point scoring; no ante.',
+      deal: 'Dealer-only in deal phase.',
+      reveal_market: 'Yorkshire uses Pitch; first lead sets trump, no turn-up.',
+      buy_market: 'Trump set by pitch card; no market.',
+      buy_stock: 'Six cards dealt; no draw during play.',
+      fold: 'Trick-taking partnership game; no fold.',
+      check: 'Points for High, Low, Jack, Game; no betting.',
+      call: 'Yorkshire All Fours scores by card points only.',
+      bet: 'No betting rounds; 11-point target.',
+      raise: 'No betting rounds; 11-point target.',
+      declare: 'Points at hand end; no declare phase.',
+      reveal_hand: 'Cards played to tricks; no showdown.',
+      award_pot: 'System action after hand completes.',
+      play_card: 'On non-trump lead, player with led suit may follow or play trump; cannot discard off-suit non-trump when able to follow.',
+      draw: 'Six cards dealt; no draw during tricks.',
+      discard: 'Cards played to tricks; no discard pile.',
+      pass: 'Pitch sets trump; no pass phase like Beg/Stand.',
+      bid: 'Yorkshire uses Pitch, not Beg; no bid.',
+      meld: 'Trick-taking; High, Low, Jack, Game only.',
+      go_out: 'Allowed only under no-trumps-no-count condition during trick play.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: First team to reach 11 points (or 15 in some leagues) by winning High, Low, Jack, and Game.',
+      "Turn-flow example: 1. The player to dealer's left pitches the first card; its suit becomes trump. 2. The first trick is kept face up with a trump visible on top; later tricks are face down. 3. If a player has no trumps and no counting cards above 9 and is not winning the current trick, they may throw in their hand and take no further part while partner continues. 4. Score points in order High, Low, Jack, Game.",
+      'Scoring example: Classic All Fours scoring system focused on the four specific points. First team to reach 11 points wins. The strict H-L-J-G counting order is used to resolve 11-11 ties within a single hand..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'all-fours-yorkshire.rules.objective',
+        title: 'Objective',
+        text: 'First team to reach 11 points (or 15 in some leagues) by winning High, Low, Jack, and Game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. The player to dealer's left pitches the first card; its suit becomes trump. 2. The first trick is kept face up with a trump visible on top; later tricks are face down. 3. If a player has no trumps and no counting cards above 9 and is not winning the current trick, they may throw in their hand and take no further part while partner continues. 4. Score points in order High, Low, Jack, Game.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ace is high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, All Fours pegging board (traditionally to 11 points).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 6 cards in batches of 3. No card is turned for trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach 11 points wins. The strict H-L-J-G counting order is used to resolve 11-11 ties within a single hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.score.description',
+        title: 'Scoring',
+        text: 'Classic All Fours scoring system focused on the four specific points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.rules.key.1',
+        title: 'Key rule 1',
+        text: 'High (1 pt): Team dealt the highest trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Low (1 pt): Team dealt the lowest trump (unlike Lancashire, this is awarded to the holder).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Jack (1 pt): Winning the trick containing the Jack of trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Game (1 pt): Higher pip total (A=4, K=3, Q=2, J=1, 10=10).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.rules.key.5',
+        title: 'Key rule 5',
+        text: "Pitcher's partner must keep their cards face down until the Pitch is made.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'all-fours-yorkshire.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'all-fours-yorkshire.rules.objective',
+          'all-fours-yorkshire.rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'all-fours-yorkshire.setup.players',
+          'all-fours-yorkshire.setup.deck',
+          'all-fours-yorkshire.setup.equipment',
+          'all-fours-yorkshire.setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'all-fours-yorkshire.rules.key.1',
+          'all-fours-yorkshire.rules.key.2',
+          'all-fours-yorkshire.rules.key.3',
+          'all-fours-yorkshire.rules.key.4',
+          'all-fours-yorkshire.rules.key.5',
+        ],
+      },
+      {
+        id: 'all-fours-yorkshire.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'all-fours-yorkshire.score.description',
+          'all-fours-yorkshire.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'all-fours-yorkshire.setup.dealing',
+        'all-fours-yorkshire.rules.objective',
+      ],
+      deal: [
+        'all-fours-yorkshire.rules.gameplay',
+      ],
+      award_pot: [
+        'all-fours-yorkshire.rules.gameplay',
+      ],
+      play_card: [
+        'all-fours-yorkshire.rules.gameplay',
+      ],
+      go_out: [
+        'all-fours-yorkshire.rules.gameplay',
+      ],
+    },
+  },
+}

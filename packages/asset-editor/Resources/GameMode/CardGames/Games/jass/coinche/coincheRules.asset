@@ -1,0 +1,225 @@
+{
+  system: {
+    guid: 'b0e611e5-842e-402b-98dc-c8d62eb44104',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/coinche/coincheRules.asset',
+    gameId: 'coinche',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Auction**: Players bid point totals (80 to 160) and a suit. 2. **Doubling**: Opponents can 'Coinche' a bid, doubling its value. 3. **The Play**: Standard Belote rules apply. Must follow suit. Must trump if void (unless partner wins). Must over-trump if possible. 4. **Trump Highs**: Jack (20) and 9 (14) of trumps are the highest cards.",
+    Player: "1. **Auction**: Players bid point totals (80 to 160) and a suit. 2. **Doubling**: Opponents can 'Coinche' a bid, doubling its value. 3. **The Play**: Standard Belote rules apply. Must follow suit. Must trump if void (unless partner wins). Must over-trump if possible. 4. **Trump Highs**: Jack (20) and 9 (14) of trumps are the highest cards.",
+    objective: 'The bidding team must score at least the amount they bid (e.g., 100 points) AND more than the opponents.',
+    gameplay: "1. **Auction**: Players bid point totals (80 to 160) and a suit. 2. **Doubling**: Opponents can 'Coinche' a bid, doubling its value. 3. **The Play**: Standard Belote rules apply. Must follow suit. Must trump if void (unless partner wins). Must over-trump if possible. 4. **Trump Highs**: Jack (20) and 9 (14) of trumps are the highest cards.",
+    keyRules: [
+      'You cannot bid lower than the previous bid.',
+      'A failed contract (Dedans) results in the defenders scoring all points (162 + melds).',
+      'Belote-Rebelote (King and Queen of trumps) scores 20 points regardless of other melds.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in two fixed partnerships.',
+      deck: '32 cards. Ranks: Ace (11), 10 (10), King (4), Queen (3), Jack (20/2), 9 (14/0), 8 (0), 7 (0).',
+      equipment: 'Standard 32-card French pack (Piquet deck), score pad.',
+      dealing: 'All 32 cards are dealt at once (usually in batches of 3-2-3). Bidding starts immediately after the deal.',
+    },
+    turnFlow: "1. **Auction**: Players bid point totals (80 to 160) and a suit. 2. **Doubling**: Opponents can 'Coinche' a bid, doubling its value. 3. **The Play**: Standard Belote rules apply. Must follow suit. Must trump if void (unless partner wins). Must over-trump if possible. 4. **Trump Highs**: Jack (20) and 9 (14) of trumps are the highest cards.",
+    moveValidityConditions: {
+      ante: 'Belote Coinchée is a point-based partnership game and does not utilize a monetary or chip-based ante.',
+      deal: 'The full distribution of eight cards to each of the four players is performed automatically by the system dealer.',
+      reveal_market: 'Every card in the 32-card deck is distributed to the players; there is no public market or shared pool.',
+      buy_market: 'Players cannot purchase or swap cards from any external area; they must succeed with their initial hand.',
+      buy_stock: 'The entire deck is exhausted during the deal phase; no cards remain in stock to be drawn or purchased.',
+      fold: "Players are committed to their partnership's contract and must participate in all eight tricks of the hand.",
+      check: 'The game uses a trick-taking structure rather than a vying structure where checking would be an appropriate action.',
+      call: 'There is no pot to match in this game; competition is based on bidding point values and winning tricks.',
+      bet: 'Success is determined by total point accumulation on a scorecard rather than through the wagering of assets.',
+      raise: 'Point bids are increased during the auction phase via the bid action rather than through wagering rounds.',
+      declare: 'Must be leading or playing to the first trick.',
+      reveal_hand: 'Hands remain private until individual cards are played into tricks; no full-hand reveal phase occurs.',
+      award_pot: 'Winning points are added to a cumulative session total rather than distributed from a physical pot.',
+      play_card: 'Must follow suit; must trump if void; must over-trump if possible.',
+      draw: 'All cards are distributed at the start; no drawing phase exists during the play of the tricks.',
+      discard: "Every card in the player's hand must be played into a trick; no cards are discarded or buried.",
+      pass: 'Allowed during bidding when choosing not to increase the contract.',
+      bid: 'Must be higher than the current bid.',
+      meld: 'Declared during the first trick.',
+      go_out: 'The hand terminates only after all eight tricks have been played by all participants.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      'Rule example: The bidding team must score at least the amount they bid (e.g., 100 points) AND more than the opponents.',
+      "Turn-flow example: 1. **Auction**: Players bid point totals (80 to 160) and a suit. 2. **Doubling**: Opponents can 'Coinche' a bid, doubling its value. 3. **The Play**: Standard Belote rules apply. Must follow suit. Must trump if void (unless partner wins). Must over-trump if possible. 4. **Trump Highs**: Jack (20) and 9 (14) of trumps are the highest cards.",
+      'Scoring example: Scores are kept globally. A match is usually to 1000, 2000, or 3000 points. First team to target score..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'coinche.rules.objective',
+        title: 'Objective',
+        text: 'The bidding team must score at least the amount they bid (e.g., 100 points) AND more than the opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'coinche.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Auction**: Players bid point totals (80 to 160) and a suit. 2. **Doubling**: Opponents can 'Coinche' a bid, doubling its value. 3. **The Play**: Standard Belote rules apply. Must follow suit. Must trump if void (unless partner wins). Must over-trump if possible. 4. **Trump Highs**: Jack (20) and 9 (14) of trumps are the highest cards.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'coinche.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'coinche.setup.deck',
+        title: 'Deck',
+        text: '32 cards. Ranks: Ace (11), 10 (10), King (4), Queen (3), Jack (20/2), 9 (14/0), 8 (0), 7 (0).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'coinche.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 32-card French pack (Piquet deck), score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'coinche.setup.dealing',
+        title: 'Deal',
+        text: 'All 32 cards are dealt at once (usually in batches of 3-2-3). Bidding starts immediately after the deal.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'coinche.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to target score.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'coinche.score.description',
+        title: 'Scoring',
+        text: 'Scores are kept globally. A match is usually to 1000, 2000, or 3000 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'coinche.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You cannot bid lower than the previous bid.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'coinche.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A failed contract (Dedans) results in the defenders scoring all points (162 + melds).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'coinche.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Belote-Rebelote (King and Queen of trumps) scores 20 points regardless of other melds.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'coinche.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'coinche.rules.objective',
+          'coinche.rules.gameplay',
+        ],
+      },
+      {
+        id: 'coinche.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'coinche.setup.players',
+          'coinche.setup.deck',
+          'coinche.setup.equipment',
+          'coinche.setup.dealing',
+        ],
+      },
+      {
+        id: 'coinche.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'coinche.rules.key.1',
+          'coinche.rules.key.2',
+          'coinche.rules.key.3',
+        ],
+      },
+      {
+        id: 'coinche.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'coinche.score.description',
+          'coinche.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'coinche.setup.dealing',
+        'coinche.rules.objective',
+      ],
+      declare: [
+        'coinche.rules.gameplay',
+      ],
+      play_card: [
+        'coinche.rules.gameplay',
+      ],
+      pass: [
+        'coinche.rules.gameplay',
+      ],
+      bid: [
+        'coinche.rules.gameplay',
+      ],
+      meld: [
+        'coinche.rules.gameplay',
+      ],
+      deal_8_each: [
+        'coinche.rules.gameplay',
+      ],
+      bid_suit_value: [
+        'coinche.rules.gameplay',
+      ],
+      coinche: [
+        'coinche.rules.gameplay',
+      ],
+      announce_meld: [
+        'coinche.rules.gameplay',
+      ],
+      calculate_total_points: [
+        'coinche.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,217 @@
+{
+  system: {
+    guid: '652171c6-7c2d-49d9-ba9f-6d970ec06417',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/solo-whist/solo-whistRules.asset',
+    gameId: 'solo-whist',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Deal 13 cards each; last card to dealer is turned for prospective trump. Bid in order from dealer's left: Prop, Cop, Solo, Misère, Abundance, Abundance in Trumps, Misère Ouverte, Abundance Declared. Higher bid wins; bidding continues until three players pass. If all pass or Prop finds no Cop, redeal. Play: player to dealer's left leads (except Abundance Declared when bidder leads). Follow suit if possible; highest trump wins the trick, else highest card of the led suit. Winner of each trick leads to the next.",
+    Player: "Deal 13 cards each; last card to dealer is turned for prospective trump. Bid in order from dealer's left: Prop, Cop, Solo, Misère, Abundance, Abundance in Trumps, Misère Ouverte, Abundance Declared. Higher bid wins; bidding continues until three players pass. If all pass or Prop finds no Cop, redeal. Play: player to dealer's left leads (except Abundance Declared when bidder leads). Follow suit if possible; highest trump wins the trick, else highest card of the led suit. Winner of each trick leads to the next.",
+    objective: 'Win your bid: in Prop and Cop make 8 tricks with your partner (turned suit as trump); in Solo make 5 tricks alone in the turned suit; in Misère lose every trick (no trumps); in Abundance make 9 tricks alone (you choose trump); in Abundance Declared make all 13 tricks (no trumps, you lead). Settle in units after each deal.',
+    gameplay: "Deal 13 cards each; last card to dealer is turned for prospective trump. Bid in order from dealer's left: Prop, Cop, Solo, Misère, Abundance, Abundance in Trumps, Misère Ouverte, Abundance Declared. Higher bid wins; bidding continues until three players pass. If all pass or Prop finds no Cop, redeal. Play: player to dealer's left leads (except Abundance Declared when bidder leads). Follow suit if possible; highest trump wins the trick, else highest card of the led suit. Winner of each trick leads to the next.",
+    keyRules: [
+      'Follow suit if you can; otherwise play any card.',
+      'Highest trump in the trick wins; if no trump, highest card of the led suit wins.',
+      'Prop and Cop: two players try to make 8 tricks with turned suit as trump.',
+      'Solo: one player tries to make 5 tricks alone. Misère: one player tries to lose every trick.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Four players, each ultimately playing for themselves, though they form temporary alliances (one against three or two against two) for each hand.',
+      deck: 'A standard 52-card pack is used; cards in each suit rank from high to low: A K Q J 10 9 8 7 6 5 4 3 2.',
+      equipment: 'A standard 52-card pack is used; cards in each suit rank from high to low: A K Q J 10 9 8 7 6 5 4 3 2.',
+      dealing: 'Deal 13 cards each in packets of three until four cards remain, then deal the last four singly; the last card (to the dealer) is turned face up to indicate prospective trump. Dealer may pick it up after the first trick if not played.',
+    },
+    turnFlow: "Deal 13 cards each; last card to dealer is turned for prospective trump. Bid in order from dealer's left: Prop, Cop, Solo, Misère, Abundance, Abundance in Trumps, Misère Ouverte, Abundance Declared. Higher bid wins; bidding continues until three players pass. If all pass or Prop finds no Cop, redeal. Play: player to dealer's left leads (except Abundance Declared when bidder leads). Follow suit if possible; highest trump wins the trick, else highest card of the led suit. Winner of each trick leads to the next.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: "Legal when it is your turn to bid. A player who has passed cannot bid again except: dealer's left may Cop after passing if only bid was Prop.",
+      bid: 'When it is your turn to bid; must bid higher than current bid or pass. Proposer may convert Prop to Solo if no Cop.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Win your bid: in Prop and Cop make 8 tricks with your partner (turned suit as trump); in Solo make 5 tricks alone in the turned suit; in Misère lose every trick (no trumps); in Abundance make 9 tricks alone (you choose trump); in Abundance Declared make all 13 tricks (no trumps, you lead). Settle in units after each deal.',
+      "Turn-flow example: Deal 13 cards each; last card to dealer is turned for prospective trump. Bid in order from dealer's left: Prop, Cop, Solo, Misère, Abundance, Abundance in Trumps, Misère Ouverte, Abundance Declared. Higher bid wins; bidding continues until three players pass. If all pass or Prop finds no Cop, redeal. Play: player to dealer's left leads (except Abundance Declared when bidder leads). Follow suit if possible; highest trump wins the trick, else highest card of the led suit. Winner of each trick leads to the next.",
+      'Scoring example: Fixed payments for each bid (e.g., Solo pays 2 chips, Abundance pays 4). Fulfill your bid..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'solo-whist.rules.objective',
+        title: 'Objective',
+        text: 'Win your bid: in Prop and Cop make 8 tricks with your partner (turned suit as trump); in Solo make 5 tricks alone in the turned suit; in Misère lose every trick (no trumps); in Abundance make 9 tricks alone (you choose trump); in Abundance Declared make all 13 tricks (no trumps, you lead). Settle in units after each deal.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'solo-whist.rules.gameplay',
+        title: 'Turn flow',
+        text: "Deal 13 cards each; last card to dealer is turned for prospective trump. Bid in order from dealer's left: Prop, Cop, Solo, Misère, Abundance, Abundance in Trumps, Misère Ouverte, Abundance Declared. Higher bid wins; bidding continues until three players pass. If all pass or Prop finds no Cop, redeal. Play: player to dealer's left leads (except Abundance Declared when bidder leads). Follow suit if possible; highest trump wins the trick, else highest card of the led suit. Winner of each trick leads to the next.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'solo-whist.setup.players',
+        title: 'Players',
+        text: 'Four players, each ultimately playing for themselves, though they form temporary alliances (one against three or two against two) for each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'solo-whist.setup.deck',
+        title: 'Deck',
+        text: 'A standard 52-card pack is used; cards in each suit rank from high to low: A K Q J 10 9 8 7 6 5 4 3 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'solo-whist.setup.equipment',
+        title: 'Equipment',
+        text: 'A standard 52-card pack is used; cards in each suit rank from high to low: A K Q J 10 9 8 7 6 5 4 3 2.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'solo-whist.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 13 cards each in packets of three until four cards remain, then deal the last four singly; the last card (to the dealer) is turned face up to indicate prospective trump. Dealer may pick it up after the first trick if not played.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'solo-whist.score.win-condition',
+        title: 'Win condition',
+        text: 'Fulfill your bid.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'solo-whist.score.description',
+        title: 'Scoring',
+        text: 'Fixed payments for each bid (e.g., Solo pays 2 chips, Abundance pays 4).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'solo-whist.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit if you can; otherwise play any card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'solo-whist.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Highest trump in the trick wins; if no trump, highest card of the led suit wins.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'solo-whist.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Prop and Cop: two players try to make 8 tricks with turned suit as trump.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'solo-whist.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Solo: one player tries to make 5 tricks alone. Misère: one player tries to lose every trick.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'solo-whist.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'solo-whist.rules.objective',
+          'solo-whist.rules.gameplay',
+        ],
+      },
+      {
+        id: 'solo-whist.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'solo-whist.setup.players',
+          'solo-whist.setup.deck',
+          'solo-whist.setup.equipment',
+          'solo-whist.setup.dealing',
+        ],
+      },
+      {
+        id: 'solo-whist.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'solo-whist.rules.key.1',
+          'solo-whist.rules.key.2',
+          'solo-whist.rules.key.3',
+          'solo-whist.rules.key.4',
+        ],
+      },
+      {
+        id: 'solo-whist.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'solo-whist.score.description',
+          'solo-whist.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'solo-whist.setup.dealing',
+        'solo-whist.rules.objective',
+      ],
+      play_card: [
+        'solo-whist.rules.gameplay',
+      ],
+      pass: [
+        'solo-whist.rules.gameplay',
+      ],
+      bid: [
+        'solo-whist.rules.gameplay',
+      ],
+      deal_13_each_turn_last: [
+        'solo-whist.rules.gameplay',
+      ],
+    },
+  },
+}

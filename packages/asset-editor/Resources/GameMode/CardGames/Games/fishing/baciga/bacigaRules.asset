@@ -1,0 +1,234 @@
+{
+  system: {
+    guid: '5bd29b32-f16a-4628-9988-45311bfccb6e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/baciga/bacigaRules.asset',
+    gameId: 'baciga',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Dealer gives 3 cards to each player, 4 face-up on table. 2. Declaration phase: players may announce Chorizo, Flor, Báciga, or Escalera before play. 3. In turn, each player plays one card to capture table cards that sum to 15, or adds a card to the table. 4. Escoba: capturing all table cards scores bonus. 5. When hands empty, dealer deals 3 more cards; repeat until deck exhausted. 6. Score: Oros (coins), Cartas (cards), Setenta (sevens). First to 21 wins.',
+    Player: '1. Dealer gives 3 cards to each player, 4 face-up on table. 2. Declaration phase: players may announce Chorizo, Flor, Báciga, or Escalera before play. 3. In turn, each player plays one card to capture table cards that sum to 15, or adds a card to the table. 4. Escoba: capturing all table cards scores bonus. 5. When hands empty, dealer deals 3 more cards; repeat until deck exhausted. 6. Score: Oros (coins), Cartas (cards), Setenta (sevens). First to 21 wins.',
+    objective: 'Be the first to reach 21 points through captures and hand declarations.',
+    gameplay: '1. Dealer gives 3 cards to each player, 4 face-up on table. 2. Declaration phase: players may announce Chorizo, Flor, Báciga, or Escalera before play. 3. In turn, each player plays one card to capture table cards that sum to 15, or adds a card to the table. 4. Escoba: capturing all table cards scores bonus. 5. When hands empty, dealer deals 3 more cards; repeat until deck exhausted. 6. Score: Oros (coins), Cartas (cards), Setenta (sevens). First to 21 wins.',
+    keyRules: [
+      '21 points wins the game.',
+      'The 7 of Coins is the most valuable individual card.',
+      'If the initial 4 cards on the table sum to 15 or 30, the Dealer takes them as 1 or 2 Escobas immediately.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2-4 players. 4-player games are usually partnerships (North-South vs East-West).',
+      deck: '40-card Spanish deck (1-7, 10-12). Note: 10 (Sota), 11 (Caballo), 12 (Rey).',
+      equipment: 'Standard Spanish deck, pen and paper for 21-point tracking.',
+      dealing: '1. Dealer deals 3 cards to each player face down. 2. 4 cards are dealt face up to the table. 3. Dealing is counter-clockwise.',
+    },
+    turnFlow: '1. Dealer gives 3 cards to each player, 4 face-up on table. 2. Declaration phase: players may announce Chorizo, Flor, Báciga, or Escalera before play. 3. In turn, each player plays one card to capture table cards that sum to 15, or adds a card to the table. 4. Escoba: capturing all table cards scores bonus. 5. When hands empty, dealer deals 3 more cards; repeat until deck exhausted. 6. Score: Oros (coins), Cartas (cards), Setenta (sevens). First to 21 wins.',
+    moveValidityConditions: {
+      ante: 'Fishing game; no ante or betting round.',
+      deal: 'Dealer only; initial deal and after each round when hands empty.',
+      reveal_market: 'Table cards are always face-up; no separate reveal step.',
+      buy_market: 'Capture is by playing a card that sums to 15 with table cards; no buying from market.',
+      buy_stock: 'New cards come only via dealer redeal when hands empty; no draw-from-stock.',
+      fold: 'No folding; every player plays each hand to completion.',
+      check: 'No betting; no check action.',
+      call: 'No betting round; no call.',
+      bet: 'Points only; no money or chip bets.',
+      raise: 'No betting; no raise.',
+      declare: 'Declarations (Chorizo, Flor, Báciga, Escalera) are custom actions before play, not generic declare.',
+      reveal_hand: 'Hands stay private until declaration or play; no single reveal-hand step.',
+      award_pot: 'Scoring is by points (Oros, Cartas, Setenta); no pot to award.',
+      play_card: 'One card per turn; capture sum 15 or leave card on table.',
+      draw: 'New cards only when dealer redeals after hands empty; no in-turn draw.',
+      discard: 'Cards are played to capture or to table, not discarded to a pile.',
+      pass: 'Declaration phase only; optional.',
+      bid: 'No bidding; play is turn-based with no auctions.',
+      meld: 'Declarations are announced combos for points, not melds laid on table.',
+      go_out: 'Game ends when a player reaches 21 points; no go-out play.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Be the first to reach 21 points through captures and hand declarations.',
+      'Turn-flow example: 1. Dealer gives 3 cards to each player, 4 face-up on table. 2. Declaration phase: players may announce Chorizo, Flor, Báciga, or Escalera before play. 3. In turn, each player plays one card to capture table cards that sum to 15, or adds a card to the table. 4. Escoba: capturing all table cards scores bonus. 5. When hands empty, dealer deals 3 more cards; repeat until deck exhausted. 6. Score: Oros (coins), Cartas (cards), Setenta (sevens). First to 21 wins.',
+      'Scoring example: Accumulative points across multiple deals until 21 is reached. Reach 21 points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'baciga.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach 21 points through captures and hand declarations.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'baciga.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Dealer gives 3 cards to each player, 4 face-up on table. 2. Declaration phase: players may announce Chorizo, Flor, Báciga, or Escalera before play. 3. In turn, each player plays one card to capture table cards that sum to 15, or adds a card to the table. 4. Escoba: capturing all table cards scores bonus. 5. When hands empty, dealer deals 3 more cards; repeat until deck exhausted. 6. Score: Oros (coins), Cartas (cards), Setenta (sevens). First to 21 wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'baciga.setup.players',
+        title: 'Players',
+        text: '2-4 players. 4-player games are usually partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'baciga.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish deck (1-7, 10-12). Note: 10 (Sota), 11 (Caballo), 12 (Rey).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'baciga.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Spanish deck, pen and paper for 21-point tracking.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'baciga.setup.dealing',
+        title: 'Deal',
+        text: '1. Dealer deals 3 cards to each player face down. 2. 4 cards are dealt face up to the table. 3. Dealing is counter-clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'baciga.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach 21 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'baciga.score.description',
+        title: 'Scoring',
+        text: 'Accumulative points across multiple deals until 21 is reached.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'baciga.rules.key.1',
+        title: 'Key rule 1',
+        text: '21 points wins the game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'baciga.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The 7 of Coins is the most valuable individual card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'baciga.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If the initial 4 cards on the table sum to 15 or 30, the Dealer takes them as 1 or 2 Escobas immediately.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'baciga.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'baciga.rules.objective',
+          'baciga.rules.gameplay',
+        ],
+      },
+      {
+        id: 'baciga.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'baciga.setup.players',
+          'baciga.setup.deck',
+          'baciga.setup.equipment',
+          'baciga.setup.dealing',
+        ],
+      },
+      {
+        id: 'baciga.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'baciga.rules.key.1',
+          'baciga.rules.key.2',
+          'baciga.rules.key.3',
+        ],
+      },
+      {
+        id: 'baciga.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'baciga.score.description',
+          'baciga.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'baciga.setup.dealing',
+        'baciga.rules.objective',
+      ],
+      deal: [
+        'baciga.rules.gameplay',
+      ],
+      play_card: [
+        'baciga.rules.gameplay',
+      ],
+      pass: [
+        'baciga.rules.gameplay',
+      ],
+      deal_3_cards: [
+        'baciga.rules.gameplay',
+      ],
+      place_4_on_table: [
+        'baciga.rules.gameplay',
+      ],
+      declare_chorizo: [
+        'baciga.rules.gameplay',
+      ],
+      declare_flor: [
+        'baciga.rules.gameplay',
+      ],
+      declare_baciga: [
+        'baciga.rules.gameplay',
+      ],
+      declare_escalera: [
+        'baciga.rules.gameplay',
+      ],
+      play_card_and_capture: [
+        'baciga.rules.gameplay',
+      ],
+      calculate_oro_point: [
+        'baciga.rules.gameplay',
+      ],
+      calculate_cartas_point: [
+        'baciga.rules.gameplay',
+      ],
+      calculate_setenta: [
+        'baciga.rules.gameplay',
+      ],
+    },
+  },
+}

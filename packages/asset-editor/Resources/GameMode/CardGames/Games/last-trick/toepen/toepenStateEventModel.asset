@@ -1,0 +1,75 @@
+{
+  system: {
+    guid: 'b9a2e156-36f1-44ca-9520-c7062ec121dc',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/last-trick/toepen/toepenStateEventModel.asset',
+    gameId: 'toepen',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'toepen',
+    familyVariant: 'Last-trick / Knocking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        hand_size: 4,
+        trick_count: 4,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'trick_play',
+        'score',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'fold',
+        'play_card',
+        'knock',
+        'apply_penalties',
+      ],
+    },
+    examples: [],
+  },
+}

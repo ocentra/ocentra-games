@@ -1,0 +1,208 @@
+{
+  system: {
+    guid: '6fdfcffc-7f9f-4565-a771-3c11a89bc060',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/tabli/tabliRules.asset',
+    gameId: 'tabli',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Players play one card from hand. If it matches a card on table (by rank) or a sum of cards (e.g. 9 captures 9, or 5+4), the player captures them. If no capture, the card stays on table. The player who makes the last capture takes any remaining cards at the end.',
+    Player: 'Players play one card from hand. If it matches a card on table (by rank) or a sum of cards (e.g. 9 captures 9, or 5+4), the player captures them. If no capture, the card stays on table. The player who makes the last capture takes any remaining cards at the end.',
+    objective: 'Score points by capturing cards. Scores: A, K, Q, J, 10 = 1 point. 10 of Diamonds (Double Ten) = 2 points. 2 of Clubs (Little Two) = 1 point. Most cards = 3 points. Tabla (clearing the table) = 1 point.',
+    gameplay: 'Players play one card from hand. If it matches a card on table (by rank) or a sum of cards (e.g. 9 captures 9, or 5+4), the player captures them. If no capture, the card stays on table. The player who makes the last capture takes any remaining cards at the end.',
+    keyRules: [
+      'Capture by equality or sum',
+      'K=14, Q=13, J=12, A=1/11',
+      'Tabla bonus for clearing table',
+      'Last capture takes remainder',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Normally two players, or four in fixed partnerships with partners sitting opposite. A three-player game is also possible but less usual; in Serbia deal and play are counter-clockwise.',
+      deck: 'Standard 52-card deck',
+      equipment: 'Cards, score sheet',
+      dealing: 'Dealer deals 6 cards to each player and 4 face up on the table. Only the first deal places cards on the table. Subsequent deals refill hands until the deck is exhausted.',
+    },
+    turnFlow: 'Players play one card from hand. If it matches a card on table (by rank) or a sum of cards (e.g. 9 captures 9, or 5+4), the player captures them. If no capture, the card stays on table. The player who makes the last capture takes any remaining cards at the end.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal when it is your turn; you may capture any matching card or sum, or optionally capture nothing and leave your card on the table.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Score points by capturing cards. Scores: A, K, Q, J, 10 = 1 point. 10 of Diamonds (Double Ten) = 2 points. 2 of Clubs (Little Two) = 1 point. Most cards = 3 points. Tabla (clearing the table) = 1 point.',
+      'Turn-flow example: Players play one card from hand. If it matches a card on table (by rank) or a sum of cards (e.g. 9 captures 9, or 5+4), the player captures them. If no capture, the card stays on table. The player who makes the last capture takes any remaining cards at the end.',
+      'Scoring example: Card values: K=14, Q=13, J=12. Ace=1 or 11. Numerals=Face value. Scoring Points: K, Q, J, A, 10s = 1 point each. 10♦ = 2 points. 2♣ = 1 point. Tabla = 1 point (clearing table during play). Most cards = 3 points. Score points by capturing cards. Scores: A, K, Q, J, 10 = 1 point. 10 of Diamonds (Double Ten) = 2 points. 2 of Clubs (Little Two) = 1 point. Most cards = 3 points. Tabla (clearing the table) = 1 point..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'tabli.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing cards. Scores: A, K, Q, J, 10 = 1 point. 10 of Diamonds (Double Ten) = 2 points. 2 of Clubs (Little Two) = 1 point. Most cards = 3 points. Tabla (clearing the table) = 1 point.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tabli.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play one card from hand. If it matches a card on table (by rank) or a sum of cards (e.g. 9 captures 9, or 5+4), the player captures them. If no capture, the card stays on table. The player who makes the last capture takes any remaining cards at the end.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tabli.setup.players',
+        title: 'Players',
+        text: 'Normally two players, or four in fixed partnerships with partners sitting opposite. A three-player game is also possible but less usual; in Serbia deal and play are counter-clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tabli.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tabli.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tabli.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals 6 cards to each player and 4 face up on the table. Only the first deal places cards on the table. Subsequent deals refill hands until the deck is exhausted.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tabli.score.win-condition',
+        title: 'Win condition',
+        text: 'Score points by capturing cards. Scores: A, K, Q, J, 10 = 1 point. 10 of Diamonds (Double Ten) = 2 points. 2 of Clubs (Little Two) = 1 point. Most cards = 3 points. Tabla (clearing the table) = 1 point.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tabli.score.description',
+        title: 'Scoring',
+        text: 'Card values: K=14, Q=13, J=12. Ace=1 or 11. Numerals=Face value. Scoring Points: K, Q, J, A, 10s = 1 point each. 10♦ = 2 points. 2♣ = 1 point. Tabla = 1 point (clearing table during play). Most cards = 3 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tabli.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Capture by equality or sum',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tabli.rules.key.2',
+        title: 'Key rule 2',
+        text: 'K=14, Q=13, J=12, A=1/11',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tabli.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tabla bonus for clearing table',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tabli.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Last capture takes remainder',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tabli.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tabli.rules.objective',
+          'tabli.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tabli.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tabli.setup.players',
+          'tabli.setup.deck',
+          'tabli.setup.equipment',
+          'tabli.setup.dealing',
+        ],
+      },
+      {
+        id: 'tabli.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tabli.rules.key.1',
+          'tabli.rules.key.2',
+          'tabli.rules.key.3',
+          'tabli.rules.key.4',
+        ],
+      },
+      {
+        id: 'tabli.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tabli.score.description',
+          'tabli.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tabli.setup.dealing',
+        'tabli.rules.objective',
+      ],
+      play_card: [
+        'tabli.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '646fa86a-a460-4f94-815e-65e965b48966',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/briscola/briscola-chiamata/briscola-chiamataValidationFixtures.asset',
+    gameId: 'briscola-chiamata',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'briscola-chiamata',
+    familyVariant: 'Partnership / Secret Alliance',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'briscola-chiamata.core-runtime-contracts',
+        title: 'Briscola Chiamata Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'briscola-chiamata.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 8,
+            expectedPlayerCounts: {
+              min: 5,
+              max: 5,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 40,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Briscola Chiamata must start by giving each active player 8 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'briscola-chiamata.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'briscola-chiamata.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'pass',
+              'bid',
+              'deal_8_each',
+              'play_any_card',
+            ],
+            explanation: 'Briscola Chiamata must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'briscola-chiamata.setup.initial-deal',
+              'briscola-chiamata.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_8_each',
+            ],
+          },
+          {
+            id: 'briscola-chiamata.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '61',
+            scoringDirection: 'high_wins',
+            targetScore: 61,
+            cardValues: {},
+            explanation: '120 total card points. Caller+Partner need their bid total.',
+            linkedRuleIds: [
+              'briscola-chiamata.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'briscola-chiamata.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 8,
+        expectedPlayerCounts: {
+          min: 5,
+          max: 5,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

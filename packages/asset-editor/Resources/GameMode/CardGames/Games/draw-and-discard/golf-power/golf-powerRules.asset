@@ -1,0 +1,216 @@
+{
+  system: {
+    guid: 'fc68d8e6-ae7f-41dc-a58c-a770cb3edf0e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/draw-and-discard/golf-power/golf-powerRules.asset',
+    gameId: 'golf-power',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Turn: draw from stock or top discard. Use drawn card to (a) replace one face-down layout card without looking, discarding the replaced card, or (b) if it is a Jack or Queen drawn from stock, use its power (Jack: swap any two layout cards; Queen: peek at one card) then discard it. Power cards from discard have no power. To end the round: call 'Dacz' instead of drawing; each opponent gets one more turn, then all score.",
+    Player: "Turn: draw from stock or top discard. Use drawn card to (a) replace one face-down layout card without looking, discarding the replaced card, or (b) if it is a Jack or Queen drawn from stock, use its power (Jack: swap any two layout cards; Queen: peek at one card) then discard it. Power cards from discard have no power. To end the round: call 'Dacz' instead of drawing; each opponent gets one more turn, then all score.",
+    objective: 'Achieve the lowest total score in your 4-card layout by the end of the round.',
+    gameplay: "Turn: draw from stock or top discard. Use drawn card to (a) replace one face-down layout card without looking, discarding the replaced card, or (b) if it is a Jack or Queen drawn from stock, use its power (Jack: swap any two layout cards; Queen: peek at one card) then discard it. Power cards from discard have no power. To end the round: call 'Dacz' instead of drawing; each opponent gets one more turn, then all score.",
+    keyRules: [
+      'You cannot look at a layout card before replacing it unless a Power (Peek) was used.',
+      'Discarded Power Cards cannot have their powers used by the next player (powers only activate when drawn from stock).',
+      "Penalty for Caller: If the player who called 'Dacz' does not have the lowest score, they add a +10 penalty (+5 if tied for lowest).",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two to six players; the game is often best with two to four. Four-card Golf and its power-card variants (Dacz, Cabo, Cambio, Cactus) can in theory be played by two to around eight or more; with eight or more players, two packs are shuffled together. Commercial and folk accounts typically describe play with 2-6 players.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Standard deck, score sheet.',
+      dealing: 'Each player is dealt 4 cards face-down in a row. Before play begins, each player may peek at their two outer cards (or two inner, by agreement). The rest of the deck forms the stock; one card is turned up to start the discard pile.',
+    },
+    turnFlow: "Turn: draw from stock or top discard. Use drawn card to (a) replace one face-down layout card without looking, discarding the replaced card, or (b) if it is a Jack or Queen drawn from stock, use its power (Jack: swap any two layout cards; Queen: peek at one card) then discard it. Power cards from discard have no power. To end the round: call 'Dacz' instead of drawing; each opponent gets one more turn, then all score.",
+    moveValidityConditions: {
+      ante: 'Layout-replacement game; this action does not apply.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'Layout-replacement game; this action does not apply.',
+      buy_market: 'Layout-replacement game; this action does not apply.',
+      buy_stock: 'Layout-replacement game; this action does not apply.',
+      fold: 'Layout-replacement game; this action does not apply.',
+      check: 'Layout-replacement game; this action does not apply.',
+      call: 'Layout-replacement game; this action does not apply.',
+      bet: 'Layout-replacement game; this action does not apply.',
+      raise: 'Layout-replacement game; this action does not apply.',
+      declare: 'Layout-replacement game; this action does not apply.',
+      reveal_hand: 'Layout-replacement game; this action does not apply.',
+      award_pot: 'Layout-replacement game; this action does not apply.',
+      play_card: 'Layout-replacement game; this action does not apply.',
+      draw: 'Allowed only when draw timing and source rules permit.',
+      discard: 'Allowed only when discard timing and count rules permit.',
+      pass: 'Layout-replacement game; this action does not apply.',
+      bid: 'Layout-replacement game; this action does not apply.',
+      meld: 'Layout-replacement game; this action does not apply.',
+      go_out: 'Layout-replacement game; this action does not apply.',
+    },
+    exampleHands: [
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Achieve the lowest total score in your 4-card layout by the end of the round.',
+      "Turn-flow example: Turn: draw from stock or top discard. Use drawn card to (a) replace one face-down layout card without looking, discarding the replaced card, or (b) if it is a Jack or Queen drawn from stock, use its power (Jack: swap any two layout cards; Queen: peek at one card) then discard it. Power cards from discard have no power. To end the round: call 'Dacz' instead of drawing; each opponent gets one more turn, then all score.",
+      'Scoring example: Lowest total wins. Special values for Kings and certain Face cards depending on the variant. Lowest cumulative score after a set number of rounds (usually 9 or until someone hits 100)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'golf-power.rules.objective',
+        title: 'Objective',
+        text: 'Achieve the lowest total score in your 4-card layout by the end of the round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'golf-power.rules.gameplay',
+        title: 'Turn flow',
+        text: "Turn: draw from stock or top discard. Use drawn card to (a) replace one face-down layout card without looking, discarding the replaced card, or (b) if it is a Jack or Queen drawn from stock, use its power (Jack: swap any two layout cards; Queen: peek at one card) then discard it. Power cards from discard have no power. To end the round: call 'Dacz' instead of drawing; each opponent gets one more turn, then all score.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-power.setup.players',
+        title: 'Players',
+        text: 'Two to six players; the game is often best with two to four. Four-card Golf and its power-card variants (Dacz, Cabo, Cambio, Cactus) can in theory be played by two to around eight or more; with eight or more players, two packs are shuffled together. Commercial and folk accounts typically describe play with 2-6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'golf-power.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'golf-power.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'golf-power.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 4 cards face-down in a row. Before play begins, each player may peek at their two outer cards (or two inner, by agreement). The rest of the deck forms the stock; one card is turned up to start the discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-power.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest cumulative score after a set number of rounds (usually 9 or until someone hits 100).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'golf-power.score.description',
+        title: 'Scoring',
+        text: 'Lowest total wins. Special values for Kings and certain Face cards depending on the variant.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'golf-power.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You cannot look at a layout card before replacing it unless a Power (Peek) was used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'golf-power.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Discarded Power Cards cannot have their powers used by the next player (powers only activate when drawn from stock).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'golf-power.rules.key.3',
+        title: 'Key rule 3',
+        text: "Penalty for Caller: If the player who called 'Dacz' does not have the lowest score, they add a +10 penalty (+5 if tied for lowest).",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'golf-power.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'golf-power.rules.objective',
+          'golf-power.rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-power.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'golf-power.setup.players',
+          'golf-power.setup.deck',
+          'golf-power.setup.equipment',
+          'golf-power.setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-power.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'golf-power.rules.key.1',
+          'golf-power.rules.key.2',
+          'golf-power.rules.key.3',
+        ],
+      },
+      {
+        id: 'golf-power.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'golf-power.score.description',
+          'golf-power.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'golf-power.setup.dealing',
+        'golf-power.rules.objective',
+      ],
+      deal: [
+        'golf-power.rules.gameplay',
+      ],
+      draw: [
+        'golf-power.rules.gameplay',
+      ],
+      discard: [
+        'golf-power.rules.gameplay',
+      ],
+      peek_2: [
+        'golf-power.rules.gameplay',
+      ],
+      use_power: [
+        'golf-power.rules.gameplay',
+      ],
+      replace: [
+        'golf-power.rules.gameplay',
+      ],
+      call_dacz: [
+        'golf-power.rules.gameplay',
+      ],
+    },
+  },
+}

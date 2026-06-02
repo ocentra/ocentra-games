@@ -1,0 +1,234 @@
+{
+  system: {
+    guid: '5dfb4631-1fd9-4355-8874-258fe9c82034',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/anaconda/anacondaRules.asset',
+    gameId: 'anaconda',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Initial Deal**: 7 cards face down. 1st betting round. 2. **Round of 3**: Every player passes 3 cards from their hand to the player on their left. 2nd betting round. 3. **Round of 2**: Every player passes 2 cards to the player on their right. 3rd betting round. 4. **Round of 1**: Every player passes 1 card to the player on their left. 4th betting round. 5. **Selection**: Players choose their best 5 cards and discard the remaining 2 face down (these are dead). 6. **The Arrangement**: Players arrange their 5 chosen cards in a face-down pile in the order they wish to reveal them. 7. **The Rollout**: Each player reveals their first card simultaneously. Betting occurs. Then the second card, and so on, with betting after every reveal.',
+    Player: '1. **Initial Deal**: 7 cards face down. 1st betting round. 2. **Round of 3**: Every player passes 3 cards from their hand to the player on their left. 2nd betting round. 3. **Round of 2**: Every player passes 2 cards to the player on their right. 3rd betting round. 4. **Round of 1**: Every player passes 1 card to the player on their left. 4th betting round. 5. **Selection**: Players choose their best 5 cards and discard the remaining 2 face down (these are dead). 6. **The Arrangement**: Players arrange their 5 chosen cards in a face-down pile in the order they wish to reveal them. 7. **The Rollout**: Each player reveals their first card simultaneously. Betting occurs. Then the second card, and so on, with betting after every reveal.',
+    objective: 'Win the pot by having the best 5-card poker hand after three passing rounds and a 5-step rollout reveal.',
+    gameplay: '1. **Initial Deal**: 7 cards face down. 1st betting round. 2. **Round of 3**: Every player passes 3 cards from their hand to the player on their left. 2nd betting round. 3. **Round of 2**: Every player passes 2 cards to the player on their right. 3rd betting round. 4. **Round of 1**: Every player passes 1 card to the player on their left. 4th betting round. 5. **Selection**: Players choose their best 5 cards and discard the remaining 2 face down (these are dead). 6. **The Arrangement**: Players arrange their 5 chosen cards in a face-down pile in the order they wish to reveal them. 7. **The Rollout**: Each player reveals their first card simultaneously. Betting occurs. Then the second card, and so on, with betting after every reveal.',
+    keyRules: [
+      'No peaking: Once the 5 cards are stacked for the rollout, the order cannot be changed.',
+      'Full Pot: Because there are up to 8 betting rounds, Anaconda pots are significantly larger than standard poker pots.',
+      'High/Low Split: Common in home games, where the best high hand and best low hand (8-or-better) split the pot.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: "Best with 6-8 players to ensure many cards are 'trashed'.",
+      deck: 'Standard 52 cards. Ace is high.',
+      equipment: 'Poker chips, standard deck.',
+      dealing: 'Each player receives 7 cards face down. Initial ante or forced bets are placed.',
+    },
+    turnFlow: '1. **Initial Deal**: 7 cards face down. 1st betting round. 2. **Round of 3**: Every player passes 3 cards from their hand to the player on their left. 2nd betting round. 3. **Round of 2**: Every player passes 2 cards to the player on their right. 3rd betting round. 4. **Round of 1**: Every player passes 1 card to the player on their left. 4th betting round. 5. **Selection**: Players choose their best 5 cards and discard the remaining 2 face down (these are dead). 6. **The Arrangement**: Players arrange their 5 chosen cards in a face-down pile in the order they wish to reveal them. 7. **The Rollout**: Each player reveals their first card simultaneously. Betting occurs. Then the second card, and so on, with betting after every reveal.',
+    moveValidityConditions: {
+      ante: 'Anaconda uses optional ante or forced bet; use custom phase.',
+      deal: 'Deal via custom deal_seven_face_down.',
+      reveal_market: 'No market; 7 cards dealt, then pass rounds.',
+      buy_market: 'No market; cards passed between players.',
+      buy_stock: 'No stock purchase; pass-the-trash only.',
+      fold: 'Allowed during betting when player chooses to leave the hand.',
+      check: 'Allowed when rules permit skipping a wager or play.',
+      call: 'During betting; match current bet to stay in.',
+      bet: 'Stack size; fixed limit typical.',
+      raise: 'Must raise by at least min-raise amount.',
+      declare: 'Showdown determines winner; no declare phase.',
+      reveal_hand: 'Rollout reveals cards one-by-one; use reveal_card custom.',
+      award_pot: 'Allowed only in phases that list this action as legal.',
+      play_card: 'Anaconda is poker; no card play to table.',
+      draw: 'No draw pile; pass rounds and discard_two custom.',
+      discard: 'Trim to 5 via custom discard_two and set_rollout_order.',
+      pass: 'Use check for no bet; passing cards is custom pass_three/two/one.',
+      bid: 'Poker variant; no bidding for contract.',
+      meld: 'Poker; best 5-card hand at showdown, no meld.',
+      go_out: 'Hand ends at showdown after rollout.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Win the pot by having the best 5-card poker hand after three passing rounds and a 5-step rollout reveal.',
+      'Turn-flow example: 1. **Initial Deal**: 7 cards face down. 1st betting round. 2. **Round of 3**: Every player passes 3 cards from their hand to the player on their left. 2nd betting round. 3. **Round of 2**: Every player passes 2 cards to the player on their right. 3rd betting round. 4. **Round of 1**: Every player passes 1 card to the player on their left. 4th betting round. 5. **Selection**: Players choose their best 5 cards and discard the remaining 2 face down (these are dead). 6. **The Arrangement**: Players arrange their 5 chosen cards in a face-down pile in the order they wish to reveal them. 7. **The Rollout**: Each player reveals their first card simultaneously. Betting occurs. Then the second card, and so on, with betting after every reveal.',
+      'Scoring example: Standard Poker hand rankings apply. High poker hand (or High/Low split) takes the pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'anaconda.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best 5-card poker hand after three passing rounds and a 5-step rollout reveal.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'anaconda.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Initial Deal**: 7 cards face down. 1st betting round. 2. **Round of 3**: Every player passes 3 cards from their hand to the player on their left. 2nd betting round. 3. **Round of 2**: Every player passes 2 cards to the player on their right. 3rd betting round. 4. **Round of 1**: Every player passes 1 card to the player on their left. 4th betting round. 5. **Selection**: Players choose their best 5 cards and discard the remaining 2 face down (these are dead). 6. **The Arrangement**: Players arrange their 5 chosen cards in a face-down pile in the order they wish to reveal them. 7. **The Rollout**: Each player reveals their first card simultaneously. Betting occurs. Then the second card, and so on, with betting after every reveal.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'anaconda.setup.players',
+        title: 'Players',
+        text: "Best with 6-8 players to ensure many cards are 'trashed'.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'anaconda.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards. Ace is high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'anaconda.setup.equipment',
+        title: 'Equipment',
+        text: 'Poker chips, standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'anaconda.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 7 cards face down. Initial ante or forced bets are placed.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'anaconda.score.win-condition',
+        title: 'Win condition',
+        text: 'High poker hand (or High/Low split) takes the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'anaconda.score.description',
+        title: 'Scoring',
+        text: 'Standard Poker hand rankings apply.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'anaconda.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No peaking: Once the 5 cards are stacked for the rollout, the order cannot be changed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'anaconda.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Full Pot: Because there are up to 8 betting rounds, Anaconda pots are significantly larger than standard poker pots.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'anaconda.rules.key.3',
+        title: 'Key rule 3',
+        text: 'High/Low Split: Common in home games, where the best high hand and best low hand (8-or-better) split the pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'anaconda.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'anaconda.rules.objective',
+          'anaconda.rules.gameplay',
+        ],
+      },
+      {
+        id: 'anaconda.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'anaconda.setup.players',
+          'anaconda.setup.deck',
+          'anaconda.setup.equipment',
+          'anaconda.setup.dealing',
+        ],
+      },
+      {
+        id: 'anaconda.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'anaconda.rules.key.1',
+          'anaconda.rules.key.2',
+          'anaconda.rules.key.3',
+        ],
+      },
+      {
+        id: 'anaconda.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'anaconda.score.description',
+          'anaconda.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'anaconda.setup.dealing',
+        'anaconda.rules.objective',
+      ],
+      fold: [
+        'anaconda.rules.gameplay',
+      ],
+      check: [
+        'anaconda.rules.gameplay',
+      ],
+      call: [
+        'anaconda.rules.gameplay',
+      ],
+      bet: [
+        'anaconda.rules.gameplay',
+      ],
+      raise: [
+        'anaconda.rules.gameplay',
+      ],
+      award_pot: [
+        'anaconda.rules.gameplay',
+      ],
+      deal_seven_face_down: [
+        'anaconda.rules.gameplay',
+      ],
+      pass_three: [
+        'anaconda.rules.gameplay',
+      ],
+      pass_two: [
+        'anaconda.rules.gameplay',
+      ],
+      pass_one: [
+        'anaconda.rules.gameplay',
+      ],
+      discard_two: [
+        'anaconda.rules.gameplay',
+      ],
+      set_rollout_order: [
+        'anaconda.rules.gameplay',
+      ],
+      reveal_card: [
+        'anaconda.rules.gameplay',
+      ],
+    },
+  },
+}

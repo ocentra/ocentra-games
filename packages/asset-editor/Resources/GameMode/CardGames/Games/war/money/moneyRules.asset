@@ -1,0 +1,218 @@
+{
+  system: {
+    guid: '984a30d2-a9f8-4494-8277-8d2cc32cdfdd',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/war/money/moneyRules.asset',
+    gameId: 'money',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Players take turns playing the top card of their face-down stack to the 'floor' (play pile). The card is thrown face-down then turned face up.",
+    Player: "Players take turns playing the top card of their face-down stack to the 'floor' (play pile). The card is thrown face-down then turned face up.",
+    objective: 'Collect all the cards (both numeral cards and picture cards/money), leaving the opponent with nothing.',
+    gameplay: "Players take turns playing the top card of their face-down stack to the 'floor' (play pile). The card is thrown face-down then turned face up.",
+    keyRules: [
+      'Must play top card of stack each turn',
+      'Capture by matching the top card number',
+      'Picture cards are money to buy more cards',
+      'Speed matters - notice matches quickly',
+      'Goal is to collect all cards',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two players. The game is normally played with a standard 52-card pack; some variants add two Jokers. Before dealing, all picture cards (Kings, Queens, Jacks) are removed. Each player receives two Kings, two Queens, and two Jacks as their starting money, stored face up in a money area or bank. The remaining 40 numeral cards (Aces count as 1s) are shuffled and dealt equally, 20 cards each, as face-down stacks that players must not look at or reorder.',
+      deck: 'Standard 52-card pack. Optional: 2 Jokers can be added. Suits are irrelevant.',
+      equipment: "Standard deck, space for 'money area' (bank) and 'floor' (play pile).",
+      dealing: "Before dealing, all picture cards (Kings, Queens, Jacks) are removed and each player receives 2 Kings, 2 Queens, and 2 Jacks as their starting 'money'. The remaining 40 numeral cards are shuffled and dealt equally (20 each) as face-down stacks.",
+    },
+    turnFlow: "Players take turns playing the top card of their face-down stack to the 'floor' (play pile). The card is thrown face-down then turned face up.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'See game rules.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Collect all the cards (both numeral cards and picture cards/money), leaving the opponent with nothing.',
+      "Turn-flow example: Players take turns playing the top card of their face-down stack to the 'floor' (play pile). The card is thrown face-down then turned face up.",
+      'Scoring example: No points - the winner is the player who collects all cards. Collect all numeral cards and all picture cards, leaving opponent with nothing..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'money.rules.objective',
+        title: 'Objective',
+        text: 'Collect all the cards (both numeral cards and picture cards/money), leaving the opponent with nothing.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'money.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players take turns playing the top card of their face-down stack to the 'floor' (play pile). The card is thrown face-down then turned face up.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'money.setup.players',
+        title: 'Players',
+        text: 'Two players. The game is normally played with a standard 52-card pack; some variants add two Jokers. Before dealing, all picture cards (Kings, Queens, Jacks) are removed. Each player receives two Kings, two Queens, and two Jacks as their starting money, stored face up in a money area or bank. The remaining 40 numeral cards (Aces count as 1s) are shuffled and dealt equally, 20 cards each, as face-down stacks that players must not look at or reorder.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'money.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Optional: 2 Jokers can be added. Suits are irrelevant.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'money.setup.equipment',
+        title: 'Equipment',
+        text: "Standard deck, space for 'money area' (bank) and 'floor' (play pile).",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'money.setup.dealing',
+        title: 'Deal',
+        text: "Before dealing, all picture cards (Kings, Queens, Jacks) are removed and each player receives 2 Kings, 2 Queens, and 2 Jacks as their starting 'money'. The remaining 40 numeral cards are shuffled and dealt equally (20 each) as face-down stacks.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'money.score.win-condition',
+        title: 'Win condition',
+        text: 'Collect all numeral cards and all picture cards, leaving opponent with nothing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'money.score.description',
+        title: 'Scoring',
+        text: 'No points - the winner is the player who collects all cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'money.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must play top card of stack each turn',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'money.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Capture by matching the top card number',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'money.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Picture cards are money to buy more cards',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'money.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Speed matters - notice matches quickly',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'money.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Goal is to collect all cards',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'money.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'money.rules.objective',
+          'money.rules.gameplay',
+        ],
+      },
+      {
+        id: 'money.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'money.setup.players',
+          'money.setup.deck',
+          'money.setup.equipment',
+          'money.setup.dealing',
+        ],
+      },
+      {
+        id: 'money.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'money.rules.key.1',
+          'money.rules.key.2',
+          'money.rules.key.3',
+          'money.rules.key.4',
+          'money.rules.key.5',
+        ],
+      },
+      {
+        id: 'money.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'money.score.description',
+          'money.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'money.setup.dealing',
+        'money.rules.objective',
+      ],
+      play_card: [
+        'money.rules.gameplay',
+      ],
+    },
+  },
+}

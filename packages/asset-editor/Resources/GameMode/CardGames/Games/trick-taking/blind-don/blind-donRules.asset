@@ -1,0 +1,207 @@
+{
+  system: {
+    guid: '47981476-5759-430d-acb4-ebd8c71f896c',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/blind-don/blind-donRules.asset',
+    gameId: 'blind-don',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+    Player: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+    objective: 'Score points by capturing specific cards in tricks. Points: Nines (9 each), Fives (5 each), Aces (4 each), Kings (3), Queens (2), Jacks (1).',
+    gameplay: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+    keyRules: [
+      "The Five of Trumps is known as the 'Don'.",
+      'Winning the last trick of the game (the 26th trick) scores no bonus points, but captures the cards.',
+      'Players must follow suit if they can; trumps rank high.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Exactly 2 players.',
+      deck: 'Standard 52-card French pack. Ranks: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2.',
+      equipment: 'Standard pack, score pad.',
+      dealing: "Deal 13 cards to each player. The remaining 26 cards are set aside face-down for the second half of the game. The first card played (the 'pitch') by the non-dealer sets the trump suit for the entire hand.",
+    },
+    turnFlow: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+    moveValidityConditions: {
+      ante: 'Blind Don is a point-trick game and does not utilize a monetary or chip-based ante system.',
+      deal: 'The two-part distribution of 13 cards per phase is handled automatically by the system dealer.',
+      reveal_market: "This is a closed-hand game where cards are either in players' hands or the face-down reserve.",
+      buy_market: 'Players cannot purchase or swap cards from any market area; they must play with their dealt hands.',
+      buy_stock: 'The entire deck is distributed in two fixed dealing phases; no cards can be bought from the stock.',
+      fold: 'Both players must participate in all 26 tricks of the deal to determine the final point winner.',
+      check: 'The game uses a trick-taking structure rather than a vying structure where checking would be an option.',
+      call: 'There is no pot or bet to match in Blind Don; competition is based on card point accumulation.',
+      bet: 'Success is determined by card points won in tricks rather than through financial or chip-based betting.',
+      raise: 'There are no wagering rounds in this game, so the value of the deal cannot be increased via raises.',
+      declare: 'Hand resolution is based on objective trick counts and point cards without a declaration phase.',
+      reveal_hand: 'Hands remain private until individual cards are played into tricks; no full-hand reveal occurs.',
+      award_pot: 'Winning is determined by cumulative match points rather than by awarding a physical or virtual pot.',
+      play_card: 'Must follow suit; highest trump or highest led card wins.',
+      draw: 'All cards are distributed in two dealing phases; no drawing phase exists during the play of tricks.',
+      discard: 'Every card in the hand must be played into a trick; no cards are discarded or buried.',
+      pass: 'Players must always play a card to every trick; passing a turn without action is not allowed.',
+      bid: 'The trump suit is determined by the rank of the first card led rather than through a bidding auction.',
+      meld: 'This is a point-trick game based on single cards rather than forming sequences or melds in hand.',
+      go_out: 'The game ends automatically once all 26 tricks have been played by both participants.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Score points by capturing specific cards in tricks. Points: Nines (9 each), Fives (5 each), Aces (4 each), Kings (3), Queens (2), Jacks (1).',
+      'Turn-flow example: 1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+      'Scoring example: Points are tallied after all 26 tricks. First to reach 80 points wins the match. First player to reach 80 points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'blind-don.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing specific cards in tricks. Points: Nines (9 each), Fives (5 each), Aces (4 each), Kings (3), Queens (2), Jacks (1).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blind-don.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-don.setup.players',
+        title: 'Players',
+        text: 'Exactly 2 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blind-don.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack. Ranks: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blind-don.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blind-don.setup.dealing',
+        title: 'Deal',
+        text: "Deal 13 cards to each player. The remaining 26 cards are set aside face-down for the second half of the game. The first card played (the 'pitch') by the non-dealer sets the trump suit for the entire hand.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-don.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 80 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blind-don.score.description',
+        title: 'Scoring',
+        text: 'Points are tallied after all 26 tricks. First to reach 80 points wins the match.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blind-don.rules.key.1',
+        title: 'Key rule 1',
+        text: "The Five of Trumps is known as the 'Don'.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blind-don.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Winning the last trick of the game (the 26th trick) scores no bonus points, but captures the cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blind-don.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players must follow suit if they can; trumps rank high.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blind-don.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blind-don.rules.objective',
+          'blind-don.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-don.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blind-don.setup.players',
+          'blind-don.setup.deck',
+          'blind-don.setup.equipment',
+          'blind-don.setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-don.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blind-don.rules.key.1',
+          'blind-don.rules.key.2',
+          'blind-don.rules.key.3',
+        ],
+      },
+      {
+        id: 'blind-don.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blind-don.score.description',
+          'blind-don.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blind-don.setup.dealing',
+        'blind-don.rules.objective',
+      ],
+      play_card: [
+        'blind-don.rules.gameplay',
+      ],
+      deal_13_each: [
+        'blind-don.rules.gameplay',
+      ],
+      deal_remaining_26: [
+        'blind-don.rules.gameplay',
+      ],
+      calculate_don_points: [
+        'blind-don.rules.gameplay',
+      ],
+    },
+  },
+}

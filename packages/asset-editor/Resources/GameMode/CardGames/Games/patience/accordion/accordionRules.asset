@@ -1,0 +1,201 @@
+{
+  system: {
+    guid: 'a863402e-544f-4cd5-ab81-3a5fa0efa86b',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/accordion/accordionRules.asset',
+    gameId: 'accordion',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Deal one card at a time into a row of face-up piles. 2. A top card may move onto the pile immediately to its left or three piles to its left if the destination top card matches suit or rank. 3. After a move, close gaps so piles stay contiguous. 4. Continue moving whenever legal moves exist. 5. Hand ends when no legal moves remain.',
+    Player: '1. Deal one card at a time into a row of face-up piles. 2. A top card may move onto the pile immediately to its left or three piles to its left if the destination top card matches suit or rank. 3. After a move, close gaps so piles stay contiguous. 4. Continue moving whenever legal moves exist. 5. Hand ends when no legal moves remain.',
+    objective: 'Compress the entire deck into a single pile. The game is won when all 52 cards are in one pile; the layout is so named because compressing the row resembles closing accordion pleats.',
+    gameplay: '1. Deal one card at a time into a row of face-up piles. 2. A top card may move onto the pile immediately to its left or three piles to its left if the destination top card matches suit or rank. 3. After a move, close gaps so piles stay contiguous. 4. Continue moving whenever legal moves exist. 5. Hand ends when no legal moves remain.',
+    keyRules: [
+      'Moves are always to the left.',
+      'A move is legal only when suit or rank matches the destination top card.',
+      'The allowed jump distances are exactly 1-left and 3-left.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'One player. Accordion is a patience (solitaire) game played by a single player; there are no opponents or partners.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'One shuffled deck and table space for a long row of piles.',
+      dealing: 'Deal cards one by one from stock into a single row. After each deal, resolve any legal compression moves before dealing again if playing the incremental style.',
+    },
+    turnFlow: '1. Deal one card at a time into a row of face-up piles. 2. A top card may move onto the pile immediately to its left or three piles to its left if the destination top card matches suit or rank. 3. After a move, close gaps so piles stay contiguous. 4. Continue moving whenever legal moves exist. 5. Hand ends when no legal moves remain.',
+    moveValidityConditions: {
+      ante: 'Accordion is a patience game; there is no betting or poker mechanic.',
+      deal: 'Allowed during the deal phase while stock cards remain.',
+      reveal_market: 'Accordion has no market; cards go from stock to tableau.',
+      buy_market: 'Accordion has no market; cards are dealt to tableau.',
+      buy_stock: 'Accordion deals from stock to tableau; no buy-from-stock mechanic.',
+      fold: 'Accordion is single-player patience; no fold mechanic.',
+      check: 'Accordion is patience; no betting or check mechanic.',
+      call: 'Accordion is patience; no betting mechanic.',
+      bet: 'Accordion is patience; no betting mechanic.',
+      raise: 'Accordion is patience; no betting mechanic.',
+      declare: 'Accordion has no declaration; game ends when no moves remain.',
+      reveal_hand: 'Accordion has no hand; all cards are in tableau row.',
+      award_pot: 'Accordion is patience; no pot or award mechanic.',
+      play_card: 'Card must be a top card and destination top card must match in rank or suit.',
+      draw: 'Accordion deals cards to tableau; no draw-to-hand phase.',
+      discard: 'Accordion compresses tableau; no discard pile.',
+      pass: 'Accordion has no pass; player moves cards or deals next.',
+      bid: 'Accordion is patience, not trick-taking; no bidding.',
+      meld: 'Accordion uses compression by suit/rank; no melding.',
+      go_out: 'Accordion ends when no moves remain; no go-out mechanic.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Compress the entire deck into a single pile. The game is won when all 52 cards are in one pile; the layout is so named because compressing the row resembles closing accordion pleats.',
+      'Turn-flow example: 1. Deal one card at a time into a row of face-up piles. 2. A top card may move onto the pile immediately to its left or three piles to its left if the destination top card matches suit or rank. 3. After a move, close gaps so piles stay contiguous. 4. Continue moving whenever legal moves exist. 5. Hand ends when no legal moves remain.',
+      'Scoring example: Score by final number of piles; fewer is better. Finish with exactly one pile..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'accordion.rules.objective',
+        title: 'Objective',
+        text: 'Compress the entire deck into a single pile. The game is won when all 52 cards are in one pile; the layout is so named because compressing the row resembles closing accordion pleats.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'accordion.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal one card at a time into a row of face-up piles. 2. A top card may move onto the pile immediately to its left or three piles to its left if the destination top card matches suit or rank. 3. After a move, close gaps so piles stay contiguous. 4. Continue moving whenever legal moves exist. 5. Hand ends when no legal moves remain.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'accordion.setup.players',
+        title: 'Players',
+        text: 'One player. Accordion is a patience (solitaire) game played by a single player; there are no opponents or partners.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'accordion.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'accordion.setup.equipment',
+        title: 'Equipment',
+        text: 'One shuffled deck and table space for a long row of piles.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'accordion.setup.dealing',
+        title: 'Deal',
+        text: 'Deal cards one by one from stock into a single row. After each deal, resolve any legal compression moves before dealing again if playing the incremental style.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'accordion.score.win-condition',
+        title: 'Win condition',
+        text: 'Finish with exactly one pile.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'accordion.score.description',
+        title: 'Scoring',
+        text: 'Score by final number of piles; fewer is better.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'accordion.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Moves are always to the left.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'accordion.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A move is legal only when suit or rank matches the destination top card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'accordion.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The allowed jump distances are exactly 1-left and 3-left.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'accordion.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'accordion.rules.objective',
+          'accordion.rules.gameplay',
+        ],
+      },
+      {
+        id: 'accordion.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'accordion.setup.players',
+          'accordion.setup.deck',
+          'accordion.setup.equipment',
+          'accordion.setup.dealing',
+        ],
+      },
+      {
+        id: 'accordion.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'accordion.rules.key.1',
+          'accordion.rules.key.2',
+          'accordion.rules.key.3',
+        ],
+      },
+      {
+        id: 'accordion.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'accordion.score.description',
+          'accordion.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'accordion.setup.dealing',
+        'accordion.rules.objective',
+      ],
+      deal: [
+        'accordion.rules.gameplay',
+      ],
+      play_card: [
+        'accordion.rules.gameplay',
+      ],
+    },
+  },
+}

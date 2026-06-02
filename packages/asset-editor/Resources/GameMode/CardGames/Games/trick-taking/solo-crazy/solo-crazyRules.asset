@@ -1,0 +1,227 @@
+{
+  system: {
+    guid: '649296be-71ff-4557-8b0d-96772823b7a2',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/solo-crazy/solo-crazyRules.asset',
+    gameId: 'solo-crazy',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Each hand: deal all cards; then a bidding round (Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts) starting with the player on the lead. Each player bids once in turn; each must bid higher than the previous or pass. Winning bidder calls trump (Hearts automatic if bid was Solo in Hearts or Go Alone in Hearts) and, if not going alone, calls a card as partner; the holder of that card is the secret partner. Play: player to dealer's left leads. Players must follow suit if possible; if unable, must play a trump if able. No requirement to beat the card led. Winner of each trick leads the next. Solo team's trick points are combined; 61 or more wins the hand.",
+    Player: "Each hand: deal all cards; then a bidding round (Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts) starting with the player on the lead. Each player bids once in turn; each must bid higher than the previous or pass. Winning bidder calls trump (Hearts automatic if bid was Solo in Hearts or Go Alone in Hearts) and, if not going alone, calls a card as partner; the holder of that card is the secret partner. Play: player to dealer's left leads. Players must follow suit if possible; if unable, must play a trump if able. No requirement to beat the card led. Winner of each trick leads the next. Solo team's trick points are combined; 61 or more wins the hand.",
+    objective: 'The solo team (caller and optional secret partner) aims to win a majority of the 120 card points (61 or more) in tricks; the gang aims to prevent this.',
+    gameplay: "Each hand: deal all cards; then a bidding round (Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts) starting with the player on the lead. Each player bids once in turn; each must bid higher than the previous or pass. Winning bidder calls trump (Hearts automatic if bid was Solo in Hearts or Go Alone in Hearts) and, if not going alone, calls a card as partner; the holder of that card is the secret partner. Play: player to dealer's left leads. Players must follow suit if possible; if unable, must play a trump if able. No requirement to beat the card led. Winner of each trick leads the next. Solo team's trick points are combined; 61 or more wins the hand.",
+    keyRules: [
+      'Card ranking (high to low): Ace, Ten, King, Queen, Jack, 9, 8, 7, 6.',
+      'Point values: Ace 11, Ten 10, King 4, Queen 3, Jack 2; 9-6 count 0. Total 120 points.',
+      'Bids in order: Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts.',
+      'Caller may call a card in his own hand to play alone without revealing it.',
+      'If all pass, cards are thrown in and the same dealer redeals.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Three to twelve players; four or more is standard.',
+      deck: '36 cards (standard); 30, 32, 33 or 35 depending on player count.',
+      equipment: '36 cards (standard); 30, 32, 33 or 35 depending on player count.',
+      dealing: "All cards distributed one at a time starting with the player to the left of the dealer. With 4, 6, 9 or 12 players use full 36-card deck; with 5 or 7 remove six of spades (35); with 8 remove all sixes (32); with 10 remove all sixes plus seven of spades and seven of clubs (30); with 11 remove sixes of spades, clubs and diamonds (33). Player to dealer's left is on the lead.",
+    },
+    turnFlow: "Each hand: deal all cards; then a bidding round (Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts) starting with the player on the lead. Each player bids once in turn; each must bid higher than the previous or pass. Winning bidder calls trump (Hearts automatic if bid was Solo in Hearts or Go Alone in Hearts) and, if not going alone, calls a card as partner; the holder of that card is the secret partner. Play: player to dealer's left leads. Players must follow suit if possible; if unable, must play a trump if able. No requirement to beat the card led. Winner of each trick leads the next. Solo team's trick points are combined; 61 or more wins the hand.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Legal during bid phase when it is your turn.',
+      bid: 'Legal during bid phase; must bid higher than previous bid or pass. Bids in order: Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      'Rule example: The solo team (caller and optional secret partner) aims to win a majority of the 120 card points (61 or more) in tricks; the gang aims to prevent this.',
+      "Turn-flow example: Each hand: deal all cards; then a bidding round (Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts) starting with the player on the lead. Each player bids once in turn; each must bid higher than the previous or pass. Winning bidder calls trump (Hearts automatic if bid was Solo in Hearts or Go Alone in Hearts) and, if not going alone, calls a card as partner; the holder of that card is the secret partner. Play: player to dealer's left leads. Players must follow suit if possible; if unable, must play a trump if able. No requirement to beat the card led. Winner of each trick leads the next. Solo team's trick points are combined; 61 or more wins the hand.",
+      'Scoring example: Points awarded for making bid. Penalties for failing. Hearts double the stakes. Solo team wins by taking 61 or more of the 120 card points in tricks..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'solo-crazy.rules.objective',
+        title: 'Objective',
+        text: 'The solo team (caller and optional secret partner) aims to win a majority of the 120 card points (61 or more) in tricks; the gang aims to prevent this.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'solo-crazy.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each hand: deal all cards; then a bidding round (Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts) starting with the player on the lead. Each player bids once in turn; each must bid higher than the previous or pass. Winning bidder calls trump (Hearts automatic if bid was Solo in Hearts or Go Alone in Hearts) and, if not going alone, calls a card as partner; the holder of that card is the secret partner. Play: player to dealer's left leads. Players must follow suit if possible; if unable, must play a trump if able. No requirement to beat the card led. Winner of each trick leads the next. Solo team's trick points are combined; 61 or more wins the hand.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'solo-crazy.setup.players',
+        title: 'Players',
+        text: 'Three to twelve players; four or more is standard.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'solo-crazy.setup.deck',
+        title: 'Deck',
+        text: '36 cards (standard); 30, 32, 33 or 35 depending on player count.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'solo-crazy.setup.equipment',
+        title: 'Equipment',
+        text: '36 cards (standard); 30, 32, 33 or 35 depending on player count.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'solo-crazy.setup.dealing',
+        title: 'Deal',
+        text: "All cards distributed one at a time starting with the player to the left of the dealer. With 4, 6, 9 or 12 players use full 36-card deck; with 5 or 7 remove six of spades (35); with 8 remove all sixes (32); with 10 remove all sixes plus seven of spades and seven of clubs (30); with 11 remove sixes of spades, clubs and diamonds (33). Player to dealer's left is on the lead.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'solo-crazy.score.win-condition',
+        title: 'Win condition',
+        text: 'Solo team wins by taking 61 or more of the 120 card points in tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'solo-crazy.score.description',
+        title: 'Scoring',
+        text: 'Points awarded for making bid. Penalties for failing. Hearts double the stakes.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'solo-crazy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card ranking (high to low): Ace, Ten, King, Queen, Jack, 9, 8, 7, 6.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'solo-crazy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Point values: Ace 11, Ten 10, King 4, Queen 3, Jack 2; 9-6 count 0. Total 120 points.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'solo-crazy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bids in order: Pass, Solo, Solo in Hearts, Go Alone, Go Alone in Hearts.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'solo-crazy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Caller may call a card in his own hand to play alone without revealing it.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'solo-crazy.rules.key.5',
+        title: 'Key rule 5',
+        text: 'If all pass, cards are thrown in and the same dealer redeals.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'solo-crazy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'solo-crazy.rules.objective',
+          'solo-crazy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'solo-crazy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'solo-crazy.setup.players',
+          'solo-crazy.setup.deck',
+          'solo-crazy.setup.equipment',
+          'solo-crazy.setup.dealing',
+        ],
+      },
+      {
+        id: 'solo-crazy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'solo-crazy.rules.key.1',
+          'solo-crazy.rules.key.2',
+          'solo-crazy.rules.key.3',
+          'solo-crazy.rules.key.4',
+          'solo-crazy.rules.key.5',
+        ],
+      },
+      {
+        id: 'solo-crazy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'solo-crazy.score.description',
+          'solo-crazy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'solo-crazy.setup.dealing',
+        'solo-crazy.rules.objective',
+      ],
+      play_card: [
+        'solo-crazy.rules.gameplay',
+      ],
+      pass: [
+        'solo-crazy.rules.gameplay',
+      ],
+      bid: [
+        'solo-crazy.rules.gameplay',
+      ],
+      deal_all_clockwise: [
+        'solo-crazy.rules.gameplay',
+      ],
+    },
+  },
+}

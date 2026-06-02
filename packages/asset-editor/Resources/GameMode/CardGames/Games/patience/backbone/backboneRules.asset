@@ -1,0 +1,214 @@
+{
+  system: {
+    guid: '79e3e5a0-5d79-4445-85aa-e509ab42ad6e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/backbone/backboneRules.asset',
+    gameId: 'backbone',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Cards move from exposed positions to foundations or legal tableau spaces. The backbone reserve can only be released gradually, so the player must plan several ranks ahead.',
+    Player: 'Cards move from exposed positions to foundations or legal tableau spaces. The backbone reserve can only be released gradually, so the player must plan several ranks ahead.',
+    objective: 'Complete the foundations by freeing and sequencing every card from the backbone and stock.',
+    gameplay: 'Cards move from exposed positions to foundations or legal tableau spaces. The backbone reserve can only be released gradually, so the player must plan several ranks ahead.',
+    keyRules: [
+      'Uses two full decks.',
+      'A central backbone reserve restricts access.',
+      'Foundations must be completed to win.',
+      'Poor early foundation timing can trap required cards.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'One player lays out the central reserve, tableau, stock, and foundations.',
+      deck: 'Use two shuffled standard packs.',
+      equipment: 'Two standard 52-card decks, score area, and enough table space for play.',
+      dealing: 'Deal the backbone reserve and supporting tableau, then use the remaining cards as stock.',
+    },
+    turnFlow: 'Cards move from exposed positions to foundations or legal tableau spaces. The backbone reserve can only be released gradually, so the player must plan several ranks ahead.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Only during the deal phase; performed once at game start.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Foundation: same suit, ascending. Tableau: alternating colors, descending. Only in-suit sequences may move as a unit.',
+      draw: 'Allowed when stock has cards. Three cards at a time go to waste; redeal once when stock is empty.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Complete the foundations by freeing and sequencing every card from the backbone and stock.',
+      'Turn-flow example: Cards move from exposed positions to foundations or legal tableau spaces. The backbone reserve can only be released gradually, so the player must plan several ranks ahead.',
+      'Scoring example: Win by completing all foundations; otherwise the blocked layout loses. Complete the foundations by freeing and sequencing every card from the backbone and stock..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'backbone.rules.objective',
+        title: 'Objective',
+        text: 'Complete the foundations by freeing and sequencing every card from the backbone and stock.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'backbone.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Cards move from exposed positions to foundations or legal tableau spaces. The backbone reserve can only be released gradually, so the player must plan several ranks ahead.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'backbone.setup.players',
+        title: 'Players',
+        text: 'One player lays out the central reserve, tableau, stock, and foundations.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'backbone.setup.deck',
+        title: 'Deck',
+        text: 'Use two shuffled standard packs.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'backbone.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'backbone.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the backbone reserve and supporting tableau, then use the remaining cards as stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'backbone.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete the foundations by freeing and sequencing every card from the backbone and stock.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'backbone.score.description',
+        title: 'Scoring',
+        text: 'Win by completing all foundations; otherwise the blocked layout loses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'backbone.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses two full decks.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'backbone.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A central backbone reserve restricts access.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'backbone.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations must be completed to win.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'backbone.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Poor early foundation timing can trap required cards.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'backbone.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'backbone.rules.objective',
+          'backbone.rules.gameplay',
+        ],
+      },
+      {
+        id: 'backbone.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'backbone.setup.players',
+          'backbone.setup.deck',
+          'backbone.setup.equipment',
+          'backbone.setup.dealing',
+        ],
+      },
+      {
+        id: 'backbone.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'backbone.rules.key.1',
+          'backbone.rules.key.2',
+          'backbone.rules.key.3',
+          'backbone.rules.key.4',
+        ],
+      },
+      {
+        id: 'backbone.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'backbone.score.description',
+          'backbone.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'backbone.setup.dealing',
+        'backbone.rules.objective',
+      ],
+      deal: [
+        'backbone.rules.gameplay',
+      ],
+      play_card: [
+        'backbone.rules.gameplay',
+      ],
+      draw: [
+        'backbone.rules.gameplay',
+      ],
+    },
+  },
+}

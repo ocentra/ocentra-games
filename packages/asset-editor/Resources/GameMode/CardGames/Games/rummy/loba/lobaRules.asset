@@ -1,0 +1,275 @@
+{
+  system: {
+    guid: '3947b6bf-b67a-4b94-a652-cb72435073e3',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/loba/lobaRules.asset',
+    gameId: 'loba',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Draw**: On your turn, draw one card from the stock or take the top card from the discard pile. 2. **Melding**: You can lay down melds as soon as you have them. In the first round, you usually need a minimum 'opening' count (e.g., 30 or 40 points in some variants). 3. **Laying Off**: You can add cards to your own or opponents' existing melds on the table. 4. **Discard**: End your turn by discarding one card to the discard pile.",
+    Player: "1. **Draw**: On your turn, draw one card from the stock or take the top card from the discard pile. 2. **Melding**: You can lay down melds as soon as you have them. In the first round, you usually need a minimum 'opening' count (e.g., 30 or 40 points in some variants). 3. **Laying Off**: You can add cards to your own or opponents' existing melds on the table. 4. **Discard**: End your turn by discarding one card to the discard pile.",
+    objective: "Form all cards in your hand into valid melds and 'go out' (empty your hand). Lowest cumulative score across all rounds wins.",
+    gameplay: "1. **Draw**: On your turn, draw one card from the stock or take the top card from the discard pile. 2. **Melding**: You can lay down melds as soon as you have them. In the first round, you usually need a minimum 'opening' count (e.g., 30 or 40 points in some variants). 3. **Laying Off**: You can add cards to your own or opponents' existing melds on the table. 4. **Discard**: End your turn by discarding one card to the discard pile.",
+    keyRules: [
+      'Juego (Set): 3+ cards of same rank (different suits).',
+      'Escalera (Sequence): 3+ consecutive cards of same suit.',
+      'Jokers and sometimes 2s act as wildcards.',
+      'Sequence cannot consist solely of wildcards.',
+      'Must draw before melding or laying off.',
+      'Must end turn with a discard (unless going out).',
+      "Can lay off on opponents' melds once you've opened.",
+      'Going out ends the round; remaining cards count as penalties.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2-5 players. Optimal with 4 players.',
+      deck: '108 cards (2 standard 52-card decks + 4 Jokers).',
+      equipment: 'Standard decks and score sheet.',
+      dealing: 'Each player is dealt 11 cards (in some variants 13). The remaining cards form the stock pile. One card is turned up to start the discard pile.',
+    },
+    turnFlow: "1. **Draw**: On your turn, draw one card from the stock or take the top card from the discard pile. 2. **Melding**: You can lay down melds as soon as you have them. In the first round, you usually need a minimum 'opening' count (e.g., 30 or 40 points in some variants). 3. **Laying Off**: You can add cards to your own or opponents' existing melds on the table. 4. **Discard**: End your turn by discarding one card to the discard pile.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'Must discard to end turn (unless going out).',
+      pass: 'Only when allowed',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'All cards must be in valid melds.',
+    },
+    exampleHands: [
+      'Setup example: 11 card(s) per player.',
+      "Rule example: Form all cards in your hand into valid melds and 'go out' (empty your hand). Lowest cumulative score across all rounds wins.",
+      "Turn-flow example: 1. **Draw**: On your turn, draw one card from the stock or take the top card from the discard pile. 2. **Melding**: You can lay down melds as soon as you have them. In the first round, you usually need a minimum 'opening' count (e.g., 30 or 40 points in some variants). 3. **Laying Off**: You can add cards to your own or opponents' existing melds on the table. 4. **Discard**: End your turn by discarding one card to the discard pile.",
+      'Scoring example: Penalty points for cards remaining in hand when another player goes out. Lowest cumulative score after agreed number of rounds or when a player reaches a penalty threshold (e.g., 200 points)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'loba.rules.objective',
+        title: 'Objective',
+        text: "Form all cards in your hand into valid melds and 'go out' (empty your hand). Lowest cumulative score across all rounds wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'loba.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Draw**: On your turn, draw one card from the stock or take the top card from the discard pile. 2. **Melding**: You can lay down melds as soon as you have them. In the first round, you usually need a minimum 'opening' count (e.g., 30 or 40 points in some variants). 3. **Laying Off**: You can add cards to your own or opponents' existing melds on the table. 4. **Discard**: End your turn by discarding one card to the discard pile.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'loba.setup.players',
+        title: 'Players',
+        text: '2-5 players. Optimal with 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'loba.setup.deck',
+        title: 'Deck',
+        text: '108 cards (2 standard 52-card decks + 4 Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'loba.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard decks and score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'loba.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 11 cards (in some variants 13). The remaining cards form the stock pile. One card is turned up to start the discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'loba.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest cumulative score after agreed number of rounds or when a player reaches a penalty threshold (e.g., 200 points).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'loba.score.description',
+        title: 'Scoring',
+        text: 'Penalty points for cards remaining in hand when another player goes out.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'loba.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Juego (Set): 3+ cards of same rank (different suits).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'loba.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Escalera (Sequence): 3+ consecutive cards of same suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'loba.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Jokers and sometimes 2s act as wildcards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'loba.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sequence cannot consist solely of wildcards.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'loba.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Must draw before melding or laying off.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'loba.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Must end turn with a discard (unless going out).',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'loba.rules.key.7',
+        title: 'Key rule 7',
+        text: "Can lay off on opponents' melds once you've opened.",
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'loba.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Going out ends the round; remaining cards count as penalties.',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'loba.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'loba.rules.objective',
+          'loba.rules.gameplay',
+        ],
+      },
+      {
+        id: 'loba.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'loba.setup.players',
+          'loba.setup.deck',
+          'loba.setup.equipment',
+          'loba.setup.dealing',
+        ],
+      },
+      {
+        id: 'loba.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'loba.rules.key.1',
+          'loba.rules.key.2',
+          'loba.rules.key.3',
+          'loba.rules.key.4',
+          'loba.rules.key.5',
+          'loba.rules.key.6',
+          'loba.rules.key.7',
+          'loba.rules.key.8',
+        ],
+      },
+      {
+        id: 'loba.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'loba.score.description',
+          'loba.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'loba.setup.dealing',
+        'loba.rules.objective',
+      ],
+      deal: [
+        'loba.rules.gameplay',
+      ],
+      discard: [
+        'loba.rules.gameplay',
+      ],
+      pass: [
+        'loba.rules.gameplay',
+      ],
+      go_out: [
+        'loba.rules.gameplay',
+      ],
+      draw_stock: [
+        'loba.rules.gameplay',
+      ],
+      take_discard: [
+        'loba.rules.gameplay',
+      ],
+      lay_meld: [
+        'loba.rules.gameplay',
+      ],
+      lay_off: [
+        'loba.rules.gameplay',
+      ],
+      continue: [
+        'loba.rules.gameplay',
+      ],
+      calculate: [
+        'loba.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,244 @@
+{
+  system: {
+    guid: '2df467b5-9db8-49ff-89a7-362a0d656f8a',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/blackjack/blackjackRules.asset',
+    gameId: 'blackjack',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Wagering**: Players place bets. 2. **Deal**: Players and dealer receive two cards. 3. **Player Turn**: Players choose to 'Hit' (take card), 'Stand' (keep hand), 'Double Down' (double bet for one card), or 'Split' (split pairs). 4. **Dealer Turn**: Dealer reveals hole card and must hit until reaching 17+. 5. **Settlement**: Higher hand wins; dealer bust pays all remaining players.",
+    Player: "1. **Wagering**: Players place bets. 2. **Deal**: Players and dealer receive two cards. 3. **Player Turn**: Players choose to 'Hit' (take card), 'Stand' (keep hand), 'Double Down' (double bet for one card), or 'Split' (split pairs). 4. **Dealer Turn**: Dealer reveals hole card and must hit until reaching 17+. 5. **Settlement**: Higher hand wins; dealer bust pays all remaining players.",
+    objective: "Achieve a hand value closer to 21 than the dealer's hand, without exceeding 21.",
+    gameplay: "1. **Wagering**: Players place bets. 2. **Deal**: Players and dealer receive two cards. 3. **Player Turn**: Players choose to 'Hit' (take card), 'Stand' (keep hand), 'Double Down' (double bet for one card), or 'Split' (split pairs). 4. **Dealer Turn**: Dealer reveals hole card and must hit until reaching 17+. 5. **Settlement**: Higher hand wins; dealer bust pays all remaining players.",
+    keyRules: [
+      'Aces count as 1 or 11.',
+      'Face cards (K, Q, J) count as 10.',
+      'Blackjack (Natural 21) typically pays 3-to-2.',
+      "Insurance is offered if the dealer's upcard is an Ace.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Typically 1 to 7 players seated at a semi-circular table, all playing against a central Dealer.',
+      deck: 'Standard 52-card French decks (usually 6 or 8 decks in a shoe).',
+      equipment: 'Casino table, chips, card shoe, discard tray.',
+      dealing: "After bets are placed, players and the dealer receive two cards each. Usually, one of the dealer's cards is face up (upcard) and one is face down (hole card).",
+    },
+    turnFlow: "1. **Wagering**: Players place bets. 2. **Deal**: Players and dealer receive two cards. 3. **Player Turn**: Players choose to 'Hit' (take card), 'Stand' (keep hand), 'Double Down' (double bet for one card), or 'Split' (split pairs). 4. **Dealer Turn**: Dealer reveals hole card and must hit until reaching 17+. 5. **Settlement**: Higher hand wins; dealer bust pays all remaining players.",
+    moveValidityConditions: {
+      ante: 'Blackjack uses direct bets on the hand outcome rather than a pre-deal forced ante.',
+      deal: 'The initial distribution of two cards to each player and the dealer is performed by the system.',
+      reveal_market: "There is no community market in Blackjack; the only shared information is the dealer's upcard.",
+      buy_market: 'Players cannot purchase or swap cards from a market; new cards are obtained only via hitting.',
+      buy_stock: "Cards are received from the dealer's shoe rather than being purchased from a stock pile.",
+      fold: 'Once a bet is placed and cards are dealt, the player must play out the hand (or surrender if allowed).',
+      check: 'Every hand requires a bet to be active; there is no checking mechanic in this banking game.',
+      call: "Bets are made independently against the house rather than matching other players' wagers.",
+      bet: 'Must be within table limits.',
+      raise: 'Wagers are fixed after the deal, except for doubling down or splitting pairs.',
+      declare: 'Hand strength is established during the showdown comparison rather than through a declaration.',
+      reveal_hand: 'Hand reveal is managed automatically by the system logic during the settlement phase.',
+      award_pot: 'Winning bets are paid directly by the house; there is no shared pot to award to a single winner.',
+      play_card: 'Blackjack is a hand-value banking game where cards are held rather than played to a shared trick.',
+      draw: 'Allowed only if current hand value is under 21.',
+      discard: 'Players must keep all cards dealt to them; cards are only removed after the hand ends.',
+      pass: 'May stand on any value.',
+      bid: 'Blackjack uses a wagering system rather than an auction-style bidding system.',
+      meld: 'Hand resolution depends on cumulative point total rather than forming sets or melds.',
+      go_out: 'The hand concludes automatically after the dealer turn and subsequent settlement.',
+    },
+    exampleHands: [
+      'Setup example: 2 card(s) per player.',
+      "Rule example: Achieve a hand value closer to 21 than the dealer's hand, without exceeding 21.",
+      "Turn-flow example: 1. **Wagering**: Players place bets. 2. **Deal**: Players and dealer receive two cards. 3. **Player Turn**: Players choose to 'Hit' (take card), 'Stand' (keep hand), 'Double Down' (double bet for one card), or 'Split' (split pairs). 4. **Dealer Turn**: Dealer reveals hole card and must hit until reaching 17+. 5. **Settlement**: Higher hand wins; dealer bust pays all remaining players.",
+      'Scoring example: Payouts based on hand outcome. Higher total than dealer or dealer bust..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'blackjack.rules.objective',
+        title: 'Objective',
+        text: "Achieve a hand value closer to 21 than the dealer's hand, without exceeding 21.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blackjack.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Wagering**: Players place bets. 2. **Deal**: Players and dealer receive two cards. 3. **Player Turn**: Players choose to 'Hit' (take card), 'Stand' (keep hand), 'Double Down' (double bet for one card), or 'Split' (split pairs). 4. **Dealer Turn**: Dealer reveals hole card and must hit until reaching 17+. 5. **Settlement**: Higher hand wins; dealer bust pays all remaining players.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blackjack.setup.players',
+        title: 'Players',
+        text: 'Typically 1 to 7 players seated at a semi-circular table, all playing against a central Dealer.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blackjack.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French decks (usually 6 or 8 decks in a shoe).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blackjack.setup.equipment',
+        title: 'Equipment',
+        text: 'Casino table, chips, card shoe, discard tray.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blackjack.setup.dealing',
+        title: 'Deal',
+        text: "After bets are placed, players and the dealer receive two cards each. Usually, one of the dealer's cards is face up (upcard) and one is face down (hole card).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blackjack.score.win-condition',
+        title: 'Win condition',
+        text: 'Higher total than dealer or dealer bust.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blackjack.score.description',
+        title: 'Scoring',
+        text: 'Payouts based on hand outcome.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blackjack.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aces count as 1 or 11.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blackjack.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Face cards (K, Q, J) count as 10.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blackjack.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Blackjack (Natural 21) typically pays 3-to-2.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'blackjack.rules.key.4',
+        title: 'Key rule 4',
+        text: "Insurance is offered if the dealer's upcard is an Ace.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blackjack.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blackjack.rules.objective',
+          'blackjack.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blackjack.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blackjack.setup.players',
+          'blackjack.setup.deck',
+          'blackjack.setup.equipment',
+          'blackjack.setup.dealing',
+        ],
+      },
+      {
+        id: 'blackjack.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blackjack.rules.key.1',
+          'blackjack.rules.key.2',
+          'blackjack.rules.key.3',
+          'blackjack.rules.key.4',
+        ],
+      },
+      {
+        id: 'blackjack.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blackjack.score.description',
+          'blackjack.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blackjack.setup.dealing',
+        'blackjack.rules.objective',
+      ],
+      bet: [
+        'blackjack.rules.gameplay',
+      ],
+      draw: [
+        'blackjack.rules.gameplay',
+      ],
+      pass: [
+        'blackjack.rules.gameplay',
+      ],
+      place_bet: [
+        'blackjack.rules.gameplay',
+      ],
+      deal_2_each: [
+        'blackjack.rules.gameplay',
+      ],
+      hit: [
+        'blackjack.rules.gameplay',
+      ],
+      stand: [
+        'blackjack.rules.gameplay',
+      ],
+      double_down: [
+        'blackjack.rules.gameplay',
+      ],
+      split_pair: [
+        'blackjack.rules.gameplay',
+      ],
+      reveal_hole_card: [
+        'blackjack.rules.gameplay',
+      ],
+      dealer_hit_to_17: [
+        'blackjack.rules.gameplay',
+      ],
+      compare_hands: [
+        'blackjack.rules.gameplay',
+      ],
+      award_bets: [
+        'blackjack.rules.gameplay',
+      ],
+    },
+  },
+}

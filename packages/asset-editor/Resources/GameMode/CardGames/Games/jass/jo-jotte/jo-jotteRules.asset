@@ -1,0 +1,207 @@
+{
+  system: {
+    guid: '02efc091-5f4a-4935-b14a-ed3e264560dd',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/jo-jotte/jo-jotteRules.asset',
+    gameId: 'jo-jotte',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Must follow suit. If unable, must trump.\n2. **Melds**: Sequences and four-of-a-kind can be declared before play.\n3. **Jo-Jotte (Marriage)**: Declaring 'Jo' and 'Jotte' for the King and Queen of trumps (20 pts).",
+    Player: "1. Must follow suit. If unable, must trump.\n2. **Melds**: Sequences and four-of-a-kind can be declared before play.\n3. **Jo-Jotte (Marriage)**: Declaring 'Jo' and 'Jotte' for the King and Queen of trumps (20 pts).",
+    objective: 'Score points through tricks, melds, and fulfilling contracts. The first to 1,000 points wins.',
+    gameplay: "1. Must follow suit. If unable, must trump.\n2. **Melds**: Sequences and four-of-a-kind can be declared before play.\n3. **Jo-Jotte (Marriage)**: Declaring 'Jo' and 'Jotte' for the King and Queen of trumps (20 pts).",
+    keyRules: [
+      'Follow the legal action constraints defined for Jo-Jotte.',
+      "Round outcome is resolved by the scoring method: Points are scored 'Below the line' for tricks and 'Above the line' for melds/bonuses, similar to Rubber Bridge.",
+      'Winning condition: Score points through tricks, melds, and fulfilling contracts.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two players. The first dealer is determined by a single cut of the deck (low card deals first). Thereafter the deal alternates between the two players.',
+      deck: '32 cards (standard deck with 2s through 6s removed).',
+      equipment: '32 cards (standard deck with 2s through 6s removed).',
+      dealing: 'Deal six cards to each player. One card is turned up to start the bidding. After trump is set, three more cards are dealt to each player (total of 9 cards).',
+    },
+    turnFlow: "1. Must follow suit. If unable, must trump.\n2. **Melds**: Sequences and four-of-a-kind can be declared before play.\n3. **Jo-Jotte (Marriage)**: Declaring 'Jo' and 'Jotte' for the King and Queen of trumps (20 pts).",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'At start of round',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if possible',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'During bidding phase',
+      bid: 'During bidding phase',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Score points through tricks, melds, and fulfilling contracts. The first to 1,000 points wins.',
+      "Turn-flow example: 1. Must follow suit. If unable, must trump.\n2. **Melds**: Sequences and four-of-a-kind can be declared before play.\n3. **Jo-Jotte (Marriage)**: Declaring 'Jo' and 'Jotte' for the King and Queen of trumps (20 pts).",
+      "Scoring example: Points are scored 'Below the line' for tricks and 'Above the line' for melds/bonuses, similar to Rubber Bridge. Score points through tricks, melds, and fulfilling contracts..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'jo-jotte.rules.objective',
+        title: 'Objective',
+        text: 'Score points through tricks, melds, and fulfilling contracts. The first to 1,000 points wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'jo-jotte.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Must follow suit. If unable, must trump.\n2. **Melds**: Sequences and four-of-a-kind can be declared before play.\n3. **Jo-Jotte (Marriage)**: Declaring 'Jo' and 'Jotte' for the King and Queen of trumps (20 pts).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'jo-jotte.setup.players',
+        title: 'Players',
+        text: 'Two players. The first dealer is determined by a single cut of the deck (low card deals first). Thereafter the deal alternates between the two players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'jo-jotte.setup.deck',
+        title: 'Deck',
+        text: '32 cards (standard deck with 2s through 6s removed).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'jo-jotte.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards (standard deck with 2s through 6s removed).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'jo-jotte.setup.dealing',
+        title: 'Deal',
+        text: 'Deal six cards to each player. One card is turned up to start the bidding. After trump is set, three more cards are dealt to each player (total of 9 cards).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'jo-jotte.score.win-condition',
+        title: 'Win condition',
+        text: 'Score points through tricks, melds, and fulfilling contracts.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'jo-jotte.score.description',
+        title: 'Scoring',
+        text: "Points are scored 'Below the line' for tricks and 'Above the line' for melds/bonuses, similar to Rubber Bridge.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'jo-jotte.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Jo-Jotte.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'jo-jotte.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round outcome is resolved by the scoring method: Points are scored 'Below the line' for tricks and 'Above the line' for melds/bonuses, similar to Rubber Bridge.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'jo-jotte.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Score points through tricks, melds, and fulfilling contracts.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'jo-jotte.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'jo-jotte.rules.objective',
+          'jo-jotte.rules.gameplay',
+        ],
+      },
+      {
+        id: 'jo-jotte.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'jo-jotte.setup.players',
+          'jo-jotte.setup.deck',
+          'jo-jotte.setup.equipment',
+          'jo-jotte.setup.dealing',
+        ],
+      },
+      {
+        id: 'jo-jotte.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'jo-jotte.rules.key.1',
+          'jo-jotte.rules.key.2',
+          'jo-jotte.rules.key.3',
+        ],
+      },
+      {
+        id: 'jo-jotte.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'jo-jotte.score.description',
+          'jo-jotte.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'jo-jotte.setup.dealing',
+        'jo-jotte.rules.objective',
+      ],
+      deal: [
+        'jo-jotte.rules.gameplay',
+      ],
+      play_card: [
+        'jo-jotte.rules.gameplay',
+      ],
+      pass: [
+        'jo-jotte.rules.gameplay',
+      ],
+      bid: [
+        'jo-jotte.rules.gameplay',
+      ],
+    },
+  },
+}

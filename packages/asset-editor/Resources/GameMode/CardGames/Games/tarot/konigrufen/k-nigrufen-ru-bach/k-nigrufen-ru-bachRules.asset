@@ -1,0 +1,261 @@
+{
+  system: {
+    guid: '2f2a7a84-bb63-4a5e-98f8-bebb26aed175',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/konigrufen/k-nigrufen-ru-bach/k-nigrufen-ru-bachRules.asset',
+    gameId: 'k-nigrufen-ru-bach',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Deal 12 cards each and 6 to talon. Auction to determine declarer and contract. In king-calling contracts declarer names a suit; holder of that king is partner (hidden until king is played). Declarer may exchange with talon in some contracts. Announcements (bonuses, kontra) then play. Follow suit; must trump if unable. Highest trump or highest of led suit wins trick. Count card points; declarer's side needs 36+ in positive contracts.",
+    Player: "Deal 12 cards each and 6 to talon. Auction to determine declarer and contract. In king-calling contracts declarer names a suit; holder of that king is partner (hidden until king is played). Declarer may exchange with talon in some contracts. Announcements (bonuses, kontra) then play. Follow suit; must trump if unable. Highest trump or highest of led suit wins trick. Count card points; declarer's side needs 36+ in positive contracts.",
+    objective: "In positive contracts, the declarer's side must take at least 36 of the 70 available card points. Negative contracts have objectives like losing all tricks or winning an exact number of tricks.",
+    gameplay: "Deal 12 cards each and 6 to talon. Auction to determine declarer and contract. In king-calling contracts declarer names a suit; holder of that king is partner (hidden until king is played). Declarer may exchange with talon in some contracts. Announcements (bonuses, kontra) then play. Follow suit; must trump if unable. Highest trump or highest of led suit wins trick. Count card points; declarer's side needs 36+ in positive contracts.",
+    keyRules: [
+      "Deal 12 cards each, 6 to talon; deal in two packets of 6 anticlockwise from dealer's right.",
+      'Auction to determine declarer; forehand may say Mein Spiel; three consecutive passes end bidding.',
+      "In Rufer/Solo/Besserrufer declarer calls a king of a suit; that king's holder is partner (hidden until played).",
+      'Follow suit; if unable, must play a trump. Highest trump or highest of led suit wins trick.',
+      "Positive contracts: declarer's side needs 36+ of 70 card points. Negative: lose every trick, or take exactly one or two tricks, or fewest points.",
+      'Bonuses (Trull, Pagat Ultimo, Valat, etc.) and kontra/rekontra double scores; announcements before play.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Four players. Partnerships formed through king-calling in appropriate contracts, or one player alone in solo contracts.',
+      deck: '54-card Austrian Tarock pack: 22 trumps (Tarocks numbered I-XXI plus the SkÃ¼s), and 8 cards in each of four suits (Clubs, Spades, Hearts, Diamonds).',
+      equipment: '54-card Austrian Tarock pack: 22 trumps (Tarocks numbered I-XXI plus the SkÃ¼s), and 8 cards in each of four suits (Clubs, Spades, Hearts, Diamonds).',
+      dealing: "Standard KÃ¶nigrufen dealing: 12 cards to each player, 6 cards to the talon. Dealt in packets of 6 anticlockwise, starting with player to dealer's right. Play proceeds anticlockwise.",
+    },
+    turnFlow: "Deal 12 cards each and 6 to talon. Auction to determine declarer and contract. In king-calling contracts declarer names a suit; holder of that king is partner (hidden until king is played). Declarer may exchange with talon in some contracts. Announcements (bonuses, kontra) then play. Follow suit; must trump if unable. Highest trump or highest of led suit wins trick. Count card points; declarer's side needs 36+ in positive contracts.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Allowed only in phases that list this action as legal.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 12 card(s) per player.',
+      "Rule example: In positive contracts, the declarer's side must take at least 36 of the 70 available card points. Negative contracts have objectives like losing all tricks or winning an exact number of tricks.",
+      "Turn-flow example: Deal 12 cards each and 6 to talon. Auction to determine declarer and contract. In king-calling contracts declarer names a suit; holder of that king is partner (hidden until king is played). Declarer may exchange with talon in some contracts. Announcements (bonuses, kontra) then play. Follow suit; must trump if unable. Highest trump or highest of led suit wins trick. Count card points; declarer's side needs 36+ in positive contracts.",
+      "Scoring example: Standard KÃ¶nigrufen scoring applies with RuÃŸbach-specific values for contracts and bonuses. In positive contracts declarer's side wins by taking at least 36 of 70 card points (plus talon share). In negative contracts win by losing every trick (Bettel), taking exactly one or two tricks (Piccolo/Zwiccolo), or taking fewest points (Trischaken). Bonuses (Trull, Pagat Ultimo, Valat, etc.) score game points independently..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'k-nigrufen-ru-bach.rules.objective',
+        title: 'Objective',
+        text: "In positive contracts, the declarer's side must take at least 36 of the 70 available card points. Negative contracts have objectives like losing all tricks or winning an exact number of tricks.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.rules.gameplay',
+        title: 'Turn flow',
+        text: "Deal 12 cards each and 6 to talon. Auction to determine declarer and contract. In king-calling contracts declarer names a suit; holder of that king is partner (hidden until king is played). Declarer may exchange with talon in some contracts. Announcements (bonuses, kontra) then play. Follow suit; must trump if unable. Highest trump or highest of led suit wins trick. Count card points; declarer's side needs 36+ in positive contracts.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.setup.players',
+        title: 'Players',
+        text: 'Four players. Partnerships formed through king-calling in appropriate contracts, or one player alone in solo contracts.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.setup.deck',
+        title: 'Deck',
+        text: '54-card Austrian Tarock pack: 22 trumps (Tarocks numbered I-XXI plus the SkÃ¼s), and 8 cards in each of four suits (Clubs, Spades, Hearts, Diamonds).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.setup.equipment',
+        title: 'Equipment',
+        text: '54-card Austrian Tarock pack: 22 trumps (Tarocks numbered I-XXI plus the SkÃ¼s), and 8 cards in each of four suits (Clubs, Spades, Hearts, Diamonds).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.setup.dealing',
+        title: 'Deal',
+        text: "Standard KÃ¶nigrufen dealing: 12 cards to each player, 6 cards to the talon. Dealt in packets of 6 anticlockwise, starting with player to dealer's right. Play proceeds anticlockwise.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.score.win-condition',
+        title: 'Win condition',
+        text: "In positive contracts declarer's side wins by taking at least 36 of 70 card points (plus talon share). In negative contracts win by losing every trick (Bettel), taking exactly one or two tricks (Piccolo/Zwiccolo), or taking fewest points (Trischaken). Bonuses (Trull, Pagat Ultimo, Valat, etc.) score game points independently.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.score.description',
+        title: 'Scoring',
+        text: 'Standard KÃ¶nigrufen scoring applies with RuÃŸbach-specific values for contracts and bonuses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.rules.key.1',
+        title: 'Key rule 1',
+        text: "Deal 12 cards each, 6 to talon; deal in two packets of 6 anticlockwise from dealer's right.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Auction to determine declarer; forehand may say Mein Spiel; three consecutive passes end bidding.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.rules.key.3',
+        title: 'Key rule 3',
+        text: "In Rufer/Solo/Besserrufer declarer calls a king of a suit; that king's holder is partner (hidden until played).",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Follow suit; if unable, must play a trump. Highest trump or highest of led suit wins trick.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.rules.key.5',
+        title: 'Key rule 5',
+        text: "Positive contracts: declarer's side needs 36+ of 70 card points. Negative: lose every trick, or take exactly one or two tricks, or fewest points.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Bonuses (Trull, Pagat Ultimo, Valat, etc.) and kontra/rekontra double scores; announcements before play.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'k-nigrufen-ru-bach.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'k-nigrufen-ru-bach.rules.objective',
+          'k-nigrufen-ru-bach.rules.gameplay',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'k-nigrufen-ru-bach.setup.players',
+          'k-nigrufen-ru-bach.setup.deck',
+          'k-nigrufen-ru-bach.setup.equipment',
+          'k-nigrufen-ru-bach.setup.dealing',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'k-nigrufen-ru-bach.rules.key.1',
+          'k-nigrufen-ru-bach.rules.key.2',
+          'k-nigrufen-ru-bach.rules.key.3',
+          'k-nigrufen-ru-bach.rules.key.4',
+          'k-nigrufen-ru-bach.rules.key.5',
+          'k-nigrufen-ru-bach.rules.key.6',
+        ],
+      },
+      {
+        id: 'k-nigrufen-ru-bach.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'k-nigrufen-ru-bach.score.description',
+          'k-nigrufen-ru-bach.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'k-nigrufen-ru-bach.setup.dealing',
+        'k-nigrufen-ru-bach.rules.objective',
+      ],
+      deal: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      play_card: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      pass: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      bid: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      form_talon: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      call_king: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      talon_exchange: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      announce: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      follow_suit: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      trump: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      count_points: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+      calculate_scores: [
+        'k-nigrufen-ru-bach.rules.gameplay',
+      ],
+    },
+  },
+}

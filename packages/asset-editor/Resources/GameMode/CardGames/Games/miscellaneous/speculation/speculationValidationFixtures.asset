@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: '460fcb06-c509-4e67-ab45-51a4c7ca1d1c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/miscellaneous/speculation/speculationValidationFixtures.asset',
+    gameId: 'speculation',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'speculation',
+    familyVariant: 'Combination / Comparison',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'speculation.core-runtime-contracts',
+        title: 'Speculation Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'speculation.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 9,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 27,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Speculation must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'speculation.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'speculation.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'buy_market',
+              'award_pot',
+              'pass',
+              'perform_deal',
+              'reveal_trump_card',
+              'reveal_top_card',
+              'sell_current_trump',
+              'buy_mystery_cards',
+            ],
+            explanation: 'Speculation must run setup_round first, then enter ante with the processed legal actions.',
+            linkedRuleIds: [
+              'speculation.setup.initial-deal',
+              'speculation.flow.ante',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
+            ],
+          },
+          {
+            id: 'speculation.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Hold the highest trump card revealed at the end of the hand.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Hold the highest trump card revealed at the end of the hand.',
+            linkedRuleIds: [
+              'speculation.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'speculation.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 9,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

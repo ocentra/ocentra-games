@@ -29,6 +29,8 @@ import {
 } from './LeaderboardPageSvgSurfaceControls';
 import {
   LEADERBOARD_GAME_ACTIVITY_UNAVAILABLE_LABEL,
+  LEADERBOARD_EMPTY_ENTRY_LABEL,
+  LEADERBOARD_EMPTY_VALUE_LABEL,
   normalizeLeaderboardPageContent,
   type LeaderboardGameOption,
   type LeaderboardIconName,
@@ -713,18 +715,18 @@ function toDisplayRows(rows: LeaderboardPageRow[], pageMode: LeaderboardPageMode
 
 function leaderboardPlaceholderRows(count: number, selectedGameName: string): DisplayRow[] {
   const tones: Tone[] = ['gold', 'muted', 'red', 'cyan', 'purple'];
-  const bestGame = selectedGameName || 'N/A';
+  const bestGame = selectedGameName || LEADERBOARD_GAME_ACTIVITY_UNAVAILABLE_LABEL;
   return Array.from({ length: count }, (_, index) => ({
     id: `leaderboard-empty-slot-${index + 1}`,
     rank: index + 1,
-    player: 'N/A',
-    rating: 'N/A',
-    games: 'N/A',
-    wins: 'N/A',
-    winRate: 'N/A',
+    player: LEADERBOARD_EMPTY_ENTRY_LABEL,
+    rating: LEADERBOARD_EMPTY_VALUE_LABEL,
+    games: LEADERBOARD_EMPTY_VALUE_LABEL,
+    wins: LEADERBOARD_EMPTY_VALUE_LABEL,
+    winRate: LEADERBOARD_EMPTY_VALUE_LABEL,
     bestGame,
     scope: undefined,
-    trend: 'N/A',
+    trend: LEADERBOARD_EMPTY_VALUE_LABEL,
     tone: tones[index % tones.length] ?? 'cyan',
     isPlaceholder: true,
   }));
@@ -929,9 +931,9 @@ function leaderTopCard(row: DisplayRow): LeaderboardTopCardItem {
     key: `leader:${row.id}`,
     row,
     title: row.player,
-    subtitle: row.isPlaceholder ? `Rank ${row.rank} / N/A` : `Rank ${row.rank} / ${row.bestGame}`,
+    subtitle: row.isPlaceholder ? `Rank ${row.rank} / ${LEADERBOARD_EMPTY_VALUE_LABEL}` : `Rank ${row.rank} / ${row.bestGame}`,
     value: row.rating,
-    detail: row.isPlaceholder ? 'N/A' : `${row.winRate} win rate`,
+    detail: row.isPlaceholder ? 'No ranked data' : `${row.winRate} win rate`,
     tone: row.tone,
   };
 }
@@ -2044,7 +2046,7 @@ function TableRow({
         </>
       )}
       {compact ? null : row.isPlaceholder ? (
-        <text x={p.badges + 18} y={y + 23} fontSize={12} fontWeight={760} fill={cfg.colors.mutedText}>N/A</text>
+        <text x={p.badges + 18} y={y + 23} fontSize={12} fontWeight={760} fill={cfg.colors.mutedText}>{LEADERBOARD_EMPTY_VALUE_LABEL}</text>
       ) : <BadgeSet x={p.badges + 18} y={y + 17} tone={row.tone} cfg={cfg} />}
       <text x={p.trendCenter} y={y + 23} textAnchor="middle" fontSize={13} fontWeight={800} fill={isUp ? '#57ff9a' : isDown ? '#ff4c60' : '#e8f4ff'}>{row.trend}</text>
     </g>
@@ -2655,7 +2657,7 @@ function GamePopularityBoard({
   const hasActivity = activityGames.length > 0;
   const displayGames = hasActivity
     ? activityGames
-    : games.slice(0, 8).map(game => ({ ...game, matches: 'N/A', growth: 'N/A' }));
+    : games.slice(0, 8).map(game => ({ ...game, matches: LEADERBOARD_EMPTY_VALUE_LABEL, growth: LEADERBOARD_EMPTY_VALUE_LABEL }));
   if (displayGames.length === 0) {
     return (
       <LeaderboardEmptyPanel
@@ -3355,7 +3357,7 @@ function MainBoard({
     return {
       label: item.label,
       detail: rowCount > 0 ? `${rowCount} ranked rows` : overviewScopeDetail(item),
-      value: rowCount > 0 ? String(rowCount) : 'N/A',
+      value: rowCount > 0 ? String(rowCount) : LEADERBOARD_EMPTY_VALUE_LABEL,
       tone: overviewScopeTone(item),
       navItem: item,
     };
@@ -4017,8 +4019,8 @@ function DetailOverlay({ x, y, w, h, mode, activeTab, detail, season, topGames, 
   const stats = mode === 'season'
     ? season.stats.map(stat => [stat.label, stat.value] as [string, string])
     : mode === 'game'
-      ? [['MATCHES', selectedGame?.matches ?? 'N/A'], ['GROWTH', selectedGame?.growth ?? 'N/A'], ['LEADERS', 'N/A']]
-      : [['RATING', selectedPlayer?.rating ?? 'N/A'], ['WIN RATE', selectedPlayer?.winRate ?? 'N/A'], ['TREND', selectedPlayer?.trend ?? 'N/A']];
+      ? [['MATCHES', selectedGame?.matches ?? LEADERBOARD_EMPTY_VALUE_LABEL], ['GROWTH', selectedGame?.growth ?? LEADERBOARD_EMPTY_VALUE_LABEL], ['LEADERS', LEADERBOARD_EMPTY_VALUE_LABEL]]
+      : [['RATING', selectedPlayer?.rating ?? LEADERBOARD_EMPTY_VALUE_LABEL], ['WIN RATE', selectedPlayer?.winRate ?? LEADERBOARD_EMPTY_VALUE_LABEL], ['TREND', selectedPlayer?.trend ?? LEADERBOARD_EMPTY_VALUE_LABEL]];
   const primaryTab: LeaderboardTabId = mode === 'season' ? 'tournaments' : mode === 'game' ? 'perGame' : activeTab;
   const primaryLabel = mode === 'season' ? 'OPEN EVENTS' : mode === 'game' ? 'OPEN GAME' : 'KEEP SELECTED';
   const artworkImageUrl = mode === 'season'
@@ -4061,8 +4063,8 @@ function TopGameRow({ game, x, y, w, selected, unavailable = false, onSelect, cf
   const lit = selected || hovered;
   const color = toneColor(game.tone, cfg);
   const rowH = 24;
-  const matchesLabel = unavailable ? 'N/A' : compactGameStatLabel(game.matches);
-  const growthLabel = unavailable ? 'N/A' : compactGameGrowthLabel(game.growth);
+  const matchesLabel = unavailable ? LEADERBOARD_EMPTY_VALUE_LABEL : compactGameStatLabel(game.matches);
+  const growthLabel = unavailable ? LEADERBOARD_EMPTY_VALUE_LABEL : compactGameGrowthLabel(game.growth);
   const gameNameW = Math.max(48, w - 164);
   const gameNameSize = fitSingleLineTextSize(game.name, gameNameW, 8.5, 12, 0.58);
   const matchesSize = fitSingleLineTextSize(matchesLabel, 42, 8.4, 10.8, 0.56);
@@ -4277,7 +4279,7 @@ function RightRail({ activeTab, tabDetails, topGames, quickGames, distributionLa
   const hasGameActivity = gameActivityRows.length > 0;
   const displayGameActivityRows = hasGameActivity
     ? gameActivityRows
-    : topGames.slice(0, 5).map(game => ({ ...game, matches: 'N/A', growth: 'N/A' }));
+    : topGames.slice(0, 5).map(game => ({ ...game, matches: LEADERBOARD_EMPTY_VALUE_LABEL, growth: LEADERBOARD_EMPTY_VALUE_LABEL }));
   const emptyDistributionSize = Math.min(52, Math.max(40, Math.min(rightW * 0.18, distributionH * 0.22)));
   const openGames = () => {
     onFocusMainSection('gamePopularity');

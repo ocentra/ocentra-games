@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: '239c1a52-9df4-4f84-a6f7-0e11e99b077e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/cego/cegoValidationFixtures.asset',
+    gameId: 'cego',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'cego',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'cego.core-runtime-contracts',
+        title: 'Cego Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'cego.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 11,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 44,
+            expectedDeckCount: 54,
+            expectedVisibility: 'face_down',
+            explanation: 'Cego must start by giving each active player 11 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'cego.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'cego.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'bid',
+              'perform_deal',
+            ],
+            explanation: 'Cego must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'cego.setup.initial-deal',
+              'cego.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'perform_deal',
+            ],
+          },
+          {
+            id: 'cego.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: 'high_wins',
+            targetScore: 'NA',
+            cardValues: {
+              '1': '5',
+              '21': '5',
+              Gstieß: '5',
+              K: '5',
+              Q: '4',
+              Cavalier: '3',
+              J: '2',
+              default: '1',
+            },
+            explanation: 'Card points in tricks: Gstieß, Trock 21, Trock 1, Kings 5 each; Queens 4; Cavaliers 3; Jacks 2; others 1. Total 70. Normal games: bidder needs 36+ (plus at least one trick). Count in threes, subtract 2 per group; remainder subtract 1. Special games (Ulti, Piccolo, Bettel, Räuber) have fixed scores.',
+            linkedRuleIds: [
+              'cego.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'cego.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 11,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

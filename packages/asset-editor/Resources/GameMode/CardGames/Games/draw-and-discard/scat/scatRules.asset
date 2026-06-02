@@ -1,0 +1,217 @@
+{
+  system: {
+    guid: '851aabc3-1240-43d5-a9e1-50a8dc64f60b',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/draw-and-discard/scat/scatRules.asset',
+    gameId: 'scat',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. On your turn, you may:\n   a) Exchange one card from your hand with one card from the widow.\n   b) Exchange your entire hand for all three cards in the widow.\n   c) Knock, if you believe your hand is high enough to win.\n2. When a player knocks, every other player gets one final turn.\n3. SCORING: Total up cards of the same suit. Ace=11, K/Q/J=10, 2-10=face value. Three of a kind (any suit) = 30.5 points.\n4. LIVES: The player with the lowest score loses one life. At zero lives, they are 'on the bus' and out if they lose again.",
+    Player: "1. On your turn, you may:\n   a) Exchange one card from your hand with one card from the widow.\n   b) Exchange your entire hand for all three cards in the widow.\n   c) Knock, if you believe your hand is high enough to win.\n2. When a player knocks, every other player gets one final turn.\n3. SCORING: Total up cards of the same suit. Ace=11, K/Q/J=10, 2-10=face value. Three of a kind (any suit) = 30.5 points.\n4. LIVES: The player with the lowest score loses one life. At zero lives, they are 'on the bus' and out if they lose again.",
+    objective: 'Have a hand with a total value closer to 31 than your opponents in a single suit.',
+    gameplay: "1. On your turn, you may:\n   a) Exchange one card from your hand with one card from the widow.\n   b) Exchange your entire hand for all three cards in the widow.\n   c) Knock, if you believe your hand is high enough to win.\n2. When a player knocks, every other player gets one final turn.\n3. SCORING: Total up cards of the same suit. Ace=11, K/Q/J=10, 2-10=face value. Three of a kind (any suit) = 30.5 points.\n4. LIVES: The player with the lowest score loses one life. At zero lives, they are 'on the bus' and out if they lose again.",
+    keyRules: [
+      'Only cards of the same suit can be summed (except for three of a kind).',
+      'Three of a kind is always exactly 30.5 points.',
+      "A hand of 31 is an immediate 'Blitz', stopping the game instantly.",
+      'If you knock and tie for the lowest score, you do not lose a life, but others do.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'From 2 to 9 or more people can play. The game is often best with 3 players but works well with a larger group.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Standard deck, three coins or tokens per player (for lives), score sheet.',
+      dealing: "Dealer deals 3 cards to each player, one at a time, and 3 cards face-up to the table (the 'widow'). Remaining cards form the stock.",
+    },
+    turnFlow: "1. On your turn, you may:\n   a) Exchange one card from your hand with one card from the widow.\n   b) Exchange your entire hand for all three cards in the widow.\n   c) Knock, if you believe your hand is high enough to win.\n2. When a player knocks, every other player gets one final turn.\n3. SCORING: Total up cards of the same suit. Ace=11, K/Q/J=10, 2-10=face value. Three of a kind (any suit) = 30.5 points.\n4. LIVES: The player with the lowest score loses one life. At zero lives, they are 'on the bus' and out if they lose again.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'Must swap at least one card OR take all three.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Occurs only during scoring.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Can only be done at the start of your turn.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Have a hand with a total value closer to 31 than your opponents in a single suit.',
+      "Turn-flow example: 1. On your turn, you may:\n   a) Exchange one card from your hand with one card from the widow.\n   b) Exchange your entire hand for all three cards in the widow.\n   c) Knock, if you believe your hand is high enough to win.\n2. When a player knocks, every other player gets one final turn.\n3. SCORING: Total up cards of the same suit. Ace=11, K/Q/J=10, 2-10=face value. Three of a kind (any suit) = 30.5 points.\n4. LIVES: The player with the lowest score loses one life. At zero lives, they are 'on the bus' and out if they lose again.",
+      'Scoring example: Total same-suit cards. Highest hand wins. Lowest hand loses a life (coin). Highest score wins the hand..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'scat.rules.objective',
+        title: 'Objective',
+        text: 'Have a hand with a total value closer to 31 than your opponents in a single suit.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'scat.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. On your turn, you may:\n   a) Exchange one card from your hand with one card from the widow.\n   b) Exchange your entire hand for all three cards in the widow.\n   c) Knock, if you believe your hand is high enough to win.\n2. When a player knocks, every other player gets one final turn.\n3. SCORING: Total up cards of the same suit. Ace=11, K/Q/J=10, 2-10=face value. Three of a kind (any suit) = 30.5 points.\n4. LIVES: The player with the lowest score loses one life. At zero lives, they are 'on the bus' and out if they lose again.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'scat.setup.players',
+        title: 'Players',
+        text: 'From 2 to 9 or more people can play. The game is often best with 3 players but works well with a larger group.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'scat.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'scat.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, three coins or tokens per player (for lives), score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'scat.setup.dealing',
+        title: 'Deal',
+        text: "Dealer deals 3 cards to each player, one at a time, and 3 cards face-up to the table (the 'widow'). Remaining cards form the stock.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'scat.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score wins the hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'scat.score.description',
+        title: 'Scoring',
+        text: 'Total same-suit cards. Highest hand wins. Lowest hand loses a life (coin).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'scat.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only cards of the same suit can be summed (except for three of a kind).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'scat.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Three of a kind is always exactly 30.5 points.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'scat.rules.key.3',
+        title: 'Key rule 3',
+        text: "A hand of 31 is an immediate 'Blitz', stopping the game instantly.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'scat.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If you knock and tie for the lowest score, you do not lose a life, but others do.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'scat.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'scat.rules.objective',
+          'scat.rules.gameplay',
+        ],
+      },
+      {
+        id: 'scat.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'scat.setup.players',
+          'scat.setup.deck',
+          'scat.setup.equipment',
+          'scat.setup.dealing',
+        ],
+      },
+      {
+        id: 'scat.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'scat.rules.key.1',
+          'scat.rules.key.2',
+          'scat.rules.key.3',
+          'scat.rules.key.4',
+        ],
+      },
+      {
+        id: 'scat.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'scat.score.description',
+          'scat.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'scat.setup.dealing',
+        'scat.rules.objective',
+      ],
+      deal: [
+        'scat.rules.gameplay',
+      ],
+      buy_market: [
+        'scat.rules.gameplay',
+      ],
+      reveal_hand: [
+        'scat.rules.gameplay',
+      ],
+      pass: [
+        'scat.rules.gameplay',
+      ],
+    },
+  },
+}

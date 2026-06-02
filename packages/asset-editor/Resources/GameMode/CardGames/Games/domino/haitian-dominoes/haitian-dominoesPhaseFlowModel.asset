@@ -1,0 +1,169 @@
+{
+  system: {
+    guid: '2f9e8f53-6f2b-48b4-b953-e8cfcb78f85e',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/haitian-dominoes/haitian-dominoesPhaseFlowModel.asset',
+    gameId: 'haitian-dominoes',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'haitian-dominoes',
+    familyVariant: 'Partnership Line Game',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 7 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal_round',
+        label: 'Deal 7 Tiles',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Distribute 7 tiles each; handle five-or-more-doubles reshuffle; opener follows [6:6]/previous-winner rules.',
+      },
+      {
+        id: 'play_loop',
+        label: 'Play or Pass',
+        actor: 'current_player',
+        legalActions: [
+          'play_card',
+          'pass',
+          'declare',
+        ],
+        nextPhase: 'round_check',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Current player must play matching tile if possible, otherwise pass. Optional declare encodes partner signal in gesture-enabled tables.',
+      },
+      {
+        id: 'round_check',
+        label: 'Check End',
+        actor: 'system',
+        legalActions: [
+          'evaluate_round_end',
+        ],
+        nextPhase: 'play_loop',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'player_hand_empty',
+            nextPhase: 'settlement',
+          },
+          {
+            condition: 'line_blocked_all_pass',
+            nextPhase: 'settlement',
+          },
+          {
+            condition: 'otherwise',
+            nextPhase: 'play_loop',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Round ends by empty hand or blocked line.',
+      },
+      {
+        id: 'settlement',
+        label: 'Score Round',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: 'deal_round',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'team_score_ge_4',
+            nextPhase: null,
+          },
+          {
+            condition: 'otherwise',
+            nextPhase: 'deal_round',
+          },
+        ],
+        cardVisibilityChanges: {},
+        notes: 'Apply normal, Dekabes, blocked, and post-tied-block bonuses; losing team resets to 0.',
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'fixed_player',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: 'Exactly 4 players in fixed partnerships; partners sit opposite.',
+        deck: 'One double-six domino set (28 tiles), shuffled face down.',
+        equipment: 'Domino set and score tracker.',
+        dealing: 'Each player draws 7 tiles. Any player with 5 or more doubles may demand a full reshuffle and redeal. In first round, holder of the double-six tile starts by playing it. In later rounds, a member of the team that won the previous round starts.',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'fixed_player',
+        dealerRotates: false,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+        'deal',
+      ],
+      authoritativeServer: true,
+      customLogicNeeded: [
+        'dekabes_detection_non_double_and_double_end_fit',
+        'blocked_round_lowest_individual_tiebreak',
+        'post_tied_block_round_value_escalation',
+        'streak_scoring_with_loser_reset',
+      ],
+    },
+    progression: [
+      'setup_round',
+      'deal_round',
+      'play_loop',
+      'round_check',
+      'settlement',
+    ],
+    examples: [],
+  },
+}

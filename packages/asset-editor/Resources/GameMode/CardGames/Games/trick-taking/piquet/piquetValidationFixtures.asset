@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '7f76bbfe-6847-407f-b540-e61e7c85878e',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/piquet/piquetValidationFixtures.asset',
+    gameId: 'piquet',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'piquet',
+    familyVariant: 'Plain Tricks / No Trump',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'piquet.core-runtime-contracts',
+        title: 'Piquet Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'piquet.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Piquet must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'piquet.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'piquet.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'exchange',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+              'discard',
+              'declare_point',
+              'declare_sequence',
+              'declare_set',
+              'lead',
+            ],
+            explanation: 'Piquet must run setup_round first, then enter exchange with the processed legal actions.',
+            linkedRuleIds: [
+              'piquet.setup.initial-deal',
+              'piquet.flow.exchange',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'exchange',
+            firstPlayableLegalActions: [
+              'discard',
+              'draw',
+            ],
+          },
+          {
+            id: 'piquet.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Higher score after 6 deals.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Point, Sequence, Set; tricks; capot 40; repique 60; pique 30. Rubicon: loser <100 pays sum+100; â‰¥100 pays diff+100.',
+            linkedRuleIds: [
+              'piquet.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'piquet.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

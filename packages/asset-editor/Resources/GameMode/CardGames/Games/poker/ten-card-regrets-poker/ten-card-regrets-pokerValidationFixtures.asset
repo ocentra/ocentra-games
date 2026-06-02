@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '369fb219-ac15-47d8-a44c-a9ad185e03e8',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/ten-card-regrets-poker/ten-card-regrets-pokerValidationFixtures.asset',
+    gameId: 'ten-card-regrets-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ten-card-regrets-poker',
+    familyVariant: 'Community Card / High-Low Split',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ten-card-regrets-poker.core-runtime-contracts',
+        title: '10 Card Regrets Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ten-card-regrets-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 5,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 25,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '10 Card Regrets Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ten-card-regrets-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ten-card-regrets-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: '10 Card Regrets Poker must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'ten-card-regrets-poker.setup.initial-deal',
+              'ten-card-regrets-poker.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'ten-card-regrets-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Build best High hand and/or best Low hand to win split pot.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Split pot: best High hand + best Low hand.',
+            linkedRuleIds: [
+              'ten-card-regrets-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ten-card-regrets-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

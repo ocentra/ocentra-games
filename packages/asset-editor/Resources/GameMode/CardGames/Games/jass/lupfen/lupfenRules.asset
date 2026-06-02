@@ -1,0 +1,272 @@
+{
+  system: {
+    guid: '336c3b3e-bd3d-4a41-a171-eae295e827bd',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/lupfen/lupfenRules.asset',
+    gameId: 'lupfen',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Dealing**: Each player receives 9 cards. 2. **Auction**: Players bid for the right to become the declarer. Bids include 'Game' (choosing trump), 'Solo' (playing without the skat), and 'Grand' (only Obers are trump). 3. **Trump Selection**: The declarer chooses the trump suit. 4. **Play**: Must follow suit. Must trump if void in led suit. 5. **Scoring**: Card points are counted. The declarer needs 61+ to win.",
+    Player: "1. **Dealing**: Each player receives 9 cards. 2. **Auction**: Players bid for the right to become the declarer. Bids include 'Game' (choosing trump), 'Solo' (playing without the skat), and 'Grand' (only Obers are trump). 3. **Trump Selection**: The declarer chooses the trump suit. 4. **Play**: Must follow suit. Must trump if void in led suit. 5. **Scoring**: Card points are counted. The declarer needs 61+ to win.",
+    objective: 'Win the auction and then win at least 61 points in tricks (out of 120 total card points).',
+    gameplay: "1. **Dealing**: Each player receives 9 cards. 2. **Auction**: Players bid for the right to become the declarer. Bids include 'Game' (choosing trump), 'Solo' (playing without the skat), and 'Grand' (only Obers are trump). 3. **Trump Selection**: The declarer chooses the trump suit. 4. **Play**: Must follow suit. Must trump if void in led suit. 5. **Scoring**: Card points are counted. The declarer needs 61+ to win.",
+    keyRules: [
+      '36-card deck: 6-10, Under, Ober, King, Ace in four suits.',
+      'Card ranks: Ace (11), Ten (10), King (4), Ober (3), Under (2), 9-8-7-6 (0).',
+      'Total points per hand: 120.',
+      "Auction: Bid 'Game', 'Solo', or 'Grand'.",
+      "Declarer's goal: Win 61+ points.",
+      'Must follow suit; must trump if void.',
+      'Obers and Unters are permanent trumps in some contracts.',
+      'Schneider (91+ points) and Schwarz (all tricks) bonuses apply.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3-5 players (4 is optimal).',
+      deck: '36-card Swiss-German deck: 6-10, Under, Ober, King, Ace in each of four suits (Acorns, Bells, Hearts, Leaves).',
+      equipment: 'Swiss-German deck and score counters.',
+      dealing: 'Each player receives 9 cards (in a 4-player game).',
+    },
+    turnFlow: "1. **Dealing**: Each player receives 9 cards. 2. **Auction**: Players bid for the right to become the declarer. Bids include 'Game' (choosing trump), 'Solo' (playing without the skat), and 'Grand' (only Obers are trump). 3. **Trump Selection**: The declarer chooses the trump suit. 4. **Play**: Must follow suit. Must trump if void in led suit. 5. **Scoring**: Card points are counted. The declarer needs 61+ to win.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit; must trump if void',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Allowed only in phases that list this action as legal.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Win the auction and then win at least 61 points in tricks (out of 120 total card points).',
+      "Turn-flow example: 1. **Dealing**: Each player receives 9 cards. 2. **Auction**: Players bid for the right to become the declarer. Bids include 'Game' (choosing trump), 'Solo' (playing without the skat), and 'Grand' (only Obers are trump). 3. **Trump Selection**: The declarer chooses the trump suit. 4. **Play**: Must follow suit. Must trump if void in led suit. 5. **Scoring**: Card points are counted. The declarer needs 61+ to win.",
+      'Scoring example: Card points from tricks. Declarer needs 61+ to win. Win auction and score 61+ points; or defeat declarer by preventing 61 points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'lupfen.rules.objective',
+        title: 'Objective',
+        text: 'Win the auction and then win at least 61 points in tricks (out of 120 total card points).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'lupfen.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Dealing**: Each player receives 9 cards. 2. **Auction**: Players bid for the right to become the declarer. Bids include 'Game' (choosing trump), 'Solo' (playing without the skat), and 'Grand' (only Obers are trump). 3. **Trump Selection**: The declarer chooses the trump suit. 4. **Play**: Must follow suit. Must trump if void in led suit. 5. **Scoring**: Card points are counted. The declarer needs 61+ to win.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'lupfen.setup.players',
+        title: 'Players',
+        text: '3-5 players (4 is optimal).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'lupfen.setup.deck',
+        title: 'Deck',
+        text: '36-card Swiss-German deck: 6-10, Under, Ober, King, Ace in each of four suits (Acorns, Bells, Hearts, Leaves).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'lupfen.setup.equipment',
+        title: 'Equipment',
+        text: 'Swiss-German deck and score counters.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'lupfen.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 9 cards (in a 4-player game).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'lupfen.score.win-condition',
+        title: 'Win condition',
+        text: 'Win auction and score 61+ points; or defeat declarer by preventing 61 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'lupfen.score.description',
+        title: 'Scoring',
+        text: 'Card points from tricks. Declarer needs 61+ to win.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'lupfen.rules.key.1',
+        title: 'Key rule 1',
+        text: '36-card deck: 6-10, Under, Ober, King, Ace in four suits.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'lupfen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Card ranks: Ace (11), Ten (10), King (4), Ober (3), Under (2), 9-8-7-6 (0).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'lupfen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Total points per hand: 120.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'lupfen.rules.key.4',
+        title: 'Key rule 4',
+        text: "Auction: Bid 'Game', 'Solo', or 'Grand'.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'lupfen.rules.key.5',
+        title: 'Key rule 5',
+        text: "Declarer's goal: Win 61+ points.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'lupfen.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Must follow suit; must trump if void.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'lupfen.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Obers and Unters are permanent trumps in some contracts.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'lupfen.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Schneider (91+ points) and Schwarz (all tricks) bonuses apply.',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'lupfen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'lupfen.rules.objective',
+          'lupfen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'lupfen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'lupfen.setup.players',
+          'lupfen.setup.deck',
+          'lupfen.setup.equipment',
+          'lupfen.setup.dealing',
+        ],
+      },
+      {
+        id: 'lupfen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'lupfen.rules.key.1',
+          'lupfen.rules.key.2',
+          'lupfen.rules.key.3',
+          'lupfen.rules.key.4',
+          'lupfen.rules.key.5',
+          'lupfen.rules.key.6',
+          'lupfen.rules.key.7',
+          'lupfen.rules.key.8',
+        ],
+      },
+      {
+        id: 'lupfen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'lupfen.score.description',
+          'lupfen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'lupfen.setup.dealing',
+        'lupfen.rules.objective',
+      ],
+      deal: [
+        'lupfen.rules.gameplay',
+      ],
+      play_card: [
+        'lupfen.rules.gameplay',
+      ],
+      pass: [
+        'lupfen.rules.gameplay',
+      ],
+      bid: [
+        'lupfen.rules.gameplay',
+      ],
+      bid_game: [
+        'lupfen.rules.gameplay',
+      ],
+      bid_solo: [
+        'lupfen.rules.gameplay',
+      ],
+      bid_grand: [
+        'lupfen.rules.gameplay',
+      ],
+      choose_trump: [
+        'lupfen.rules.gameplay',
+      ],
+      score: [
+        'lupfen.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,213 @@
+{
+  system: {
+    guid: 'bf7b15f2-22e4-4d78-b07d-fd40a3378817',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/gambling/seotda/seotdaRules.asset',
+    gameId: 'seotda',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Card distribution: Each player is dealt two cards.\n2. Betting rounds: After receiving cards, players in turn may Call (match the current bet), Raise (increase the bet), or Fold (drop out and forfeit stakes).\n3. Showdown: After the final betting round, remaining players reveal their cards; the highest-ranking combination wins the pot.',
+    Player: '1. Card distribution: Each player is dealt two cards.\n2. Betting rounds: After receiving cards, players in turn may Call (match the current bet), Raise (increase the bet), or Fold (drop out and forfeit stakes).\n3. Showdown: After the final betting round, remaining players reveal their cards; the highest-ranking combination wins the pot.',
+    objective: 'Form the highest-ranking two-card hand (GwangTtaeng, Ttaeng, or Geut) to beat opponents and win the pot; players may fold to minimize losses.',
+    gameplay: '1. Card distribution: Each player is dealt two cards.\n2. Betting rounds: After receiving cards, players in turn may Call (match the current bet), Raise (increase the bet), or Fold (drop out and forfeit stakes).\n3. Showdown: After the final betting round, remaining players reveal their cards; the highest-ranking combination wins the pot.',
+    keyRules: [
+      'Hand rankings: GwangTtaeng (e.g. 3-8 Gwang) beats Ttaeng (pairs); Ttaeng beats Geut (sum of values, last digit); special hands 4-7 and 3-7 override certain combinations.',
+      'Betting: Call, Raise, or Fold each round; the best hand at showdown wins.',
+      'Traditional Seotda uses 20 Hwatu cards; LA Seotda uses a 52-card deck with poker-style bonuses (Ttaeng Value).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+      deck: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+      equipment: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+      dealing: 'Cards per Player: 2\nDealing Pattern: Clockwise, one card at a time or two to each player.\nDealer rotates; cards dealt face down.',
+    },
+    turnFlow: '1. Card distribution: Each player is dealt two cards.\n2. Betting rounds: After receiving cards, players in turn may Call (match the current bet), Raise (increase the bet), or Fold (drop out and forfeit stakes).\n3. Showdown: After the final betting round, remaining players reveal their cards; the highest-ranking combination wins the pot.',
+    moveValidityConditions: {
+      ante: 'Seotda has no mandatory ante; betting begins after cards are dealt.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: "Legal during betting rounds when it is the player's turn to act.",
+      check: 'Seotda uses call, raise, or fold; no check action in betting rounds.',
+      call: 'Legal during betting rounds when the player has not yet matched the current bet.',
+      bet: "Legal during betting rounds when it is the player's turn; amount must be within table limits.",
+      raise: "Legal during betting rounds when a bet has been made and it is the player's turn.",
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Legal at showdown after betting rounds when the player has not folded.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Form the highest-ranking two-card hand (GwangTtaeng, Ttaeng, or Geut) to beat opponents and win the pot; players may fold to minimize losses.',
+      'Turn-flow example: 1. Card distribution: Each player is dealt two cards.\n2. Betting rounds: After receiving cards, players in turn may Call (match the current bet), Raise (increase the bet), or Fold (drop out and forfeit stakes).\n3. Showdown: After the final betting round, remaining players reveal their cards; the highest-ranking combination wins the pot.',
+      'Scoring example: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Be the first player to achieve the winning condition through strategic play of cards..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'seotda.rules.objective',
+        title: 'Objective',
+        text: 'Form the highest-ranking two-card hand (GwangTtaeng, Ttaeng, or Geut) to beat opponents and win the pot; players may fold to minimize losses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'seotda.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Card distribution: Each player is dealt two cards.\n2. Betting rounds: After receiving cards, players in turn may Call (match the current bet), Raise (increase the bet), or Fold (drop out and forfeit stakes).\n3. Showdown: After the final betting round, remaining players reveal their cards; the highest-ranking combination wins the pot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'seotda.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'seotda.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'seotda.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'seotda.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 2\nDealing Pattern: Clockwise, one card at a time or two to each player.\nDealer rotates; cards dealt face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'seotda.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'seotda.score.description',
+        title: 'Scoring',
+        text: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'seotda.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hand rankings: GwangTtaeng (e.g. 3-8 Gwang) beats Ttaeng (pairs); Ttaeng beats Geut (sum of values, last digit); special hands 4-7 and 3-7 override certain combinations.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'seotda.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Betting: Call, Raise, or Fold each round; the best hand at showdown wins.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'seotda.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Traditional Seotda uses 20 Hwatu cards; LA Seotda uses a 52-card deck with poker-style bonuses (Ttaeng Value).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'seotda.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'seotda.rules.objective',
+          'seotda.rules.gameplay',
+        ],
+      },
+      {
+        id: 'seotda.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'seotda.setup.players',
+          'seotda.setup.deck',
+          'seotda.setup.equipment',
+          'seotda.setup.dealing',
+        ],
+      },
+      {
+        id: 'seotda.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'seotda.rules.key.1',
+          'seotda.rules.key.2',
+          'seotda.rules.key.3',
+        ],
+      },
+      {
+        id: 'seotda.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'seotda.score.description',
+          'seotda.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'seotda.setup.dealing',
+        'seotda.rules.objective',
+      ],
+      fold: [
+        'seotda.rules.gameplay',
+      ],
+      call: [
+        'seotda.rules.gameplay',
+      ],
+      bet: [
+        'seotda.rules.gameplay',
+      ],
+      raise: [
+        'seotda.rules.gameplay',
+      ],
+      reveal_hand: [
+        'seotda.rules.gameplay',
+      ],
+      play_card: [
+        'seotda.rules.gameplay',
+      ],
+    },
+  },
+}

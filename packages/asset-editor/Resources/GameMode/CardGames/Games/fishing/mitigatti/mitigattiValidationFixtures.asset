@@ -1,0 +1,116 @@
+{
+  system: {
+    guid: '67f84fd1-2a92-47a7-a044-a31a73f3ffb4',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/mitigatti/mitigattiValidationFixtures.asset',
+    gameId: 'mitigatti',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mitigatti',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mitigatti.core-runtime-contracts',
+        title: 'Mitigatti (Gatti) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mitigatti.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 25,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 100,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Mitigatti (Gatti) must start by giving each active player 25 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mitigatti.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mitigatti.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'deal_25_each_talon_3',
+            ],
+            explanation: 'Mitigatti (Gatti) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'mitigatti.setup.initial-deal',
+              'mitigatti.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_25_each_talon_3',
+            ],
+          },
+          {
+            id: 'mitigatti.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Score the most points through tricks, declarations, and ending-bonuses.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Score the most points through tricks, declarations, and ending-bonuses.',
+            linkedRuleIds: [
+              'mitigatti.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mitigatti.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 25,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

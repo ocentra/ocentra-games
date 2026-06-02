@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '80a15bb8-425e-47ae-aae3-57fd6c269a9c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/zifuli/zifuliValidationFixtures.asset',
+    gameId: 'zifuli',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'zifuli',
+    familyVariant: 'Secret Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'zifuli.core-runtime-contracts',
+        title: 'Zifuli Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'zifuli.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 5,
+              max: 5,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 25,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Zifuli must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'zifuli.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'zifuli.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Zifuli must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'zifuli.setup.initial-deal',
+              'zifuli.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'zifuli.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win tricks containing valuable cards. Side with 10+ of 19 points wins.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "Bidder's side wins: opponents each pay 1 stake (bidder gets 2, partner gets 1). Bidder loses: reversed. Solo bidder wins: 8 stakes (2 from each); loses: pays 2 to each.",
+            linkedRuleIds: [
+              'zifuli.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'zifuli.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 5,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

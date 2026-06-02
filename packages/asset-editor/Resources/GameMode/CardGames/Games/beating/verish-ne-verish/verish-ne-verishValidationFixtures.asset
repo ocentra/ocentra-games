@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '62deb981-4c97-4614-b1ac-dcac21e56bad',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/verish-ne-verish/verish-ne-verishValidationFixtures.asset',
+    gameId: 'verish-ne-verish',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'verish-ne-verish',
+    familyVariant: 'Vying',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'verish-ne-verish.core-runtime-contracts',
+        title: "Verish' Ne Verish' Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'verish-ne-verish.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 78,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "Verish' Ne Verish' must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'verish-ne-verish.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'verish-ne-verish.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'declare',
+              'play_card',
+              'challenge',
+              'finish_game',
+            ],
+            explanation: "Verish' Ne Verish' must run setup_round first, then enter deal with the processed legal actions.",
+            linkedRuleIds: [
+              'verish-ne-verish.setup.initial-deal',
+              'verish-ne-verish.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'verish-ne-verish.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Shed all cards first.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'First out wins. Last = loser.',
+            linkedRuleIds: [
+              'verish-ne-verish.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'verish-ne-verish.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

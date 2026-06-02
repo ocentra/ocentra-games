@@ -1,0 +1,265 @@
+{
+  system: {
+    guid: 'a8a5aff7-18ba-400e-8a1c-bfbc3bfbcb7d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/stud/london-lowball/london-lowballRules.asset',
+    gameId: 'london-lowball',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+    Player: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+    objective: 'Form the lowest possible 5-card hand. Straights and Flushes ARE NOT counted (California/A-5 Lowball rules).',
+    gameplay: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+    keyRules: [
+      'Ace-to-Five lowball ranking: A-2-3-4-5 (Wheel) is best hand.',
+      'Aces always low.',
+      'Straights and flushes do not count against player.',
+      'Highest door card pays bring-in (Ace is low, so King is worst).',
+      'Pairs are badâ€”any no-pair hand beats any paired hand.',
+      'Compare highest cards first when ranking hands.',
+      'Traditionally played Pot-Limit.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Best with 6-8 players.',
+      deck: 'Standard 52-card deck. No Jokers.',
+      equipment: 'Standard deck, poker chips, dealer button.',
+      dealing: 'Two cards face-down, one card face-up to begin. Subsequent rounds follow the 7-card stud pattern (4th, 5th, 6th streets up, 7th street down).',
+    },
+    turnFlow: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+    moveValidityConditions: {
+      ante: 'All players',
+      deal: 'Dealer only',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Allowed during betting when player chooses to leave the hand.',
+      check: 'Only if no bet yet',
+      call: 'Allowed only during betting phases within table limits.',
+      bet: 'Pot-Limit',
+      raise: 'Pot-Limit',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Allowed only in phases that list this action as legal.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Form the lowest possible 5-card hand. Straights and Flushes ARE NOT counted (California/A-5 Lowball rules).',
+      "Turn-flow example: 1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+      'Scoring example: Ace-to-five lowball hand ranking. The wheel (A-2-3-4-5) is the nuts. Lowest qualifying 5-card hand wins the pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'london-lowball.rules.objective',
+        title: 'Objective',
+        text: 'Form the lowest possible 5-card hand. Straights and Flushes ARE NOT counted (California/A-5 Lowball rules).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'london-lowball.setup.players',
+        title: 'Players',
+        text: 'Best with 6-8 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'london-lowball.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No Jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'london-lowball.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips, dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'london-lowball.setup.dealing',
+        title: 'Deal',
+        text: 'Two cards face-down, one card face-up to begin. Subsequent rounds follow the 7-card stud pattern (4th, 5th, 6th streets up, 7th street down).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'london-lowball.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest qualifying 5-card hand wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'london-lowball.score.description',
+        title: 'Scoring',
+        text: 'Ace-to-five lowball hand ranking. The wheel (A-2-3-4-5) is the nuts.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Ace-to-Five lowball ranking: A-2-3-4-5 (Wheel) is best hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces always low.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Straights and flushes do not count against player.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Highest door card pays bring-in (Ace is low, so King is worst).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Pairs are badâ€”any no-pair hand beats any paired hand.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Compare highest cards first when ranking hands.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Traditionally played Pot-Limit.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'london-lowball.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'london-lowball.rules.objective',
+          'london-lowball.rules.gameplay',
+        ],
+      },
+      {
+        id: 'london-lowball.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'london-lowball.setup.players',
+          'london-lowball.setup.deck',
+          'london-lowball.setup.equipment',
+          'london-lowball.setup.dealing',
+        ],
+      },
+      {
+        id: 'london-lowball.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'london-lowball.rules.key.1',
+          'london-lowball.rules.key.2',
+          'london-lowball.rules.key.3',
+          'london-lowball.rules.key.4',
+          'london-lowball.rules.key.5',
+          'london-lowball.rules.key.6',
+          'london-lowball.rules.key.7',
+        ],
+      },
+      {
+        id: 'london-lowball.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'london-lowball.score.description',
+          'london-lowball.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'london-lowball.setup.dealing',
+        'london-lowball.rules.objective',
+      ],
+      ante: [
+        'london-lowball.rules.gameplay',
+      ],
+      deal: [
+        'london-lowball.rules.gameplay',
+      ],
+      fold: [
+        'london-lowball.rules.gameplay',
+      ],
+      check: [
+        'london-lowball.rules.gameplay',
+      ],
+      call: [
+        'london-lowball.rules.gameplay',
+      ],
+      bet: [
+        'london-lowball.rules.gameplay',
+      ],
+      raise: [
+        'london-lowball.rules.gameplay',
+      ],
+      reveal_hand: [
+        'london-lowball.rules.gameplay',
+      ],
+      bring_in: [
+        'london-lowball.rules.gameplay',
+      ],
+      reveal: [
+        'london-lowball.rules.gameplay',
+      ],
+    },
+  },
+}

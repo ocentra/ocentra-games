@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '9d7d970e-2419-4661-a068-67d40e856631',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/sab-at-al-deemin/sab-at-al-deeminValidationFixtures.asset',
+    gameId: 'sab-at-al-deemin',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sab-at-al-deemin',
+    familyVariant: 'Line / Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sab-at-al-deemin.core-runtime-contracts',
+        title: "Sab'at Al-Deemin Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'sab-at-al-deemin.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: "Sab'at Al-Deemin must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'sab-at-al-deemin.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sab-at-al-deemin.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: "Sab'at Al-Deemin must run setup_round first, then enter play with the processed legal actions.",
+            linkedRuleIds: [
+              'sab-at-al-deemin.setup.initial-deal',
+              'sab-at-al-deemin.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'sab-at-al-deemin.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Be the first player to achieve the winning condition through strategic play of cards.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+            linkedRuleIds: [
+              'sab-at-al-deemin.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sab-at-al-deemin.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

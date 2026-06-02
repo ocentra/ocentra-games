@@ -1,0 +1,214 @@
+{
+  system: {
+    guid: '59be665e-3b6b-4efd-911f-fe1531c0f179',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/smear/smearRules.asset',
+    gameId: 'smear',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Six cards each. One round of bidding (2 to 4); high bidder names trump and leads. Follow suit; may trump when void (in some variants may trump while holding led suit). Four points per hand: High (ace of trump), Low (deuce of trump), Jack (trick with jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). First team to reach target (e.g. 15 or 21) wins.',
+    Player: 'Six cards each. One round of bidding (2 to 4); high bidder names trump and leads. Follow suit; may trump when void (in some variants may trump while holding led suit). Four points per hand: High (ace of trump), Low (deuce of trump), Jack (trick with jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). First team to reach target (e.g. 15 or 21) wins.',
+    objective: 'Score points: High (1), Low (1), Jack (1), Game (1). Total 4 points per hand (or more in variants with Joker).',
+    gameplay: 'Six cards each. One round of bidding (2 to 4); high bidder names trump and leads. Follow suit; may trump when void (in some variants may trump while holding led suit). Four points per hand: High (ace of trump), Low (deuce of trump), Jack (trick with jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). First team to reach target (e.g. 15 or 21) wins.',
+    keyRules: [
+      'Deal 6 cards each; one round of bidding (2 to 4); high bidder names trump and leads.',
+      'Must follow suit when possible; may play trump when void.',
+      'Four points per hand: High (ace of trump), Low (deuce of trump), Jack (trick with jack of trumps), Game (more card points in tricks).',
+      'Bidding side scores what they made if they make bid; else they lose the bid amount. First to target (e.g. 21) wins.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Four players in fixed partnerships, partners sitting opposite each other. Some variants use six players in two teams of three or three players without partners.',
+      deck: 'Standard 52-card pack; cards in each suit rank A, K, Q, J, 10 down to 2. Some variants use a 54-card pack with one or two jokers as extra trumps, or a stripped 32-card deck (A-K-Q-J-10-9-8-7 per suit).',
+      equipment: 'Standard 52-card pack; cards in each suit rank A, K, Q, J, 10 down to 2. Some variants use a 54-card pack with one or two jokers as extra trumps, or a stripped 32-card deck (A-K-Q-J-10-9-8-7 per suit).',
+      dealing: 'Deal 6 cards each. Bidding starts left of dealer.',
+    },
+    turnFlow: 'Six cards each. One round of bidding (2 to 4); high bidder names trump and leads. Follow suit; may trump when void (in some variants may trump while holding led suit). Four points per hand: High (ace of trump), Low (deuce of trump), Jack (trick with jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). First team to reach target (e.g. 15 or 21) wins.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Legal during bid phase when it is your turn to bid.',
+      bid: 'During bid phase; bid must exceed previous bid or be first bid.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Score points: High (1), Low (1), Jack (1), Game (1). Total 4 points per hand (or more in variants with Joker).',
+      'Turn-flow example: Six cards each. One round of bidding (2 to 4); high bidder names trump and leads. Follow suit; may trump when void (in some variants may trump while holding led suit). Four points per hand: High (ace of trump), Low (deuce of trump), Jack (trick with jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). First team to reach target (e.g. 15 or 21) wins.',
+      "Scoring example: High (highest trump in play), Low (lowest trump in playâ€”goes to holder or winner? In Pitch, usually to holder. In Smear, usually to winner of trick? Check rules: In 'Smear', Low often goes to the *capturer* of the low trump, making it distinct from Pitch where it goes to the original holder. Four points per hand: High (player who plays ace of trump), Low (player who plays deuce of trump), Jack (side that wins trick containing jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). If bidding side makes at least their bid they score what they made; otherwise they lose the bid amount. First team to reach target (e.g. 15 or 21) wins. Score points: High (1), Low (1), Jack (1), Game (1). Total 4 points per hand (or more in variants with Joker). First team to reach agreed target score wins..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'smear.rules.objective',
+        title: 'Objective',
+        text: 'Score points: High (1), Low (1), Jack (1), Game (1). Total 4 points per hand (or more in variants with Joker).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'smear.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Six cards each. One round of bidding (2 to 4); high bidder names trump and leads. Follow suit; may trump when void (in some variants may trump while holding led suit). Four points per hand: High (ace of trump), Low (deuce of trump), Jack (trick with jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). First team to reach target (e.g. 15 or 21) wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'smear.setup.players',
+        title: 'Players',
+        text: 'Four players in fixed partnerships, partners sitting opposite each other. Some variants use six players in two teams of three or three players without partners.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'smear.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack; cards in each suit rank A, K, Q, J, 10 down to 2. Some variants use a 54-card pack with one or two jokers as extra trumps, or a stripped 32-card deck (A-K-Q-J-10-9-8-7 per suit).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'smear.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack; cards in each suit rank A, K, Q, J, 10 down to 2. Some variants use a 54-card pack with one or two jokers as extra trumps, or a stripped 32-card deck (A-K-Q-J-10-9-8-7 per suit).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'smear.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 6 cards each. Bidding starts left of dealer.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'smear.score.win-condition',
+        title: 'Win condition',
+        text: 'Score points: High (1), Low (1), Jack (1), Game (1). Total 4 points per hand (or more in variants with Joker). First team to reach agreed target score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'smear.score.description',
+        title: 'Scoring',
+        text: "High (highest trump in play), Low (lowest trump in playâ€”goes to holder or winner? In Pitch, usually to holder. In Smear, usually to winner of trick? Check rules: In 'Smear', Low often goes to the *capturer* of the low trump, making it distinct from Pitch where it goes to the original holder. Four points per hand: High (player who plays ace of trump), Low (player who plays deuce of trump), Jack (side that wins trick containing jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). If bidding side makes at least their bid they score what they made; otherwise they lose the bid amount. First team to reach target (e.g. 15 or 21) wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'smear.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Deal 6 cards each; one round of bidding (2 to 4); high bidder names trump and leads.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'smear.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must follow suit when possible; may play trump when void.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'smear.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Four points per hand: High (ace of trump), Low (deuce of trump), Jack (trick with jack of trumps), Game (more card points in tricks).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'smear.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bidding side scores what they made if they make bid; else they lose the bid amount. First to target (e.g. 21) wins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'smear.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'smear.rules.objective',
+          'smear.rules.gameplay',
+        ],
+      },
+      {
+        id: 'smear.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'smear.setup.players',
+          'smear.setup.deck',
+          'smear.setup.equipment',
+          'smear.setup.dealing',
+        ],
+      },
+      {
+        id: 'smear.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'smear.rules.key.1',
+          'smear.rules.key.2',
+          'smear.rules.key.3',
+          'smear.rules.key.4',
+        ],
+      },
+      {
+        id: 'smear.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'smear.score.description',
+          'smear.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'smear.setup.dealing',
+        'smear.rules.objective',
+      ],
+      play_card: [
+        'smear.rules.gameplay',
+      ],
+      pass: [
+        'smear.rules.gameplay',
+      ],
+      bid: [
+        'smear.rules.gameplay',
+      ],
+    },
+  },
+}

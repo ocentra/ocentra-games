@@ -104,7 +104,7 @@ export function buildHomePath(): string {
 }
 
 export function buildSettingsPath(): string {
-  return PublicRoutePath[PublicRouteKey.PlayerHub];
+  return PublicRoutePath[PublicRouteKey.Settings];
 }
 
 export function buildShopPath(): string {
@@ -255,7 +255,7 @@ export function parseAppRoute(pathname: string): AppRouteState {
   }
 
   if (first === AppScreenToken.Settings) {
-    return second ? notFoundRoute(segments) : { kind: 'playerHub' };
+    return second ? notFoundRoute(segments) : { kind: 'settings' };
   }
   if (first === AppScreenToken.Shop) {
     return second ? notFoundRoute(segments) : { kind: 'shop' };

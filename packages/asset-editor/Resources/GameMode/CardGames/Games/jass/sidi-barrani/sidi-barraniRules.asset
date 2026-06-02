@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: '7e7c88ab-bb2c-4f46-a991-93d338f014ad',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/sidi-barrani/sidi-barraniRules.asset',
+    gameId: 'sidi-barrani',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'After the deal, auction determines trump and point target (40–257). Declarer leads to the first trick. Follow suit or trump; no undertrump unless only trumps in hand. Trick winner leads next. Weis may be declared when playing to the first trick. Score tricks, last trick (5), Weis and Stöck; add bid value to declarers if made, else to opponents.',
+    Player: 'After the deal, auction determines trump and point target (40–257). Declarer leads to the first trick. Follow suit or trump; no undertrump unless only trumps in hand. Trick winner leads next. Weis may be declared when playing to the first trick. Score tricks, last trick (5), Weis and Stöck; add bid value to declarers if made, else to opponents.',
+    objective: 'Bid a contract (trump or Obenabe/Undenufe plus point target). Make at least that many card points in tricks (plus last trick and optional Weis/Stöck). First team to reach 2000 or more points wins; if the losing team has under 1000 it is a double game.',
+    gameplay: 'After the deal, auction determines trump and point target (40–257). Declarer leads to the first trick. Follow suit or trump; no undertrump unless only trumps in hand. Trick winner leads next. Weis may be declared when playing to the first trick. Score tricks, last trick (5), Weis and Stöck; add bid value to declarers if made, else to opponents.',
+    keyRules: [
+      'Follow suit when possible; may trump on non-trump lead. No undertrump unless hand is all trumps. Trump Under (Puur) and Nine are highest; 157 points in pack plus 5 for last trick; Match (all nine tricks) scores 257.',
+      'Weis declared when playing to first trick; highest Weis combination wins for the team. Stöck (K+O of trumps) claimed after both cards seen.',
+      'Auction: bid number (40–257) and denomination (suit or Obenabe or Undenufe). Double by opponent ends auction and doubles stakes.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Four players in fixed partnerships, partners opposite.',
+      deck: '36-card pack (Swiss-German bells, shields, acorns, roses; or French hearts, diamonds, spades, clubs).',
+      equipment: 'Cards.',
+      dealing: 'First dealer random. Dealer shuffles, left player cuts. Deal all 36 cards anticlockwise in batches of 3, so each player receives 9 cards. Deal rotates right after each hand.',
+    },
+    turnFlow: 'After the deal, auction determines trump and point target (40–257). Declarer leads to the first trick. Follow suit or trump; no undertrump unless only trumps in hand. Trick winner leads next. Weis may be declared when playing to the first trick. Score tricks, last trick (5), Weis and Stöck; add bid value to declarers if made, else to opponents.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'Weis declared when playing card to first trick; must announce value; only if potentially higher than earlier declarations. Stöck after both cards played or shown.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Legal during bidding phase when it is your turn to speak.',
+      bid: 'Legal during bidding phase. Bid must exceed current high bid. Numbers: 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 157, 257.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Bid a contract (trump or Obenabe/Undenufe plus point target). Make at least that many card points in tricks (plus last trick and optional Weis/Stöck). First team to reach 2000 or more points wins; if the losing team has under 1000 it is a double game.',
+      'Turn-flow example: After the deal, auction determines trump and point target (40–257). Declarer leads to the first trick. Follow suit or trump; no undertrump unless only trumps in hand. Trick winner leads next. Weis may be declared when playing to the first trick. Score tricks, last trick (5), Weis and Stöck; add bid value to declarers if made, else to opponents.',
+      'Scoring example: Card points in tricks (157 total), 5 for last trick, 100 for Match (all nine tricks). Weis and Stöck add extra. Bid value (×2 if doubled) added to declarers if contract made, else to opponents. First team to 2000 wins; loser under 1000 = double game. First team to reach 2000 or more points wins. If both reach 2000+ in the same deal, play one more deal to break the tie. If the losing team has less than 1000, the winners win a double game..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'sidi-barrani.rules.objective',
+        title: 'Objective',
+        text: 'Bid a contract (trump or Obenabe/Undenufe plus point target). Make at least that many card points in tricks (plus last trick and optional Weis/Stöck). First team to reach 2000 or more points wins; if the losing team has under 1000 it is a double game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sidi-barrani.rules.gameplay',
+        title: 'Turn flow',
+        text: 'After the deal, auction determines trump and point target (40–257). Declarer leads to the first trick. Follow suit or trump; no undertrump unless only trumps in hand. Trick winner leads next. Weis may be declared when playing to the first trick. Score tricks, last trick (5), Weis and Stöck; add bid value to declarers if made, else to opponents.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sidi-barrani.setup.players',
+        title: 'Players',
+        text: 'Four players in fixed partnerships, partners opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sidi-barrani.setup.deck',
+        title: 'Deck',
+        text: '36-card pack (Swiss-German bells, shields, acorns, roses; or French hearts, diamonds, spades, clubs).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sidi-barrani.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sidi-barrani.setup.dealing',
+        title: 'Deal',
+        text: 'First dealer random. Dealer shuffles, left player cuts. Deal all 36 cards anticlockwise in batches of 3, so each player receives 9 cards. Deal rotates right after each hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sidi-barrani.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach 2000 or more points wins. If both reach 2000+ in the same deal, play one more deal to break the tie. If the losing team has less than 1000, the winners win a double game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sidi-barrani.score.description',
+        title: 'Scoring',
+        text: 'Card points in tricks (157 total), 5 for last trick, 100 for Match (all nine tricks). Weis and Stöck add extra. Bid value (×2 if doubled) added to declarers if contract made, else to opponents. First team to 2000 wins; loser under 1000 = double game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sidi-barrani.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit when possible; may trump on non-trump lead. No undertrump unless hand is all trumps. Trump Under (Puur) and Nine are highest; 157 points in pack plus 5 for last trick; Match (all nine tricks) scores 257.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sidi-barrani.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Weis declared when playing to first trick; highest Weis combination wins for the team. Stöck (K+O of trumps) claimed after both cards seen.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sidi-barrani.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Auction: bid number (40–257) and denomination (suit or Obenabe or Undenufe). Double by opponent ends auction and doubles stakes.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sidi-barrani.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sidi-barrani.rules.objective',
+          'sidi-barrani.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sidi-barrani.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sidi-barrani.setup.players',
+          'sidi-barrani.setup.deck',
+          'sidi-barrani.setup.equipment',
+          'sidi-barrani.setup.dealing',
+        ],
+      },
+      {
+        id: 'sidi-barrani.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sidi-barrani.rules.key.1',
+          'sidi-barrani.rules.key.2',
+          'sidi-barrani.rules.key.3',
+        ],
+      },
+      {
+        id: 'sidi-barrani.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sidi-barrani.score.description',
+          'sidi-barrani.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sidi-barrani.setup.dealing',
+        'sidi-barrani.rules.objective',
+      ],
+      declare: [
+        'sidi-barrani.rules.gameplay',
+      ],
+      play_card: [
+        'sidi-barrani.rules.gameplay',
+      ],
+      pass: [
+        'sidi-barrani.rules.gameplay',
+      ],
+      bid: [
+        'sidi-barrani.rules.gameplay',
+      ],
+      deal_9_each_3_batches: [
+        'sidi-barrani.rules.gameplay',
+      ],
+    },
+  },
+}

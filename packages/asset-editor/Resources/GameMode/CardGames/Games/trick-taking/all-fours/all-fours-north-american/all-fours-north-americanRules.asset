@@ -1,0 +1,239 @@
+{
+  system: {
+    guid: '920b5d66-a31a-4e04-8a5b-ceeb1bb15826',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/all-fours-north-american/all-fours-north-americanRules.asset',
+    gameId: 'all-fours-north-american',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **The Turn-Up**: Dealer flips a card for trumps. 2. **The Beg**: Non-dealer (Eldest) can either 'Stand' (accept trump) or 'Beg'. 3. **The Gift/Run**: If they beg, dealer can: \n   - 'Gift' 1 point to the opponent and keep the trump suit.\n   - OR 'Run the cards': Deal 3 more cards to each player. Flip a new trump. (If the new suit is the same as the first, keep running 3 at a time until a different suit appears).\n4. **Discarding**: If the cards were run, players discard down to exactly 6 cards before play starts. 5. **Play**: Follow suit or trump. 6. **Scoring**: Points awarded in order: High, Low, Jack, Game.",
+    Player: "1. **The Turn-Up**: Dealer flips a card for trumps. 2. **The Beg**: Non-dealer (Eldest) can either 'Stand' (accept trump) or 'Beg'. 3. **The Gift/Run**: If they beg, dealer can: \n   - 'Gift' 1 point to the opponent and keep the trump suit.\n   - OR 'Run the cards': Deal 3 more cards to each player. Flip a new trump. (If the new suit is the same as the first, keep running 3 at a time until a different suit appears).\n4. **Discarding**: If the cards were run, players discard down to exactly 6 cards before play starts. 5. **Play**: Follow suit or trump. 6. **Scoring**: Points awarded in order: High, Low, Jack, Game.",
+    objective: 'Score 7 points by winning High, Low, Jack, and Game in several hands.',
+    gameplay: "1. **The Turn-Up**: Dealer flips a card for trumps. 2. **The Beg**: Non-dealer (Eldest) can either 'Stand' (accept trump) or 'Beg'. 3. **The Gift/Run**: If they beg, dealer can: \n   - 'Gift' 1 point to the opponent and keep the trump suit.\n   - OR 'Run the cards': Deal 3 more cards to each player. Flip a new trump. (If the new suit is the same as the first, keep running 3 at a time until a different suit appears).\n4. **Discarding**: If the cards were run, players discard down to exactly 6 cards before play starts. 5. **Play**: Follow suit or trump. 6. **Scoring**: Points awarded in order: High, Low, Jack, Game.",
+    keyRules: [
+      'High (1 pt): Held by the player dealt the highest trump.',
+      'Low (1 pt): Held by the player dealt the lowest trump.',
+      'Jack (1 pt): Awarded to the team that WINS the trick containing the Jack of trumps.',
+      "Game (1 pt): Awarded to the team with the most 'pips' from captured tricks (A=4, K=3, Q=2, J=1, 10=10).",
+      'Game Tie: If the pip count is tied, the point goes to the non-dealing side (Eldest).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 or 4 (Partnerships opposite each other).',
+      deck: 'Standard 52-card deck. Ace is high.',
+      equipment: 'Standard deck, 7 chips per player/team for scoring.',
+      dealing: 'Dealer gives 6 cards to each player (traditionally 3 at a time). The 13th card is turned up for trumps.',
+    },
+    turnFlow: "1. **The Turn-Up**: Dealer flips a card for trumps. 2. **The Beg**: Non-dealer (Eldest) can either 'Stand' (accept trump) or 'Beg'. 3. **The Gift/Run**: If they beg, dealer can: \n   - 'Gift' 1 point to the opponent and keep the trump suit.\n   - OR 'Run the cards': Deal 3 more cards to each player. Flip a new trump. (If the new suit is the same as the first, keep running 3 at a time until a different suit appears).\n4. **Discarding**: If the cards were run, players discard down to exactly 6 cards before play starts. 5. **Play**: Follow suit or trump. 6. **Scoring**: Points awarded in order: High, Low, Jack, Game.",
+    moveValidityConditions: {
+      ante: 'Seven Up uses Beg/Stand and point scoring; no ante.',
+      deal: 'Dealer-only in deal/response phases.',
+      reveal_market: 'Dealer-only after deal packets.',
+      buy_market: 'Trump set by turn-up and Beg; no market.',
+      buy_stock: 'Six dealt, optional trim to six; no stock draw during tricks.',
+      fold: 'Trick-taking; all play each trick. No fold.',
+      check: 'Dealer-response phase only.',
+      call: 'Points for High, Low, Jack, Game; no betting.',
+      bet: 'Seven Up scores by card points only.',
+      raise: 'No betting rounds.',
+      declare: 'Points at hand end; no declare phase.',
+      reveal_hand: 'Cards played to tricks; no showdown.',
+      award_pot: 'System action after trick play.',
+      play_card: 'On non-trump lead, player with led suit may follow suit or trump but cannot discard off-suit non-trump.',
+      draw: 'Six dealt, trim to six; no draw during tricks.',
+      discard: 'Only in trim phase after trumps are rerun.',
+      pass: 'Eldest decision phase only.',
+      bid: 'Eldest decision phase only.',
+      meld: 'Trick-taking; High, Low, Jack, Game only.',
+      go_out: 'Hand ends when all tricks are played.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Score 7 points by winning High, Low, Jack, and Game in several hands.',
+      "Turn-flow example: 1. **The Turn-Up**: Dealer flips a card for trumps. 2. **The Beg**: Non-dealer (Eldest) can either 'Stand' (accept trump) or 'Beg'. 3. **The Gift/Run**: If they beg, dealer can: \n   - 'Gift' 1 point to the opponent and keep the trump suit.\n   - OR 'Run the cards': Deal 3 more cards to each player. Flip a new trump. (If the new suit is the same as the first, keep running 3 at a time until a different suit appears).\n4. **Discarding**: If the cards were run, players discard down to exactly 6 cards before play starts. 5. **Play**: Follow suit or trump. 6. **Scoring**: Points awarded in order: High, Low, Jack, Game.",
+      'Scoring example: Points are scored in a strict 1-by-1 sequence. The first side to reach 7 points wins the hand/match..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'all-fours-north-american.rules.objective',
+        title: 'Objective',
+        text: 'Score 7 points by winning High, Low, Jack, and Game in several hands.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **The Turn-Up**: Dealer flips a card for trumps. 2. **The Beg**: Non-dealer (Eldest) can either 'Stand' (accept trump) or 'Beg'. 3. **The Gift/Run**: If they beg, dealer can: \n   - 'Gift' 1 point to the opponent and keep the trump suit.\n   - OR 'Run the cards': Deal 3 more cards to each player. Flip a new trump. (If the new suit is the same as the first, keep running 3 at a time until a different suit appears).\n4. **Discarding**: If the cards were run, players discard down to exactly 6 cards before play starts. 5. **Play**: Follow suit or trump. 6. **Scoring**: Points awarded in order: High, Low, Jack, Game.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.setup.players',
+        title: 'Players',
+        text: '2 or 4 (Partnerships opposite each other).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ace is high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, 7 chips per player/team for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives 6 cards to each player (traditionally 3 at a time). The 13th card is turned up for trumps.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.score.win-condition',
+        title: 'Win condition',
+        text: 'The first side to reach 7 points wins the hand/match.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.score.description',
+        title: 'Scoring',
+        text: 'Points are scored in a strict 1-by-1 sequence.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.rules.key.1',
+        title: 'Key rule 1',
+        text: 'High (1 pt): Held by the player dealt the highest trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Low (1 pt): Held by the player dealt the lowest trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Jack (1 pt): Awarded to the team that WINS the trick containing the Jack of trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.rules.key.4',
+        title: 'Key rule 4',
+        text: "Game (1 pt): Awarded to the team with the most 'pips' from captured tricks (A=4, K=3, Q=2, J=1, 10=10).",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Game Tie: If the pip count is tied, the point goes to the non-dealing side (Eldest).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'all-fours-north-american.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'all-fours-north-american.rules.objective',
+          'all-fours-north-american.rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'all-fours-north-american.setup.players',
+          'all-fours-north-american.setup.deck',
+          'all-fours-north-american.setup.equipment',
+          'all-fours-north-american.setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'all-fours-north-american.rules.key.1',
+          'all-fours-north-american.rules.key.2',
+          'all-fours-north-american.rules.key.3',
+          'all-fours-north-american.rules.key.4',
+          'all-fours-north-american.rules.key.5',
+        ],
+      },
+      {
+        id: 'all-fours-north-american.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'all-fours-north-american.score.description',
+          'all-fours-north-american.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'all-fours-north-american.setup.dealing',
+        'all-fours-north-american.rules.objective',
+      ],
+      deal: [
+        'all-fours-north-american.rules.gameplay',
+      ],
+      reveal_market: [
+        'all-fours-north-american.rules.gameplay',
+      ],
+      check: [
+        'all-fours-north-american.rules.gameplay',
+      ],
+      award_pot: [
+        'all-fours-north-american.rules.gameplay',
+      ],
+      play_card: [
+        'all-fours-north-american.rules.gameplay',
+      ],
+      discard: [
+        'all-fours-north-american.rules.gameplay',
+      ],
+      pass: [
+        'all-fours-north-american.rules.gameplay',
+      ],
+      bid: [
+        'all-fours-north-american.rules.gameplay',
+      ],
+    },
+  },
+}

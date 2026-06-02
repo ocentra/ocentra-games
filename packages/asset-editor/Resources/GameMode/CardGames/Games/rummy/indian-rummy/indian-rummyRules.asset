@@ -1,0 +1,253 @@
+{
+  system: {
+    guid: '70a6ee89-ad1c-4a0e-95a4-1c7616825b66',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/indian-rummy/indian-rummyRules.asset',
+    gameId: 'indian-rummy',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Each player is dealt 13 cards\n2. One card is turned face-up to determine the wild card (joker)\n3. The remaining cards form the stock pile\n4. Players take turns drawing a card (from stock or discard pile) and discarding one\n5. Players arrange cards into sets and sequences\n6. A valid declaration requires at least two sequences, one of which must be pure (no jokers)\n7. When a player has valid combinations, they declare by discarding to the 'show' slot\n8. The player reveals their cards, organized into sets and sequences\n9. If valid, other players count points for unmatched cards\n10. If invalid, the declarer pays a penalty",
+    Player: "1. Each player is dealt 13 cards\n2. One card is turned face-up to determine the wild card (joker)\n3. The remaining cards form the stock pile\n4. Players take turns drawing a card (from stock or discard pile) and discarding one\n5. Players arrange cards into sets and sequences\n6. A valid declaration requires at least two sequences, one of which must be pure (no jokers)\n7. When a player has valid combinations, they declare by discarding to the 'show' slot\n8. The player reveals their cards, organized into sets and sequences\n9. If valid, other players count points for unmatched cards\n10. If invalid, the declarer pays a penalty",
+    objective: 'Arrange all 13 cards into valid combinations of sets (three or four cards of the same rank) and sequences (three or more consecutive cards of the same suit). Declare first to win the hand.',
+    gameplay: "1. Each player is dealt 13 cards\n2. One card is turned face-up to determine the wild card (joker)\n3. The remaining cards form the stock pile\n4. Players take turns drawing a card (from stock or discard pile) and discarding one\n5. Players arrange cards into sets and sequences\n6. A valid declaration requires at least two sequences, one of which must be pure (no jokers)\n7. When a player has valid combinations, they declare by discarding to the 'show' slot\n8. The player reveals their cards, organized into sets and sequences\n9. If valid, other players count points for unmatched cards\n10. If invalid, the declarer pays a penalty",
+    keyRules: [
+      'Must have at least two sequences to declare',
+      'One sequence must be pure (no jokers)',
+      "A pure sequence can use a joker only if it's the actual card of that rank",
+      'Sets cannot have two cards of the same suit',
+      'Maximum of 4 cards in a set (since only 4 suits)',
+      'Aces can be high or low but not both (A-2-3 or Q-K-A valid, K-A-2 invalid)',
+      'Jokers can substitute for any card in sets and impure sequences',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Minimum Players: 2\nMaximum Players: 10\nOptimal Players: 4-6\nPartnerships: No',
+      deck: 'Type: Standard 52-card decks\nNumber of Decks: 2 for 2-6 players, 3 for 7+ players\nJokers: Yes (2 per deck plus one random card as wild)',
+      equipment: '2-3 standard 52-card decks\nJokers\nScore sheet for tracking points',
+      dealing: 'Cards per Player: 13\nDealing Pattern: Clockwise, one at a time\nWild card: One random card is turned up - all cards of this rank are wild',
+    },
+    turnFlow: "1. Each player is dealt 13 cards\n2. One card is turned face-up to determine the wild card (joker)\n3. The remaining cards form the stock pile\n4. Players take turns drawing a card (from stock or discard pile) and discarding one\n5. Players arrange cards into sets and sequences\n6. A valid declaration requires at least two sequences, one of which must be pure (no jokers)\n7. When a player has valid combinations, they declare by discarding to the 'show' slot\n8. The player reveals their cards, organized into sets and sequences\n9. If valid, other players count points for unmatched cards\n10. If invalid, the declarer pays a penalty",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'At start of round',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'See game rules.',
+      draw: 'From stock or discard pile',
+      discard: 'End of turn',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'Valid sets or sequences',
+      go_out: 'When all cards are in valid melds',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Arrange all 13 cards into valid combinations of sets (three or four cards of the same rank) and sequences (three or more consecutive cards of the same suit). Declare first to win the hand.',
+      "Turn-flow example: 1. Each player is dealt 13 cards\n2. One card is turned face-up to determine the wild card (joker)\n3. The remaining cards form the stock pile\n4. Players take turns drawing a card (from stock or discard pile) and discarding one\n5. Players arrange cards into sets and sequences\n6. A valid declaration requires at least two sequences, one of which must be pure (no jokers)\n7. When a player has valid combinations, they declare by discarding to the 'show' slot\n8. The player reveals their cards, organized into sets and sequences\n9. If valid, other players count points for unmatched cards\n10. If invalid, the declarer pays a penalty",
+      'Scoring example: After the winner declares rummy, all other players who have not packed count their hands for pay-off. After the winner declares rummy, all other players who have not packed count their hands for pay-off..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'indian-rummy.rules.objective',
+        title: 'Objective',
+        text: 'Arrange all 13 cards into valid combinations of sets (three or four cards of the same rank) and sequences (three or more consecutive cards of the same suit). Declare first to win the hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'indian-rummy.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Each player is dealt 13 cards\n2. One card is turned face-up to determine the wild card (joker)\n3. The remaining cards form the stock pile\n4. Players take turns drawing a card (from stock or discard pile) and discarding one\n5. Players arrange cards into sets and sequences\n6. A valid declaration requires at least two sequences, one of which must be pure (no jokers)\n7. When a player has valid combinations, they declare by discarding to the 'show' slot\n8. The player reveals their cards, organized into sets and sequences\n9. If valid, other players count points for unmatched cards\n10. If invalid, the declarer pays a penalty",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'indian-rummy.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 10\nOptimal Players: 4-6\nPartnerships: No',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'indian-rummy.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card decks\nNumber of Decks: 2 for 2-6 players, 3 for 7+ players\nJokers: Yes (2 per deck plus one random card as wild)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'indian-rummy.setup.equipment',
+        title: 'Equipment',
+        text: '2-3 standard 52-card decks\nJokers\nScore sheet for tracking points',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'indian-rummy.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 13\nDealing Pattern: Clockwise, one at a time\nWild card: One random card is turned up - all cards of this rank are wild',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'indian-rummy.score.win-condition',
+        title: 'Win condition',
+        text: 'After the winner declares rummy, all other players who have not packed count their hands for pay-off.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'indian-rummy.score.description',
+        title: 'Scoring',
+        text: 'After the winner declares rummy, all other players who have not packed count their hands for pay-off.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'indian-rummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must have at least two sequences to declare',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'indian-rummy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'One sequence must be pure (no jokers)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'indian-rummy.rules.key.3',
+        title: 'Key rule 3',
+        text: "A pure sequence can use a joker only if it's the actual card of that rank",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'indian-rummy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sets cannot have two cards of the same suit',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'indian-rummy.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Maximum of 4 cards in a set (since only 4 suits)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'indian-rummy.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Aces can be high or low but not both (A-2-3 or Q-K-A valid, K-A-2 invalid)',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'indian-rummy.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Jokers can substitute for any card in sets and impure sequences',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'indian-rummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'indian-rummy.rules.objective',
+          'indian-rummy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'indian-rummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'indian-rummy.setup.players',
+          'indian-rummy.setup.deck',
+          'indian-rummy.setup.equipment',
+          'indian-rummy.setup.dealing',
+        ],
+      },
+      {
+        id: 'indian-rummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'indian-rummy.rules.key.1',
+          'indian-rummy.rules.key.2',
+          'indian-rummy.rules.key.3',
+          'indian-rummy.rules.key.4',
+          'indian-rummy.rules.key.5',
+          'indian-rummy.rules.key.6',
+          'indian-rummy.rules.key.7',
+        ],
+      },
+      {
+        id: 'indian-rummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'indian-rummy.score.description',
+          'indian-rummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'indian-rummy.setup.dealing',
+        'indian-rummy.rules.objective',
+      ],
+      deal: [
+        'indian-rummy.rules.gameplay',
+      ],
+      play_card: [
+        'indian-rummy.rules.gameplay',
+      ],
+      draw: [
+        'indian-rummy.rules.gameplay',
+      ],
+      discard: [
+        'indian-rummy.rules.gameplay',
+      ],
+      meld: [
+        'indian-rummy.rules.gameplay',
+      ],
+      go_out: [
+        'indian-rummy.rules.gameplay',
+      ],
+    },
+  },
+}

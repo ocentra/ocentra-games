@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: '68d1cd8b-d888-477a-a30b-78cd6765544e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/gaigel/gaigelRules.asset',
+    gameId: 'gaigel',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Gaigel proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+    Player: 'Gaigel proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+    objective: 'The aim of the play is to take tricks containing valuable cards and to declare King-Ober marriages; the first team that reaches 101 or more points wins the round and must stop the play by calling Aus to claim the win.',
+    gameplay: 'Gaigel proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+    keyRules: [
+      'Out! (Schluss!): A player can stop the game midndhand if they believe their team has reached 101 points. If they are correct, they win. If they are wrong, the opponents win regardless of the final score.',
+      'Round outcome is resolved by the scoring method: Scoring summary: Points scored through tricks and marriage declarations.',
+      'Winning condition: First team to reach 101 points wins the round.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in two partnerships (North/South vs East/West).',
+      deck: '48 cards (WÃ¼rttemberg pattern). Two copies of Ace, 10, King, Ober, Unter, and 7 per suit.',
+      equipment: '48 cards (WÃ¼rttemberg pattern). Two copies of Ace, 10, King, Ober, Unter, and 7 per suit.',
+      dealing: 'Done counter-clockwise in batches of 3 then 2. The 21st card is turned face-up as the trump suit indicator.',
+    },
+    turnFlow: 'Gaigel proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+    moveValidityConditions: {
+      ante: 'Gaigel is a point-trick game and has no ante payment phase.',
+      deal: 'Dealer only at hand start using the agreed 3+2 packet pattern.',
+      reveal_market: 'Gaigel has no market reveal mechanic.',
+      buy_market: 'Cards are dealt and drawn from talon, never bought from market.',
+      buy_stock: 'Players draw by trick result; there is no stock purchase action.',
+      fold: 'Players must play one card per trick and cannot fold out of a hand.',
+      check: 'No betting rounds exist where checking would apply.',
+      call: 'Gaigel uses card-point scoring and has no call action.',
+      bet: 'No betting mechanic exists in the standard ruleset.',
+      raise: 'Gaigel has no raise action because there is no betting pot.',
+      declare: 'Only valid when holder can show the pair and the side has already won at least one trick.',
+      reveal_hand: 'Full hand reveal is not part of standard Gaigel gameplay.',
+      award_pot: 'System action at hand end after point count verification.',
+      play_card: 'Talon phase allows free play; strict phase requires follow suit, trump when void, and beat when possible.',
+      draw: 'Draw order starts with trick winner and proceeds in play order.',
+      discard: 'Cards are played to tricks; there is no separate discard action.',
+      pass: 'In Gaigel each player must contribute a card to every trick.',
+      bid: 'Gaigel does not use a bidding system.',
+      meld: 'Marriage points are handled through declaration, not persistent meld action.',
+      go_out: 'A hand ends by points and Aus declaration, not by emptying hand first.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: The aim of the play is to take tricks containing valuable cards and to declare King-Ober marriages; the first team that reaches 101 or more points wins the round and must stop the play by calling Aus to claim the win.',
+      'Turn-flow example: Gaigel proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+      'Scoring example: Points scored through tricks and marriage declarations. First team to 101 points wins the round. A side wins by correctly declaring Aus at 101 or more points; incorrect Aus loses double and overgaigeln can also cause a double loss..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'gaigel.rules.objective',
+        title: 'Objective',
+        text: 'The aim of the play is to take tricks containing valuable cards and to declare King-Ober marriages; the first team that reaches 101 or more points wins the round and must stop the play by calling Aus to claim the win.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gaigel.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Gaigel proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gaigel.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships (North/South vs East/West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gaigel.setup.deck',
+        title: 'Deck',
+        text: '48 cards (WÃ¼rttemberg pattern). Two copies of Ace, 10, King, Ober, Unter, and 7 per suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gaigel.setup.equipment',
+        title: 'Equipment',
+        text: '48 cards (WÃ¼rttemberg pattern). Two copies of Ace, 10, King, Ober, Unter, and 7 per suit.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gaigel.setup.dealing',
+        title: 'Deal',
+        text: 'Done counter-clockwise in batches of 3 then 2. The 21st card is turned face-up as the trump suit indicator.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gaigel.score.win-condition',
+        title: 'Win condition',
+        text: 'A side wins by correctly declaring Aus at 101 or more points; incorrect Aus loses double and overgaigeln can also cause a double loss.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gaigel.score.description',
+        title: 'Scoring',
+        text: 'Points scored through tricks and marriage declarations. First team to 101 points wins the round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gaigel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Out! (Schluss!): A player can stop the game midndhand if they believe their team has reached 101 points. If they are correct, they win. If they are wrong, the opponents win regardless of the final score.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gaigel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Points scored through tricks and marriage declarations.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gaigel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: First team to reach 101 points wins the round.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gaigel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gaigel.rules.objective',
+          'gaigel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gaigel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gaigel.setup.players',
+          'gaigel.setup.deck',
+          'gaigel.setup.equipment',
+          'gaigel.setup.dealing',
+        ],
+      },
+      {
+        id: 'gaigel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gaigel.rules.key.1',
+          'gaigel.rules.key.2',
+          'gaigel.rules.key.3',
+        ],
+      },
+      {
+        id: 'gaigel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gaigel.score.description',
+          'gaigel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gaigel.setup.dealing',
+        'gaigel.rules.objective',
+      ],
+      deal: [
+        'gaigel.rules.gameplay',
+      ],
+      declare: [
+        'gaigel.rules.gameplay',
+      ],
+      award_pot: [
+        'gaigel.rules.gameplay',
+      ],
+      play_card: [
+        'gaigel.rules.gameplay',
+      ],
+      draw: [
+        'gaigel.rules.gameplay',
+      ],
+    },
+  },
+}

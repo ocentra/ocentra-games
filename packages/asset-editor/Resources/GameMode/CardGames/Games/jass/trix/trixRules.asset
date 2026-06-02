@@ -1,0 +1,208 @@
+{
+  system: {
+    guid: 'd1032447-46ad-4bf9-84f6-4ad30b0c717a',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/trix/trixRules.asset',
+    gameId: 'trix',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Kingdom owner picks 1 of 5 contracts. Contracts: 1) Kâ™¥ = -75. 2) Queens = -25 each. 3) Diamonds = -10 each. 4) Tricks = -15 each. 5) Trix (shedding from Jacks up/down) = +200/+150/+100/+50.',
+    Player: 'Kingdom owner picks 1 of 5 contracts. Contracts: 1) Kâ™¥ = -75. 2) Queens = -25 each. 3) Diamonds = -10 each. 4) Tricks = -15 each. 5) Trix (shedding from Jacks up/down) = +200/+150/+100/+50.',
+    objective: 'Score points or avoid penalties across 20 deals (four kingdoms of five contracts each). The player with the highest total score after all deals wins.',
+    gameplay: 'Kingdom owner picks 1 of 5 contracts. Contracts: 1) Kâ™¥ = -75. 2) Queens = -25 each. 3) Diamonds = -10 each. 4) Tricks = -15 each. 5) Trix (shedding from Jacks up/down) = +200/+150/+100/+50.',
+    keyRules: [
+      '7â™¥ holder starts',
+      '5 contracts per kingdom',
+      'Each player has 1 kingdom',
+      'Doubling available on penalty cards',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: 'Standard 52. A(high)-2(low).',
+      equipment: 'Cards, score sheet',
+      dealing: '13 cards each. 7â™¥ holder owns first kingdom.',
+    },
+    turnFlow: 'Kingdom owner picks 1 of 5 contracts. Contracts: 1) Kâ™¥ = -75. 2) Queens = -25 each. 3) Diamonds = -10 each. 4) Tricks = -15 each. 5) Trix (shedding from Jacks up/down) = +200/+150/+100/+50.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score points or avoid penalties across 20 deals (four kingdoms of five contracts each). The player with the highest total score after all deals wins.',
+      'Turn-flow example: Kingdom owner picks 1 of 5 contracts. Contracts: 1) Kâ™¥ = -75. 2) Queens = -25 each. 3) Diamonds = -10 each. 4) Tricks = -15 each. 5) Trix (shedding from Jacks up/down) = +200/+150/+100/+50.',
+      'Scoring example: Contracts 1-4: Negative. Contract 5: Positive. Must play all 5 contracts once per kingdom. Highest positive score after 20 deals..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'trix.rules.objective',
+        title: 'Objective',
+        text: 'Score points or avoid penalties across 20 deals (four kingdoms of five contracts each). The player with the highest total score after all deals wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trix.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Kingdom owner picks 1 of 5 contracts. Contracts: 1) Kâ™¥ = -75. 2) Queens = -25 each. 3) Diamonds = -10 each. 4) Tricks = -15 each. 5) Trix (shedding from Jacks up/down) = +200/+150/+100/+50.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trix.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trix.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52. A(high)-2(low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trix.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trix.setup.dealing',
+        title: 'Deal',
+        text: '13 cards each. 7â™¥ holder owns first kingdom.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trix.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest positive score after 20 deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trix.score.description',
+        title: 'Scoring',
+        text: 'Contracts 1-4: Negative. Contract 5: Positive. Must play all 5 contracts once per kingdom.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trix.rules.key.1',
+        title: 'Key rule 1',
+        text: '7â™¥ holder starts',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'trix.rules.key.2',
+        title: 'Key rule 2',
+        text: '5 contracts per kingdom',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'trix.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each player has 1 kingdom',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'trix.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Doubling available on penalty cards',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trix.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trix.rules.objective',
+          'trix.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trix.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trix.setup.players',
+          'trix.setup.deck',
+          'trix.setup.equipment',
+          'trix.setup.dealing',
+        ],
+      },
+      {
+        id: 'trix.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trix.rules.key.1',
+          'trix.rules.key.2',
+          'trix.rules.key.3',
+          'trix.rules.key.4',
+        ],
+      },
+      {
+        id: 'trix.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trix.score.description',
+          'trix.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trix.setup.dealing',
+        'trix.rules.objective',
+      ],
+      play_card: [
+        'trix.rules.gameplay',
+      ],
+    },
+  },
+}

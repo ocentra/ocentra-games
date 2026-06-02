@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '410a8ca8-877d-4010-b171-9b8300ac77c0',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/ronda/rondaValidationFixtures.asset',
+    gameId: 'ronda',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ronda',
+    familyVariant: 'Capture / Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ronda.core-runtime-contracts',
+        title: 'Ronda Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ronda.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 12,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Ronda must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ronda.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ronda.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'announce',
+            supportedActionIds: [
+              'setup_round',
+              'ronda',
+              'tringa',
+              'capture',
+              'trail',
+            ],
+            explanation: 'Ronda must run setup_round first, then enter announce with the processed legal actions.',
+            linkedRuleIds: [
+              'ronda.setup.initial-deal',
+              'ronda.flow.announce',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'announce',
+            firstPlayableLegalActions: [
+              'ronda',
+              'tringa',
+            ],
+          },
+          {
+            id: 'ronda.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '41',
+            scoringDirection: 'high_wins',
+            targetScore: 41,
+            cardValues: {},
+            explanation: 'Ronda, tringa, caida, mesa, card majority.',
+            linkedRuleIds: [
+              'ronda.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ronda.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

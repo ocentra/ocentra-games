@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '95eaec83-d87c-4ede-93ef-dbb4d168d743',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/invented/mort-la-morte/mort-la-morteValidationFixtures.asset',
+    gameId: 'mort-la-morte',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mort-la-morte',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mort-la-morte.core-runtime-contracts',
+        title: 'Mort (La Morte) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mort-la-morte.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 5,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 45,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Mort (La Morte) must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mort-la-morte.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mort-la-morte.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'bid',
+              'accept',
+              'drop_out',
+            ],
+            explanation: 'Mort (La Morte) must run setup_round first, then enter bidding with the processed legal actions.',
+            linkedRuleIds: [
+              'mort-la-morte.setup.initial-deal',
+              'mort-la-morte.flow.bidding',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'bidding',
+            firstPlayableLegalActions: [
+              'bid',
+              'accept',
+              'drop_out',
+            ],
+          },
+          {
+            id: 'mort-la-morte.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '50',
+            scoringDirection: 'high_wins',
+            targetScore: 50,
+            cardValues: {},
+            explanation: 'Maker scores contract value if bid made; defenders score contract value if maker fails. Droppers: contract minus 1 if 0 tricks, else 0. Each trick worth 1. Game typically to 50 points or after a set number of deals.',
+            linkedRuleIds: [
+              'mort-la-morte.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mort-la-morte.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 5,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

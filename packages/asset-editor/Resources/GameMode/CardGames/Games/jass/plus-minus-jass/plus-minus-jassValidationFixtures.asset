@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: 'df9e6bda-aefa-4b59-b7f0-56130b5e3ca8',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/plus-minus-jass/plus-minus-jassValidationFixtures.asset',
+    gameId: 'plus-minus-jass',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'plus-minus-jass',
+    familyVariant: 'Jass',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'plus-minus-jass.core-runtime-contracts',
+        title: 'Plus-Minus Jass Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'plus-minus-jass.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 9,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Plus-Minus Jass must start by giving each active player 9 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'plus-minus-jass.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'plus-minus-jass.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Plus-Minus Jass must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'plus-minus-jass.setup.initial-deal',
+              'plus-minus-jass.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'plus-minus-jass.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '7',
+            scoringDirection: 'high_wins',
+            targetScore: 7,
+            cardValues: {},
+            explanation: 'Sticks only. Under 100 card points: most and least each score one stick. If someone takes 100 or more: only least points scores one stick. First to 7 sticks wins; if several reach 7 in same hand, continue until clear leader.',
+            linkedRuleIds: [
+              'plus-minus-jass.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'plus-minus-jass.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 9,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

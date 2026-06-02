@@ -1,0 +1,225 @@
+{
+  system: {
+    guid: '0b68a5a7-c9a5-4fcd-843c-13a6d6471af4',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/climbing/bao-huang/bao-huangRules.asset',
+    gameId: 'bao-huang',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Standard climbing rules: You must play the same number of cards as the leader, but of higher rank. If someone plays four 7s, you must play four 8s or higher. If you can't or won't play, you pass.",
+    Player: "Standard climbing rules: You must play the same number of cards as the leader, but of higher rank. If someone plays four 7s, you must play four 8s or higher. If you can't or won't play, you pass.",
+    objective: "Escape the hand. Points are awarded based on the order in which players finish. The Emperor's team wins if they finish in the top positions.",
+    gameplay: "Standard climbing rules: You must play the same number of cards as the leader, but of higher rank. If someone plays four 7s, you must play four 8s or higher. If you can't or won't play, you pass.",
+    keyRules: [
+      'Uprising (Zaofan): Before play, Commoners can declare an uprising if they have strong hands, doubling the stakes.',
+      'Tribute (Jin Gong): Losers of the previous round must give their highest cards to the winners at the start of the next round.',
+      'Emperor alone: If the Emperor holds both marked cards, they play against the other four alone for quadruple points.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '5 players. Team A: Emperor & Eunuch. Team B: Three Commoners.',
+      deck: "168 cards. Take four standard 52-card decks, remove all 3s, 4s, and 5s. Use 4 Red Jokers and 4 Black Jokers. One specific Red Joker is marked 'Emperor' and one specific Black Joker is marked 'Eunuch'.",
+      equipment: 'Special 168-card deck, score pad.',
+      dealing: 'Players draw cards one by one from a shuffled wall. Everyone receives 33 or 34 cards.',
+    },
+    turnFlow: "Standard climbing rules: You must play the same number of cards as the leader, but of higher rank. If someone plays four 7s, you must play four 8s or higher. If you can't or won't play, you pass.",
+    moveValidityConditions: {
+      ante: 'Bao Huang is a climbing game; no antes.',
+      deal: 'Deal is performed by dealer at start of round.',
+      reveal_market: 'No market; climbing game with hand only.',
+      buy_market: 'No buying from stock; only lead or follow.',
+      buy_stock: 'No stock purchase; play from hand only.',
+      fold: 'No folding; all players play each round.',
+      check: 'Use pass to skip; no check in climbing.',
+      call: 'No betting; point scoring only.',
+      bet: 'No money bets; rank-based scoring.',
+      raise: 'No raising; play combos or pass.',
+      declare: 'No separate declare; play reveals.',
+      reveal_hand: 'Hands shown when played; no reveal phase.',
+      award_pot: 'Scoring by points, not a pot.',
+      play_card: 'Must follow rank and count rules; pass to skip.',
+      draw: 'No draw; play from hand only.',
+      discard: 'Cards are played to table, not discarded.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'No bidding; Emperor and team are predetermined.',
+      meld: 'Climbing game; play combos, not melds.',
+      go_out: 'Round ends when one player empties hand.',
+    },
+    exampleHands: [
+      'Setup example: 34 card(s) per player.',
+      "Rule example: Escape the hand. Points are awarded based on the order in which players finish. The Emperor's team wins if they finish in the top positions.",
+      "Turn-flow example: Standard climbing rules: You must play the same number of cards as the leader, but of higher rank. If someone plays four 7s, you must play four 8s or higher. If you can't or won't play, you pass.",
+      'Scoring example: Points are based on finishing order (1st place through 5th place). Calculated per hand. Typically: 1st/2nd finish by Royals = +6 points. 1st/3rd = +4 points. If Commoners take 1st, the Royals lose points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bao-huang.rules.objective',
+        title: 'Objective',
+        text: "Escape the hand. Points are awarded based on the order in which players finish. The Emperor's team wins if they finish in the top positions.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bao-huang.rules.gameplay',
+        title: 'Turn flow',
+        text: "Standard climbing rules: You must play the same number of cards as the leader, but of higher rank. If someone plays four 7s, you must play four 8s or higher. If you can't or won't play, you pass.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bao-huang.setup.players',
+        title: 'Players',
+        text: '5 players. Team A: Emperor & Eunuch. Team B: Three Commoners.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bao-huang.setup.deck',
+        title: 'Deck',
+        text: "168 cards. Take four standard 52-card decks, remove all 3s, 4s, and 5s. Use 4 Red Jokers and 4 Black Jokers. One specific Red Joker is marked 'Emperor' and one specific Black Joker is marked 'Eunuch'.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bao-huang.setup.equipment',
+        title: 'Equipment',
+        text: 'Special 168-card deck, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bao-huang.setup.dealing',
+        title: 'Deal',
+        text: 'Players draw cards one by one from a shuffled wall. Everyone receives 33 or 34 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bao-huang.score.win-condition',
+        title: 'Win condition',
+        text: 'Calculated per hand. Typically: 1st/2nd finish by Royals = +6 points. 1st/3rd = +4 points. If Commoners take 1st, the Royals lose points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bao-huang.score.description',
+        title: 'Scoring',
+        text: 'Points are based on finishing order (1st place through 5th place).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bao-huang.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uprising (Zaofan): Before play, Commoners can declare an uprising if they have strong hands, doubling the stakes.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bao-huang.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tribute (Jin Gong): Losers of the previous round must give their highest cards to the winners at the start of the next round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bao-huang.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Emperor alone: If the Emperor holds both marked cards, they play against the other four alone for quadruple points.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bao-huang.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bao-huang.rules.objective',
+          'bao-huang.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bao-huang.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bao-huang.setup.players',
+          'bao-huang.setup.deck',
+          'bao-huang.setup.equipment',
+          'bao-huang.setup.dealing',
+        ],
+      },
+      {
+        id: 'bao-huang.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bao-huang.rules.key.1',
+          'bao-huang.rules.key.2',
+          'bao-huang.rules.key.3',
+        ],
+      },
+      {
+        id: 'bao-huang.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bao-huang.score.description',
+          'bao-huang.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bao-huang.setup.dealing',
+        'bao-huang.rules.objective',
+      ],
+      play_card: [
+        'bao-huang.rules.gameplay',
+      ],
+      pass: [
+        'bao-huang.rules.gameplay',
+      ],
+      deal_34_cards: [
+        'bao-huang.rules.gameplay',
+      ],
+      declare_uprising: [
+        'bao-huang.rules.gameplay',
+      ],
+      stay_silent: [
+        'bao-huang.rules.gameplay',
+      ],
+      lead_single: [
+        'bao-huang.rules.gameplay',
+      ],
+      lead_set: [
+        'bao-huang.rules.gameplay',
+      ],
+      follow_with_higher: [
+        'bao-huang.rules.gameplay',
+      ],
+      reveal_eunuch: [
+        'bao-huang.rules.gameplay',
+      ],
+      give_high_cards: [
+        'bao-huang.rules.gameplay',
+      ],
+    },
+  },
+}

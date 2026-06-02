@@ -1,0 +1,211 @@
+{
+  system: {
+    guid: 'eee245ad-74c9-4acb-b65b-b224672baf8a',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/marias/mariasRules.asset',
+    gameId: 'marias',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Must follow suit.\n2. If void, MUST play a trump card.\n3. **Must Overtake**: You must play a card higher than the current winning card if you have it.',
+    Player: '1. Must follow suit.\n2. If void, MUST play a trump card.\n3. **Must Overtake**: You must play a card higher than the current winning card if you have it.',
+    objective: 'Score 100+ points (Standard) or fulfill a special contract.',
+    gameplay: '1. Must follow suit.\n2. If void, MUST play a trump card.\n3. **Must Overtake**: You must play a card higher than the current winning card if you have it.',
+    keyRules: [
+      'Must follow suit. If void in led suit, must play a trump.',
+      'Must overtake: play a card higher than the current winning card when possible (even if partner is winning).',
+      'Declarer plays alone against the two defenders, who form a team.',
+      "Contracts (Suit, Betl, Durch, Open Betl, Open Durch) are chosen by bidding; forehand must name a contract, others say 'good' or 'bad' to take over.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: "3 players. One is the 'Declarer' (Solo), playing against the other two (Defenders).",
+      deck: '32 cards: Ace, 10, King, Queen, Jack, 9, 8, 7.',
+      equipment: '32 cards: Ace, 10, King, Queen, Jack, 9, 8, 7.',
+      dealing: "Dealer deals 12-10-10 cards or 7-5-5-5-5-5. The declarer gets a 'Talon' (2 cards) to discard.",
+    },
+    turnFlow: '1. Must follow suit.\n2. If void, MUST play a trump card.\n3. **Must Overtake**: You must play a card higher than the current winning card if you have it.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: "Must follow suit. If void in led suit, must play a trump. If possible, must play a card that beats the current winning card (including partner's).",
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: "Forehand must play if no one says 'bad'. Contracts in ascending order: Suit, Betl, Durch, Open Betl, Open Durch.",
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Score 100+ points (Standard) or fulfill a special contract.',
+      'Turn-flow example: 1. Must follow suit.\n2. If void, MUST play a trump card.\n3. **Must Overtake**: You must play a card higher than the current winning card if you have it.',
+      'Scoring example: Points or match rules. In suit contract: take more card points than the two defenders together (100+ with marriage, or majority of 90 card points plus last trick and marriages). In Betl: lose every trick. In Durch: win every trick..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'marias.rules.objective',
+        title: 'Objective',
+        text: 'Score 100+ points (Standard) or fulfill a special contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'marias.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must follow suit.\n2. If void, MUST play a trump card.\n3. **Must Overtake**: You must play a card higher than the current winning card if you have it.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'marias.setup.players',
+        title: 'Players',
+        text: "3 players. One is the 'Declarer' (Solo), playing against the other two (Defenders).",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'marias.setup.deck',
+        title: 'Deck',
+        text: '32 cards: Ace, 10, King, Queen, Jack, 9, 8, 7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'marias.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards: Ace, 10, King, Queen, Jack, 9, 8, 7.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'marias.setup.dealing',
+        title: 'Deal',
+        text: "Dealer deals 12-10-10 cards or 7-5-5-5-5-5. The declarer gets a 'Talon' (2 cards) to discard.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'marias.score.win-condition',
+        title: 'Win condition',
+        text: 'In suit contract: take more card points than the two defenders together (100+ with marriage, or majority of 90 card points plus last trick and marriages). In Betl: lose every trick. In Durch: win every trick.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'marias.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'marias.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit. If void in led suit, must play a trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'marias.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must overtake: play a card higher than the current winning card when possible (even if partner is winning).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'marias.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Declarer plays alone against the two defenders, who form a team.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'marias.rules.key.4',
+        title: 'Key rule 4',
+        text: "Contracts (Suit, Betl, Durch, Open Betl, Open Durch) are chosen by bidding; forehand must name a contract, others say 'good' or 'bad' to take over.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'marias.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'marias.rules.objective',
+          'marias.rules.gameplay',
+        ],
+      },
+      {
+        id: 'marias.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'marias.setup.players',
+          'marias.setup.deck',
+          'marias.setup.equipment',
+          'marias.setup.dealing',
+        ],
+      },
+      {
+        id: 'marias.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'marias.rules.key.1',
+          'marias.rules.key.2',
+          'marias.rules.key.3',
+          'marias.rules.key.4',
+        ],
+      },
+      {
+        id: 'marias.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'marias.score.description',
+          'marias.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'marias.setup.dealing',
+        'marias.rules.objective',
+      ],
+      play_card: [
+        'marias.rules.gameplay',
+      ],
+      bid: [
+        'marias.rules.gameplay',
+      ],
+    },
+  },
+}

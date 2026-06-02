@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: 'f80a8340-2e29-44ef-8ade-5986a5982585',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/lansquenet/lansquenetValidationFixtures.asset',
+    gameId: 'lansquenet',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'lansquenet',
+    familyVariant: 'Gambling / Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'lansquenet.core-runtime-contracts',
+        title: 'Lansquenet Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'lansquenet.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 20,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 2,
+            expectedVisibility: 'face_up',
+            explanation: 'Lansquenet must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'lansquenet.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'lansquenet.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'place_bets',
+            supportedActionIds: [
+              'setup_round',
+              'bet_player',
+              'bet_banker',
+              'reveal',
+              'resolve_tie',
+              'continue',
+              'draw_card',
+              'pay_winners',
+              'collect_losers',
+            ],
+            explanation: 'Lansquenet must run setup_round first, then enter place_bets with the processed legal actions.',
+            linkedRuleIds: [
+              'lansquenet.setup.initial-deal',
+              'lansquenet.flow.place_bets',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'place_bets',
+            firstPlayableLegalActions: [
+              'bet_player',
+              'bet_banker',
+            ],
+          },
+          {
+            id: 'lansquenet.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: "If the Player's Card rank appears first in the draw, Player bettors win 1:1. If the Banker's Card rank appears first, Banker wins all bets.",
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Even money payouts. No complex scoringâ€”pure win/lose on each bet.',
+            linkedRuleIds: [
+              'lansquenet.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'lansquenet.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 20,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

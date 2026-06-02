@@ -1,0 +1,226 @@
+{
+  system: {
+    guid: '58f6966a-4ac4-4cff-ae0e-b823f71cc269',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/russian-poker/russian-pokerRules.asset',
+    gameId: 'russian-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Ante. 2. 5 cards each. 3. Player: play or fold. 4. Optional: exchange, buy 6th, insure. 5. Dealer reveals. Qualify? 6. Compare. Payout table. Two combinations from 5 or 6 cards paid if different.',
+    Player: '1. Ante. 2. 5 cards each. 3. Player: play or fold. 4. Optional: exchange, buy 6th, insure. 5. Dealer reveals. Qualify? 6. Compare. Payout table. Two combinations from 5 or 6 cards paid if different.',
+    objective: 'Beat dealer. Dealer qualifies A-K+. If dealer fails, bets cancelled. Payout if player wins.',
+    gameplay: '1. Ante. 2. 5 cards each. 3. Player: play or fold. 4. Optional: exchange, buy 6th, insure. 5. Dealer reveals. Qualify? 6. Compare. Payout table. Two combinations from 5 or 6 cards paid if different.',
+    keyRules: [
+      'Dealer must qualify A-K+; else push.',
+      'Two different combinations paid (max 2).',
+      'Exchange/buy 6th options.',
+      'Payout table: Royal 100:1, SF 50:1, etc.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Dealer (house) + up to 6 players (boxes).',
+      deck: 'A single standard 52-card pack is used; no jokers.',
+      equipment: 'Table. Cards.',
+      dealing: '5 each. Dealer qualifies A-K+.',
+    },
+    turnFlow: '1. Ante. 2. 5 cards each. 3. Player: play or fold. 4. Optional: exchange, buy 6th, insure. 5. Dealer reveals. Qualify? 6. Compare. Payout table. Two combinations from 5 or 6 cards paid if different.',
+    moveValidityConditions: {
+      ante: 'Allowed only in phases that list this action as legal; typically at start of hand.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Allowed during betting when player chooses to leave the hand.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Beat dealer. Dealer qualifies A-K+. If dealer fails, bets cancelled. Payout if player wins.',
+      'Turn-flow example: 1. Ante. 2. 5 cards each. 3. Player: play or fold. 4. Optional: exchange, buy 6th, insure. 5. Dealer reveals. Qualify? 6. Compare. Payout table. Two combinations from 5 or 6 cards paid if different.',
+      'Scoring example: Payout: Royal 100:1, SF 50:1, 4K 20:1, FH 7:1, Flush 5:1, Straight 4:1, 3K 3:1, 2P/1P/AK 1:1. Two combos paid. Beat dealer. Collect payout..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'russian-poker.rules.objective',
+        title: 'Objective',
+        text: 'Beat dealer. Dealer qualifies A-K+. If dealer fails, bets cancelled. Payout if player wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'russian-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Ante. 2. 5 cards each. 3. Player: play or fold. 4. Optional: exchange, buy 6th, insure. 5. Dealer reveals. Qualify? 6. Compare. Payout table. Two combinations from 5 or 6 cards paid if different.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'russian-poker.setup.players',
+        title: 'Players',
+        text: 'Dealer (house) + up to 6 players (boxes).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'russian-poker.setup.deck',
+        title: 'Deck',
+        text: 'A single standard 52-card pack is used; no jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'russian-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Table. Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'russian-poker.setup.dealing',
+        title: 'Deal',
+        text: '5 each. Dealer qualifies A-K+.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'russian-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Beat dealer. Collect payout.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'russian-poker.score.description',
+        title: 'Scoring',
+        text: 'Payout: Royal 100:1, SF 50:1, 4K 20:1, FH 7:1, Flush 5:1, Straight 4:1, 3K 3:1, 2P/1P/AK 1:1. Two combos paid.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'russian-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dealer must qualify A-K+; else push.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'russian-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two different combinations paid (max 2).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'russian-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Exchange/buy 6th options.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'russian-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Payout table: Royal 100:1, SF 50:1, etc.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'russian-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'russian-poker.rules.objective',
+          'russian-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'russian-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'russian-poker.setup.players',
+          'russian-poker.setup.deck',
+          'russian-poker.setup.equipment',
+          'russian-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'russian-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'russian-poker.rules.key.1',
+          'russian-poker.rules.key.2',
+          'russian-poker.rules.key.3',
+          'russian-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'russian-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'russian-poker.score.description',
+          'russian-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'russian-poker.setup.dealing',
+        'russian-poker.rules.objective',
+      ],
+      ante: [
+        'russian-poker.rules.gameplay',
+      ],
+      deal: [
+        'russian-poker.rules.gameplay',
+      ],
+      fold: [
+        'russian-poker.rules.gameplay',
+      ],
+      play: [
+        'russian-poker.rules.gameplay',
+      ],
+      exchange: [
+        'russian-poker.rules.gameplay',
+      ],
+      buy_6th: [
+        'russian-poker.rules.gameplay',
+      ],
+      reveal: [
+        'russian-poker.rules.gameplay',
+      ],
+    },
+  },
+}

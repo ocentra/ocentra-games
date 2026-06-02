@@ -20,12 +20,45 @@ describe('commercial asset policy', () => {
     ).toContain('commercial');
   });
 
-  it('flags commercial card folders by path', () => {
+  it('allows path-only commercial checks to defer until asset data is available', () => {
     expect(
       getCommercialAssetViolation(
         'Resources/GameMode/CardGames/Cards/Whot 54/whot_triangles_1.asset',
       ),
-    ).toContain('must not exist');
+    ).toBeNull();
+  });
+
+  it('allows explicit commercial placeholder deck assets', () => {
+    expect(
+      getCommercialAssetViolation(
+        'Resources/GameMode/CardGames/Decks/Whot 54.asset',
+        'Deck',
+        {
+          commercialPlaceholderOnly: true,
+          supportedTriples: [
+            {
+              deckType: 'Whot 54',
+              suitSet: 'Whot',
+              rankSet: 'Whot',
+            },
+          ],
+        },
+      ),
+    ).toBeNull();
+  });
+
+  it('flags commercial card folders without the placeholder marker', () => {
+    expect(
+      getCommercialAssetViolation(
+        'Resources/GameMode/CardGames/Cards/Whot 54/whot_triangles_1.asset',
+        'Card',
+        {
+          rankingAsset: {
+            path: 'Resources/GameMode/CardGames/CardRanking/whot_54.asset',
+          },
+        },
+      ),
+    ).toContain('commercial');
   });
 
   it('does not flag safe shared-family assets', () => {

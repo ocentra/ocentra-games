@@ -1,0 +1,218 @@
+{
+  system: {
+    guid: '013db5d9-b375-4857-b287-de466d753f0d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/zsirozas/zsirozasRules.asset',
+    gameId: 'zsirozas',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Lead any card. Win by playing SAME RANK as led card (last match wins). Seven = WILD (matches any led). 'Greasing': winner can extend trick by leading again. A=10pts, 10=10pts. Total=80. 40+ wins. Tie: last trick winner wins.",
+    Player: "Lead any card. Win by playing SAME RANK as led card (last match wins). Seven = WILD (matches any led). 'Greasing': winner can extend trick by leading again. A=10pts, 10=10pts. Total=80. 40+ wins. Tie: last trick winner wins.",
+    objective: "Capture the majority of the 80 card-points in the pack: aces and tens (zsír, 'grease') count 10 points each; win a hand by taking 40 or more of these points.",
+    gameplay: "Lead any card. Win by playing SAME RANK as led card (last match wins). Seven = WILD (matches any led). 'Greasing': winner can extend trick by leading again. A=10pts, 10=10pts. Total=80. 40+ wins. Tie: last trick winner wins.",
+    keyRules: [
+      'Suits irrelevant',
+      'Match rank to win (last wins)',
+      'Sevens are wild',
+      'Greasing extends tricks',
+      'A=10, 10=10, total 80',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: '32 Hungarian cards (A-K-Felső-Alsó-10-9-8-7). 4 suits ignored.',
+      equipment: 'Cards',
+      dealing: '2p: 4 each + stock. 4p: 8 each.',
+    },
+    turnFlow: "Lead any card. Win by playing SAME RANK as led card (last match wins). Seven = WILD (matches any led). 'Greasing': winner can extend trick by leading again. A=10pts, 10=10pts. Total=80. 40+ wins. Tie: last trick winner wins.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'Drawing is done automatically after each trick (winner first, then in turn to 4 cards); not a separate player action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Capture the majority of the 80 card-points in the pack: aces and tens (zsír, 'grease') count 10 points each; win a hand by taking 40 or more of these points.",
+      "Turn-flow example: Lead any card. Win by playing SAME RANK as led card (last match wins). Seven = WILD (matches any led). 'Greasing': winner can extend trick by leading again. A=10pts, 10=10pts. Total=80. 40+ wins. Tie: last trick winner wins.",
+      "Scoring example: 40-70=1pt. All 80 (not all cards)=2pts ('kopasz'). All 80 + all cards=3pts ('csupasz'). Capture 40+ of 80 'zsír' points (Aces + Tens)..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'zsirozas.rules.objective',
+        title: 'Objective',
+        text: "Capture the majority of the 80 card-points in the pack: aces and tens (zsír, 'grease') count 10 points each; win a hand by taking 40 or more of these points.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'zsirozas.rules.gameplay',
+        title: 'Turn flow',
+        text: "Lead any card. Win by playing SAME RANK as led card (last match wins). Seven = WILD (matches any led). 'Greasing': winner can extend trick by leading again. A=10pts, 10=10pts. Total=80. 40+ wins. Tie: last trick winner wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'zsirozas.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'zsirozas.setup.deck',
+        title: 'Deck',
+        text: '32 Hungarian cards (A-K-Felső-Alsó-10-9-8-7). 4 suits ignored.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'zsirozas.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'zsirozas.setup.dealing',
+        title: 'Deal',
+        text: '2p: 4 each + stock. 4p: 8 each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'zsirozas.score.win-condition',
+        title: 'Win condition',
+        text: "Capture 40+ of 80 'zsír' points (Aces + Tens).",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'zsirozas.score.description',
+        title: 'Scoring',
+        text: "40-70=1pt. All 80 (not all cards)=2pts ('kopasz'). All 80 + all cards=3pts ('csupasz').",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'zsirozas.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Suits irrelevant',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'zsirozas.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Match rank to win (last wins)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'zsirozas.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Sevens are wild',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'zsirozas.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Greasing extends tricks',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'zsirozas.rules.key.5',
+        title: 'Key rule 5',
+        text: 'A=10, 10=10, total 80',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'zsirozas.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'zsirozas.rules.objective',
+          'zsirozas.rules.gameplay',
+        ],
+      },
+      {
+        id: 'zsirozas.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'zsirozas.setup.players',
+          'zsirozas.setup.deck',
+          'zsirozas.setup.equipment',
+          'zsirozas.setup.dealing',
+        ],
+      },
+      {
+        id: 'zsirozas.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'zsirozas.rules.key.1',
+          'zsirozas.rules.key.2',
+          'zsirozas.rules.key.3',
+          'zsirozas.rules.key.4',
+          'zsirozas.rules.key.5',
+        ],
+      },
+      {
+        id: 'zsirozas.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'zsirozas.score.description',
+          'zsirozas.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'zsirozas.setup.dealing',
+        'zsirozas.rules.objective',
+      ],
+      play_card: [
+        'zsirozas.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -69,7 +69,7 @@ export const PLAYER_HUB_QUICK_ACTION_ORDER: PlayerHubQuickActionId[] = [
 export const DEFAULT_PLAYER_HUB_PAGE_SVG_CONTROLS: PlayerHubPageSvgControls = {
   header: {
     title: 'Player Hub',
-    subtitle: 'Your private player profile, settings, progress, matches, inventory, rewards, and account controls.',
+    subtitle: 'Your private player profile, progress, matches, inventory, rewards, and account controls.',
     statusLabel: 'Account hub',
     showSubtitle: false,
   },
@@ -87,7 +87,7 @@ export const DEFAULT_PLAYER_HUB_PAGE_SVG_CONTROLS: PlayerHubPageSvgControls = {
     { id: 'play', label: 'Play', enabled: true },
     { id: 'lobby', label: 'Matches', enabled: true },
     { id: 'shop', label: 'Shop', enabled: true },
-    { id: 'settings', label: 'Account', enabled: true },
+    { id: 'settings', label: 'Settings', enabled: true },
   ],
   defaultTab: 'overview',
   emptyStates: {
@@ -108,8 +108,8 @@ export const DEFAULT_PLAYER_HUB_PAGE_SVG_CONTROLS: PlayerHubPageSvgControls = {
     },
     ai: {
       title: 'AI setup is ready to configure',
-      body: 'Cloud keys, local endpoints, browser models, and inference defaults are managed from Player Hub.',
-      actionLabel: 'Open AI Setup',
+      body: 'Saved AI runtime status is summarized here. Provider, local endpoint, browser model, and inference defaults open in Settings.',
+      actionLabel: 'Open Settings',
     },
     competition: {
       title: 'No event tickets or tournament passes yet',
@@ -119,16 +119,16 @@ export const DEFAULT_PLAYER_HUB_PAGE_SVG_CONTROLS: PlayerHubPageSvgControls = {
     inventory: {
       title: 'No owned items yet',
       body: 'Decks, cosmetics, badges, tickets, and passes you own will appear here after they are earned or granted.',
-      actionLabel: 'Open Shop',
+      actionLabel: 'View Inventory',
     },
     rewards: {
       title: 'No reward history yet',
       body: 'Daily rewards, badges, achievements, and competition prizes will appear here when they are earned.',
-      actionLabel: 'Open Shop',
+      actionLabel: 'View Rewards',
     },
     account: {
       title: 'Account controls live here',
-      body: 'Profile preferences, notification settings, wallet status, AI settings, API settings, local runtime choices, and privacy controls belong inside Player Hub.',
+      body: 'Profile-safe account controls stay in Player Hub. Device, provider, API, local runtime, and privacy settings open in Settings.',
       actionLabel: 'Manage Account',
     },
   },

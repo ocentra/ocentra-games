@@ -1,0 +1,211 @@
+{
+  system: {
+    guid: '8308cb73-8936-4efe-81fe-65e407dff14f',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/manillen/manillenRules.asset',
+    gameId: 'manillen',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Player to dealer's left leads. Must follow suit if able. If an opponent is winning, you must beat their card if possible when following suit. If void, must trump if possible (unless partner is winning).",
+    Player: "Player to dealer's left leads. Must follow suit if able. If an opponent is winning, you must beat their card if possible when following suit. If void, must trump if possible (unless partner is winning).",
+    objective: "Be the first team to collect 101 points or more. One game to 101 is called a 'boam' (tree).",
+    gameplay: "Player to dealer's left leads. Must follow suit if able. If an opponent is winning, you must beat their card if possible when following suit. If void, must trump if possible (unless partner is winning).",
+    keyRules: [
+      'Must follow suit if able. If opponent is winning, must beat their card when following suit or overtrump when void; if partner is winning, no obligation to beat or trump.',
+      'Undertrumpping is illegal (cannot play a lower trump than the one winning the trick unless only small trumps left).',
+      "Dealer chooses trump (or no trump for double); no bidding. Dealer's partner must not look at cards before trump is chosen.",
+      'First team to 101 points wins one boam. Card points: 10=5, A=4, K=3, Q=2, J=1; 9/8/7=0. Team with more points in tricks scores (total minus 30); doubles apply for no trump, Ik ga mee, tie, or all tricks.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in fixed partnerships, sitting across from each other. Variations exist for 2 and 6 players.',
+      deck: '32 cards (7, 8, 9, 10, Jack, Queen, King, Ace in each suit). Ranking: 10 (Manille) > Ace > King > Queen > Jack > 9 > 8 > 7.',
+      equipment: '32 cards (7, 8, 9, 10, Jack, Queen, King, Ace in each suit). Ranking: 10 (Manille) > Ace > King > Queen > Jack > 9 > 8 > 7.',
+      dealing: "To determine first dealer: each player takes a pile of cards; highest bottom card deals. Dealer shuffles (max twice), player to dealer's right cuts. Deal clockwise in batches of 3-2-3 (8 cards each). Dealer's partner must NOT look at cards before trump is chosen.",
+    },
+    turnFlow: "Player to dealer's left leads. Must follow suit if able. If an opponent is winning, you must beat their card if possible when following suit. If void, must trump if possible (unless partner is winning).",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Follow suit when able. When opponent leads or wins: beat when following suit, or overtrump when void. When partner is winning: may play any legal card. No undertrumpping.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      "Rule example: Be the first team to collect 101 points or more. One game to 101 is called a 'boam' (tree).",
+      "Turn-flow example: Player to dealer's left leads. Must follow suit if able. If an opponent is winning, you must beat their card if possible when following suit. If void, must trump if possible (unless partner is winning).",
+      'Scoring example: Each team counts card points in tricks won. Team with more points scores (their total minus 30); doubles apply (no trump, Ik ga mee, Ik ga tegen, tie, or all tricks). First team to 101 or more wins the boam. First team to reach 101 points or more wins one boam (game). Tournament play is often best of three boams..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'manillen.rules.objective',
+        title: 'Objective',
+        text: "Be the first team to collect 101 points or more. One game to 101 is called a 'boam' (tree).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'manillen.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's left leads. Must follow suit if able. If an opponent is winning, you must beat their card if possible when following suit. If void, must trump if possible (unless partner is winning).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'manillen.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships, sitting across from each other. Variations exist for 2 and 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'manillen.setup.deck',
+        title: 'Deck',
+        text: '32 cards (7, 8, 9, 10, Jack, Queen, King, Ace in each suit). Ranking: 10 (Manille) > Ace > King > Queen > Jack > 9 > 8 > 7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'manillen.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards (7, 8, 9, 10, Jack, Queen, King, Ace in each suit). Ranking: 10 (Manille) > Ace > King > Queen > Jack > 9 > 8 > 7.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'manillen.setup.dealing',
+        title: 'Deal',
+        text: "To determine first dealer: each player takes a pile of cards; highest bottom card deals. Dealer shuffles (max twice), player to dealer's right cuts. Deal clockwise in batches of 3-2-3 (8 cards each). Dealer's partner must NOT look at cards before trump is chosen.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'manillen.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach 101 points or more wins one boam (game). Tournament play is often best of three boams.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'manillen.score.description',
+        title: 'Scoring',
+        text: 'Each team counts card points in tricks won. Team with more points scores (their total minus 30); doubles apply (no trump, Ik ga mee, Ik ga tegen, tie, or all tricks). First team to 101 or more wins the boam.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'manillen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if able. If opponent is winning, must beat their card when following suit or overtrump when void; if partner is winning, no obligation to beat or trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'manillen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Undertrumpping is illegal (cannot play a lower trump than the one winning the trick unless only small trumps left).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'manillen.rules.key.3',
+        title: 'Key rule 3',
+        text: "Dealer chooses trump (or no trump for double); no bidding. Dealer's partner must not look at cards before trump is chosen.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'manillen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First team to 101 points wins one boam. Card points: 10=5, A=4, K=3, Q=2, J=1; 9/8/7=0. Team with more points in tricks scores (total minus 30); doubles apply for no trump, Ik ga mee, tie, or all tricks.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'manillen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'manillen.rules.objective',
+          'manillen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'manillen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'manillen.setup.players',
+          'manillen.setup.deck',
+          'manillen.setup.equipment',
+          'manillen.setup.dealing',
+        ],
+      },
+      {
+        id: 'manillen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'manillen.rules.key.1',
+          'manillen.rules.key.2',
+          'manillen.rules.key.3',
+          'manillen.rules.key.4',
+        ],
+      },
+      {
+        id: 'manillen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'manillen.score.description',
+          'manillen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'manillen.setup.dealing',
+        'manillen.rules.objective',
+      ],
+      play_card: [
+        'manillen.rules.gameplay',
+      ],
+      declare_trump: [
+        'manillen.rules.gameplay',
+      ],
+    },
+  },
+}

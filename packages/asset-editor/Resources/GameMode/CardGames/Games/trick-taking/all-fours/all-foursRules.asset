@@ -1,0 +1,236 @@
+{
+  system: {
+    guid: '2ee851d7-c9ff-4b41-a625-9c9edfd1e752',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/all-foursRules.asset',
+    gameId: 'all-fours',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'After six cards each and a turned trump indicator, eldest hand may stand or beg. If begging is accepted, dealer runs three more cards each and turns again until trump suit changes. In play, highest trump wins a trick; if no trump is played, highest card of the led suit wins. Players with the led suit may either follow suit or play trump, but cannot throw a non-trump card of another suit when they could follow. Score hand points in order High, Low, Jack, Game; first side to target wins the game.',
+    Player: 'After six cards each and a turned trump indicator, eldest hand may stand or beg. If begging is accepted, dealer runs three more cards each and turns again until trump suit changes. In play, highest trump wins a trick; if no trump is played, highest card of the led suit wins. Players with the led suit may either follow suit or play trump, but cannot throw a non-trump card of another suit when they could follow. Score hand points in order High, Low, Jack, Game; first side to target wins the game.',
+    objective: 'Reach the target score by collecting High, Low, Jack, and Game points each hand.',
+    gameplay: 'After six cards each and a turned trump indicator, eldest hand may stand or beg. If begging is accepted, dealer runs three more cards each and turns again until trump suit changes. In play, highest trump wins a trick; if no trump is played, highest card of the led suit wins. Players with the led suit may either follow suit or play trump, but cannot throw a non-trump card of another suit when they could follow. Score hand points in order High, Low, Jack, Game; first side to target wins the game.',
+    keyRules: [
+      'High: point to side originally holding highest trump dealt.',
+      'Low: point to side originally holding lowest trump dealt.',
+      'Jack: point if your side wins trick containing jack of trumps (hang-jack variants award extra on capture).',
+      'Game: point to side with higher trick-card value total (A=4, K=3, Q=2, J=1, 10=10).',
+      'Scores are pegged in fixed order High, Low, Jack, Game to resolve close finishes.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '2-4 players; with 4, fixed partnerships across the table.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Deck and score track.',
+      dealing: 'Deal six cards to each player, then turn one card up for provisional trumps.',
+    },
+    turnFlow: 'After six cards each and a turned trump indicator, eldest hand may stand or beg. If begging is accepted, dealer runs three more cards each and turns again until trump suit changes. In play, highest trump wins a trick; if no trump is played, highest card of the led suit wins. Players with the led suit may either follow suit or play trump, but cannot throw a non-trump card of another suit when they could follow. Score hand points in order High, Low, Jack, Game; first side to target wins the game.',
+    moveValidityConditions: {
+      ante: 'All Fours uses Beg/Stand and point scoring; no ante.',
+      deal: 'Dealer only during deal and dealer-response phases.',
+      reveal_market: 'Dealer only after deal or run-cards packet.',
+      buy_market: 'Trump is set by turn-up and Beg/Stand; no market purchase.',
+      buy_stock: 'Six cards dealt; no draw from stock during play.',
+      fold: 'Trick-taking; all must play each trick. No fold.',
+      check: 'Dealer-response phase only.',
+      call: 'Points for High, Low, Jack, Game; no betting call.',
+      bet: 'Scoring is by card points, not bets.',
+      raise: 'No betting rounds in All Fours.',
+      declare: 'Points awarded at hand end; no declare phase.',
+      reveal_hand: 'Cards played to tricks; no showdown reveal.',
+      award_pot: 'System-only at hand end.',
+      play_card: 'Must follow led suit or play trump if possible; cannot discard off-suit non-trump when holding led suit.',
+      draw: 'Six cards dealt; no draw during trick play.',
+      discard: 'Cards are played to tricks, not to a discard pile.',
+      pass: 'Used by eldest hand in beg-or-stand phase.',
+      bid: 'Used by eldest hand in beg-or-stand phase.',
+      meld: 'Trick-taking; no melds. Points are High, Low, Jack, Game.',
+      go_out: 'Hand ends when all tricks are played; no go-out declaration.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Reach the target score by collecting High, Low, Jack, and Game points each hand.',
+      'Turn-flow example: After six cards each and a turned trump indicator, eldest hand may stand or beg. If begging is accepted, dealer runs three more cards each and turns again until trump suit changes. In play, highest trump wins a trick; if no trump is played, highest card of the led suit wins. Players with the led suit may either follow suit or play trump, but cannot throw a non-trump card of another suit when they could follow. Score hand points in order High, Low, Jack, Game; first side to target wins the game.',
+      'Scoring example: Each hand can award up to four core points: High, Low, Jack, and Game. First side to 14 points in this base profile wins; other targets are variation-specific..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'all-fours.rules.objective',
+        title: 'Objective',
+        text: 'Reach the target score by collecting High, Low, Jack, and Game points each hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'all-fours.rules.gameplay',
+        title: 'Turn flow',
+        text: 'After six cards each and a turned trump indicator, eldest hand may stand or beg. If begging is accepted, dealer runs three more cards each and turns again until trump suit changes. In play, highest trump wins a trick; if no trump is played, highest card of the led suit wins. Players with the led suit may either follow suit or play trump, but cannot throw a non-trump card of another suit when they could follow. Score hand points in order High, Low, Jack, Game; first side to target wins the game.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fours.setup.players',
+        title: 'Players',
+        text: '2-4 players; with 4, fixed partnerships across the table.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'all-fours.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'all-fours.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck and score track.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'all-fours.setup.dealing',
+        title: 'Deal',
+        text: 'Deal six cards to each player, then turn one card up for provisional trumps.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fours.score.win-condition',
+        title: 'Win condition',
+        text: 'First side to 14 points in this base profile wins; other targets are variation-specific.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'all-fours.score.description',
+        title: 'Scoring',
+        text: 'Each hand can award up to four core points: High, Low, Jack, and Game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'all-fours.rules.key.1',
+        title: 'Key rule 1',
+        text: 'High: point to side originally holding highest trump dealt.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'all-fours.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Low: point to side originally holding lowest trump dealt.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'all-fours.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Jack: point if your side wins trick containing jack of trumps (hang-jack variants award extra on capture).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'all-fours.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Game: point to side with higher trick-card value total (A=4, K=3, Q=2, J=1, 10=10).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'all-fours.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Scores are pegged in fixed order High, Low, Jack, Game to resolve close finishes.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'all-fours.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'all-fours.rules.objective',
+          'all-fours.rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fours.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'all-fours.setup.players',
+          'all-fours.setup.deck',
+          'all-fours.setup.equipment',
+          'all-fours.setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fours.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'all-fours.rules.key.1',
+          'all-fours.rules.key.2',
+          'all-fours.rules.key.3',
+          'all-fours.rules.key.4',
+          'all-fours.rules.key.5',
+        ],
+      },
+      {
+        id: 'all-fours.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'all-fours.score.description',
+          'all-fours.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'all-fours.setup.dealing',
+        'all-fours.rules.objective',
+      ],
+      deal: [
+        'all-fours.rules.gameplay',
+      ],
+      reveal_market: [
+        'all-fours.rules.gameplay',
+      ],
+      check: [
+        'all-fours.rules.gameplay',
+      ],
+      award_pot: [
+        'all-fours.rules.gameplay',
+      ],
+      play_card: [
+        'all-fours.rules.gameplay',
+      ],
+      pass: [
+        'all-fours.rules.gameplay',
+      ],
+      bid: [
+        'all-fours.rules.gameplay',
+      ],
+    },
+  },
+}

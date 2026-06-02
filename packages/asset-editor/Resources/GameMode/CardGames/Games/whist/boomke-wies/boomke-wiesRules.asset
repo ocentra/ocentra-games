@@ -1,0 +1,239 @@
+{
+  system: {
+    guid: 'e16e80c9-7a57-44aa-b3f7-c71e97e2fb39',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/boomke-wies/boomke-wiesRules.asset',
+    gameId: 'boomke-wies',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Players bid in order from dealer's left; lowest bid 7, highest Boom (13). Pass or bid higher; once you pass you may not bid again. When three have passed, dealer must bid 7, bid Boom, or declare Meetje. Highest bidder leads to the first trick; the suit of that card is trump. Each trick: follow suit if possible; no obligation to beat or trump when void. Trick won by highest trump in it, or highest of led suit if no trump. Winner of each trick leads to the next. After 13 tricks, score by bid and tricks won; then next hand or end of round.",
+    Player: "Players bid in order from dealer's left; lowest bid 7, highest Boom (13). Pass or bid higher; once you pass you may not bid again. When three have passed, dealer must bid 7, bid Boom, or declare Meetje. Highest bidder leads to the first trick; the suit of that card is trump. Each trick: follow suit if possible; no obligation to beat or trump when void. Trick won by highest trump in it, or highest of led suit if no trump. Winner of each trick leads to the next. After 13 tricks, score by bid and tricks won; then next hand or end of round.",
+    objective: "Win tricks according to your team's bid, or prevent the opposing team from making theirs.",
+    gameplay: "Players bid in order from dealer's left; lowest bid 7, highest Boom (13). Pass or bid higher; once you pass you may not bid again. When three have passed, dealer must bid 7, bid Boom, or declare Meetje. Highest bidder leads to the first trick; the suit of that card is trump. Each trick: follow suit if possible; no obligation to beat or trump when void. Trick won by highest trump in it, or highest of led suit if no trump. Winner of each trick leads to the next. After 13 tricks, score by bid and tricks won; then next hand or end of round.",
+    keyRules: [
+      'Bid a number of tricks (7-13); highest bidder picks trump by leading.',
+      "No suit mentioned in bidding â€” partners can't know each other's preferred trump.",
+      'Boom (13) is the only bid above 9 worth making when three players passed (same score for 7-9).',
+      'Meetje: no-bid fallback where dealer leads and majority wins.',
+      'Follow suit required; no obligation to head or trump when void.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in fixed partnerships. Teams determined at start: each player takes a portion of the shuffled deck and shows the bottom card â€” two lowest pair up, two highest pair up.',
+      deck: 'Standard 52-card deck. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2 (high to low).',
+      equipment: 'Standard 52-card deck. Score sheet.',
+      dealing: "13 cards each, dealt in batches: either 4-4-5 or 5-4-4 per player. Dealer may choose to shuffle or not. Player to dealer's right cuts.",
+    },
+    turnFlow: "Players bid in order from dealer's left; lowest bid 7, highest Boom (13). Pass or bid higher; once you pass you may not bid again. When three have passed, dealer must bid 7, bid Boom, or declare Meetje. Highest bidder leads to the first trick; the suit of that card is trump. Each trick: follow suit if possible; no obligation to beat or trump when void. Trick won by highest trump in it, or highest of led suit if no trump. Winner of each trick leads to the next. After 13 tricks, score by bid and tricks won; then next hand or end of round.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'In bidding phase only. A player who has passed cannot bid at a later turn.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      "Rule example: Win tricks according to your team's bid, or prevent the opposing team from making theirs.",
+      "Turn-flow example: Players bid in order from dealer's left; lowest bid 7, highest Boom (13). Pass or bid higher; once you pass you may not bid again. When three have passed, dealer must bid 7, bid Boom, or declare Meetje. Highest bidder leads to the first trick; the suit of that card is trump. Each trick: follow suit if possible; no obligation to beat or trump when void. Trick won by highest trump in it, or highest of led suit if no trump. Winner of each trick leads to the next. After 13 tricks, score by bid and tricks won; then next hand or end of round.",
+      'Scoring example: Points awarded per hand based on bid made and tricks won. Negative points possible for failed bids. Tournament: highest score after timed round (e.g. 1 hour). Tie: extra deal..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'boomke-wies.rules.objective',
+        title: 'Objective',
+        text: "Win tricks according to your team's bid, or prevent the opposing team from making theirs.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'boomke-wies.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players bid in order from dealer's left; lowest bid 7, highest Boom (13). Pass or bid higher; once you pass you may not bid again. When three have passed, dealer must bid 7, bid Boom, or declare Meetje. Highest bidder leads to the first trick; the suit of that card is trump. Each trick: follow suit if possible; no obligation to beat or trump when void. Trick won by highest trump in it, or highest of led suit if no trump. Winner of each trick leads to the next. After 13 tricks, score by bid and tricks won; then next hand or end of round.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'boomke-wies.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships. Teams determined at start: each player takes a portion of the shuffled deck and shows the bottom card â€” two lowest pair up, two highest pair up.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'boomke-wies.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2 (high to low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'boomke-wies.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'boomke-wies.setup.dealing',
+        title: 'Deal',
+        text: "13 cards each, dealt in batches: either 4-4-5 or 5-4-4 per player. Dealer may choose to shuffle or not. Player to dealer's right cuts.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'boomke-wies.score.win-condition',
+        title: 'Win condition',
+        text: 'Tournament: highest score after timed round (e.g. 1 hour). Tie: extra deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'boomke-wies.score.description',
+        title: 'Scoring',
+        text: 'Points awarded per hand based on bid made and tricks won. Negative points possible for failed bids.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'boomke-wies.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid a number of tricks (7-13); highest bidder picks trump by leading.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'boomke-wies.rules.key.2',
+        title: 'Key rule 2',
+        text: "No suit mentioned in bidding â€” partners can't know each other's preferred trump.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'boomke-wies.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Boom (13) is the only bid above 9 worth making when three players passed (same score for 7-9).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'boomke-wies.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Meetje: no-bid fallback where dealer leads and majority wins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'boomke-wies.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Follow suit required; no obligation to head or trump when void.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'boomke-wies.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'boomke-wies.rules.objective',
+          'boomke-wies.rules.gameplay',
+        ],
+      },
+      {
+        id: 'boomke-wies.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'boomke-wies.setup.players',
+          'boomke-wies.setup.deck',
+          'boomke-wies.setup.equipment',
+          'boomke-wies.setup.dealing',
+        ],
+      },
+      {
+        id: 'boomke-wies.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'boomke-wies.rules.key.1',
+          'boomke-wies.rules.key.2',
+          'boomke-wies.rules.key.3',
+          'boomke-wies.rules.key.4',
+          'boomke-wies.rules.key.5',
+        ],
+      },
+      {
+        id: 'boomke-wies.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'boomke-wies.score.description',
+          'boomke-wies.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'boomke-wies.setup.dealing',
+        'boomke-wies.rules.objective',
+      ],
+      play_card: [
+        'boomke-wies.rules.gameplay',
+      ],
+      pass: [
+        'boomke-wies.rules.gameplay',
+      ],
+      deal_13: [
+        'boomke-wies.rules.gameplay',
+      ],
+      bid_number: [
+        'boomke-wies.rules.gameplay',
+      ],
+      bid_boom: [
+        'boomke-wies.rules.gameplay',
+      ],
+      declare_meetje: [
+        'boomke-wies.rules.gameplay',
+      ],
+      evaluate_bid: [
+        'boomke-wies.rules.gameplay',
+      ],
+      award_points: [
+        'boomke-wies.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,245 @@
+{
+  system: {
+    guid: 'b91fdc5c-a453-4db1-9679-171491e4ffd7',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/aces-straights-and-flushes-poker/aces-straights-and-flushes-pokerRules.asset',
+    gameId: 'aces-straights-and-flushes-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Post ante, place shared joker in center, deal and bet through stud streets, then showdown. The bug joker can represent an ace or complete straight/flush draws, but cannot create non-ace sets.',
+    Player: 'Post ante, place shared joker in center, deal and bet through stud streets, then showdown. The bug joker can represent an ace or complete straight/flush draws, but cannot create non-ace sets.',
+    objective: 'Make the best high poker hand using six personal cards plus the shared bug joker.',
+    gameplay: 'Post ante, place shared joker in center, deal and bet through stud streets, then showdown. The bug joker can represent an ace or complete straight/flush draws, but cannot create non-ace sets.',
+    keyRules: [
+      'Shared center joker is available to every active player at showdown.',
+      'Joker acts as a bug, not fully wild.',
+      'Bug may stand for an ace or straight/flush completion card.',
+      'Bug may not complete non-ace pairs/trips/quads.',
+      'Highest valid high hand wins.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'From two to eight players may take part, as in standard seven-card stud; the game plays best with five to seven. Each player receives six personal cards and shares one center joker as the seventh card.',
+      deck: 'Standard 52-card deck and one joker placed face-up in center.',
+      equipment: 'Deck, chips, dealer button.',
+      dealing: 'Deal starts as stud: two down and one up to each player, with later streets as defined by house flow.',
+    },
+    turnFlow: 'Post ante, place shared joker in center, deal and bet through stud streets, then showdown. The bug joker can represent an ace or complete straight/flush draws, but cannot create non-ace sets.',
+    moveValidityConditions: {
+      ante: 'Required for each player before first cards are dealt.',
+      deal: 'Dealer-only; card count and up/down visibility depend on street.',
+      reveal_market: 'Dealer-only during setup.',
+      buy_market: 'Stud poker; cards are dealt, not bought from a market.',
+      buy_stock: 'Stud; no draw phase, cards come by deal only.',
+      fold: 'Available in betting rounds.',
+      check: 'Only if no bet is open.',
+      call: 'Only if bet or raise is open.',
+      bet: 'Only if no bet is open.',
+      raise: 'Only if bet is already open.',
+      declare: 'Stud poker; no high-low declaration, showdown decides winner.',
+      reveal_hand: 'End-of-hand showdown action.',
+      award_pot: 'Dealer/system action after hand evaluation.',
+      play_card: 'Stud poker; players do not play cards to a trick, hands go to showdown.',
+      draw: 'Seven-card stud has no draw phase; cards are dealt by street.',
+      discard: 'Stud; no discard phase, players keep all seven cards.',
+      pass: 'Betting uses check/call/bet/raise; pass is trick-taking, not used here.',
+      bid: 'Poker uses bet/call/raise; bid refers to contract bidding in trick games.',
+      meld: 'Stud poker is not rummy; there is no melding of sets or runs.',
+      go_out: 'Game ends at showdown when all betting is complete; no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Make the best high poker hand using six personal cards plus the shared bug joker.',
+      'Turn-flow example: Post ante, place shared joker in center, deal and bet through stud streets, then showdown. The bug joker can represent an ace or complete straight/flush draws, but cannot create non-ace sets.',
+      'Scoring example: Pot game. Best high hand under bug-joker rule wins. Highest valid five-card poker hand at showdown wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'aces-straights-and-flushes-poker.rules.objective',
+        title: 'Objective',
+        text: 'Make the best high poker hand using six personal cards plus the shared bug joker.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Post ante, place shared joker in center, deal and bet through stud streets, then showdown. The bug joker can represent an ace or complete straight/flush draws, but cannot create non-ace sets.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.setup.players',
+        title: 'Players',
+        text: 'From two to eight players may take part, as in standard seven-card stud; the game plays best with five to seven. Each player receives six personal cards and shares one center joker as the seventh card.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck and one joker placed face-up in center.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, chips, dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Deal starts as stud: two down and one up to each player, with later streets as defined by house flow.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest valid five-card poker hand at showdown wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.score.description',
+        title: 'Scoring',
+        text: 'Pot game. Best high hand under bug-joker rule wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Shared center joker is available to every active player at showdown.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Joker acts as a bug, not fully wild.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bug may stand for an ace or straight/flush completion card.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bug may not complete non-ace pairs/trips/quads.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Highest valid high hand wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'aces-straights-and-flushes-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'aces-straights-and-flushes-poker.rules.objective',
+          'aces-straights-and-flushes-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'aces-straights-and-flushes-poker.setup.players',
+          'aces-straights-and-flushes-poker.setup.deck',
+          'aces-straights-and-flushes-poker.setup.equipment',
+          'aces-straights-and-flushes-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'aces-straights-and-flushes-poker.rules.key.1',
+          'aces-straights-and-flushes-poker.rules.key.2',
+          'aces-straights-and-flushes-poker.rules.key.3',
+          'aces-straights-and-flushes-poker.rules.key.4',
+          'aces-straights-and-flushes-poker.rules.key.5',
+        ],
+      },
+      {
+        id: 'aces-straights-and-flushes-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'aces-straights-and-flushes-poker.score.description',
+          'aces-straights-and-flushes-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'aces-straights-and-flushes-poker.setup.dealing',
+        'aces-straights-and-flushes-poker.rules.objective',
+      ],
+      ante: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      deal: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      reveal_market: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      fold: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      check: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      call: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      bet: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      raise: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'aces-straights-and-flushes-poker.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,216 @@
+{
+  system: {
+    guid: '9f27722e-575e-4b67-b83e-7fef8f05b979',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/stud/razz/razzRules.asset',
+    gameId: 'razz',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Ante. 2. Third street: 2 down, 1 up. Lowest up brings. 3. Fourthâ€“Seventh: 1 up each (last down). 4. Betting after each. 5. Best low wins. No straights/flushes. A=1.',
+    Player: '1. Ante. 2. Third street: 2 down, 1 up. Lowest up brings. 3. Fourthâ€“Seventh: 1 up each (last down). 4. Betting after each. 5. Best low wins. No straights/flushes. A=1.',
+    objective: 'The objective is to make the lowest possible five-card hand using ace-to-five (A-5) lowball ranking: aces count as low, straights and flushes do not count, and the best hand is 5-4-3-2-A (the wheel).',
+    gameplay: '1. Ante. 2. Third street: 2 down, 1 up. Lowest up brings. 3. Fourthâ€“Seventh: 1 up each (last down). 4. Betting after each. 5. Best low wins. No straights/flushes. A=1.',
+    keyRules: [
+      'A-5 lowball. Best hand: 5-4-3-2-A.',
+      'No straights, no flushes. Aces always low.',
+      '7-Card Stud structure.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: 'A standard 52-card pack is used; two to eight players can take part. The game is best for five to seven players.',
+      equipment: 'Deck, chips.',
+      dealing: '2 down, 1 up; 3 up; 1 up; 1 down. As Stud.',
+    },
+    turnFlow: '1. Ante. 2. Third street: 2 down, 1 up. Lowest up brings. 3. Fourthâ€“Seventh: 1 up each (last down). 4. Betting after each. 5. Best low wins. No straights/flushes. A=1.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Allowed during betting when player chooses to leave the hand.',
+      check: 'Allowed when rules permit skipping a wager or play.',
+      call: 'When facing a bet; must match the current bet to stay in; subject to table limits.',
+      bet: 'When no bet has been made; subject to table stakes and Razz rules.',
+      raise: 'When facing a bet; must raise by at least the minimum; subject to table limits.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 2 card(s) per player.',
+      'Rule example: The objective is to make the lowest possible five-card hand using ace-to-five (A-5) lowball ranking: aces count as low, straights and flushes do not count, and the best hand is 5-4-3-2-A (the wheel).',
+      'Turn-flow example: 1. Ante. 2. Third street: 2 down, 1 up. Lowest up brings. 3. Fourthâ€“Seventh: 1 up each (last down). 4. Betting after each. 5. Best low wins. No straights/flushes. A=1.',
+      'Scoring example: Pot to best low. No split. Best 5-card low wins pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'razz.rules.objective',
+        title: 'Objective',
+        text: 'The objective is to make the lowest possible five-card hand using ace-to-five (A-5) lowball ranking: aces count as low, straights and flushes do not count, and the best hand is 5-4-3-2-A (the wheel).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'razz.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Ante. 2. Third street: 2 down, 1 up. Lowest up brings. 3. Fourthâ€“Seventh: 1 up each (last down). 4. Betting after each. 5. Best low wins. No straights/flushes. A=1.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'razz.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'razz.setup.deck',
+        title: 'Deck',
+        text: 'A standard 52-card pack is used; two to eight players can take part. The game is best for five to seven players.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'razz.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'razz.setup.dealing',
+        title: 'Deal',
+        text: '2 down, 1 up; 3 up; 1 up; 1 down. As Stud.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'razz.score.win-condition',
+        title: 'Win condition',
+        text: 'Best 5-card low wins pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'razz.score.description',
+        title: 'Scoring',
+        text: 'Pot to best low. No split.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'razz.rules.key.1',
+        title: 'Key rule 1',
+        text: 'A-5 lowball. Best hand: 5-4-3-2-A.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'razz.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No straights, no flushes. Aces always low.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'razz.rules.key.3',
+        title: 'Key rule 3',
+        text: '7-Card Stud structure.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'razz.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'razz.rules.objective',
+          'razz.rules.gameplay',
+        ],
+      },
+      {
+        id: 'razz.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'razz.setup.players',
+          'razz.setup.deck',
+          'razz.setup.equipment',
+          'razz.setup.dealing',
+        ],
+      },
+      {
+        id: 'razz.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'razz.rules.key.1',
+          'razz.rules.key.2',
+          'razz.rules.key.3',
+        ],
+      },
+      {
+        id: 'razz.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'razz.score.description',
+          'razz.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'razz.setup.dealing',
+        'razz.rules.objective',
+      ],
+      fold: [
+        'razz.rules.gameplay',
+      ],
+      check: [
+        'razz.rules.gameplay',
+      ],
+      call: [
+        'razz.rules.gameplay',
+      ],
+      bet: [
+        'razz.rules.gameplay',
+      ],
+      raise: [
+        'razz.rules.gameplay',
+      ],
+      bring: [
+        'razz.rules.gameplay',
+      ],
+      reveal: [
+        'razz.rules.gameplay',
+      ],
+    },
+  },
+}

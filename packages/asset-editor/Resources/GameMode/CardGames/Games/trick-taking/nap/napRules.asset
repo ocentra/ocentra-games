@@ -1,0 +1,230 @@
+{
+  system: {
+    guid: '5ef01fa8-431a-40e7-b72c-f50973a3a646',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/nap/napRules.asset',
+    gameId: 'nap',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. High bidder leads first trick; suit of this card becomes trumps. 2. Players must follow suit if possible. 3. Highest trump wins trick; if no trumps, highest card of led suit wins. 4. Winner of trick leads next.',
+    Player: '1. High bidder leads first trick; suit of this card becomes trumps. 2. Players must follow suit if possible. 3. Highest trump wins trick; if no trumps, highest card of led suit wins. 4. Winner of trick leads next.',
+    objective: 'Win at least the number of tricks bid. The bidder plays against all other players who form a temporary team.',
+    gameplay: '1. High bidder leads first trick; suit of this card becomes trumps. 2. Players must follow suit if possible. 3. Highest trump wins trick; if no trumps, highest card of led suit wins. 4. Winner of trick leads next.',
+    keyRules: [
+      'Five cards each; high bidder names trumps by leading',
+      'Must follow suit if possible',
+      'One bidding round onlyâ€”pass or overcall',
+      'Wellington can only be bid after Nap; BlÃ¼cher only after Wellington',
+      'Cards often not shuffled between hands (just cut)',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '3-8 players; 4-5 is optimal. No permanent partnershipsâ€”high bidder plays against all others.',
+      deck: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2. Often reduced: 3 players use 20 cards (A-K-Q-J-10), 4 players use 28 (A-8), 5 players use 32 (A-7).',
+      equipment: 'Standard deck, poker chips or counters for stakes.',
+      dealing: 'Five cards to each playerâ€”either 3 then 2, or 2 then 3. Cards are shuffled only at start and after successful Nap/Wellington/BlÃ¼cher bids; otherwise just gathered and cut.',
+    },
+    turnFlow: '1. High bidder leads first trick; suit of this card becomes trumps. 2. Players must follow suit if possible. 3. Highest trump wins trick; if no trumps, highest card of led suit wins. 4. Winner of trick leads next.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if possible',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Cannot bid later in same round',
+      bid: 'Must exceed previous bid or pass. Wellington only after Nap. BlÃ¼cher only after Wellington.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win at least the number of tricks bid. The bidder plays against all other players who form a temporary team.',
+      'Turn-flow example: 1. High bidder leads first trick; suit of this card becomes trumps. 2. Players must follow suit if possible. 3. Highest trump wins trick; if no trumps, highest card of led suit wins. 4. Winner of trick leads next.',
+      'Scoring example: Stake-based payment system. Bidder wins stakes from all opponents if successful; pays all opponents if unsuccessful. Win at least the number of tricks bid..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'nap.rules.objective',
+        title: 'Objective',
+        text: 'Win at least the number of tricks bid. The bidder plays against all other players who form a temporary team.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'nap.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. High bidder leads first trick; suit of this card becomes trumps. 2. Players must follow suit if possible. 3. Highest trump wins trick; if no trumps, highest card of led suit wins. 4. Winner of trick leads next.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'nap.setup.players',
+        title: 'Players',
+        text: '3-8 players; 4-5 is optimal. No permanent partnershipsâ€”high bidder plays against all others.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'nap.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2. Often reduced: 3 players use 20 cards (A-K-Q-J-10), 4 players use 28 (A-8), 5 players use 32 (A-7).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'nap.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips or counters for stakes.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'nap.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards to each playerâ€”either 3 then 2, or 2 then 3. Cards are shuffled only at start and after successful Nap/Wellington/BlÃ¼cher bids; otherwise just gathered and cut.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'nap.score.win-condition',
+        title: 'Win condition',
+        text: 'Win at least the number of tricks bid.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'nap.score.description',
+        title: 'Scoring',
+        text: 'Stake-based payment system. Bidder wins stakes from all opponents if successful; pays all opponents if unsuccessful.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'nap.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Five cards each; high bidder names trumps by leading',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'nap.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must follow suit if possible',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'nap.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One bidding round onlyâ€”pass or overcall',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'nap.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Wellington can only be bid after Nap; BlÃ¼cher only after Wellington',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'nap.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Cards often not shuffled between hands (just cut)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'nap.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'nap.rules.objective',
+          'nap.rules.gameplay',
+        ],
+      },
+      {
+        id: 'nap.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'nap.setup.players',
+          'nap.setup.deck',
+          'nap.setup.equipment',
+          'nap.setup.dealing',
+        ],
+      },
+      {
+        id: 'nap.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'nap.rules.key.1',
+          'nap.rules.key.2',
+          'nap.rules.key.3',
+          'nap.rules.key.4',
+          'nap.rules.key.5',
+        ],
+      },
+      {
+        id: 'nap.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'nap.score.description',
+          'nap.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'nap.setup.dealing',
+        'nap.rules.objective',
+      ],
+      deal: [
+        'nap.rules.gameplay',
+      ],
+      play_card: [
+        'nap.rules.gameplay',
+      ],
+      pass: [
+        'nap.rules.gameplay',
+      ],
+      bid: [
+        'nap.rules.gameplay',
+      ],
+      settle_stakes: [
+        'nap.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -234,9 +234,10 @@ export function buildGameSummary(
     subcategory,
     player_mode: cleanText(gameInfo?.playerMode) || null,
     file_exists: true,
-    link_valid: 'asset',
+    link_valid: home.releaseStatus ?? 'asset',
     guid: home.guid,
     source: 'asset' as const,
+    releaseStatus: home.releaseStatus ?? null,
   };
 }
 
@@ -279,6 +280,7 @@ export function buildGameDetail(home: GameHome | null, gameInfo: GameInfo | null
     completeness: gameInfo?.completeness ?? home?.completeness ?? {},
     quality: cleanText(gameInfo?.quality) || cleanText(home?.quality) || 'placeholder',
     source: 'asset',
+    releaseStatus: home?.releaseStatus ?? null,
     overview: {
       description: overviewDescription,
       type: cleanText(gameInfo?.gameCategory) || cleanText(home?.gameCategory) || undefined,

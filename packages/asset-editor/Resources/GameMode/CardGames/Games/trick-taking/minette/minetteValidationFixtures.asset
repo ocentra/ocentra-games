@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '1fafd8b9-016a-470d-b38a-4eb821a9d46a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/minette/minetteValidationFixtures.asset',
+    gameId: 'minette',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'minette',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'minette.core-runtime-contracts',
+        title: 'Minette (Minet) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'minette.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Minette (Minet) must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'minette.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'minette.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'declare',
+              'play_card',
+              'deal_12_each_8_talon',
+            ],
+            explanation: 'Minette (Minet) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'minette.setup.initial-deal',
+              'minette.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_12_each_8_talon',
+            ],
+          },
+          {
+            id: 'minette.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '60',
+            scoringDirection: 'high_wins',
+            targetScore: 60,
+            cardValues: {
+              A: '11',
+              K: '3',
+              Q: '2',
+              J: '1',
+            },
+            explanation: 'Kings, Queens, and Jacks carry 1-3 points. Aces are worth 11 points. The last trick adds a bonus.',
+            linkedRuleIds: [
+              'minette.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'minette.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,125 @@
+{
+  system: {
+    guid: '18677b7e-cdd9-4b47-9995-5dc15496ebda',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/hachi-hachi/hachi-hachiValidationFixtures.asset',
+    gameId: 'hachi-hachi',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hachi-hachi',
+    familyVariant: 'Capture / Matching',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'hachi-hachi.core-runtime-contracts',
+        title: 'Hachi-Hachi (八八) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'hachi-hachi.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 6,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Hachi-Hachi (八八) must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'hachi-hachi.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'hachi-hachi.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'bidding',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'reveal_market',
+              'declare',
+              'award_pot',
+              'play_card',
+              'bid',
+            ],
+            explanation: 'Hachi-Hachi (八八) must run setup_round first, then enter bidding with the processed legal actions.',
+            linkedRuleIds: [
+              'hachi-hachi.setup.initial-deal',
+              'hachi-hachi.flow.bidding',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'bidding',
+            firstPlayableLegalActions: [
+              'bid',
+            ],
+          },
+          {
+            id: 'hachi-hachi.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '88',
+            scoringDirection: 'closest_to_target',
+            targetScore: 88,
+            cardValues: {
+              Brights: '20',
+              Animals: '10',
+              Ribbons: '5',
+              Chaff: '1',
+            },
+            explanation: 'Score as close to 88 points as possible (the par score). Players pay/receive based on deviation from 88. Alternatively, form valuable yaku combinations to stop play early and claim payment.',
+            linkedRuleIds: [
+              'hachi-hachi.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'hachi-hachi.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

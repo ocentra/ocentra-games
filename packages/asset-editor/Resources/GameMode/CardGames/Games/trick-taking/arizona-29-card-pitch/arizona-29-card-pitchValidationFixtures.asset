@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '24aac7cd-13cb-4e97-8728-b46ff22d8cbd',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/arizona-29-card-pitch/arizona-29-card-pitchValidationFixtures.asset',
+    gameId: 'arizona-29-card-pitch',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'arizona-29-card-pitch',
+    familyVariant: 'Pitch / All Fours Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'arizona-29-card-pitch.core-runtime-contracts',
+        title: 'Arizona 29-card Pitch Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'arizona-29-card-pitch.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Arizona 29-card Pitch must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'arizona-29-card-pitch.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'arizona-29-card-pitch.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'deal_six_and_kitty',
+              'bid_one_to_five',
+              'take_kitty',
+              'discard_five',
+              'lead_trump_card',
+              'calculate_setback_score',
+            ],
+            explanation: 'Arizona 29-card Pitch must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'arizona-29-card-pitch.setup.initial-deal',
+              'arizona-29-card-pitch.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_six_and_kitty',
+            ],
+          },
+          {
+            id: 'arizona-29-card-pitch.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '21',
+            scoringDirection: 'high_wins',
+            targetScore: 21,
+            cardValues: {},
+            explanation: "Pitch uses a 'Setback' scoring system where failing a bid subtracts from your total.",
+            linkedRuleIds: [
+              'arizona-29-card-pitch.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'arizona-29-card-pitch.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

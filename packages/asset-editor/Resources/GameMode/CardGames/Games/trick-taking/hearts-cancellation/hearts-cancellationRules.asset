@@ -1,0 +1,184 @@
+{
+  system: {
+    guid: 'f6e9d037-3701-4b9f-831b-357b451a54ad',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/hearts-cancellation/hearts-cancellationRules.asset',
+    gameId: 'hearts-cancellation',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Standard Hearts: 13 each; pass 3; 2♣ leads; must follow suit. Matching cards in a trick cancel each other (no points). Queen of Spades 13; each heart 1. Shoot moon = 0 or pass 26 to others. Lowest score wins.',
+    Player: 'Standard Hearts: 13 each; pass 3; 2♣ leads; must follow suit. Matching cards in a trick cancel each other (no points). Queen of Spades 13; each heart 1. Shoot moon = 0 or pass 26 to others. Lowest score wins.',
+    objective: 'Avoid scoring penalty points. Achieve the lowest total score; when two identical cards are played to a trick they cancel each other for trick-taking (no winner from that pair) but still carry penalty points if they are hearts or the Queen of Spades.',
+    gameplay: 'Standard Hearts: 13 each; pass 3; 2♣ leads; must follow suit. Matching cards in a trick cancel each other (no points). Queen of Spades 13; each heart 1. Shoot moon = 0 or pass 26 to others. Lowest score wins.',
+    keyRules: [
+      'Cancel in trick',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Cancellation Hearts is commonly played by six to ten players; this build uses four players with one deck. No partnerships; play is clockwise.',
+      deck: 'Standard 52-card deck. The classic Cancellation form uses two 52-card packs shuffled together for six to ten players; this entry uses one pack for four players.',
+      equipment: 'Standard 52-card deck. The classic Cancellation form uses two 52-card packs shuffled together for six to ten players; this entry uses one pack for four players.',
+      dealing: 'All cards are dealt out as far as they go; any leftover go to a face-down kitty taken by the winner of the first trick. For 4 players, 13 cards each, one at a time. After the deal, pass three cards (left, right, across, no pass by round).',
+    },
+    turnFlow: 'Standard Hearts: 13 each; pass 3; 2♣ leads; must follow suit. Matching cards in a trick cancel each other (no points). Queen of Spades 13; each heart 1. Shoot moon = 0 or pass 26 to others. Lowest score wins.',
+    moveValidityConditions: {
+      ante: 'Hearts has no betting or antes; trick-taking only.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'No market; all cards dealt to players each hand.',
+      buy_market: 'No market; trick-taking only.',
+      buy_stock: 'No stock; all cards dealt at start of each hand.',
+      fold: 'No folding; all players play every trick.',
+      check: 'No betting; avoid hearts and Queen of Spades.',
+      call: 'No betting or calling; trick-taking only.',
+      bet: 'No betting; penalty points from tricks only.',
+      raise: 'No betting or raising; trick-taking only.',
+      declare: 'No declarations; penalties from tricks taken.',
+      reveal_hand: 'No showdown; penalties scored from tricks won.',
+      award_pot: 'No pot; penalty points recorded per player.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'No drawing; all cards dealt at start of each hand.',
+      discard: 'No discarding; cards only played to tricks.',
+      pass: 'No pass; must play a card when it is your turn.',
+      bid: 'No bidding; pass 3 cards then play.',
+      meld: 'No melding; trick-taking only.',
+      go_out: 'Hand ends when all tricks played; no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Avoid scoring penalty points. Achieve the lowest total score; when two identical cards are played to a trick they cancel each other for trick-taking (no winner from that pair) but still carry penalty points if they are hearts or the Queen of Spades.',
+      'Turn-flow example: Standard Hearts: 13 each; pass 3; 2♣ leads; must follow suit. Matching cards in a trick cancel each other (no points). Queen of Spades 13; each heart 1. Shoot moon = 0 or pass 26 to others. Lowest score wins.',
+      'Scoring example: Points scored by taking heart cards and the Queen of Spades. Matching cards in a trick cancel (zero points for that trick). Lowest cumulative score after all rounds wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'hearts-cancellation.rules.objective',
+        title: 'Objective',
+        text: 'Avoid scoring penalty points. Achieve the lowest total score; when two identical cards are played to a trick they cancel each other for trick-taking (no winner from that pair) but still carry penalty points if they are hearts or the Queen of Spades.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Standard Hearts: 13 each; pass 3; 2♣ leads; must follow suit. Matching cards in a trick cancel each other (no points). Queen of Spades 13; each heart 1. Shoot moon = 0 or pass 26 to others. Lowest score wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.setup.players',
+        title: 'Players',
+        text: 'Cancellation Hearts is commonly played by six to ten players; this build uses four players with one deck. No partnerships; play is clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. The classic Cancellation form uses two 52-card packs shuffled together for six to ten players; this entry uses one pack for four players.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. The classic Cancellation form uses two 52-card packs shuffled together for six to ten players; this entry uses one pack for four players.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.setup.dealing',
+        title: 'Deal',
+        text: 'All cards are dealt out as far as they go; any leftover go to a face-down kitty taken by the winner of the first trick. For 4 players, 13 cards each, one at a time. After the deal, pass three cards (left, right, across, no pass by round).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest cumulative score after all rounds wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.score.description',
+        title: 'Scoring',
+        text: 'Points scored by taking heart cards and the Queen of Spades. Matching cards in a trick cancel (zero points for that trick).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cancel in trick',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hearts-cancellation.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hearts-cancellation.rules.objective',
+          'hearts-cancellation.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hearts-cancellation.setup.players',
+          'hearts-cancellation.setup.deck',
+          'hearts-cancellation.setup.equipment',
+          'hearts-cancellation.setup.dealing',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hearts-cancellation.rules.key.1',
+        ],
+      },
+      {
+        id: 'hearts-cancellation.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hearts-cancellation.score.description',
+          'hearts-cancellation.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hearts-cancellation.setup.dealing',
+        'hearts-cancellation.rules.objective',
+      ],
+      deal: [
+        'hearts-cancellation.rules.gameplay',
+      ],
+      play_card: [
+        'hearts-cancellation.rules.gameplay',
+      ],
+      complete_scoring: [
+        'hearts-cancellation.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,12 +1,7 @@
 import { schema } from '@ocentra/schema-domain/effect-builder';
 import { GameModeStatus } from '@/constants/game-mode-status';
 
-const GameModeStatusSchema = schema.enum([
-  GameModeStatus.Available,
-  GameModeStatus.ComingSoon,
-  GameModeStatus.Maintenance,
-  GameModeStatus.Deprecated,
-]);
+const GameModeStatusSchema = schema.nativeEnum(GameModeStatus);
 
 export const GameCatalogEntrySchema = schema.object({
   gameId: schema.string(),

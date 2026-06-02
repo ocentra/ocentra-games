@@ -1,0 +1,214 @@
+{
+  system: {
+    guid: '1729d61f-2295-4111-b31b-9b927661be5c',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bura/buraRules.asset',
+    gameId: 'bura',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Lead any card. No follow-suit obligation. Highest trump wins; else highest led-suit card. Winner draws first, loser draws second. Winner leads next. Continue until stock exhausted.',
+    Player: 'Lead any card. No follow-suit obligation. Highest trump wins; else highest led-suit card. Winner draws first, loser draws second. Winner leads next. Continue until stock exhausted.',
+    objective: 'Accumulate 31 or more card points in your trick pile.',
+    gameplay: 'Lead any card. No follow-suit obligation. Highest trump wins; else highest led-suit card. Winner draws first, loser draws second. Winner leads next. Continue until stock exhausted.',
+    keyRules: [
+      'No follow-suit obligation.',
+      'Trump (set by last dealt card) beats any off-suit.',
+      'After stock exhausted, must follow suit.',
+      "'Bura!' can be declared only after stock is empty.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: '36 cards: 6-7-8-9-10-J-Q-K-A in each of 4 suits.',
+      equipment: 'Cards.',
+      dealing: 'Deal 3 cards each. Turn the last card face-up as trump indicator; place it under the stock pile with the suit visible.',
+    },
+    turnFlow: 'Lead any card. No follow-suit obligation. Highest trump wins; else highest led-suit card. Winner draws first, loser draws second. Winner leads next. Continue until stock exhausted.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Accumulate 31 or more card points in your trick pile.',
+      'Turn-flow example: Lead any card. No follow-suit obligation. Highest trump wins; else highest led-suit card. Winner draws first, loser draws second. Winner leads next. Continue until stock exhausted.',
+      'Scoring example: 31 card points to win. First to accumulate 31+ card points in tricks..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bura.rules.objective',
+        title: 'Objective',
+        text: 'Accumulate 31 or more card points in your trick pile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bura.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Lead any card. No follow-suit obligation. Highest trump wins; else highest led-suit card. Winner draws first, loser draws second. Winner leads next. Continue until stock exhausted.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bura.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bura.setup.deck',
+        title: 'Deck',
+        text: '36 cards: 6-7-8-9-10-J-Q-K-A in each of 4 suits.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bura.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bura.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 3 cards each. Turn the last card face-up as trump indicator; place it under the stock pile with the suit visible.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bura.score.win-condition',
+        title: 'Win condition',
+        text: 'First to accumulate 31+ card points in tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bura.score.description',
+        title: 'Scoring',
+        text: '31 card points to win.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bura.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No follow-suit obligation.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bura.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump (set by last dealt card) beats any off-suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bura.rules.key.3',
+        title: 'Key rule 3',
+        text: 'After stock exhausted, must follow suit.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bura.rules.key.4',
+        title: 'Key rule 4',
+        text: "'Bura!' can be declared only after stock is empty.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bura.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bura.rules.objective',
+          'bura.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bura.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bura.setup.players',
+          'bura.setup.deck',
+          'bura.setup.equipment',
+          'bura.setup.dealing',
+        ],
+      },
+      {
+        id: 'bura.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bura.rules.key.1',
+          'bura.rules.key.2',
+          'bura.rules.key.3',
+          'bura.rules.key.4',
+        ],
+      },
+      {
+        id: 'bura.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bura.score.description',
+          'bura.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bura.setup.dealing',
+        'bura.rules.objective',
+      ],
+      deal_3_turn_trump: [
+        'bura.rules.gameplay',
+      ],
+      play_any_card: [
+        'bura.rules.gameplay',
+      ],
+      declare_bura: [
+        'bura.rules.gameplay',
+      ],
+    },
+  },
+}

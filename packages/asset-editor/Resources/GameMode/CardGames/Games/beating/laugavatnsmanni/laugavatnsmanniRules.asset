@@ -1,0 +1,253 @@
+{
+  system: {
+    guid: '4a7f9feb-318d-4585-9fb9-ccf2ce1ec9cc',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/laugavatnsmanni/laugavatnsmanniRules.asset',
+    gameId: 'laugavatnsmanni',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Contract Selection**: Each player must play each of the 6 contracts exactly once over 18 deals. The first time you are declarer, you may choose any contract. The next time, you choose from the remaining 5, and so on. 2. **The Exchange**: Before play begins, the declarer (player to dealer's left) may discard up to 4 cards and draw replacements from the Manni pile. The second player may then exchange up to 4 of the remaining cards. The dealer takes whatever is left in the Manni (if any). 3. **Trick Play**: Declarer leads to the first trick. Must follow suit if possible. If void, may play any card. Highest trump wins, or highest card of led suit if no trumps. Winner leads to next trick.",
+    Player: "1. **Contract Selection**: Each player must play each of the 6 contracts exactly once over 18 deals. The first time you are declarer, you may choose any contract. The next time, you choose from the remaining 5, and so on. 2. **The Exchange**: Before play begins, the declarer (player to dealer's left) may discard up to 4 cards and draw replacements from the Manni pile. The second player may then exchange up to 4 of the remaining cards. The dealer takes whatever is left in the Manni (if any). 3. **Trick Play**: Declarer leads to the first trick. Must follow suit if possible. If void, may play any card. Highest trump wins, or highest card of led suit if no trumps. Winner leads to next trick.",
+    objective: 'Accumulate the most points by winning tricks relative to your contract target. Game ends after 18 deals (each player plays each of the 6 contracts exactly once).',
+    gameplay: "1. **Contract Selection**: Each player must play each of the 6 contracts exactly once over 18 deals. The first time you are declarer, you may choose any contract. The next time, you choose from the remaining 5, and so on. 2. **The Exchange**: Before play begins, the declarer (player to dealer's left) may discard up to 4 cards and draw replacements from the Manni pile. The second player may then exchange up to 4 of the remaining cards. The dealer takes whatever is left in the Manni (if any). 3. **Trick Play**: Declarer leads to the first trick. Must follow suit if possible. If void, may play any card. Highest trump wins, or highest card of led suit if no trumps. Winner leads to next trick.",
+    keyRules: [
+      'Contracts: Nullo (lose all tricks), Grand (win most tricks), Spades, Hearts, Diamonds, Clubs (suit trumps).',
+      'Nullo: No trumps. Ace is low, ranking below the 3.',
+      'Grand/Suits: Ace is high.',
+      'Grand/Suits target: 8 tricks for declarer, 4 for each defender.',
+      'Nullo target: 4 tricks for declarer, 6 for each defender.',
+      'Score +1 point for each trick above target, -1 for each trick below target (Nullo is inverted).',
+      'Final score = positive points minus negative points.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 players individually (no partnerships).',
+      deck: '48 cards (remove all four 2s from a standard 52-card deck). Ace is high in all contracts EXCEPT Nullo.',
+      equipment: 'Standard deck and score sheet.',
+      dealing: "Each player is dealt 16 cards in packets of 4. The remaining 4 cards form the 'Manni' pile, placed face-down in the center.",
+    },
+    turnFlow: "1. **Contract Selection**: Each player must play each of the 6 contracts exactly once over 18 deals. The first time you are declarer, you may choose any contract. The next time, you choose from the remaining 5, and so on. 2. **The Exchange**: Before play begins, the declarer (player to dealer's left) may discard up to 4 cards and draw replacements from the Manni pile. The second player may then exchange up to 4 of the remaining cards. The dealer takes whatever is left in the Manni (if any). 3. **Trick Play**: Declarer leads to the first trick. Must follow suit if possible. If void, may play any card. Highest trump wins, or highest card of led suit if no trumps. Winner leads to next trick.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if possible.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Optional.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 16 card(s) per player.',
+      'Rule example: Accumulate the most points by winning tricks relative to your contract target. Game ends after 18 deals (each player plays each of the 6 contracts exactly once).',
+      "Turn-flow example: 1. **Contract Selection**: Each player must play each of the 6 contracts exactly once over 18 deals. The first time you are declarer, you may choose any contract. The next time, you choose from the remaining 5, and so on. 2. **The Exchange**: Before play begins, the declarer (player to dealer's left) may discard up to 4 cards and draw replacements from the Manni pile. The second player may then exchange up to 4 of the remaining cards. The dealer takes whatever is left in the Manni (if any). 3. **Trick Play**: Declarer leads to the first trick. Must follow suit if possible. If void, may play any card. Highest trump wins, or highest card of led suit if no trumps. Winner leads to next trick.",
+      'Scoring example: Points awarded based on tricks taken relative to contract-specific targets. Highest net score (positive minus negative points) after 18 deals..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'laugavatnsmanni.rules.objective',
+        title: 'Objective',
+        text: 'Accumulate the most points by winning tricks relative to your contract target. Game ends after 18 deals (each player plays each of the 6 contracts exactly once).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Contract Selection**: Each player must play each of the 6 contracts exactly once over 18 deals. The first time you are declarer, you may choose any contract. The next time, you choose from the remaining 5, and so on. 2. **The Exchange**: Before play begins, the declarer (player to dealer's left) may discard up to 4 cards and draw replacements from the Manni pile. The second player may then exchange up to 4 of the remaining cards. The dealer takes whatever is left in the Manni (if any). 3. **Trick Play**: Declarer leads to the first trick. Must follow suit if possible. If void, may play any card. Highest trump wins, or highest card of led suit if no trumps. Winner leads to next trick.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.setup.players',
+        title: 'Players',
+        text: '3 players individually (no partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.setup.deck',
+        title: 'Deck',
+        text: '48 cards (remove all four 2s from a standard 52-card deck). Ace is high in all contracts EXCEPT Nullo.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck and score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 16 cards in packets of 4. The remaining 4 cards form the 'Manni' pile, placed face-down in the center.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest net score (positive minus negative points) after 18 deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.score.description',
+        title: 'Scoring',
+        text: 'Points awarded based on tricks taken relative to contract-specific targets.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Contracts: Nullo (lose all tricks), Grand (win most tricks), Spades, Hearts, Diamonds, Clubs (suit trumps).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Nullo: No trumps. Ace is low, ranking below the 3.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Grand/Suits: Ace is high.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Grand/Suits target: 8 tricks for declarer, 4 for each defender.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Nullo target: 4 tricks for declarer, 6 for each defender.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Score +1 point for each trick above target, -1 for each trick below target (Nullo is inverted).',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Final score = positive points minus negative points.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'laugavatnsmanni.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'laugavatnsmanni.rules.objective',
+          'laugavatnsmanni.rules.gameplay',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'laugavatnsmanni.setup.players',
+          'laugavatnsmanni.setup.deck',
+          'laugavatnsmanni.setup.equipment',
+          'laugavatnsmanni.setup.dealing',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'laugavatnsmanni.rules.key.1',
+          'laugavatnsmanni.rules.key.2',
+          'laugavatnsmanni.rules.key.3',
+          'laugavatnsmanni.rules.key.4',
+          'laugavatnsmanni.rules.key.5',
+          'laugavatnsmanni.rules.key.6',
+          'laugavatnsmanni.rules.key.7',
+        ],
+      },
+      {
+        id: 'laugavatnsmanni.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'laugavatnsmanni.score.description',
+          'laugavatnsmanni.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'laugavatnsmanni.setup.dealing',
+        'laugavatnsmanni.rules.objective',
+      ],
+      deal: [
+        'laugavatnsmanni.rules.gameplay',
+      ],
+      play_card: [
+        'laugavatnsmanni.rules.gameplay',
+      ],
+      pass: [
+        'laugavatnsmanni.rules.gameplay',
+      ],
+      choose_contract: [
+        'laugavatnsmanni.rules.gameplay',
+      ],
+      exchange: [
+        'laugavatnsmanni.rules.gameplay',
+      ],
+      calculate: [
+        'laugavatnsmanni.rules.gameplay',
+      ],
+    },
+  },
+}

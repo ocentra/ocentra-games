@@ -1,0 +1,225 @@
+{
+  system: {
+    guid: '9219bcd0-e405-47f7-92c8-f22875fea2fc',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/bid-whist/bid-whistRules.asset',
+    gameId: 'bid-whist',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Auction**: Players bid a number of 'books' (tricks over 6) from 3 to 7, plus a direction (Uptown, Downtown, or No Trump). 2. **Kitty**: High bidder takes the 6-card Kitty into their hand and discards 6 cards. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 12 tricks are played. Must follow suit. 5. **Direction**: Uptown (A high), Downtown (A low), No Trump (No trump suit). 6. **Jokers**: Big Joker is the highest card in the game, followed by Little Joker.",
+    Player: "1. **Auction**: Players bid a number of 'books' (tricks over 6) from 3 to 7, plus a direction (Uptown, Downtown, or No Trump). 2. **Kitty**: High bidder takes the 6-card Kitty into their hand and discards 6 cards. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 12 tricks are played. Must follow suit. 5. **Direction**: Uptown (A high), Downtown (A low), No Trump (No trump suit). 6. **Jokers**: Big Joker is the highest card in the game, followed by Little Joker.",
+    objective: 'First partnership to reach a set score (typically 7 or 21) by fulfilling trick-taking contracts.',
+    gameplay: "1. **Auction**: Players bid a number of 'books' (tricks over 6) from 3 to 7, plus a direction (Uptown, Downtown, or No Trump). 2. **Kitty**: High bidder takes the 6-card Kitty into their hand and discards 6 cards. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 12 tricks are played. Must follow suit. 5. **Direction**: Uptown (A high), Downtown (A low), No Trump (No trump suit). 6. **Jokers**: Big Joker is the highest card in the game, followed by Little Joker.",
+    keyRules: [
+      "A bid of '4 Uptown' means the team must win 10 tricks (6+4) with high cards ranking best.",
+      'In Downtown, Aces are low and 2s are high.',
+      "Failing a contract (getting 'set') results in losing points equal to the bid.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in two fixed partnerships.',
+      deck: '54 cards: Standard 52-card pack plus two distinct Jokers (Big Joker and Little Joker).',
+      equipment: 'Standard pack with jokers, score pad.',
+      dealing: "Deal 12 cards to each player. 6 cards are dealt face down to the center to form the 'Kitty'.",
+    },
+    turnFlow: "1. **Auction**: Players bid a number of 'books' (tricks over 6) from 3 to 7, plus a direction (Uptown, Downtown, or No Trump). 2. **Kitty**: High bidder takes the 6-card Kitty into their hand and discards 6 cards. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 12 tricks are played. Must follow suit. 5. **Direction**: Uptown (A high), Downtown (A low), No Trump (No trump suit). 6. **Jokers**: Big Joker is the highest card in the game, followed by Little Joker.",
+    moveValidityConditions: {
+      ante: 'Bid Whist is a point-based partnership game and does not utilize a monetary or chip-based ante.',
+      deal: 'The distribution of twelve cards per player and the six-card kitty is handled automatically by the system dealer.',
+      reveal_market: 'There is no public market in Bid Whist; the kitty is only revealed to the winning bidder.',
+      buy_market: 'Players cannot purchase cards from any external area; they must succeed using their dealt hand and the kitty.',
+      buy_stock: 'There is no stock pile to draw from during play; the entire deck is distributed at the start of the round.',
+      fold: 'All players are committed to participating in every trick of the hand to determine the final point tally.',
+      check: 'The game uses a trick-taking and bidding structure rather than a vying structure with checks.',
+      call: 'There is no bet to match in this game; competition is based on bidding trick counts and winning tricks.',
+      bet: 'Success is measured by total points accumulated on a scorecard rather than through financial betting.',
+      raise: 'The value of the deal is fixed by the bid and cannot be raised through further wagering rounds.',
+      declare: 'Only available to the highest bidder.',
+      reveal_hand: 'Hands stay private until individual cards are played into tricks; no full-hand reveal phase occurs.',
+      award_pot: 'Winning points are added to a cumulative partnership total rather than distributed from a physical pot.',
+      play_card: 'Must follow suit; highest card of led suit or highest trump wins.',
+      draw: 'All cards are distributed at the start; no drawing phase exists during the play of the twelve tricks.',
+      discard: 'Only available to the winning bidder after taking the kitty.',
+      pass: 'Allowed during bidding when choosing not to increase the contract.',
+      bid: 'Must be higher than the current high bid.',
+      meld: 'Bid Whist is strictly a trick-taking game and does not involve the formation of sequences or melds.',
+      go_out: 'The hand terminates automatically once all twelve tricks have been played by all participants.',
+    },
+    exampleHands: [
+      'Setup example: 12 card(s) per player.',
+      'Rule example: First partnership to reach a set score (typically 7 or 21) by fulfilling trick-taking contracts.',
+      "Turn-flow example: 1. **Auction**: Players bid a number of 'books' (tricks over 6) from 3 to 7, plus a direction (Uptown, Downtown, or No Trump). 2. **Kitty**: High bidder takes the 6-card Kitty into their hand and discards 6 cards. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 12 tricks are played. Must follow suit. 5. **Direction**: Uptown (A high), Downtown (A low), No Trump (No trump suit). 6. **Jokers**: Big Joker is the highest card in the game, followed by Little Joker.",
+      'Scoring example: Points are awarded for making the bid (bid amount) or subtracted for getting set. First partnership to reach 7 or 21 points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bid-whist.rules.objective',
+        title: 'Objective',
+        text: 'First partnership to reach a set score (typically 7 or 21) by fulfilling trick-taking contracts.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bid-whist.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Auction**: Players bid a number of 'books' (tricks over 6) from 3 to 7, plus a direction (Uptown, Downtown, or No Trump). 2. **Kitty**: High bidder takes the 6-card Kitty into their hand and discards 6 cards. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 12 tricks are played. Must follow suit. 5. **Direction**: Uptown (A high), Downtown (A low), No Trump (No trump suit). 6. **Jokers**: Big Joker is the highest card in the game, followed by Little Joker.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bid-whist.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bid-whist.setup.deck',
+        title: 'Deck',
+        text: '54 cards: Standard 52-card pack plus two distinct Jokers (Big Joker and Little Joker).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bid-whist.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack with jokers, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bid-whist.setup.dealing',
+        title: 'Deal',
+        text: "Deal 12 cards to each player. 6 cards are dealt face down to the center to form the 'Kitty'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bid-whist.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 7 or 21 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bid-whist.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded for making the bid (bid amount) or subtracted for getting set.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bid-whist.rules.key.1',
+        title: 'Key rule 1',
+        text: "A bid of '4 Uptown' means the team must win 10 tricks (6+4) with high cards ranking best.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bid-whist.rules.key.2',
+        title: 'Key rule 2',
+        text: 'In Downtown, Aces are low and 2s are high.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bid-whist.rules.key.3',
+        title: 'Key rule 3',
+        text: "Failing a contract (getting 'set') results in losing points equal to the bid.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bid-whist.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bid-whist.rules.objective',
+          'bid-whist.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bid-whist.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bid-whist.setup.players',
+          'bid-whist.setup.deck',
+          'bid-whist.setup.equipment',
+          'bid-whist.setup.dealing',
+        ],
+      },
+      {
+        id: 'bid-whist.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bid-whist.rules.key.1',
+          'bid-whist.rules.key.2',
+          'bid-whist.rules.key.3',
+        ],
+      },
+      {
+        id: 'bid-whist.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bid-whist.score.description',
+          'bid-whist.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bid-whist.setup.dealing',
+        'bid-whist.rules.objective',
+      ],
+      declare: [
+        'bid-whist.rules.gameplay',
+      ],
+      play_card: [
+        'bid-whist.rules.gameplay',
+      ],
+      discard: [
+        'bid-whist.rules.gameplay',
+      ],
+      pass: [
+        'bid-whist.rules.gameplay',
+      ],
+      bid: [
+        'bid-whist.rules.gameplay',
+      ],
+      deal_12_kitty_6: [
+        'bid-whist.rules.gameplay',
+      ],
+      bid_books_direction: [
+        'bid-whist.rules.gameplay',
+      ],
+      take_kitty: [
+        'bid-whist.rules.gameplay',
+      ],
+      discard_6: [
+        'bid-whist.rules.gameplay',
+      ],
+      calculate_match_points: [
+        'bid-whist.rules.gameplay',
+      ],
+    },
+  },
+}

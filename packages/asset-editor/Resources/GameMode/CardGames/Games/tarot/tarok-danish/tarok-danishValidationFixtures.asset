@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: '41626461-7a34-4248-b983-59e50cfaa190',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/tarok-danish/tarok-danishValidationFixtures.asset',
+    gameId: 'tarok-danish',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'tarok-danish',
+    familyVariant: 'Tarot',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'tarok-danish.core-runtime-contracts',
+        title: 'Tarok Danish Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'tarok-danish.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 25,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 75,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Tarok Danish must start by giving each active player 25 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'tarok-danish.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'tarok-danish.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'declare',
+              'play_card',
+              'dealer_deal',
+              'dealer_discard_skat',
+            ],
+            explanation: 'Tarok Danish must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'tarok-danish.setup.initial-deal',
+              'tarok-danish.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'dealer_deal',
+            ],
+          },
+          {
+            id: 'tarok-danish.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win the last trick (primary); win last trick with Pagat or a King (Ultimo) for bonus; avoid playing Pagat or King to last trick and losing (Bagud penalty). Two pots (king pot, pagat pot) awarded on Ultimo.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              Pagat: '4',
+              'Mondo (trump 21)': '4',
+              Fool: '4',
+              Kings: '4',
+              Queens: '3',
+              Knights: '2',
+              Jacks: '1',
+              'per trick': '1',
+              skat: '1',
+            },
+            explanation: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+            linkedRuleIds: [
+              'tarok-danish.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'tarok-danish.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 25,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

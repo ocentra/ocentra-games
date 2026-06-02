@@ -1,0 +1,126 @@
+{
+  system: {
+    guid: 'ea92edf9-b261-4439-b15e-6ba18da671d5',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/trionfo-beccaccino/trionfo-beccaccinoValidationFixtures.asset',
+    gameId: 'trionfo-beccaccino',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'trionfo-beccaccino',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'trionfo-beccaccino.core-runtime-contracts',
+        title: 'Trionfo Beccaccino Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'trionfo-beccaccino.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 30,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Trionfo Beccaccino must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'trionfo-beccaccino.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'trionfo-beccaccino.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Trionfo Beccaccino must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'trionfo-beccaccino.setup.initial-deal',
+              'trionfo-beccaccino.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'trionfo-beccaccino.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First team to 41 points.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {
+              '2': '0.333',
+              '3': '0.333',
+              '4': '0',
+              '5': '0',
+              '6': '0',
+              '7': '0',
+              A: '1',
+              K: '0.333',
+              Kt: '0.333',
+              J: '0.333',
+            },
+            explanation: 'A=1, Court=1/3, Last trick=1. Total 11/hand. Maraffa=3 bonus.',
+            linkedRuleIds: [
+              'trionfo-beccaccino.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'trionfo-beccaccino.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

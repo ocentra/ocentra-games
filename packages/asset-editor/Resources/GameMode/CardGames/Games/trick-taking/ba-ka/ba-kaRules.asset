@@ -1,0 +1,219 @@
+{
+  system: {
+    guid: '3bb646a9-63d8-42be-8d49-dd4a085d2283',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/ba-ka/ba-kaRules.asset',
+    gameId: 'ba-ka',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Players must follow suit. Trumps count as their own suit (The 'Trump' suit). If a trump is led, all others MUST play trumps. If an off-suit (e.g., Ace of Spades) is led, players must follow Spades.",
+    Player: "Players must follow suit. Trumps count as their own suit (The 'Trump' suit). If a trump is led, all others MUST play trumps. If an off-suit (e.g., Ace of Spades) is led, players must follow Spades.",
+    objective: "The 'Old Ones' must capture a majority of the 104 available points in the round (or win all tricks in solo bids).",
+    gameplay: "Players must follow suit. Trumps count as their own suit (The 'Trump' suit). If a trump is led, all others MUST play trumps. If an off-suit (e.g., Ace of Spades) is led, players must follow Spades.",
+    keyRules: [
+      'Point Values: Ace (11), 10 (10), Queen (3), Jack (2). Total = 104 points.',
+      'Winning: The declarer/partnership needs 53 points (104 / 2 + 1) to win.',
+      "Contra: Opponents can shout 'Kontra' to double the points for the round if they believe they can beat the bid.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: "4 players. Two are 'The Old Ones' (holders of Black Queens) and two are the opponents.",
+      deck: '16 cards: Ace, 10, Queen, and Jack of each suit.',
+      equipment: '16-card specific pack or a stripped 52-card deck (keep A, 10, Q, J only).',
+      dealing: 'Each player is dealt 4 cards (usually 2 and 2).',
+    },
+    turnFlow: "Players must follow suit. Trumps count as their own suit (The 'Trump' suit). If a trump is led, all others MUST play trumps. If an off-suit (e.g., Ace of Spades) is led, players must follow Spades.",
+    moveValidityConditions: {
+      ante: 'Trick-taking for points only; no antes.',
+      deal: 'Deal is performed by dealer; not a player action.',
+      reveal_market: 'Trick-taking game; no market to reveal.',
+      buy_market: 'No market purchase in trick-taking.',
+      buy_stock: 'Full deal; no buying from stock.',
+      fold: 'Trick-taking; no fold. Must play each trick.',
+      check: 'No betting rounds; no check.',
+      call: 'No betting; points only.',
+      bet: 'No betting; point-trick only.',
+      raise: 'No betting; point-trick only.',
+      declare: 'Bids chosen at round start; no in-play declare.',
+      reveal_hand: 'Hands stay private; cards played to tricks.',
+      award_pot: 'No pot; points recorded on score sheet.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'Full deal; no draw from stock.',
+      discard: 'Cards played to tricks, not discarded.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Bidding is a separate phase with custom bids (Gran, Zolo).',
+      meld: 'Trick-taking only; no melds.',
+      go_out: 'Round ends after four tricks; no go-out.',
+    },
+    exampleHands: [
+      'Setup example: 4 card(s) per player.',
+      "Rule example: The 'Old Ones' must capture a majority of the 104 available points in the round (or win all tricks in solo bids).",
+      "Turn-flow example: Players must follow suit. Trumps count as their own suit (The 'Trump' suit). If a trump is led, all others MUST play trumps. If an off-suit (e.g., Ace of Spades) is led, players must follow Spades.",
+      'Scoring example: Scoring is zero-sum based on the contract value. Capturing 53+ points (Regular/Zolo) or 104 points (Gran)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'ba-ka.rules.objective',
+        title: 'Objective',
+        text: "The 'Old Ones' must capture a majority of the 104 available points in the round (or win all tricks in solo bids).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ba-ka.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players must follow suit. Trumps count as their own suit (The 'Trump' suit). If a trump is led, all others MUST play trumps. If an off-suit (e.g., Ace of Spades) is led, players must follow Spades.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ba-ka.setup.players',
+        title: 'Players',
+        text: "4 players. Two are 'The Old Ones' (holders of Black Queens) and two are the opponents.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ba-ka.setup.deck',
+        title: 'Deck',
+        text: '16 cards: Ace, 10, Queen, and Jack of each suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ba-ka.setup.equipment',
+        title: 'Equipment',
+        text: '16-card specific pack or a stripped 52-card deck (keep A, 10, Q, J only).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ba-ka.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 4 cards (usually 2 and 2).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ba-ka.score.win-condition',
+        title: 'Win condition',
+        text: 'Capturing 53+ points (Regular/Zolo) or 104 points (Gran).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ba-ka.score.description',
+        title: 'Scoring',
+        text: 'Scoring is zero-sum based on the contract value.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ba-ka.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Point Values: Ace (11), 10 (10), Queen (3), Jack (2). Total = 104 points.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ba-ka.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Winning: The declarer/partnership needs 53 points (104 / 2 + 1) to win.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ba-ka.rules.key.3',
+        title: 'Key rule 3',
+        text: "Contra: Opponents can shout 'Kontra' to double the points for the round if they believe they can beat the bid.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ba-ka.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ba-ka.rules.objective',
+          'ba-ka.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ba-ka.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ba-ka.setup.players',
+          'ba-ka.setup.deck',
+          'ba-ka.setup.equipment',
+          'ba-ka.setup.dealing',
+        ],
+      },
+      {
+        id: 'ba-ka.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ba-ka.rules.key.1',
+          'ba-ka.rules.key.2',
+          'ba-ka.rules.key.3',
+        ],
+      },
+      {
+        id: 'ba-ka.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ba-ka.score.description',
+          'ba-ka.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ba-ka.setup.dealing',
+        'ba-ka.rules.objective',
+      ],
+      play_card: [
+        'ba-ka.rules.gameplay',
+      ],
+      pass: [
+        'ba-ka.rules.gameplay',
+      ],
+      deal_2_2: [
+        'ba-ka.rules.gameplay',
+      ],
+      regular_bid: [
+        'ba-ka.rules.gameplay',
+      ],
+      wesele: [
+        'ba-ka.rules.gameplay',
+      ],
+      gran: [
+        'ba-ka.rules.gameplay',
+      ],
+      zolo: [
+        'ba-ka.rules.gameplay',
+      ],
+      evaluate_104_points: [
+        'ba-ka.rules.gameplay',
+      ],
+    },
+  },
+}

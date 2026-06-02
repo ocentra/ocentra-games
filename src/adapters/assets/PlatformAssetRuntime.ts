@@ -2,6 +2,7 @@ import { getPlatformRuntime, PlatformRuntime } from '@ocentra/app-core/platform'
 import type { ResourceRequest } from '@ocentra/network-domain/router-types';
 import { loadDesktopPlatformAssetRuntime } from '@/adapters/assets/loadDesktopPlatformAssetRuntime';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { DesktopAssetCache } from '@/adapters/assets/DesktopAssetCache';
 import { measureRuntimeAssetOperation } from '@/adapters/assets/RuntimeAssetTelemetry';
 import { getEntryIndexUrl, type StorageConfig } from '@/services/storage/StorageConfig';
@@ -21,6 +22,7 @@ import {
   prefetchCoreSlicesInternal,
   responseToArrayBuffer,
   fetchJsonSlice,
+  clearAssetDownloadUrlResolveCacheForRequest,
   runWithConcurrency,
   DEFAULT_PLATFORM_ASSET_FETCH_CONCURRENCY,
   type JsonSliceFetchOptions,
@@ -63,8 +65,29 @@ async function fetchMobileAssetResponse(
   storageConfig: StorageConfig,
   options?: PlatformAssetFetchOptions
 ): Promise<Response> {
+  return fetchBrowserAssetResponse(request, storageConfig, options);
+}
+
+function shouldRetryAssetFetchWithFreshUrl(status: number): boolean {
+  return status === HttpStatus.Unauthorized || status === HttpStatus.Forbidden || status === HttpStatus.Gone;
+}
+
+async function fetchBrowserAssetResponse(
+  request: Pick<ResourceRequest, 'guid' | 'hash' | 'checksum'>,
+  storageConfig: StorageConfig,
+  options?: PlatformAssetFetchOptions
+): Promise<Response> {
   const resolved = await resolveAssetDownloadUrl(request, storageConfig);
-  return await fetch(resolved, options?.cache ? { cache: options.cache } : undefined);
+  const init = options?.cache ? { cache: options.cache } : undefined;
+  const response = await fetch(resolved, init);
+  if (!shouldRetryAssetFetchWithFreshUrl(response.status)) {
+    return response;
+  }
+
+  await response.text().catch(() => undefined);
+  clearAssetDownloadUrlResolveCacheForRequest(request);
+  const refreshed = await resolveAssetDownloadUrl(request, storageConfig);
+  return await fetch(refreshed, init);
 }
 
 function createLazyDesktopRuntime(): IPlatformAssetRuntime {
@@ -233,8 +256,7 @@ class WebPlatformAssetRuntime implements IPlatformAssetRuntime {
     options?: PlatformAssetFetchOptions
   ) {
     return await measureRuntimeAssetOperation('web', 'fetchAsset', async () => {
-      const resolved = await resolveAssetDownloadUrl(request, storageConfig);
-      return fetch(resolved, options?.cache ? { cache: options.cache } : undefined);
+      return fetchBrowserAssetResponse(request, storageConfig, options);
     });
   }
 

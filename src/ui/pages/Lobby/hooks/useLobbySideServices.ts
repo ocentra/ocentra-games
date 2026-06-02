@@ -7,7 +7,6 @@ import {
   inviteToParty,
   leaveParty as leaveSocialParty,
   listFriends,
-  listMessages,
   sendMessage,
   type PartyStateResponse,
 } from '@ocentra/api-domain/social';
@@ -16,7 +15,6 @@ import {
   updateSettings,
 } from '@ocentra/api-domain/playerHub';
 import type {
-  LobbyChatMessageItem,
   LobbyFriendItem,
   LobbyPartyStatus,
   LobbyRewardStatus,
@@ -30,7 +28,6 @@ import {
 } from '@/ui/rewards/dailyRewardSpinState';
 
 const LobbySideRefreshMs = 15000;
-const LobbyMessageLimit = 6;
 const PartyStoragePrefix = 'ocentra:lobby:party:';
 
 const ServerOptions = [
@@ -42,7 +39,6 @@ const ServerOptions = [
 
 type LobbySideServicesState = {
   friends: LobbyFriendItem[];
-  lobbyChatMessages: LobbyChatMessageItem[];
   reward: LobbyRewardStatus | null;
   party: LobbyPartyStatus | null;
   server: LobbyServerStatus;
@@ -53,7 +49,6 @@ type LobbySideServicesState = {
   inviteFriend: (friendId: string, nextUserId?: string) => Promise<void>;
   createParty: (nextUserId?: string) => Promise<void>;
   leaveParty: (nextUserId?: string) => Promise<void>;
-  sendLobbyChat: (message: string, nextUserId?: string) => Promise<void>;
   claimReward: (nextUserId?: string) => Promise<void>;
   selectServer: (regionId: string, nextUserId?: string) => Promise<void>;
 };
@@ -61,10 +56,6 @@ type LobbySideServicesState = {
 function normalizeConversationId(value: string): string {
   const normalized = value.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
   return normalized || 'claim';
-}
-
-function lobbyConversationId(gameType: string): string {
-  return `lobby-${normalizeConversationId(gameType)}`;
 }
 
 function directConversationId(userId: string, friendId: string): string {
@@ -97,15 +88,6 @@ function clearStoredPartyId(userId: string, gameType: string): void {
   } catch {
     void 0;
   }
-}
-
-function formatAgo(timestamp?: number): string {
-  if (!timestamp) return 'Now';
-  const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
-  if (seconds < 60) return 'Now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m`;
-  return `${Math.floor(minutes / 60)}h`;
 }
 
 function toPartyStatus(party: PartyStateResponse | null): LobbyPartyStatus | null {
@@ -151,7 +133,6 @@ function toInviteMessage(gameType: string, room: LobbyRoomLike | null | undefine
 export function useLobbySideServices(gameType: string, userId?: string | null, joinedRoom?: LobbyRoomLike | null): LobbySideServicesState {
   const [runtimeUserId, setRuntimeUserId] = useState<string | null>(userId ?? null);
   const [friends, setFriends] = useState<LobbyFriendItem[]>([]);
-  const [lobbyChatMessages, setLobbyChatMessages] = useState<LobbyChatMessageItem[]>([]);
   const [reward, setReward] = useState<LobbyRewardStatus | null>(null);
   const [party, setParty] = useState<LobbyPartyStatus | null>(null);
   const [selectedRegionId, setSelectedRegionId] = useState<string>(ServerOptions[0].regionId);
@@ -159,24 +140,11 @@ export function useLobbySideServices(gameType: string, userId?: string | null, j
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const activeUserId = userId ?? runtimeUserId;
-  const conversationId = useMemo(() => lobbyConversationId(gameType), [gameType]);
   const server = useMemo(() => toServerStatus(selectedRegionId, selectingServer), [selectedRegionId, selectingServer]);
 
   useEffect(() => {
     if (userId) setRuntimeUserId(userId);
   }, [userId]);
-
-  const loadMessages = useCallback(async () => {
-    const response = await listMessages(conversationId, { limit: LobbyMessageLimit });
-    setLobbyChatMessages((response.messages ?? []).slice(-LobbyMessageLimit).map(message => ({
-      messageId: message.messageId,
-      senderId: message.senderId,
-      name: message.senderId === activeUserId ? 'You' : message.senderId,
-      msg: message.content,
-      ago: formatAgo(message.timestamp),
-      timestamp: message.timestamp,
-    })));
-  }, [activeUserId, conversationId]);
 
   const loadFriends = useCallback(async () => {
     const response = await listFriends();
@@ -230,7 +198,6 @@ export function useLobbySideServices(gameType: string, userId?: string | null, j
     try {
       await Promise.all([
         loadFriends(),
-        loadMessages(),
         loadParty(nextUserId),
         loadReward(nextUserId),
         loadSettings(nextUserId),
@@ -240,7 +207,7 @@ export function useLobbySideServices(gameType: string, userId?: string | null, j
     } finally {
       setLoading(false);
     }
-  }, [activeUserId, loadFriends, loadMessages, loadParty, loadReward, loadSettings]);
+  }, [activeUserId, loadFriends, loadParty, loadReward, loadSettings]);
 
   useEffect(() => {
     void refresh();
@@ -320,19 +287,6 @@ export function useLobbySideServices(gameType: string, userId?: string | null, j
     }
   }, [activeUserId, gameType, joinedRoom, party?.partyId]);
 
-  const sendLobbyChat = useCallback(async (message: string, nextUserId = activeUserId ?? undefined) => {
-    const content = message.trim();
-    if (!nextUserId || !content) return;
-    setRuntimeUserId(nextUserId);
-    setError(null);
-    try {
-      await sendMessage(conversationId, content);
-      await loadMessages();
-    } catch (responseError) {
-      setError(responseError instanceof Error ? responseError.message : 'Failed to send lobby chat');
-    }
-  }, [activeUserId, conversationId, loadMessages]);
-
   const claimReward = useCallback(async (nextUserId = activeUserId ?? undefined) => {
     if (!nextUserId) return;
     if (isDailyRewardSpinCollected(reward)) return;
@@ -364,7 +318,6 @@ export function useLobbySideServices(gameType: string, userId?: string | null, j
 
   return {
     friends,
-    lobbyChatMessages,
     reward,
     party,
     server,
@@ -375,7 +328,6 @@ export function useLobbySideServices(gameType: string, userId?: string | null, j
     inviteFriend,
     createParty,
     leaveParty,
-    sendLobbyChat,
     claimReward,
     selectServer,
   };

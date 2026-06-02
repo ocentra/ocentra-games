@@ -1,0 +1,233 @@
+{
+  system: {
+    guid: '60fc6491-3db8-4268-8e5b-5ac65bcea890',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/klaber/klaberRules.asset',
+    gameId: 'klaber',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Must follow suit. If unable, MUST trump if possible. Trick-winning is counter-clockwise.',
+    Player: 'Must follow suit. If unable, MUST trump if possible. Trick-winning is counter-clockwise.',
+    objective: 'Score more points than the opposing team through tricks and melds. The contractor team must outscore the defenders.',
+    gameplay: 'Must follow suit. If unable, MUST trump if possible. Trick-winning is counter-clockwise.',
+    keyRules: [
+      'Follow suit if possible; if unable, must trump if possible; otherwise play any card.',
+      "Player to dealer's right leads first; play is anticlockwise.",
+      'Bidding decides trump and contractor team; contractor must outscore defenders.',
+      'Melds (sequences, sets, bella) declared before first trick; only highest small meld counts per team, bella always scores.',
+      'Last trick worth 10 extra points; total card points 161. First to 501 wins the game.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in fixed partnerships (2 vs 2).',
+      deck: '32-card Hungarian deck (ranks: 7, 8, 9, 10, AlsÃ³/Under, FelsÅ‘/Over, King, Ace).',
+      equipment: '32-card Hungarian (Magyar Kártya) deck; scoring slate and chalk or equivalent.',
+      dealing: 'Cards are dealt counter-clockwise in batches (3-2-3 or 4-4). Each player receives 8 cards.',
+    },
+    turnFlow: 'Must follow suit. If unable, MUST trump if possible. Trick-winning is counter-clockwise.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'Optional; only before playing first card in first trick. Late declarations void.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Follow suit if possible; if void in led suit must trump if possible; no obligation to beat cards already in trick.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Legal when it is your turn to speak in the auction.',
+      bid: "Player to dealer's right must open with 1; others may pass or bid higher; auction until one team wins.",
+      meld: 'Sequences in suit order A-K-Over-Under-10-9-8-7; four of a kind exclude 8s and 7s; bella is King and Over of trumps.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Score more points than the opposing team through tricks and melds. The contractor team must outscore the defenders.',
+      'Turn-flow example: Must follow suit. If unable, MUST trump if possible. Trick-winning is counter-clockwise.',
+      'Scoring example: Card points from tricks (161 total) plus last trick (10); melds (terc, kvart, sequences, four of a kind, bella) added. Contractor team must outscore defenders or defenders score all. First to 501 wins the game. Score more points than the opposing team in the hand; first team to reach 501 or more points wins the game..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'klaber.rules.objective',
+        title: 'Objective',
+        text: 'Score more points than the opposing team through tricks and melds. The contractor team must outscore the defenders.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'klaber.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Must follow suit. If unable, MUST trump if possible. Trick-winning is counter-clockwise.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'klaber.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (2 vs 2).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'klaber.setup.deck',
+        title: 'Deck',
+        text: '32-card Hungarian deck (ranks: 7, 8, 9, 10, AlsÃ³/Under, FelsÅ‘/Over, King, Ace).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'klaber.setup.equipment',
+        title: 'Equipment',
+        text: '32-card Hungarian (Magyar Kártya) deck; scoring slate and chalk or equivalent.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'klaber.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt counter-clockwise in batches (3-2-3 or 4-4). Each player receives 8 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'klaber.score.win-condition',
+        title: 'Win condition',
+        text: 'Score more points than the opposing team in the hand; first team to reach 501 or more points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'klaber.score.description',
+        title: 'Scoring',
+        text: 'Card points from tricks (161 total) plus last trick (10); melds (terc, kvart, sequences, four of a kind, bella) added. Contractor team must outscore defenders or defenders score all. First to 501 wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'klaber.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit if possible; if unable, must trump if possible; otherwise play any card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'klaber.rules.key.2',
+        title: 'Key rule 2',
+        text: "Player to dealer's right leads first; play is anticlockwise.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'klaber.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bidding decides trump and contractor team; contractor must outscore defenders.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'klaber.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Melds (sequences, sets, bella) declared before first trick; only highest small meld counts per team, bella always scores.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'klaber.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Last trick worth 10 extra points; total card points 161. First to 501 wins the game.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'klaber.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'klaber.rules.objective',
+          'klaber.rules.gameplay',
+        ],
+      },
+      {
+        id: 'klaber.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'klaber.setup.players',
+          'klaber.setup.deck',
+          'klaber.setup.equipment',
+          'klaber.setup.dealing',
+        ],
+      },
+      {
+        id: 'klaber.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'klaber.rules.key.1',
+          'klaber.rules.key.2',
+          'klaber.rules.key.3',
+          'klaber.rules.key.4',
+          'klaber.rules.key.5',
+        ],
+      },
+      {
+        id: 'klaber.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'klaber.score.description',
+          'klaber.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'klaber.setup.dealing',
+        'klaber.rules.objective',
+      ],
+      declare: [
+        'klaber.rules.gameplay',
+      ],
+      play_card: [
+        'klaber.rules.gameplay',
+      ],
+      pass: [
+        'klaber.rules.gameplay',
+      ],
+      bid: [
+        'klaber.rules.gameplay',
+      ],
+      meld: [
+        'klaber.rules.gameplay',
+      ],
+      deal_8_klaber: [
+        'klaber.rules.gameplay',
+      ],
+    },
+  },
+}

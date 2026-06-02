@@ -1,0 +1,230 @@
+{
+  system: {
+    guid: '5ea57a20-9076-4c0e-b1fb-c470c08cdbf7',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/krypkille/krypkilleRules.asset',
+    gameId: 'krypkille',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Standard trick-taking. Must follow suit (if suits are used) or rank.\n2. In Krypkille, the player with the *HIGHEST* card wins the trick (and thus 'penalty' cards).\n3. **The Harlekin**: Changes value. If led, it is the highest. If played later, it is the lowest.",
+    Player: "1. Standard trick-taking. Must follow suit (if suits are used) or rank.\n2. In Krypkille, the player with the *HIGHEST* card wins the trick (and thus 'penalty' cards).\n3. **The Harlekin**: Changes value. If led, it is the highest. If played later, it is the lowest.",
+    objective: "Score as few points as possible by avoiding capturing tricks or holding 'lowest' cards.",
+    gameplay: "1. Standard trick-taking. Must follow suit (if suits are used) or rank.\n2. In Krypkille, the player with the *HIGHEST* card wins the trick (and thus 'penalty' cards).\n3. **The Harlekin**: Changes value. If led, it is the highest. If played later, it is the lowest.",
+    keyRules: [
+      'Two of each card in the 42-card deck',
+      'Harlekin is highest when led, lowest when played second',
+      "Hus (Home) blocks exchanges - 'Home stays'",
+      'Kuku (Cuckoo) penalty when received',
+      'Avoid winning tricks to avoid penalty points',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Optimal with 4 to 6 players.',
+      deck: '42 cards. Ranks: Kuku (Cuckoo), Hus (Home), Katt (Cat), Cavall (Horse), WÃ¤rd (Host), Fleur, Krans, Blomma, and Numbers 1-12. Harlekin (Joker) is the absolute highest or lowest depending on the rule phase.',
+      equipment: '42 cards. Ranks: Kuku (Cuckoo), Hus (Home), Katt (Cat), Cavall (Horse), WÃ¤rd (Host), Fleur, Krans, Blomma, and Numbers 1-12. Harlekin (Joker) is the absolute highest or lowest depending on the rule phase.',
+      dealing: 'Each player is dealt one card. The round involves exchanging cards to avoid the lowest rank.',
+    },
+    turnFlow: "1. Standard trick-taking. Must follow suit (if suits are used) or rank.\n2. In Krypkille, the player with the *HIGHEST* card wins the trick (and thus 'penalty' cards).\n3. **The Harlekin**: Changes value. If led, it is the highest. If played later, it is the lowest.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'Can be blocked by Hus (Home)',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Highest card wins (bad in misere)',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'During exchange phase',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 1 card(s) per player.',
+      "Rule example: Score as few points as possible by avoiding capturing tricks or holding 'lowest' cards.",
+      "Turn-flow example: 1. Standard trick-taking. Must follow suit (if suits are used) or rank.\n2. In Krypkille, the player with the *HIGHEST* card wins the trick (and thus 'penalty' cards).\n3. **The Harlekin**: Changes value. If led, it is the highest. If played later, it is the lowest.",
+      'Scoring example: Score as few points as possible by avoiding tricks and penalty cards. Lowest score when a player reaches the point cap.',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'krypkille.rules.objective',
+        title: 'Objective',
+        text: "Score as few points as possible by avoiding capturing tricks or holding 'lowest' cards.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'krypkille.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Standard trick-taking. Must follow suit (if suits are used) or rank.\n2. In Krypkille, the player with the *HIGHEST* card wins the trick (and thus 'penalty' cards).\n3. **The Harlekin**: Changes value. If led, it is the highest. If played later, it is the lowest.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'krypkille.setup.players',
+        title: 'Players',
+        text: 'Optimal with 4 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'krypkille.setup.deck',
+        title: 'Deck',
+        text: '42 cards. Ranks: Kuku (Cuckoo), Hus (Home), Katt (Cat), Cavall (Horse), WÃ¤rd (Host), Fleur, Krans, Blomma, and Numbers 1-12. Harlekin (Joker) is the absolute highest or lowest depending on the rule phase.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'krypkille.setup.equipment',
+        title: 'Equipment',
+        text: '42 cards. Ranks: Kuku (Cuckoo), Hus (Home), Katt (Cat), Cavall (Horse), WÃ¤rd (Host), Fleur, Krans, Blomma, and Numbers 1-12. Harlekin (Joker) is the absolute highest or lowest depending on the rule phase.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'krypkille.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt one card. The round involves exchanging cards to avoid the lowest rank.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'krypkille.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest score when a player reaches the point cap',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'krypkille.score.description',
+        title: 'Scoring',
+        text: 'Score as few points as possible by avoiding tricks and penalty cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'krypkille.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two of each card in the 42-card deck',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'krypkille.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Harlekin is highest when led, lowest when played second',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'krypkille.rules.key.3',
+        title: 'Key rule 3',
+        text: "Hus (Home) blocks exchanges - 'Home stays'",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'krypkille.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Kuku (Cuckoo) penalty when received',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'krypkille.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Avoid winning tricks to avoid penalty points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'krypkille.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'krypkille.rules.objective',
+          'krypkille.rules.gameplay',
+        ],
+      },
+      {
+        id: 'krypkille.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'krypkille.setup.players',
+          'krypkille.setup.deck',
+          'krypkille.setup.equipment',
+          'krypkille.setup.dealing',
+        ],
+      },
+      {
+        id: 'krypkille.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'krypkille.rules.key.1',
+          'krypkille.rules.key.2',
+          'krypkille.rules.key.3',
+          'krypkille.rules.key.4',
+          'krypkille.rules.key.5',
+        ],
+      },
+      {
+        id: 'krypkille.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'krypkille.score.description',
+          'krypkille.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'krypkille.setup.dealing',
+        'krypkille.rules.objective',
+      ],
+      deal: [
+        'krypkille.rules.gameplay',
+      ],
+      call: [
+        'krypkille.rules.gameplay',
+      ],
+      play_card: [
+        'krypkille.rules.gameplay',
+      ],
+      pass: [
+        'krypkille.rules.gameplay',
+      ],
+      count_points: [
+        'krypkille.rules.gameplay',
+      ],
+    },
+  },
+}

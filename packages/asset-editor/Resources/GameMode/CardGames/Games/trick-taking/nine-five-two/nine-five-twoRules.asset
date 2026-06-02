@@ -1,0 +1,233 @@
+{
+  system: {
+    guid: '408f76d8-8833-45ac-a347-32c5f7e8eb60',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/nine-five-two/nine-five-twoRules.asset',
+    gameId: 'nine-five-two',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Dealer names trumps. 2. Player left of dealer leads to first trick. 3. Must follow suit if possible; may trump or discard if void. 4. Highest trump wins trick; otherwise highest of led suit wins. 5. Winner leads to next trick.',
+    Player: '1. Dealer names trumps. 2. Player left of dealer leads to first trick. 3. Must follow suit if possible; may trump or discard if void. 4. Highest trump wins trick; otherwise highest of led suit wins. 5. Winner leads to next trick.',
+    objective: 'Reach agreed target score (usually 10 or 20 points) by winning tricks relative to your quota.',
+    gameplay: '1. Dealer names trumps. 2. Player left of dealer leads to first trick. 3. Must follow suit if possible; may trump or discard if void. 4. Highest trump wins trick; otherwise highest of led suit wins. 5. Winner leads to next trick.',
+    keyRules: [
+      'Targets: Dealer=9, Left=5, Right=2',
+      'Dealer picks up kitty BEFORE discarding (unlike Sergeant Major)',
+      'Cumulative scoring: +1 per overtrick, -1 per undertrick',
+      'Card exchange based on over/under tricks',
+      'Game ends at +10 or +20 points',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 players. Targets: Dealer=9 tricks, Left opponent=5 tricks, Right opponent=2 tricks.',
+      deck: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+      equipment: 'Standard deck, score pad for cumulative scoring.',
+      dealing: '16 cards dealt to each player. Last 4 cards form the kitty. Dealer names trumps, picks up kitty, then discards 4 cards (this order is specific to 9-5-2).',
+    },
+    turnFlow: '1. Dealer names trumps. 2. Player left of dealer leads to first trick. 3. Must follow suit if possible; may trump or discard if void. 4. Highest trump wins trick; otherwise highest of led suit wins. 5. Winner leads to next trick.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if possible',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'Dealer only; after taking kitty',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 16 card(s) per player.',
+      'Rule example: Reach agreed target score (usually 10 or 20 points) by winning tricks relative to your quota.',
+      'Turn-flow example: 1. Dealer names trumps. 2. Player left of dealer leads to first trick. 3. Must follow suit if possible; may trump or discard if void. 4. Highest trump wins trick; otherwise highest of led suit wins. 5. Winner leads to next trick.',
+      "Scoring example: Cumulative point scoring. +1 per trick above target, -1 per trick below target. Sum of all three players' scores always equals zero. Reach +10 or +20 points (agreed target)..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'nine-five-two.rules.objective',
+        title: 'Objective',
+        text: 'Reach agreed target score (usually 10 or 20 points) by winning tricks relative to your quota.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'nine-five-two.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Dealer names trumps. 2. Player left of dealer leads to first trick. 3. Must follow suit if possible; may trump or discard if void. 4. Highest trump wins trick; otherwise highest of led suit wins. 5. Winner leads to next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'nine-five-two.setup.players',
+        title: 'Players',
+        text: '3 players. Targets: Dealer=9 tricks, Left opponent=5 tricks, Right opponent=2 tricks.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'nine-five-two.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'nine-five-two.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score pad for cumulative scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'nine-five-two.setup.dealing',
+        title: 'Deal',
+        text: '16 cards dealt to each player. Last 4 cards form the kitty. Dealer names trumps, picks up kitty, then discards 4 cards (this order is specific to 9-5-2).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'nine-five-two.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach +10 or +20 points (agreed target).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'nine-five-two.score.description',
+        title: 'Scoring',
+        text: "Cumulative point scoring. +1 per trick above target, -1 per trick below target. Sum of all three players' scores always equals zero.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'nine-five-two.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Targets: Dealer=9, Left=5, Right=2',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'nine-five-two.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Dealer picks up kitty BEFORE discarding (unlike Sergeant Major)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'nine-five-two.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cumulative scoring: +1 per overtrick, -1 per undertrick',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'nine-five-two.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Card exchange based on over/under tricks',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'nine-five-two.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Game ends at +10 or +20 points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'nine-five-two.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'nine-five-two.rules.objective',
+          'nine-five-two.rules.gameplay',
+        ],
+      },
+      {
+        id: 'nine-five-two.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'nine-five-two.setup.players',
+          'nine-five-two.setup.deck',
+          'nine-five-two.setup.equipment',
+          'nine-five-two.setup.dealing',
+        ],
+      },
+      {
+        id: 'nine-five-two.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'nine-five-two.rules.key.1',
+          'nine-five-two.rules.key.2',
+          'nine-five-two.rules.key.3',
+          'nine-five-two.rules.key.4',
+          'nine-five-two.rules.key.5',
+        ],
+      },
+      {
+        id: 'nine-five-two.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'nine-five-two.score.description',
+          'nine-five-two.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'nine-five-two.setup.dealing',
+        'nine-five-two.rules.objective',
+      ],
+      deal: [
+        'nine-five-two.rules.gameplay',
+      ],
+      play_card: [
+        'nine-five-two.rules.gameplay',
+      ],
+      discard: [
+        'nine-five-two.rules.gameplay',
+      ],
+      call_trump: [
+        'nine-five-two.rules.gameplay',
+      ],
+      take_kitty: [
+        'nine-five-two.rules.gameplay',
+      ],
+      exchange_cards: [
+        'nine-five-two.rules.gameplay',
+      ],
+    },
+  },
+}

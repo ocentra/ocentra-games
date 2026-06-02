@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '3f4c57be-4738-4125-bfa0-5d99155d00f4',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/miscellaneous/pelmanism/pelmanismValidationFixtures.asset',
+    gameId: 'pelmanism',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pelmanism',
+    familyVariant: 'Memory',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pelmanism.core-runtime-contracts',
+        title: 'Pelmanism Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pelmanism.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Pelmanism must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pelmanism.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pelmanism.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'flip',
+            supportedActionIds: [
+              'setup_round',
+              'flip_two_cards',
+            ],
+            explanation: 'Pelmanism must run setup_round first, then enter flip with the processed legal actions.',
+            linkedRuleIds: [
+              'pelmanism.setup.initial-deal',
+              'pelmanism.flow.flip',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'flip',
+            firstPlayableLegalActions: [
+              'flip_two_cards',
+            ],
+          },
+          {
+            id: 'pelmanism.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'The player with the most pairs (points) when the layout is empty wins; ties share the win.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'One point per pair collected. When all cards are taken, the player with the most points wins; if two or more tie for the most, they all win.',
+            linkedRuleIds: [
+              'pelmanism.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pelmanism.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

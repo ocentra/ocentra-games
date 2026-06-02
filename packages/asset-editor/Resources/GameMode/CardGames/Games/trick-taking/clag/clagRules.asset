@@ -1,0 +1,227 @@
+{
+  system: {
+    guid: '013c1bf4-d6fc-4d12-99b8-660433a1ee47',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/clag/clagRules.asset',
+    gameId: 'clag',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "22 deals (1-7 cards, then 8 special deals, then 7-1). Bid exact tricks. Trump by turned card (except specials: No Trump, Misere, Blind, Twos Wild, etc). Follow suit. Dealer's bid restricted so total ≠ cards dealt. Score for making bid.",
+    Player: "22 deals (1-7 cards, then 8 special deals, then 7-1). Bid exact tricks. Trump by turned card (except specials: No Trump, Misere, Blind, Twos Wild, etc). Follow suit. Dealer's bid restricted so total ≠ cards dealt. Score for making bid.",
+    objective: 'Players try to predict the exact number of tricks they will win in each deal. Over 22 deals (hand sizes 1–7, then eight special seven-card deals, then 7 down to 1), each player scores one point per trick won plus a 10-point bonus for making their bid exactly. The player with the highest cumulative score after all 22 deals wins.',
+    gameplay: "22 deals (1-7 cards, then 8 special deals, then 7-1). Bid exact tricks. Trump by turned card (except specials: No Trump, Misere, Blind, Twos Wild, etc). Follow suit. Dealer's bid restricted so total ≠ cards dealt. Score for making bid.",
+    keyRules: [
+      '22 deals with specific structure',
+      'Deals 1-7 and 16-22 are normal Oh Hell! deals',
+      'Deals 8-15 are special deals with unique rules',
+      "Dealer's bid restricted so total cannot equal cards dealt",
+      'Cumulative scoring over all 22 deals',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4-7 players. Deal and play are clockwise.',
+      deck: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+      equipment: 'Standard deck, score pad for cumulative scoring.',
+      dealing: '22 deals total. Deals 1-7: 1-7 cards each. Deals 8-15: special deals, 7 cards each. Deals 16-22: 7-1 cards each. Trump determined by turning next card after deal (except special deals).',
+    },
+    turnFlow: "22 deals (1-7 cards, then 8 special deals, then 7-1). Bid exact tricks. Trump by turned card (except specials: No Trump, Misere, Blind, Twos Wild, etc). Follow suit. Dealer's bid restricted so total ≠ cards dealt. Score for making bid.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit if possible',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'Dealer cannot make total equal cards dealt',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Players try to predict the exact number of tricks they will win in each deal. Over 22 deals (hand sizes 1–7, then eight special seven-card deals, then 7 down to 1), each player scores one point per trick won plus a 10-point bonus for making their bid exactly. The player with the highest cumulative score after all 22 deals wins.',
+      "Turn-flow example: 22 deals (1-7 cards, then 8 special deals, then 7-1). Bid exact tricks. Trump by turned card (except specials: No Trump, Misere, Blind, Twos Wild, etc). Follow suit. Dealer's bid restricted so total ≠ cards dealt. Score for making bid.",
+      'Scoring example: Cumulative scoring over 22 deals. 1 point per trick + 10 for exact bid (normal deals). Special deals have modified scoring. Highest score after 22 deals..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'clag.rules.objective',
+        title: 'Objective',
+        text: 'Players try to predict the exact number of tricks they will win in each deal. Over 22 deals (hand sizes 1–7, then eight special seven-card deals, then 7 down to 1), each player scores one point per trick won plus a 10-point bonus for making their bid exactly. The player with the highest cumulative score after all 22 deals wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'clag.rules.gameplay',
+        title: 'Turn flow',
+        text: "22 deals (1-7 cards, then 8 special deals, then 7-1). Bid exact tricks. Trump by turned card (except specials: No Trump, Misere, Blind, Twos Wild, etc). Follow suit. Dealer's bid restricted so total ≠ cards dealt. Score for making bid.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'clag.setup.players',
+        title: 'Players',
+        text: '4-7 players. Deal and play are clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'clag.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'clag.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score pad for cumulative scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'clag.setup.dealing',
+        title: 'Deal',
+        text: '22 deals total. Deals 1-7: 1-7 cards each. Deals 8-15: special deals, 7 cards each. Deals 16-22: 7-1 cards each. Trump determined by turning next card after deal (except special deals).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'clag.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score after 22 deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'clag.score.description',
+        title: 'Scoring',
+        text: 'Cumulative scoring over 22 deals. 1 point per trick + 10 for exact bid (normal deals). Special deals have modified scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'clag.rules.key.1',
+        title: 'Key rule 1',
+        text: '22 deals with specific structure',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'clag.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Deals 1-7 and 16-22 are normal Oh Hell! deals',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'clag.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Deals 8-15 are special deals with unique rules',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'clag.rules.key.4',
+        title: 'Key rule 4',
+        text: "Dealer's bid restricted so total cannot equal cards dealt",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'clag.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Cumulative scoring over all 22 deals',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'clag.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'clag.rules.objective',
+          'clag.rules.gameplay',
+        ],
+      },
+      {
+        id: 'clag.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'clag.setup.players',
+          'clag.setup.deck',
+          'clag.setup.equipment',
+          'clag.setup.dealing',
+        ],
+      },
+      {
+        id: 'clag.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'clag.rules.key.1',
+          'clag.rules.key.2',
+          'clag.rules.key.3',
+          'clag.rules.key.4',
+          'clag.rules.key.5',
+        ],
+      },
+      {
+        id: 'clag.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'clag.score.description',
+          'clag.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'clag.setup.dealing',
+        'clag.rules.objective',
+      ],
+      deal: [
+        'clag.rules.gameplay',
+      ],
+      play_card: [
+        'clag.rules.gameplay',
+      ],
+      bid: [
+        'clag.rules.gameplay',
+      ],
+      update_score: [
+        'clag.rules.gameplay',
+      ],
+    },
+  },
+}

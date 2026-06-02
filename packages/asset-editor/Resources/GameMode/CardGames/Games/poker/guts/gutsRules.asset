@@ -1,0 +1,193 @@
+{
+  system: {
+    guid: 'f3c565bc-104e-4a26-ae3c-b0c53eb7931e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/guts/gutsRules.asset',
+    gameId: 'guts',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'If the pot is empty, all players pay the agreed ante. Dealer shuffles and deals two cards face down to each player. Starting left of dealer and going clockwise, each player declares in (compete for the pot) or out (drop out; no extra loss). If more than one stays in, they show hands and the best two-card hand wins the pot. All players who stayed in but did not win must each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing. Ties for best share the pot; if all who stayed in tie, pot may be carried or re-anted as agreed.',
+    Player: 'If the pot is empty, all players pay the agreed ante. Dealer shuffles and deals two cards face down to each player. Starting left of dealer and going clockwise, each player declares in (compete for the pot) or out (drop out; no extra loss). If more than one stays in, they show hands and the best two-card hand wins the pot. All players who stayed in but did not win must each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing. Ties for best share the pot; if all who stayed in tie, pot may be carried or re-anted as agreed.',
+    objective: "Win the pot by having the best hand among players who declare 'in', or be the only player to declare 'in'.",
+    gameplay: 'If the pot is empty, all players pay the agreed ante. Dealer shuffles and deals two cards face down to each player. Starting left of dealer and going clockwise, each player declares in (compete for the pot) or out (drop out; no extra loss). If more than one stays in, they show hands and the best two-card hand wins the pot. All players who stayed in but did not win must each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing. Ties for best share the pot; if all who stayed in tie, pot may be carried or re-anted as agreed.',
+    keyRules: [
+      'Two cards each, dealt one at a time face down. Declare in or out in turn (or simultaneously by chips in fist, if agreed). Best two-card hand among those in wins: pair beats non-pair, higher pair beats lower, then highest card then second. Aces high. Losers who stayed in each match the pot. Agree ante and optional max loss per deal before play.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3-10 players. (Best with 5-8).',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Standard 52-card deck.',
+      dealing: 'Each player receives 2 or 3 cards (variant-dependent). No community cards. Simultaneous in/out declaration.',
+    },
+    turnFlow: 'If the pot is empty, all players pay the agreed ante. Dealer shuffles and deals two cards face down to each player. Starting left of dealer and going clockwise, each player declares in (compete for the pot) or out (drop out; no extra loss). If more than one stays in, they show hands and the best two-card hand wins the pot. All players who stayed in but did not win must each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing. Ties for best share the pot; if all who stayed in tie, pot may be carried or re-anted as agreed.',
+    moveValidityConditions: {
+      ante: 'Only when pot is empty; all players must ante before the deal. Amount from engine.constants.ante.',
+      deal: 'Dealer only; performed at start of each hand.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'During the declare phase when it is your turn (or when declaring simultaneously).',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'During the declare phase when it is your turn (or when declaring simultaneously).',
+      reveal_hand: 'Only in showdown phase; applies to all players who declared in when multiple are in.',
+      award_pot: 'Resolved by the engine after showdown (or when only one player stayed in).',
+      play_card: 'Guts has no card play; players declare in or out then show hands if multiple stayed in.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 2 card(s) per player.',
+      "Rule example: Win the pot by having the best hand among players who declare 'in', or be the only player to declare 'in'.",
+      'Turn-flow example: If the pot is empty, all players pay the agreed ante. Dealer shuffles and deals two cards face down to each player. Starting left of dealer and going clockwise, each player declares in (compete for the pot) or out (drop out; no extra loss). If more than one stays in, they show hands and the best two-card hand wins the pot. All players who stayed in but did not win must each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing. Ties for best share the pot; if all who stayed in tie, pot may be carried or re-anted as agreed.',
+      "Scoring example: Win the pot by having the best hand among players who declare 'in', or be the only player to declare 'in'. Win the pot by having the best hand among players who declare 'in', or be the only player to declare 'in'..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'guts.rules.objective',
+        title: 'Objective',
+        text: "Win the pot by having the best hand among players who declare 'in', or be the only player to declare 'in'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'guts.rules.gameplay',
+        title: 'Turn flow',
+        text: 'If the pot is empty, all players pay the agreed ante. Dealer shuffles and deals two cards face down to each player. Starting left of dealer and going clockwise, each player declares in (compete for the pot) or out (drop out; no extra loss). If more than one stays in, they show hands and the best two-card hand wins the pot. All players who stayed in but did not win must each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing. Ties for best share the pot; if all who stayed in tie, pot may be carried or re-anted as agreed.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'guts.setup.players',
+        title: 'Players',
+        text: '3-10 players. (Best with 5-8).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'guts.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'guts.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'guts.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 2 or 3 cards (variant-dependent). No community cards. Simultaneous in/out declaration.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'guts.score.win-condition',
+        title: 'Win condition',
+        text: "Win the pot by having the best hand among players who declare 'in', or be the only player to declare 'in'.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'guts.score.description',
+        title: 'Scoring',
+        text: "Win the pot by having the best hand among players who declare 'in', or be the only player to declare 'in'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'guts.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two cards each, dealt one at a time face down. Declare in or out in turn (or simultaneously by chips in fist, if agreed). Best two-card hand among those in wins: pair beats non-pair, higher pair beats lower, then highest card then second. Aces high. Losers who stayed in each match the pot. Agree ante and optional max loss per deal before play.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'guts.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'guts.rules.objective',
+          'guts.rules.gameplay',
+        ],
+      },
+      {
+        id: 'guts.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'guts.setup.players',
+          'guts.setup.deck',
+          'guts.setup.equipment',
+          'guts.setup.dealing',
+        ],
+      },
+      {
+        id: 'guts.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'guts.rules.key.1',
+        ],
+      },
+      {
+        id: 'guts.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'guts.score.description',
+          'guts.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'guts.setup.dealing',
+        'guts.rules.objective',
+      ],
+      ante: [
+        'guts.rules.gameplay',
+      ],
+      deal: [
+        'guts.rules.gameplay',
+      ],
+      fold: [
+        'guts.rules.gameplay',
+      ],
+      declare: [
+        'guts.rules.gameplay',
+      ],
+      reveal_hand: [
+        'guts.rules.gameplay',
+      ],
+      award_pot: [
+        'guts.rules.gameplay',
+      ],
+    },
+  },
+}

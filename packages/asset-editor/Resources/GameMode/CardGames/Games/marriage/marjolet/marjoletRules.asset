@@ -1,0 +1,224 @@
+{
+  system: {
+    guid: '933f01a1-8c49-488d-8212-495fa4d58c33',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/marjolet/marjoletRules.asset',
+    gameId: 'marjolet',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Non-dealer leads to first trick. Opponent may play any card (no obligation to follow suit). Higher card of led suit wins, or trump wins against non-trump lead. Winner of trick may declare melds, then both players draw from stock (winner draws first). Winner leads to next trick.',
+    Player: 'Non-dealer leads to first trick. Opponent may play any card (no obligation to follow suit). Higher card of led suit wins, or trump wins against non-trump lead. Winner of trick may declare melds, then both players draw from stock (winner draws first). Winner leads to next trick.',
+    objective: 'Win the hand by scoring the most points through melds and capturing Aces and Tens in tricks (brisques). Win the game by being first to make 500+ points across hands.',
+    gameplay: 'Non-dealer leads to first trick. Opponent may play any card (no obligation to follow suit). Higher card of led suit wins, or trump wins against non-trump lead. Winner of trick may declare melds, then both players draw from stock (winner draws first). Winner leads to next trick.',
+    keyRules: [
+      'Non-dealer leads to first trick; no obligation to follow suit during stock phase.',
+      'Higher card of led suit wins the trick, or any trump beats non-trump.',
+      'Winner of each trick may declare melds (e.g. marriage, Marjolet with Queen), then winner draws first from stock, opponent second.',
+      'First to 500 or more points wins the game; points from melds and from Aces and Tens (brisques) in tricks.',
+      'In the final 6 tricks, must follow suit and win if possible.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 players, playing individually.',
+      deck: "32-card 'French deck' - remove all cards below 7 from standard deck. Ranking: Ace (high), 10, King, Queen, Jack, 9, 8, 7. Note: 10 is second-highest, right below Ace.",
+      equipment: "32-card 'French deck' - remove all cards below 7 from standard deck. Ranking: Ace (high), 10, King, Queen, Jack, 9, 8, 7. Note: 10 is second-highest, right below Ace.",
+      dealing: 'Deal 6 cards to each player. Turn one card up next to remaining deck (stock) to determine trump suit.',
+    },
+    turnFlow: 'Non-dealer leads to first trick. Opponent may play any card (no obligation to follow suit). Higher card of led suit wins, or trump wins against non-trump lead. Winner of trick may declare melds, then both players draw from stock (winner draws first). Winner leads to next trick.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal when it is your turn to play to the trick. During stock phase no follow-suit; after stock exhausted must follow suit and overtake if able.',
+      draw: 'Only after a trick is complete; winner draws first then opponent. Only when stock has cards.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'Only legal for the player who just won the trick. One or more melds may be declared before drawing. No melds in the final 6 tricks.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Win the hand by scoring the most points through melds and capturing Aces and Tens in tricks (brisques). Win the game by being first to make 500+ points across hands.',
+      'Turn-flow example: Non-dealer leads to first trick. Opponent may play any card (no obligation to follow suit). Higher card of led suit wins, or trump wins against non-trump lead. Winner of trick may declare melds, then both players draw from stock (winner draws first). Winner leads to next trick.',
+      'Scoring example: Points from melds and from brisques (Aces and Tens) taken in tricks. First to 500 or more wins the game. First to reach 500 or more points across hands wins the game. Points come from melds declared and from Aces and Tens (brisques) captured in tricks..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'marjolet.rules.objective',
+        title: 'Objective',
+        text: 'Win the hand by scoring the most points through melds and capturing Aces and Tens in tricks (brisques). Win the game by being first to make 500+ points across hands.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'marjolet.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Non-dealer leads to first trick. Opponent may play any card (no obligation to follow suit). Higher card of led suit wins, or trump wins against non-trump lead. Winner of trick may declare melds, then both players draw from stock (winner draws first). Winner leads to next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'marjolet.setup.players',
+        title: 'Players',
+        text: '2 players, playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'marjolet.setup.deck',
+        title: 'Deck',
+        text: "32-card 'French deck' - remove all cards below 7 from standard deck. Ranking: Ace (high), 10, King, Queen, Jack, 9, 8, 7. Note: 10 is second-highest, right below Ace.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'marjolet.setup.equipment',
+        title: 'Equipment',
+        text: "32-card 'French deck' - remove all cards below 7 from standard deck. Ranking: Ace (high), 10, King, Queen, Jack, 9, 8, 7. Note: 10 is second-highest, right below Ace.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'marjolet.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 6 cards to each player. Turn one card up next to remaining deck (stock) to determine trump suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'marjolet.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reach 500 or more points across hands wins the game. Points come from melds declared and from Aces and Tens (brisques) captured in tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'marjolet.score.description',
+        title: 'Scoring',
+        text: 'Points from melds and from brisques (Aces and Tens) taken in tricks. First to 500 or more wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'marjolet.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Non-dealer leads to first trick; no obligation to follow suit during stock phase.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'marjolet.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Higher card of led suit wins the trick, or any trump beats non-trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'marjolet.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winner of each trick may declare melds (e.g. marriage, Marjolet with Queen), then winner draws first from stock, opponent second.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'marjolet.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First to 500 or more points wins the game; points from melds and from Aces and Tens (brisques) in tricks.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'marjolet.rules.key.5',
+        title: 'Key rule 5',
+        text: 'In the final 6 tricks, must follow suit and win if possible.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'marjolet.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'marjolet.rules.objective',
+          'marjolet.rules.gameplay',
+        ],
+      },
+      {
+        id: 'marjolet.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'marjolet.setup.players',
+          'marjolet.setup.deck',
+          'marjolet.setup.equipment',
+          'marjolet.setup.dealing',
+        ],
+      },
+      {
+        id: 'marjolet.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'marjolet.rules.key.1',
+          'marjolet.rules.key.2',
+          'marjolet.rules.key.3',
+          'marjolet.rules.key.4',
+          'marjolet.rules.key.5',
+        ],
+      },
+      {
+        id: 'marjolet.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'marjolet.score.description',
+          'marjolet.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'marjolet.setup.dealing',
+        'marjolet.rules.objective',
+      ],
+      play_card: [
+        'marjolet.rules.gameplay',
+      ],
+      draw: [
+        'marjolet.rules.gameplay',
+      ],
+      meld: [
+        'marjolet.rules.gameplay',
+      ],
+    },
+  },
+}

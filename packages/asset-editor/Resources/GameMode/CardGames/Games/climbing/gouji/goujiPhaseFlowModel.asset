@@ -1,0 +1,133 @@
+{
+  system: {
+    guid: '87750e43-e93f-4b46-9fb8-409d55d54d01',
+    assetType: 'GamePhaseFlowModel',
+    schemaVersion: 1,
+    displayName: 'Phase Flow Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/climbing/gouji/goujiPhaseFlowModel.asset',
+    gameId: 'gouji',
+  },
+  data: {
+    modelKind: 'phase_flow_model',
+    modelId: 'custom.phase-flow-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'gouji',
+    familyVariant: 'Climbing / Rank-exchange',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    phases: [
+      {
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: [
+          'setup_round',
+        ],
+        nextPhase: 'deal',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Deal 36 card(s) to each active player before player action begins.',
+      },
+      {
+        id: 'deal',
+        label: 'Deal',
+        actor: 'dealer',
+        legalActions: [
+          'deal',
+        ],
+        nextPhase: 'climb_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {
+          deal: 'face_down',
+        },
+        notes: 'Players draw cards from the mixed 216-card deck until each has 36 cards.',
+      },
+      {
+        id: 'climb_play',
+        label: 'Climbing and Gou Ji Duels',
+        actor: 'each_player_counterclockwise',
+        legalActions: [
+          'play_card',
+          'pass',
+        ],
+        nextPhase: 'climb_play',
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [
+          {
+            condition: 'all_but_one_players_out == true',
+            nextPhase: 'resolution',
+          },
+        ],
+        cardVisibilityChanges: {
+          play_card: 'face_up',
+        },
+        notes: 'Players beat singles or equal-size sets with higher rank sets. High enough sets trigger Gou Ji duels against opposite player.',
+      },
+      {
+        id: 'resolution',
+        label: 'Scoring',
+        actor: 'system',
+        legalActions: [
+          'award_pot',
+        ],
+        nextPhase: null,
+        isMandatory: true,
+        loopIndex: null,
+        totalLoops: null,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+        notes: 'Rank players by finish order and apply team score (+4,+2,0,0,-2,-4 with doubled 12-point swing for 1-2-3 sweep).',
+      },
+    ],
+    turnPolicy: {
+      direction: 'counterclockwise',
+      startsWith: 'right_of_dealer',
+      timerSeconds: null,
+    },
+    setupModel: {
+      setup: {
+        players: '6 players. Seated alternating (Team A: 1, 3, 5; Team B: 2, 4, 6).',
+        deck: '4 decks of 52 cards + 8 Jokers (4 Red, 4 Black). Total 216 cards.',
+        equipment: '',
+        dealing: 'Cards are dealt until the deck is exhausted (36 cards per player).',
+        hasPlaceholders: false,
+      },
+    },
+    turnModel: {
+      turnOrder: {
+        direction: 'counterclockwise',
+        startsWith: 'right_of_dealer',
+        dealerRotates: true,
+      },
+      trickConfig: null,
+    },
+    runtimeIntegration: {
+      rngUsed: [
+        'shuffle',
+      ],
+      authoritativeServer: false,
+      customLogicNeeded: [
+        'Implement Gou Ji duel interruption against opposite seat only.',
+        'Support Shao Pai intervention and failure handling.',
+        'Apply tribute and liberation rules between hands in ordinary games.',
+      ],
+    },
+    progression: [
+      'setup_round',
+      'deal',
+      'climb_play',
+      'resolution',
+    ],
+    examples: [],
+  },
+}

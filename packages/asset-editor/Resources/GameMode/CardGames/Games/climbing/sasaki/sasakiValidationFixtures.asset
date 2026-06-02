@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: 'd4aec676-0baf-4773-beb8-6c8238a76d11',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/climbing/sasaki/sasakiValidationFixtures.asset',
+    gameId: 'sasaki',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'sasaki',
+    familyVariant: 'Climbing',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'sasaki.core-runtime-contracts',
+        title: 'Sasaki Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'sasaki.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Sasaki must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'sasaki.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'sasaki.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Sasaki must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'sasaki.setup.initial-deal',
+              'sasaki.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'sasaki.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '10',
+            scoringDirection: 'high_wins',
+            targetScore: 10,
+            cardValues: {
+              '3': '3',
+              '4': '4',
+              '5': '5',
+              '6': '6',
+              '7': '7',
+              '8': '8',
+              '9': '9',
+              '10': '10',
+              A: '14',
+              K: '13',
+              Q: '12',
+              J: '11',
+            },
+            explanation: 'Team placement scoring: 1st+2nd place team +2 each; 1st+3rd +1 each; 2nd+4th or 1st+4th no score; 3rd+4th -2 each. Lone player vs three: 1st +6, 4th -3; others 0 or -2/+1. Scores doubled if red 10s exposed (running), quadrupled if other team calls stop. Scores sum to zero; often played for stakes.',
+            linkedRuleIds: [
+              'sasaki.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'sasaki.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

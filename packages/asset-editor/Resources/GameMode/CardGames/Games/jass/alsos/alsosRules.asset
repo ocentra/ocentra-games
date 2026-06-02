@@ -1,0 +1,229 @@
+{
+  system: {
+    guid: 'fc468c7b-b147-40ba-9d68-0449546dd392',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/alsos/alsosRules.asset',
+    gameId: 'alsos',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Bidding**: Players bid to accept the turned-up trump or name a new suit/game (Betli, Klopitzky). 2. **Melding**: Before the first trick, players announce 'sequences' and 'Vannak' (four of a kind). 3. **The Play**: Declarer competes against the two opponents (who cooperate). 4. **Figures**: During play, players may announce 'Ultimo' (winning last trick with trump 7) or 'Volat' (winning all tricks).",
+    Player: "1. **Bidding**: Players bid to accept the turned-up trump or name a new suit/game (Betli, Klopitzky). 2. **Melding**: Before the first trick, players announce 'sequences' and 'Vannak' (four of a kind). 3. **The Play**: Declarer competes against the two opponents (who cooperate). 4. **Figures**: During play, players may announce 'Ultimo' (winning last trick with trump 7) or 'Volat' (winning all tricks).",
+    objective: "As declarer, score more points through tricks, melds, and 'figures' than the highest-scoring opponent.",
+    gameplay: "1. **Bidding**: Players bid to accept the turned-up trump or name a new suit/game (Betli, Klopitzky). 2. **Melding**: Before the first trick, players announce 'sequences' and 'Vannak' (four of a kind). 3. **The Play**: Declarer competes against the two opponents (who cooperate). 4. **Figures**: During play, players may announce 'Ultimo' (winning last trick with trump 7) or 'Volat' (winning all tricks).",
+    keyRules: [
+      'Trump Rank: Under (Alsos) highest, then 9, A, 10, K, Over, 8, 7.',
+      'No-Trump Rank: A, 10, K, Over, Under, 9, 8, 7.',
+      "Kontra: Opponents can double the score if they feel the declarer will lose. Declarer can 'Rekontra' to quadruple.",
+      'Last Trick: Worth 10 bonus points.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 active players. With 4 players, dealer sits out each hand.',
+      deck: '32 cards (A, K, Over, Under, 10, 9, 8, 7). Usually Hungarian suits (Acorns, Hearts, Leaves, Bells).',
+      equipment: 'Hungarian deck, complex scoring sheet.',
+      dealing: "Each player receives 9 cards (dealt in batches of 3-3-3). 5 cards remain in the 'Talon' (one face up to propose trump).",
+    },
+    turnFlow: "1. **Bidding**: Players bid to accept the turned-up trump or name a new suit/game (Betli, Klopitzky). 2. **Melding**: Before the first trick, players announce 'sequences' and 'Vannak' (four of a kind). 3. **The Play**: Declarer competes against the two opponents (who cooperate). 4. **Figures**: During play, players may announce 'Ultimo' (winning last trick with trump 7) or 'Volat' (winning all tricks).",
+    moveValidityConditions: {
+      ante: 'Alsós uses contract bidding and figures; no ante.',
+      deal: 'Dealer-only in deal phases.',
+      reveal_market: 'Dealer-only during initial deal.',
+      buy_market: 'Trump from talon; no market buy.',
+      buy_stock: 'Nine cards dealt in two stages; no stock buy.',
+      fold: 'Trick-taking partnership game; no fold.',
+      check: 'No check action in this game.',
+      call: 'No call/match betting.',
+      bet: 'No betting rounds.',
+      raise: 'No betting rounds.',
+      declare: 'Only in announcement windows and according to contract timing.',
+      reveal_hand: 'Cards played to tricks; no showdown.',
+      award_pot: 'System action at settlement.',
+      play_card: 'Must follow lead/trump obligations of the active contract.',
+      draw: 'Fixed hand dealt; no draw.',
+      discard: 'Cards played to tricks; no discard.',
+      pass: 'Allowed only in bidding or declaration windows.',
+      bid: 'Must overcall current bid or pass.',
+      meld: 'Declared when playing to the first trick; state length for sequences; optional to declare.',
+      go_out: 'All cards played in tricks.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      "Rule example: As declarer, score more points through tricks, melds, and 'figures' than the highest-scoring opponent.",
+      "Turn-flow example: 1. **Bidding**: Players bid to accept the turned-up trump or name a new suit/game (Betli, Klopitzky). 2. **Melding**: Before the first trick, players announce 'sequences' and 'Vannak' (four of a kind). 3. **The Play**: Declarer competes against the two opponents (who cooperate). 4. **Figures**: During play, players may announce 'Ultimo' (winning last trick with trump 7) or 'Volat' (winning all tricks).",
+      "Scoring example: Total points come from card values, melds, and figures. The declarer wins only if their total points exceed the points of BOTH opponents. If either opponent beats or ties the declarer, the declarer 'goes down'..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'alsos.rules.objective',
+        title: 'Objective',
+        text: "As declarer, score more points through tricks, melds, and 'figures' than the highest-scoring opponent.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'alsos.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding**: Players bid to accept the turned-up trump or name a new suit/game (Betli, Klopitzky). 2. **Melding**: Before the first trick, players announce 'sequences' and 'Vannak' (four of a kind). 3. **The Play**: Declarer competes against the two opponents (who cooperate). 4. **Figures**: During play, players may announce 'Ultimo' (winning last trick with trump 7) or 'Volat' (winning all tricks).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'alsos.setup.players',
+        title: 'Players',
+        text: '3 active players. With 4 players, dealer sits out each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'alsos.setup.deck',
+        title: 'Deck',
+        text: '32 cards (A, K, Over, Under, 10, 9, 8, 7). Usually Hungarian suits (Acorns, Hearts, Leaves, Bells).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'alsos.setup.equipment',
+        title: 'Equipment',
+        text: 'Hungarian deck, complex scoring sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'alsos.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives 9 cards (dealt in batches of 3-3-3). 5 cards remain in the 'Talon' (one face up to propose trump).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'alsos.score.win-condition',
+        title: 'Win condition',
+        text: "The declarer wins only if their total points exceed the points of BOTH opponents. If either opponent beats or ties the declarer, the declarer 'goes down'.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'alsos.score.description',
+        title: 'Scoring',
+        text: 'Total points come from card values, melds, and figures.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'alsos.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump Rank: Under (Alsos) highest, then 9, A, 10, K, Over, 8, 7.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'alsos.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No-Trump Rank: A, 10, K, Over, Under, 9, 8, 7.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'alsos.rules.key.3',
+        title: 'Key rule 3',
+        text: "Kontra: Opponents can double the score if they feel the declarer will lose. Declarer can 'Rekontra' to quadruple.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'alsos.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Last Trick: Worth 10 bonus points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'alsos.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'alsos.rules.objective',
+          'alsos.rules.gameplay',
+        ],
+      },
+      {
+        id: 'alsos.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'alsos.setup.players',
+          'alsos.setup.deck',
+          'alsos.setup.equipment',
+          'alsos.setup.dealing',
+        ],
+      },
+      {
+        id: 'alsos.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'alsos.rules.key.1',
+          'alsos.rules.key.2',
+          'alsos.rules.key.3',
+          'alsos.rules.key.4',
+        ],
+      },
+      {
+        id: 'alsos.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'alsos.score.description',
+          'alsos.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'alsos.setup.dealing',
+        'alsos.rules.objective',
+      ],
+      deal: [
+        'alsos.rules.gameplay',
+      ],
+      reveal_market: [
+        'alsos.rules.gameplay',
+      ],
+      declare: [
+        'alsos.rules.gameplay',
+      ],
+      award_pot: [
+        'alsos.rules.gameplay',
+      ],
+      play_card: [
+        'alsos.rules.gameplay',
+      ],
+      pass: [
+        'alsos.rules.gameplay',
+      ],
+      bid: [
+        'alsos.rules.gameplay',
+      ],
+      meld: [
+        'alsos.rules.gameplay',
+      ],
+    },
+  },
+}

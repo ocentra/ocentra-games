@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: '8ddfd5b7-4022-4aef-b122-fbf5e129db1b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/polish-bank-gambling/polish-bank-gamblingValidationFixtures.asset',
+    gameId: 'polish-bank-gambling',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'polish-bank-gambling',
+    familyVariant: 'Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'polish-bank-gambling.core-runtime-contracts',
+        title: 'Polish Bank Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'polish-bank-gambling.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 7,
+              recommended: 5,
+            },
+            expectedTotalInitialCards: 21,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Polish Bank must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'polish-bank-gambling.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'polish-bank-gambling.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'bet',
+              'perform_deal',
+              'resolve_round',
+            ],
+            explanation: 'Polish Bank must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'polish-bank-gambling.setup.initial-deal',
+              'polish-bank-gambling.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'perform_deal',
+            ],
+          },
+          {
+            id: 'polish-bank-gambling.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand.',
+            linkedRuleIds: [
+              'polish-bank-gambling.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'polish-bank-gambling.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

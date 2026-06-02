@@ -1,0 +1,229 @@
+{
+  system: {
+    guid: '938ac257-1d03-40bf-b577-cf71c81a70b5',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/blind-watten/blind-wattenRules.asset',
+    gameId: 'blind-watten',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Secret Selection**: Forehand and dealer establish rank and suit trumps in secret. 2. **Play**: Forehand leads. **Must Follow Suit** only applies to forehand and dealer for trumps. Partners have no follow obligation but must try to deduce trumps. 3. **The Cards**: Highest card is the 'Guate' (Schlag + 1), followed by the 'Rechte' (Schlag in trump suit), then the 'Linken' (Schlag in the other suit of same color).",
+    Player: "1. **Secret Selection**: Forehand and dealer establish rank and suit trumps in secret. 2. **Play**: Forehand leads. **Must Follow Suit** only applies to forehand and dealer for trumps. Partners have no follow obligation but must try to deduce trumps. 3. **The Cards**: Highest card is the 'Guate' (Schlag + 1), followed by the 'Rechte' (Schlag in trump suit), then the 'Linken' (Schlag in the other suit of same color).",
+    objective: 'Win at least three out of five tricks to win the hand. First team to 15 or 18 points wins the match.',
+    gameplay: "1. **Secret Selection**: Forehand and dealer establish rank and suit trumps in secret. 2. **Play**: Forehand leads. **Must Follow Suit** only applies to forehand and dealer for trumps. Partners have no follow obligation but must try to deduce trumps. 3. **The Cards**: Highest card is the 'Guate' (Schlag + 1), followed by the 'Rechte' (Schlag in trump suit), then the 'Linken' (Schlag in the other suit of same color).",
+    keyRules: [
+      'No signals or verbal communication allowed between partners.',
+      "The first trick's cards remain face up on the table to assist in deduction.",
+      'WELI is always bells unless 6 is the Schlag.',
+      'Betting (raising the stakes) can be done at any time during the hand.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in two fixed partnerships (North-South vs East-West).',
+      deck: '33 cards: A, K, O, U, 10, 9, 8, 7 in four suits plus the WELI (6 of Bells).',
+      equipment: 'German-suited deck, score pad.',
+      dealing: 'Deal 5 cards to each player. Forehand shows a card rank (Schlag) to the dealer in secret; the dealer shows a suit back to forehand in secret.',
+    },
+    turnFlow: "1. **Secret Selection**: Forehand and dealer establish rank and suit trumps in secret. 2. **Play**: Forehand leads. **Must Follow Suit** only applies to forehand and dealer for trumps. Partners have no follow obligation but must try to deduce trumps. 3. **The Cards**: Highest card is the 'Guate' (Schlag + 1), followed by the 'Rechte' (Schlag in trump suit), then the 'Linken' (Schlag in the other suit of same color).",
+    moveValidityConditions: {
+      ante: 'Blind Watten is a point-based partnership game and does not utilize a monetary or chip-based ante.',
+      deal: 'The initial distribution of five cards to each of the four players is performed automatically by the system dealer.',
+      reveal_market: 'This is a closed-hand game where all cards are dealt to players; no public market or shared pool exists.',
+      buy_market: 'Players cannot purchase or swap cards from any external area; they must succeed with their initial hand.',
+      buy_stock: 'The entire 20 cards in play are distributed at the start; no cards remain in stock to be purchased.',
+      fold: 'Participation is mandatory for every trick until the round concludes to determine the point winner.',
+      check: 'The game uses a trick-taking structure rather than a vying structure where checking would be an appropriate action.',
+      call: 'There is no central pot to match in this game; competition is based on trick wins and raised stakes.',
+      bet: 'Success is determined by trick accumulation on a scorecard rather than through financial or chip betting.',
+      raise: 'Allowed during the play of any trick before the showdown.',
+      declare: 'Trumps are established through a secret showing phase rather than a formal declaration or bidding.',
+      reveal_hand: 'Hands stay private until individual cards are played into tricks; no full-hand reveal phase occurs.',
+      award_pot: 'Winning points are added to a cumulative partnership total rather than awarded from a physical pot.',
+      play_card: 'Must follow suit if forehand or dealer and trump is led.',
+      draw: 'Each player receives five cards at the start and no further drawing occurs during the play of the hand.',
+      discard: 'Every card in the hand must be played into a trick; no cards are discarded to a waste pile.',
+      pass: 'Allowed when an opponent proposes a stake increase.',
+      bid: 'Trump selection is performed via a secret showing phase rather than a competitive bidding auction.',
+      meld: 'Blind Watten is strictly a trick-taking game based on card ranks rather than forming melds.',
+      go_out: 'The hand terminates only after all five tricks have been played by all participants.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win at least three out of five tricks to win the hand. First team to 15 or 18 points wins the match.',
+      "Turn-flow example: 1. **Secret Selection**: Forehand and dealer establish rank and suit trumps in secret. 2. **Play**: Forehand leads. **Must Follow Suit** only applies to forehand and dealer for trumps. Partners have no follow obligation but must try to deduce trumps. 3. **The Cards**: Highest card is the 'Guate' (Schlag + 1), followed by the 'Rechte' (Schlag in trump suit), then the 'Linken' (Schlag in the other suit of same color).",
+      'Scoring example: Win 3+ of 5 tricks = 2 points (or higher if stakes were raised by betting). First team to target score wins. First team to reach target score (typically 15 or 18 points)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'blind-watten.rules.objective',
+        title: 'Objective',
+        text: 'Win at least three out of five tricks to win the hand. First team to 15 or 18 points wins the match.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blind-watten.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Secret Selection**: Forehand and dealer establish rank and suit trumps in secret. 2. **Play**: Forehand leads. **Must Follow Suit** only applies to forehand and dealer for trumps. Partners have no follow obligation but must try to deduce trumps. 3. **The Cards**: Highest card is the 'Guate' (Schlag + 1), followed by the 'Rechte' (Schlag in trump suit), then the 'Linken' (Schlag in the other suit of same color).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-watten.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blind-watten.setup.deck',
+        title: 'Deck',
+        text: '33 cards: A, K, O, U, 10, 9, 8, 7 in four suits plus the WELI (6 of Bells).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blind-watten.setup.equipment',
+        title: 'Equipment',
+        text: 'German-suited deck, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blind-watten.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 5 cards to each player. Forehand shows a card rank (Schlag) to the dealer in secret; the dealer shows a suit back to forehand in secret.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-watten.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach target score (typically 15 or 18 points).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blind-watten.score.description',
+        title: 'Scoring',
+        text: 'Win 3+ of 5 tricks = 2 points (or higher if stakes were raised by betting). First team to target score wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blind-watten.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No signals or verbal communication allowed between partners.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blind-watten.rules.key.2',
+        title: 'Key rule 2',
+        text: "The first trick's cards remain face up on the table to assist in deduction.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blind-watten.rules.key.3',
+        title: 'Key rule 3',
+        text: 'WELI is always bells unless 6 is the Schlag.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'blind-watten.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Betting (raising the stakes) can be done at any time during the hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blind-watten.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blind-watten.rules.objective',
+          'blind-watten.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-watten.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blind-watten.setup.players',
+          'blind-watten.setup.deck',
+          'blind-watten.setup.equipment',
+          'blind-watten.setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-watten.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blind-watten.rules.key.1',
+          'blind-watten.rules.key.2',
+          'blind-watten.rules.key.3',
+          'blind-watten.rules.key.4',
+        ],
+      },
+      {
+        id: 'blind-watten.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blind-watten.score.description',
+          'blind-watten.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blind-watten.setup.dealing',
+        'blind-watten.rules.objective',
+      ],
+      raise: [
+        'blind-watten.rules.gameplay',
+      ],
+      play_card: [
+        'blind-watten.rules.gameplay',
+      ],
+      pass: [
+        'blind-watten.rules.gameplay',
+      ],
+      deal_5_each: [
+        'blind-watten.rules.gameplay',
+      ],
+      forehand_shows_schlag: [
+        'blind-watten.rules.gameplay',
+      ],
+      dealer_shows_trump_suit: [
+        'blind-watten.rules.gameplay',
+      ],
+      calculate_match_points: [
+        'blind-watten.rules.gameplay',
+      ],
+      propose_raise: [
+        'blind-watten.rules.gameplay',
+      ],
+    },
+  },
+}

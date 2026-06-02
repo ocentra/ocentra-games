@@ -1,0 +1,77 @@
+{
+  system: {
+    guid: '2ae1fcf9-5b29-43a6-9c4a-07276bfe61ac',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/bingo-dominoes/bingo-dominoesStateEventModel.asset',
+    gameId: 'bingo-dominoes',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bingo-dominoes',
+    familyVariant: 'Trick-taking / Chinese Dominoes',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 14,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 14,
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 2,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_down',
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {
+        hand_size: 7,
+        target_score: 70,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'dealing',
+        'play_loop',
+        'scoring',
+      ],
+      actions: [
+        'setup_round',
+        'declare',
+        'draw',
+        'draw_7',
+        'calculate_game_points',
+        'play_tile',
+        'close_stock',
+        'claim_victory',
+      ],
+    },
+    examples: [],
+  },
+}

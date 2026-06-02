@@ -5,7 +5,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import JSON5 from 'json5';
 
-const CLAIM_ASSET_DIR = new URL('../../../../asset-editor/Resources/GameMode/CardGames/Games/Claim/', import.meta.url);
+const CLAIM_ASSET_DIR = new URL('../../../../asset-editor/Resources/GameMode/CardGames/Games/invented/claim/', import.meta.url);
 
 function loadClaimAsset(fileName: string): unknown {
   return JSON5.parse(readFileSync(fileURLToPath(new URL(fileName, CLAIM_ASSET_DIR)), 'utf8')) as unknown;

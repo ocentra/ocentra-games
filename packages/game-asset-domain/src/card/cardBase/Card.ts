@@ -34,6 +34,7 @@ export class Card extends ScriptableObject {
     return {
       cardIdentity: frenchCardIdentity(Suit.SPADES, 2),
       imageHash: '',
+      imagePath: '',
       cardId: '2_of_spades',
       rankingAsset: undefined,
       cardRankingAsset: undefined,
@@ -57,6 +58,9 @@ export class Card extends ScriptableObject {
   @required('Image Hash is required for card to function properly')
   @serializable({ label: 'Image Hash' })
   imageHash!: ImageHash;
+
+  @serializable({ label: 'Image Path' })
+  imagePath?: string;
 
   @required('Card ID is required for card to function properly')
   @serializable({ label: 'Card ID' })

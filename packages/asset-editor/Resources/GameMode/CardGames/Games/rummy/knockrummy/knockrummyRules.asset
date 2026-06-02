@@ -1,0 +1,236 @@
+{
+  system: {
+    guid: '83776ddb-f178-45d6-8343-d98c7696208b',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/knockrummy/knockrummyRules.asset',
+    gameId: 'knockrummy',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Draw one card from the stock or discard pile.\n2. Form melds in hand (but do not lay them down on the table until the end).\n3. End of Turn: Discard one card. If you wish to end the round, announce 'Knock' before or during the discard.",
+    Player: "1. Draw one card from the stock or discard pile.\n2. Form melds in hand (but do not lay them down on the table until the end).\n3. End of Turn: Discard one card. If you wish to end the round, announce 'Knock' before or during the discard.",
+    objective: 'Form sets (3-4 of a kind) and runs (3+ in suit) and have the lowest point total of unmatched cards (deadwood) when the round ends.',
+    gameplay: "1. Draw one card from the stock or discard pile.\n2. Form melds in hand (but do not lay them down on the table until the end).\n3. End of Turn: Discard one card. If you wish to end the round, announce 'Knock' before or during the discard.",
+    keyRules: [
+      'Form sets (3-4 of a kind) and runs (3+ consecutive in suit)',
+      'Draw from stock or discard pile',
+      'Can knock at any point after draw',
+      "No laying off on opponent's melds",
+      'Lowest deadwood wins',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 players (10 cards each), 3-5 players (7 cards each).',
+      deck: 'Standard 52-card deck. Aces are low (1) or high (11) depending on house rules.',
+      equipment: 'Standard 52-card deck. Aces are low (1) or high (11) depending on house rules.',
+      dealing: 'Cards are dealt face-down; one card is turned up to start the discard pile.',
+    },
+    turnFlow: "1. Draw one card from the stock or discard pile.\n2. Form melds in hand (but do not lay them down on the table until the end).\n3. End of Turn: Discard one card. If you wish to end the round, announce 'Knock' before or during the discard.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'After discard',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Allowed only in phases that list this action as legal.',
+      award_pot: 'Allowed only in phases that list this action as legal.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'One card per turn',
+      discard: 'Allowed only when discard timing and count rules permit.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'In hand only until knock',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Form sets (3-4 of a kind) and runs (3+ in suit) and have the lowest point total of unmatched cards (deadwood) when the round ends.',
+      "Turn-flow example: 1. Draw one card from the stock or discard pile.\n2. Form melds in hand (but do not lay them down on the table until the end).\n3. End of Turn: Discard one card. If you wish to end the round, announce 'Knock' before or during the discard.",
+      'Scoring example: Winner has lowest deadwood. Scores difference from opponents. Gin bonus (25 pts) for zero deadwood. Under-cut bonus (10 pts) if lower than knocker. Lowest deadwood when round ends.',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'knockrummy.rules.objective',
+        title: 'Objective',
+        text: 'Form sets (3-4 of a kind) and runs (3+ in suit) and have the lowest point total of unmatched cards (deadwood) when the round ends.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'knockrummy.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Draw one card from the stock or discard pile.\n2. Form melds in hand (but do not lay them down on the table until the end).\n3. End of Turn: Discard one card. If you wish to end the round, announce 'Knock' before or during the discard.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'knockrummy.setup.players',
+        title: 'Players',
+        text: '2 players (10 cards each), 3-5 players (7 cards each).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'knockrummy.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Aces are low (1) or high (11) depending on house rules.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'knockrummy.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Aces are low (1) or high (11) depending on house rules.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'knockrummy.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt face-down; one card is turned up to start the discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'knockrummy.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest deadwood when round ends',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'knockrummy.score.description',
+        title: 'Scoring',
+        text: 'Winner has lowest deadwood. Scores difference from opponents. Gin bonus (25 pts) for zero deadwood. Under-cut bonus (10 pts) if lower than knocker.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'knockrummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Form sets (3-4 of a kind) and runs (3+ consecutive in suit)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'knockrummy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Draw from stock or discard pile',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'knockrummy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Can knock at any point after draw',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'knockrummy.rules.key.4',
+        title: 'Key rule 4',
+        text: "No laying off on opponent's melds",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'knockrummy.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Lowest deadwood wins',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'knockrummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'knockrummy.rules.objective',
+          'knockrummy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'knockrummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'knockrummy.setup.players',
+          'knockrummy.setup.deck',
+          'knockrummy.setup.equipment',
+          'knockrummy.setup.dealing',
+        ],
+      },
+      {
+        id: 'knockrummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'knockrummy.rules.key.1',
+          'knockrummy.rules.key.2',
+          'knockrummy.rules.key.3',
+          'knockrummy.rules.key.4',
+          'knockrummy.rules.key.5',
+        ],
+      },
+      {
+        id: 'knockrummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'knockrummy.score.description',
+          'knockrummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'knockrummy.setup.dealing',
+        'knockrummy.rules.objective',
+      ],
+      deal: [
+        'knockrummy.rules.gameplay',
+      ],
+      call: [
+        'knockrummy.rules.gameplay',
+      ],
+      reveal_hand: [
+        'knockrummy.rules.gameplay',
+      ],
+      award_pot: [
+        'knockrummy.rules.gameplay',
+      ],
+      draw: [
+        'knockrummy.rules.gameplay',
+      ],
+      discard: [
+        'knockrummy.rules.gameplay',
+      ],
+      meld: [
+        'knockrummy.rules.gameplay',
+      ],
+    },
+  },
+}

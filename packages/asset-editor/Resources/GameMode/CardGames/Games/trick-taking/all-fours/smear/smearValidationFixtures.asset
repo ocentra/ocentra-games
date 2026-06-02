@@ -1,0 +1,118 @@
+{
+  system: {
+    guid: '6c66f3c2-943c-42d6-945b-f1cc41ff43a8',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/all-fours/smear/smearValidationFixtures.asset',
+    gameId: 'smear',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'smear',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'smear.core-runtime-contracts',
+        title: 'Smear Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'smear.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Smear must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'smear.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'smear.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'bid',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+            ],
+            explanation: 'Smear must run setup_round first, then enter bid with the processed legal actions.',
+            linkedRuleIds: [
+              'smear.setup.initial-deal',
+              'smear.flow.bid',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'bid',
+            firstPlayableLegalActions: [
+              'bid',
+              'pass',
+            ],
+          },
+          {
+            id: 'smear.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '21',
+            scoringDirection: 'high_wins',
+            targetScore: 21,
+            cardValues: {},
+            explanation: "High (highest trump in play), Low (lowest trump in playâ€”goes to holder or winner? In Pitch, usually to holder. In Smear, usually to winner of trick? Check rules: In 'Smear', Low often goes to the *capturer* of the low trump, making it distinct from Pitch where it goes to the original holder. Four points per hand: High (player who plays ace of trump), Low (player who plays deuce of trump), Jack (side that wins trick containing jack of trumps), Game (side with more card points in tricks: A=4 K=3 Q=2 J=1 10=10). If bidding side makes at least their bid they score what they made; otherwise they lose the bid amount. First team to reach target (e.g. 15 or 21) wins.",
+            linkedRuleIds: [
+              'smear.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'smear.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

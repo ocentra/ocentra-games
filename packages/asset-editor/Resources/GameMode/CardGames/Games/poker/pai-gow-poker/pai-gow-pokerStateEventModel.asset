@@ -1,0 +1,76 @@
+{
+  system: {
+    guid: '29bae68d-8dc1-47cd-a9f4-24f7faaa92ef',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/pai-gow-poker/pai-gow-pokerStateEventModel.asset',
+    gameId: 'pai-gow-poker',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pai-gow-poker',
+    familyVariant: 'Casino Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 7,
+        },
+        {
+          id: 'custom:back_hand',
+          type: 'hand',
+          visibility: 'public',
+          owner: 'player',
+          capacity: 5,
+        },
+        {
+          id: 'custom:front_hand',
+          type: 'hand',
+          visibility: 'public',
+          owner: 'player',
+          capacity: 2,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        hand_size: 7,
+        deck_count: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'betting',
+        'deal',
+        'splitting',
+        'reveal',
+      ],
+      actions: [
+        'setup_round',
+        'bet',
+        'deal_seven_cards',
+        'partition_into_two_hands',
+        'reveal_hands',
+        'settle_bets',
+      ],
+    },
+    examples: [],
+  },
+}

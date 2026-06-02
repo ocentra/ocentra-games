@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '8142f457-6380-4508-8433-4f3d8ef68363',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/australian-patience/australian-patienceValidationFixtures.asset',
+    gameId: 'australian-patience',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'australian-patience',
+    familyVariant: 'Solitaire',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'australian-patience.core-runtime-contracts',
+        title: 'Australian Patience Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'australian-patience.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 28,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 1,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Australian Patience must start by giving each active player 28 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'australian-patience.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'australian-patience.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'setup_7x4',
+              'move_tableau_group',
+              'move_to_foundation',
+              'flip_stock',
+              'move_waste_to_tableau',
+              'verify_win',
+            ],
+            explanation: 'Australian Patience must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'australian-patience.setup.initial-deal',
+              'australian-patience.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'setup_7x4',
+            ],
+          },
+          {
+            id: 'australian-patience.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '52',
+            scoringDirection: 'high_wins',
+            targetScore: 52,
+            cardValues: {},
+            explanation: 'Standard solitaire scoring (points per card moved to foundation) or simple win/loss.',
+            linkedRuleIds: [
+              'australian-patience.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'australian-patience.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 28,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 1,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '07d8104b-d268-4f89-9ca7-77d3fe1dad5c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/knock-out-whist/knock-out-whistValidationFixtures.asset',
+    gameId: 'knock-out-whist',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'knock-out-whist',
+    familyVariant: 'Whist',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'knock-out-whist.core-runtime-contracts',
+        title: 'Knock-Out Whist Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'knock-out-whist.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 7,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 49,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Knock-Out Whist must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'knock-out-whist.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'knock-out-whist.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Knock-Out Whist must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'knock-out-whist.setup.initial-deal',
+              'knock-out-whist.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'knock-out-whist.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Last player standing wins; or winner of the one trick in the final (one-card) hand.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: "No points; players are eliminated when they take no tricks in a hand. First such player gets one dog's life; thereafter elimination is immediate.",
+            linkedRuleIds: [
+              'knock-out-whist.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'knock-out-whist.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

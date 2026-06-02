@@ -1,0 +1,219 @@
+{
+  system: {
+    guid: '5da227d8-5dbd-4290-8fcb-6db40af3af46',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/climbing/big-two/big-three/big-threeRules.asset',
+    gameId: 'big-three',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Auction**: Players bid 1, 2, or 3 points to take the contract. Highest bidder is Declarer. 2. **Widow**: Declarer takes the 4 cards from the widow into their hand. 3. **Climbing**: Players must play a combination of the same type but higher rank than the previous. 4. **Ranks**: 3 (High) > 2 > A > K > Q ... > 4 (Low). 5. **Combinations**: Singles, Pairs, Triples, and Sequences.',
+    Player: '1. **Auction**: Players bid 1, 2, or 3 points to take the contract. Highest bidder is Declarer. 2. **Widow**: Declarer takes the 4 cards from the widow into their hand. 3. **Climbing**: Players must play a combination of the same type but higher rank than the previous. 4. **Ranks**: 3 (High) > 2 > A > K > Q ... > 4 (Low). 5. **Combinations**: Singles, Pairs, Triples, and Sequences.',
+    objective: 'Be the first to shed all cards from your hand. If the declarer wins, they win points from both opponents; if the opponents win, the declarer pays both.',
+    gameplay: '1. **Auction**: Players bid 1, 2, or 3 points to take the contract. Highest bidder is Declarer. 2. **Widow**: Declarer takes the 4 cards from the widow into their hand. 3. **Climbing**: Players must play a combination of the same type but higher rank than the previous. 4. **Ranks**: 3 (High) > 2 > A > K > Q ... > 4 (Low). 5. **Combinations**: Singles, Pairs, Triples, and Sequences.',
+    keyRules: [
+      '3s, 2s, and Aces cannot be part of a sequence (e.g., Q-K-A is illegal).',
+      "A Triple of 3s is an invincible 'Bomb' in some variations.",
+      'Players can pass on any turn, even if they can beat the current combo.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Exactly 3 players.',
+      deck: 'Standard 52-card deck (No Jokers).',
+      equipment: 'Standard pack, score sheet.',
+      dealing: 'The deck is dealt as follows: 16 cards to each player and 4 cards face down in the center (The Widow).',
+    },
+    turnFlow: '1. **Auction**: Players bid 1, 2, or 3 points to take the contract. Highest bidder is Declarer. 2. **Widow**: Declarer takes the 4 cards from the widow into their hand. 3. **Climbing**: Players must play a combination of the same type but higher rank than the previous. 4. **Ranks**: 3 (High) > 2 > A > K > Q ... > 4 (Low). 5. **Combinations**: Singles, Pairs, Triples, and Sequences.',
+    moveValidityConditions: {
+      ante: 'Big Three is a point-based climbing game where stakes are determined by the auction rather than antes.',
+      deal: 'The initial distribution of sixteen cards per player and the four-card widow is handled by the system dealer.',
+      reveal_market: 'There is no shared community market in Big Three; only the widow exists which is taken by the declarer.',
+      buy_market: 'Players cannot purchase cards from a market; the widow is awarded to the highest bidder for free.',
+      buy_stock: 'There is no remaining stock to draw from during play; every card is in a hand or the widow at the start.',
+      fold: 'Players must remain in the game until someone sheds their entire hand to determine the round score.',
+      check: 'The game uses a climbing and passing structure rather than a vying structure with checks and bets.',
+      call: 'There is no pot to match in this game; competition is based on card ranking and bidding levels.',
+      bet: 'Success is measured by points won or lost from other players based on the auction result.',
+      raise: 'The auction allows for bidding escalation, but there are no wagering rounds during the actual play of cards.',
+      declare: 'Declarations are handled through the auction and combo play rather than a separate declaration phase.',
+      reveal_hand: 'Hands remain private until individual cards are played into climbing combos; no showdown occurs.',
+      award_pot: 'Points are transferred between players at the end of the round; there is no physical pot to award.',
+      play_card: 'Must match the combination type and exceed the previous rank.',
+      draw: 'Players receive their massive hands at the start and no further drawing occurs during the play phase.',
+      discard: 'Every card must be shed through valid climbing combinations; there is no separate discard or waste pile.',
+      pass: 'May choose to pass even if a legal move is available.',
+      bid: 'Must be higher than the previous bid.',
+      meld: 'Big Three is a climbing game based on beating combos rather than forming table melds.',
+      go_out: 'A player wins the round automatically upon playing their final card from hand.',
+    },
+    exampleHands: [
+      'Setup example: 16 card(s) per player.',
+      'Rule example: Be the first to shed all cards from your hand. If the declarer wins, they win points from both opponents; if the opponents win, the declarer pays both.',
+      'Turn-flow example: 1. **Auction**: Players bid 1, 2, or 3 points to take the contract. Highest bidder is Declarer. 2. **Widow**: Declarer takes the 4 cards from the widow into their hand. 3. **Climbing**: Players must play a combination of the same type but higher rank than the previous. 4. **Ranks**: 3 (High) > 2 > A > K > Q ... > 4 (Low). 5. **Combinations**: Singles, Pairs, Triples, and Sequences.',
+      'Scoring example: Points are awarded based on the bid level. Declarer wins bid amount from each opponent (x2) or loses it to each. Highest point total after a set session or reaching a target score..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'big-three.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to shed all cards from your hand. If the declarer wins, they win points from both opponents; if the opponents win, the declarer pays both.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'big-three.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Auction**: Players bid 1, 2, or 3 points to take the contract. Highest bidder is Declarer. 2. **Widow**: Declarer takes the 4 cards from the widow into their hand. 3. **Climbing**: Players must play a combination of the same type but higher rank than the previous. 4. **Ranks**: 3 (High) > 2 > A > K > Q ... > 4 (Low). 5. **Combinations**: Singles, Pairs, Triples, and Sequences.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'big-three.setup.players',
+        title: 'Players',
+        text: 'Exactly 3 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'big-three.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'big-three.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'big-three.setup.dealing',
+        title: 'Deal',
+        text: 'The deck is dealt as follows: 16 cards to each player and 4 cards face down in the center (The Widow).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'big-three.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest point total after a set session or reaching a target score.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'big-three.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded based on the bid level. Declarer wins bid amount from each opponent (x2) or loses it to each.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'big-three.rules.key.1',
+        title: 'Key rule 1',
+        text: '3s, 2s, and Aces cannot be part of a sequence (e.g., Q-K-A is illegal).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'big-three.rules.key.2',
+        title: 'Key rule 2',
+        text: "A Triple of 3s is an invincible 'Bomb' in some variations.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'big-three.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players can pass on any turn, even if they can beat the current combo.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'big-three.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'big-three.rules.objective',
+          'big-three.rules.gameplay',
+        ],
+      },
+      {
+        id: 'big-three.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'big-three.setup.players',
+          'big-three.setup.deck',
+          'big-three.setup.equipment',
+          'big-three.setup.dealing',
+        ],
+      },
+      {
+        id: 'big-three.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'big-three.rules.key.1',
+          'big-three.rules.key.2',
+          'big-three.rules.key.3',
+        ],
+      },
+      {
+        id: 'big-three.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'big-three.score.description',
+          'big-three.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'big-three.setup.dealing',
+        'big-three.rules.objective',
+      ],
+      play_card: [
+        'big-three.rules.gameplay',
+      ],
+      pass: [
+        'big-three.rules.gameplay',
+      ],
+      bid: [
+        'big-three.rules.gameplay',
+      ],
+      deal_16_widow_4: [
+        'big-three.rules.gameplay',
+      ],
+      bid_points: [
+        'big-three.rules.gameplay',
+      ],
+      play_combination: [
+        'big-three.rules.gameplay',
+      ],
+      take_widow: [
+        'big-three.rules.gameplay',
+      ],
+      calculate_win_points: [
+        'big-three.rules.gameplay',
+      ],
+    },
+  },
+}

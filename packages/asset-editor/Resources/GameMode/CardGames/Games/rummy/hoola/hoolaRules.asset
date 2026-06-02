@@ -1,0 +1,213 @@
+{
+  system: {
+    guid: '2569d640-a9ac-41ec-b286-878968a3c212',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/hoola/hoolaRules.asset',
+    gameId: 'hoola',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Players draw from the stock or claim the discard.\n2. **Battle**: If multiple players want the discard, there is a priority system (usually the next player in order has first right).\n3. **Melding**: - **Sets**: 3 or 4 cards of the same rank. - **Runs**: 3+ consecutive cards of the same suit (Cyclic: K-A-2 is allowed). - **Sevens**: A single 7 can be melded alone.\n4. **Blast**: Winning with a specific combination involving 7s or a clean sweep of the hand recorded as a 'Blast' (double points).",
+    Player: "1. Players draw from the stock or claim the discard.\n2. **Battle**: If multiple players want the discard, there is a priority system (usually the next player in order has first right).\n3. **Melding**: - **Sets**: 3 or 4 cards of the same rank. - **Runs**: 3+ consecutive cards of the same suit (Cyclic: K-A-2 is allowed). - **Sevens**: A single 7 can be melded alone.\n4. **Blast**: Winning with a specific combination involving 7s or a clean sweep of the hand recorded as a 'Blast' (double points).",
+    objective: "Win by melding all cards in your hand or having the lowest point total when someone 'knocks'.",
+    gameplay: "1. Players draw from the stock or claim the discard.\n2. **Battle**: If multiple players want the discard, there is a priority system (usually the next player in order has first right).\n3. **Melding**: - **Sets**: 3 or 4 cards of the same rank. - **Runs**: 3+ consecutive cards of the same suit (Cyclic: K-A-2 is allowed). - **Sevens**: A single 7 can be melded alone.\n4. **Blast**: Winning with a specific combination involving 7s or a clean sweep of the hand recorded as a 'Blast' (double points).",
+    keyRules: [
+      'Follow the legal action constraints defined for Hoola.',
+      'Round outcome is resolved by the scoring method: - Face cards: 10-13 pts.',
+      "Winning condition: Win by melding all cards in your hand or having the lowest point total when someone 'knocks'.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 to 5 players.',
+      deck: 'Standard 52-card deck. Ranking: ...-A-2-3-4-5-6-7-8-9-10-J-Q-K-A-... (Cyclic Sequences).',
+      equipment: 'Standard 52-card deck. Ranking: ...-A-2-3-4-5-6-7-8-9-10-J-Q-K-A-... (Cyclic Sequences).',
+      dealing: 'Deal 7 cards to each player (anticlockwise). The remaining cards form the stock.',
+    },
+    turnFlow: "1. Players draw from the stock or claim the discard.\n2. **Battle**: If multiple players want the discard, there is a priority system (usually the next player in order has first right).\n3. **Melding**: - **Sets**: 3 or 4 cards of the same rank. - **Runs**: 3+ consecutive cards of the same suit (Cyclic: K-A-2 is allowed). - **Sevens**: A single 7 can be melded alone.\n4. **Blast**: Winning with a specific combination involving 7s or a clean sweep of the hand recorded as a 'Blast' (double points).",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'Allowed only in phases that list this action as legal.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      "Rule example: Win by melding all cards in your hand or having the lowest point total when someone 'knocks'.",
+      "Turn-flow example: 1. Players draw from the stock or claim the discard.\n2. **Battle**: If multiple players want the discard, there is a priority system (usually the next player in order has first right).\n3. **Melding**: - **Sets**: 3 or 4 cards of the same rank. - **Runs**: 3+ consecutive cards of the same suit (Cyclic: K-A-2 is allowed). - **Sevens**: A single 7 can be melded alone.\n4. **Blast**: Winning with a specific combination involving 7s or a clean sweep of the hand recorded as a 'Blast' (double points).",
+      'Scoring example: Players score points for cards in hand. Melding reduces point total. First to meld all cards or lowest total when knocked wins. Empty hand first, or lowest point total when someone knocks..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'hoola.rules.objective',
+        title: 'Objective',
+        text: "Win by melding all cards in your hand or having the lowest point total when someone 'knocks'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hoola.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players draw from the stock or claim the discard.\n2. **Battle**: If multiple players want the discard, there is a priority system (usually the next player in order has first right).\n3. **Melding**: - **Sets**: 3 or 4 cards of the same rank. - **Runs**: 3+ consecutive cards of the same suit (Cyclic: K-A-2 is allowed). - **Sevens**: A single 7 can be melded alone.\n4. **Blast**: Winning with a specific combination involving 7s or a clean sweep of the hand recorded as a 'Blast' (double points).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hoola.setup.players',
+        title: 'Players',
+        text: '2 to 5 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hoola.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranking: ...-A-2-3-4-5-6-7-8-9-10-J-Q-K-A-... (Cyclic Sequences).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hoola.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ranking: ...-A-2-3-4-5-6-7-8-9-10-J-Q-K-A-... (Cyclic Sequences).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hoola.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 7 cards to each player (anticlockwise). The remaining cards form the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hoola.score.win-condition',
+        title: 'Win condition',
+        text: 'Empty hand first, or lowest point total when someone knocks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hoola.score.description',
+        title: 'Scoring',
+        text: 'Players score points for cards in hand. Melding reduces point total. First to meld all cards or lowest total when knocked wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hoola.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hoola.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hoola.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: - Face cards: 10-13 pts.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hoola.rules.key.3',
+        title: 'Key rule 3',
+        text: "Winning condition: Win by melding all cards in your hand or having the lowest point total when someone 'knocks'.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hoola.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hoola.rules.objective',
+          'hoola.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hoola.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hoola.setup.players',
+          'hoola.setup.deck',
+          'hoola.setup.equipment',
+          'hoola.setup.dealing',
+        ],
+      },
+      {
+        id: 'hoola.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hoola.rules.key.1',
+          'hoola.rules.key.2',
+          'hoola.rules.key.3',
+        ],
+      },
+      {
+        id: 'hoola.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hoola.score.description',
+          'hoola.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hoola.setup.dealing',
+        'hoola.rules.objective',
+      ],
+      deal: [
+        'hoola.rules.gameplay',
+      ],
+      meld: [
+        'hoola.rules.gameplay',
+      ],
+      draw_stock: [
+        'hoola.rules.gameplay',
+      ],
+      claim_discard: [
+        'hoola.rules.gameplay',
+      ],
+      knock: [
+        'hoola.rules.gameplay',
+      ],
+      score_round: [
+        'hoola.rules.gameplay',
+      ],
+    },
+  },
+}

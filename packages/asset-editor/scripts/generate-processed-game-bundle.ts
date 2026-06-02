@@ -7,16 +7,22 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { OperationResult } from '@ocentra/eventing-domain/core/OperationResult';
 import { createTestEventBus } from '@ocentra/eventing-domain/testing/createTestEventBus';
 import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
+import {
+  deriveProcessedGameCategory,
+  parseProcessedGameTaxonomyPath,
+  type ProcessedGameTaxonomyPath,
+} from '@ocentra/game-asset-domain/factories/ProcessedGameAssetFactory';
 import { createProcessedGameModeBundle } from '@/adapters/assets/createProcessedGameModeBundle';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../..');
+const resourcesRoot = path.resolve(repoRoot, 'packages/asset-editor/Resources');
 
 interface CliOptions {
   processedGamePath: string;
   outputDir: string;
-  category?: string;
+  category?: ProcessedGameTaxonomyPath;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -34,7 +40,7 @@ function parseArgs(argv: string[]): CliOptions {
     : path.resolve(repoRoot, '.cursor/tmp/generated-game-bundles', path.basename(processedGamePath, path.extname(processedGamePath)));
 
   const category = categoryIndex >= 0 && argv[categoryIndex + 1]
-    ? argv[categoryIndex + 1]
+    ? parseProcessedGameTaxonomyPath(argv[categoryIndex + 1])
     : undefined;
 
   return {
@@ -44,6 +50,15 @@ function parseArgs(argv: string[]): CliOptions {
   };
 }
 
+function assertKnownTaxonomyCategory(processedGamePath: string, category?: ProcessedGameTaxonomyPath): ProcessedGameTaxonomyPath {
+  const resolvedCategory = category ?? deriveProcessedGameCategory(processedGamePath);
+  const categoryDir = path.resolve(resourcesRoot, 'GameMode', resolvedCategory);
+  if (!fs.existsSync(categoryDir) || !fs.statSync(categoryDir).isDirectory()) {
+    throw new Error(`Processed game category is not scaffolded: ${resolvedCategory}`);
+  }
+  return resolvedCategory;
+}
+
 async function main(): Promise<void> {
   EventBus.instance = createTestEventBus();
   EventBus.instance.subscribeAsync(GenerateUniqueGuidEvent, async (event) => {
@@ -51,9 +66,10 @@ async function main(): Promise<void> {
   });
 
   const options = parseArgs(process.argv.slice(2));
+  const category = assertKnownTaxonomyCategory(options.processedGamePath, options.category);
   const bundle = await createProcessedGameModeBundle({
     processedGamePath: options.processedGamePath,
-    category: options.category,
+    category,
   });
 
   fs.mkdirSync(options.outputDir, { recursive: true });

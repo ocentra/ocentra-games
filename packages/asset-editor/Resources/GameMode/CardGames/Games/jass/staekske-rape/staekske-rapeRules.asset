@@ -1,0 +1,239 @@
+{
+  system: {
+    guid: '5b026f73-2f76-48be-8547-1184f3ff52ee',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/staekske-rape/staekske-rapeRules.asset',
+    gameId: 'staekske-rape',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "After deal, bidding starts with player to dealer's left (sitter). First speaker is to sitter's left. Bid 3 or pass; then pass or next number (4, 5, 6…). No jump bids. Only first round allows blind 2 (without looking). Declarer takes 4-card stock, discards 4 face-down (or plays without stock for doubled stakes). Declarer announces melds (melles: four of a kind, sequences; stoek: K-Q of trumps) before first lead (sequences) or by when Q of trumps is played (stoek). Declarer names trumps and leads. Follow suit or trump; jack of trumps never forced. Trick to highest trump, else highest of led suit. Winner leads next. Seven tricks.",
+    Player: "After deal, bidding starts with player to dealer's left (sitter). First speaker is to sitter's left. Bid 3 or pass; then pass or next number (4, 5, 6…). No jump bids. Only first round allows blind 2 (without looking). Declarer takes 4-card stock, discards 4 face-down (or plays without stock for doubled stakes). Declarer announces melds (melles: four of a kind, sequences; stoek: K-Q of trumps) before first lead (sequences) or by when Q of trumps is played (stoek). Declarer names trumps and leads. Follow suit or trump; jack of trumps never forced. Trick to highest trump, else highest of led suit. Winner leads next. Seven tricks.",
+    objective: 'As declarer, take at least the bid number of card points (in tricks plus stock and melds). Bids 3–6 mean 130–160+ points. Sitter forced to play if all pass (bid 1 = 110 points or concede for -10 game points).',
+    gameplay: "After deal, bidding starts with player to dealer's left (sitter). First speaker is to sitter's left. Bid 3 or pass; then pass or next number (4, 5, 6…). No jump bids. Only first round allows blind 2 (without looking). Declarer takes 4-card stock, discards 4 face-down (or plays without stock for doubled stakes). Declarer announces melds (melles: four of a kind, sequences; stoek: K-Q of trumps) before first lead (sequences) or by when Q of trumps is played (stoek). Declarer names trumps and leads. Follow suit or trump; jack of trumps never forced. Trick to highest trump, else highest of led suit. Winner leads next. Seven tricks.",
+    keyRules: [
+      'Bidding: 3 = 130 pts, 4 = 140, 5 = 150, 6 = 160; pass or next number only.',
+      'Declarer takes stock and discards 4, or plays without stock (double stakes).',
+      'Sequences and fours announced before first lead; stoek (K-Q trumps) by Q of trumps.',
+      'Follow suit or trump; may trump anytime; never forced to play jack of trumps.',
+      '146 card points total (141 in cards + 5 for last trick); all seven tricks = +10 bonus.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Four players (or five with dealer sitting out each hand).',
+      deck: '32 cards: A, K, Q, J, 10, 9, 8, 7 in clubs, spades, hearts, diamonds (French or Dutch indices).',
+      equipment: 'Cards.',
+      dealing: "First dealer: deal face-up clockwise until someone receives a jack. Then shuffle, player to dealer's right cuts. Deal clockwise: 3 cards to each player, 4 face-down in centre (stock), then 4 cards to each player. Everyone has 7 cards.",
+    },
+    turnFlow: "After deal, bidding starts with player to dealer's left (sitter). First speaker is to sitter's left. Bid 3 or pass; then pass or next number (4, 5, 6…). No jump bids. Only first round allows blind 2 (without looking). Declarer takes 4-card stock, discards 4 face-down (or plays without stock for doubled stakes). Declarer announces melds (melles: four of a kind, sequences; stoek: K-Q of trumps) before first lead (sequences) or by when Q of trumps is played (stoek). Declarer names trumps and leads. Follow suit or trump; jack of trumps never forced. Trick to highest trump, else highest of led suit. Winner leads next. Seven tricks.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'Declarer only; sequences before first trick lead; stoek anytime before playing Q of trumps.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'Declarer only; after taking stock; must discard exactly 4 cards.',
+      pass: 'Legal during bidding phase when it is your turn.',
+      bid: 'In turn during bidding; must bid next number up or pass; once passed cannot bid again.',
+      meld: 'Declarer announces combinations verbally (declare action); no separate meld lay-down.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      'Rule example: As declarer, take at least the bid number of card points (in tricks plus stock and melds). Bids 3–6 mean 130–160+ points. Sitter forced to play if all pass (bid 1 = 110 points or concede for -10 game points).',
+      "Turn-flow example: After deal, bidding starts with player to dealer's left (sitter). First speaker is to sitter's left. Bid 3 or pass; then pass or next number (4, 5, 6…). No jump bids. Only first round allows blind 2 (without looking). Declarer takes 4-card stock, discards 4 face-down (or plays without stock for doubled stakes). Declarer announces melds (melles: four of a kind, sequences; stoek: K-Q of trumps) before first lead (sequences) or by when Q of trumps is played (stoek). Declarer names trumps and leads. Follow suit or trump; jack of trumps never forced. Trick to highest trump, else highest of led suit. Winner leads next. Seven tricks.",
+      'Scoring example: Declarer wins or loses game points (1 game point ≈ 10 card points). Achieved: card points in tricks plus stock, rounded; +5 last trick; +10 bonus for all seven tricks. Required: bid + 10 minus (meld points ÷ 10). Win difference or lose 2×difference + 10; no stock doubles amount. Declarer must take at least the bid number of card points (tricks + stock + melds). Game points: achieved minus required; loss = 2×shortfall + 10..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'staekske-rape.rules.objective',
+        title: 'Objective',
+        text: 'As declarer, take at least the bid number of card points (in tricks plus stock and melds). Bids 3–6 mean 130–160+ points. Sitter forced to play if all pass (bid 1 = 110 points or concede for -10 game points).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'staekske-rape.rules.gameplay',
+        title: 'Turn flow',
+        text: "After deal, bidding starts with player to dealer's left (sitter). First speaker is to sitter's left. Bid 3 or pass; then pass or next number (4, 5, 6…). No jump bids. Only first round allows blind 2 (without looking). Declarer takes 4-card stock, discards 4 face-down (or plays without stock for doubled stakes). Declarer announces melds (melles: four of a kind, sequences; stoek: K-Q of trumps) before first lead (sequences) or by when Q of trumps is played (stoek). Declarer names trumps and leads. Follow suit or trump; jack of trumps never forced. Trick to highest trump, else highest of led suit. Winner leads next. Seven tricks.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'staekske-rape.setup.players',
+        title: 'Players',
+        text: 'Four players (or five with dealer sitting out each hand).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'staekske-rape.setup.deck',
+        title: 'Deck',
+        text: '32 cards: A, K, Q, J, 10, 9, 8, 7 in clubs, spades, hearts, diamonds (French or Dutch indices).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'staekske-rape.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'staekske-rape.setup.dealing',
+        title: 'Deal',
+        text: "First dealer: deal face-up clockwise until someone receives a jack. Then shuffle, player to dealer's right cuts. Deal clockwise: 3 cards to each player, 4 face-down in centre (stock), then 4 cards to each player. Everyone has 7 cards.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'staekske-rape.score.win-condition',
+        title: 'Win condition',
+        text: 'Declarer must take at least the bid number of card points (tricks + stock + melds). Game points: achieved minus required; loss = 2×shortfall + 10.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'staekske-rape.score.description',
+        title: 'Scoring',
+        text: 'Declarer wins or loses game points (1 game point ≈ 10 card points). Achieved: card points in tricks plus stock, rounded; +5 last trick; +10 bonus for all seven tricks. Required: bid + 10 minus (meld points ÷ 10). Win difference or lose 2×difference + 10; no stock doubles amount.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'staekske-rape.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bidding: 3 = 130 pts, 4 = 140, 5 = 150, 6 = 160; pass or next number only.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'staekske-rape.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Declarer takes stock and discards 4, or plays without stock (double stakes).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'staekske-rape.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Sequences and fours announced before first lead; stoek (K-Q trumps) by Q of trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'staekske-rape.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Follow suit or trump; may trump anytime; never forced to play jack of trumps.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'staekske-rape.rules.key.5',
+        title: 'Key rule 5',
+        text: '146 card points total (141 in cards + 5 for last trick); all seven tricks = +10 bonus.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'staekske-rape.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'staekske-rape.rules.objective',
+          'staekske-rape.rules.gameplay',
+        ],
+      },
+      {
+        id: 'staekske-rape.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'staekske-rape.setup.players',
+          'staekske-rape.setup.deck',
+          'staekske-rape.setup.equipment',
+          'staekske-rape.setup.dealing',
+        ],
+      },
+      {
+        id: 'staekske-rape.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'staekske-rape.rules.key.1',
+          'staekske-rape.rules.key.2',
+          'staekske-rape.rules.key.3',
+          'staekske-rape.rules.key.4',
+          'staekske-rape.rules.key.5',
+        ],
+      },
+      {
+        id: 'staekske-rape.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'staekske-rape.score.description',
+          'staekske-rape.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'staekske-rape.setup.dealing',
+        'staekske-rape.rules.objective',
+      ],
+      declare: [
+        'staekske-rape.rules.gameplay',
+      ],
+      play_card: [
+        'staekske-rape.rules.gameplay',
+      ],
+      discard: [
+        'staekske-rape.rules.gameplay',
+      ],
+      pass: [
+        'staekske-rape.rules.gameplay',
+      ],
+      bid: [
+        'staekske-rape.rules.gameplay',
+      ],
+      deal_7_stock_4: [
+        'staekske-rape.rules.gameplay',
+      ],
+      take_stock_discard_4: [
+        'staekske-rape.rules.gameplay',
+      ],
+      skip_stock: [
+        'staekske-rape.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,207 @@
+{
+  system: {
+    guid: 'a6723d61-9be6-4771-a5bc-b9a2c17d1e4a',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/sedma/ristiklappi/ristiklappiRules.asset',
+    gameId: 'ristiklappi',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Trick won by last card of same rank as led. 2. May play top stock card ('in the dark'). 3. Cannot lead same rank four tricks in a row. 4. Draw from stock after each trick. 5. Clean: if took queen before stock empty, must win trick with king (not by queen) in last 5 tricks. 6. Fail to clean = dishonourable loss.",
+    Player: "1. Trick won by last card of same rank as led. 2. May play top stock card ('in the dark'). 3. Cannot lead same rank four tricks in a row. 4. Draw from stock after each trick. 5. Clean: if took queen before stock empty, must win trick with king (not by queen) in last 5 tricks. 6. Fail to clean = dishonourable loss.",
+    objective: "61+ card points; 'clean' if took queen in first part.",
+    gameplay: "1. Trick won by last card of same rank as led. 2. May play top stock card ('in the dark'). 3. Cannot lead same rank four tricks in a row. 4. Draw from stock after each trick. 5. Clean: if took queen before stock empty, must win trick with king (not by queen) in last 5 tricks. 6. Fail to clean = dishonourable loss.",
+    keyRules: [
+      'Last same-rank card wins trick. Suits irrelevant.',
+      'A=11, 10=10, K=4, Q=3, J=2. 120 pts total.',
+      'Clean rule: queen in first part â†’ must win king-trick in last 5 (not by queen).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 in partnerships.',
+      deck: '52 cards. No ranking; suits irrelevant.',
+      equipment: 'Deck.',
+      dealing: '5 each; rest stock.',
+    },
+    turnFlow: "1. Trick won by last card of same rank as led. 2. May play top stock card ('in the dark'). 3. Cannot lead same rank four tricks in a row. 4. Draw from stock after each trick. 5. Clean: if took queen before stock empty, must win trick with king (not by queen) in last 5 tricks. 6. Fail to clean = dishonourable loss.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      "Rule example: 61+ card points; 'clean' if took queen in first part.",
+      "Turn-flow example: 1. Trick won by last card of same rank as led. 2. May play top stock card ('in the dark'). 3. Cannot lead same rank four tricks in a row. 4. Draw from stock after each trick. 5. Clean: if took queen before stock empty, must win trick with king (not by queen) in last 5 tricks. 6. Fail to clean = dishonourable loss.",
+      'Scoring example: 61+ = 1 game point. 120 = 2. Tie = abeyance. First to 7 game points..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'ristiklappi.rules.objective',
+        title: 'Objective',
+        text: "61+ card points; 'clean' if took queen in first part.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ristiklappi.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Trick won by last card of same rank as led. 2. May play top stock card ('in the dark'). 3. Cannot lead same rank four tricks in a row. 4. Draw from stock after each trick. 5. Clean: if took queen before stock empty, must win trick with king (not by queen) in last 5 tricks. 6. Fail to clean = dishonourable loss.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ristiklappi.setup.players',
+        title: 'Players',
+        text: '4 in partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ristiklappi.setup.deck',
+        title: 'Deck',
+        text: '52 cards. No ranking; suits irrelevant.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ristiklappi.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ristiklappi.setup.dealing',
+        title: 'Deal',
+        text: '5 each; rest stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ristiklappi.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 7 game points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ristiklappi.score.description',
+        title: 'Scoring',
+        text: '61+ = 1 game point. 120 = 2. Tie = abeyance.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ristiklappi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Last same-rank card wins trick. Suits irrelevant.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ristiklappi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A=11, 10=10, K=4, Q=3, J=2. 120 pts total.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ristiklappi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Clean rule: queen in first part â†’ must win king-trick in last 5 (not by queen).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ristiklappi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ristiklappi.rules.objective',
+          'ristiklappi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ristiklappi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ristiklappi.setup.players',
+          'ristiklappi.setup.deck',
+          'ristiklappi.setup.equipment',
+          'ristiklappi.setup.dealing',
+        ],
+      },
+      {
+        id: 'ristiklappi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ristiklappi.rules.key.1',
+          'ristiklappi.rules.key.2',
+          'ristiklappi.rules.key.3',
+        ],
+      },
+      {
+        id: 'ristiklappi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ristiklappi.score.description',
+          'ristiklappi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ristiklappi.setup.dealing',
+        'ristiklappi.rules.objective',
+      ],
+      deal: [
+        'ristiklappi.rules.gameplay',
+      ],
+      play_card: [
+        'ristiklappi.rules.gameplay',
+      ],
+      lead: [
+        'ristiklappi.rules.gameplay',
+      ],
+      play_dark: [
+        'ristiklappi.rules.gameplay',
+      ],
+    },
+  },
+}

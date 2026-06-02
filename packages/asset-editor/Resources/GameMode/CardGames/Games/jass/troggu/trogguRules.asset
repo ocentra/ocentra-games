@@ -1,0 +1,208 @@
+{
+  system: {
+    guid: 'f2b9ba61-cda5-49f3-ab84-e86a0cee98bb',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/troggu/trogguRules.asset',
+    gameId: 'troggu',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+    Player: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+    objective: 'Score 58+ of 114 card points (as declarer) or prevent it (as defenders).',
+    gameplay: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+    keyRules: [
+      'Fool as highest trump (with last-card exception)',
+      'Secret partner mechanic (7-8 players)',
+      'Tapp exchange',
+      'Misere when all pass',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: '62 cards (78 minus low swords/batons and high cups/coins). 21 trumps + Fool + 40 suit cards. Total 114 pts.',
+      equipment: 'Cards, coins/chips',
+      dealing: 'Cards dealt + Tapp in center.',
+    },
+    turnFlow: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score 58+ of 114 card points (as declarer) or prevent it (as defenders).',
+      'Turn-flow example: Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+      'Scoring example: K/Bagat/TrXXI/Fool=5, Q=4, Cav=3, J=2, others=1. Total 114. 58+ to win. Double if opponent <30, triple if 0 tricks. Score 58+ of 114 card points (as declarer) or prevent it (as defenders)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'troggu.rules.objective',
+        title: 'Objective',
+        text: 'Score 58+ of 114 card points (as declarer) or prevent it (as defenders).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'troggu.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'troggu.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'troggu.setup.deck',
+        title: 'Deck',
+        text: '62 cards (78 minus low swords/batons and high cups/coins). 21 trumps + Fool + 40 suit cards. Total 114 pts.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'troggu.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, coins/chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'troggu.setup.dealing',
+        title: 'Deal',
+        text: 'Cards dealt + Tapp in center.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'troggu.score.win-condition',
+        title: 'Win condition',
+        text: 'Score 58+ of 114 card points (as declarer) or prevent it (as defenders).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'troggu.score.description',
+        title: 'Scoring',
+        text: 'K/Bagat/TrXXI/Fool=5, Q=4, Cav=3, J=2, others=1. Total 114. 58+ to win. Double if opponent <30, triple if 0 tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'troggu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Fool as highest trump (with last-card exception)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'troggu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Secret partner mechanic (7-8 players)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'troggu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tapp exchange',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'troggu.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Misere when all pass',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'troggu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'troggu.rules.objective',
+          'troggu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'troggu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'troggu.setup.players',
+          'troggu.setup.deck',
+          'troggu.setup.equipment',
+          'troggu.setup.dealing',
+        ],
+      },
+      {
+        id: 'troggu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'troggu.rules.key.1',
+          'troggu.rules.key.2',
+          'troggu.rules.key.3',
+          'troggu.rules.key.4',
+        ],
+      },
+      {
+        id: 'troggu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'troggu.score.description',
+          'troggu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'troggu.setup.dealing',
+        'troggu.rules.objective',
+      ],
+      play_card: [
+        'troggu.rules.gameplay',
+      ],
+    },
+  },
+}

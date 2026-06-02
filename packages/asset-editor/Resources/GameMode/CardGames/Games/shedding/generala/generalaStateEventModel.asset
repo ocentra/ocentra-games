@@ -1,0 +1,87 @@
+{
+  system: {
+    guid: '8e8830cc-fbe1-4f61-8a1a-a5d2935bf8ae',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/shedding/generala/generalaStateEventModel.asset',
+    gameId: 'generala',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'generala',
+    familyVariant: 'Shedding',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'table',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'trick',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'face_down',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 10,
+        deck_count: 1,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'trick_play',
+        'resolution',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'award_pot',
+        'play_card',
+        'draw',
+        'discard',
+        'pass',
+        'go_out',
+      ],
+    },
+    examples: [],
+  },
+}

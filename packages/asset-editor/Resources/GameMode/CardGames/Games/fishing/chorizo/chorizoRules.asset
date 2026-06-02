@@ -1,0 +1,238 @@
+{
+  system: {
+    guid: '547925b5-9a09-4510-9865-ac9b788a1c61',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/chorizo/chorizoRules.asset',
+    gameId: 'chorizo',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. First dealer chosen randomly, deals 3 cards to each player and 4 to table\n2. If 2+ Aces on table, reshuffle and redeal\n3. Players take turns counterclockwise\n4. On turn: Play one card to capture cards summing to 15 (including by matching a single 15-value card, or making combinations that sum to 15)\n5. If capture made: Take captured cards and played card, store as trick\n6. If no capture: Played card stays on table\n7. After all play their 3 cards, dealer deals 3 more to each player\n8. Continue until all cards played\n9. Last player to capture takes remaining table cards\n10. Score points based on captured cards and declarations',
+    Player: '1. First dealer chosen randomly, deals 3 cards to each player and 4 to table\n2. If 2+ Aces on table, reshuffle and redeal\n3. Players take turns counterclockwise\n4. On turn: Play one card to capture cards summing to 15 (including by matching a single 15-value card, or making combinations that sum to 15)\n5. If capture made: Take captured cards and played card, store as trick\n6. If no capture: Played card stays on table\n7. After all play their 3 cards, dealer deals 3 more to each player\n8. Continue until all cards played\n9. Last player to capture takes remaining table cards\n10. Score points based on captured cards and declarations',
+    objective: 'Score points by capturing cards from the table (making combinations that sum to 15) and declaring special three-card combinations in hand. The game is played to an agreed target score (commonly 21 or 31 points).',
+    gameplay: '1. First dealer chosen randomly, deals 3 cards to each player and 4 to table\n2. If 2+ Aces on table, reshuffle and redeal\n3. Players take turns counterclockwise\n4. On turn: Play one card to capture cards summing to 15 (including by matching a single 15-value card, or making combinations that sum to 15)\n5. If capture made: Take captured cards and played card, store as trick\n6. If no capture: Played card stays on table\n7. After all play their 3 cards, dealer deals 3 more to each player\n8. Continue until all cards played\n9. Last player to capture takes remaining table cards\n10. Score points based on captured cards and declarations',
+    keyRules: [
+      'Captures must sum to exactly 15',
+      'A single card can capture if it matches a table card of same value',
+      "Multiple table cards can be captured if they sum to the played card's value",
+      'Escoba (sweep): Capturing all table cards at once - worth 1 point',
+      'Declaration bonuses are announced before playing, with specific procedures',
+      'Wild cards may be used in some variants (e.g., 7 of cups)',
+      "If dealer's initial 4 table cards sum to 15, dealer captures them for bonus",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Minimum Players: 2\nMaximum Players: 4\nOptimal Players: 2 or 4 (partnerships)\nPartnerships: Yes for 4 players (partners opposite)',
+      deck: 'Type: Spanish 40-card deck\nNumber of Decks: 1\nJokers: Not included\nCard Values: Ace=1, 2-7=face value, Sota (Jack)=8, Caballo (Horse)=9, Rey (King)=10',
+      equipment: 'Spanish 40-card deck\nScore sheet\nTable space',
+      dealing: 'Initial Deal: 3 cards to each player, 4 cards face-up to table\nSubsequent Deals: 3 cards each when hands are empty (no more table cards)\nDealing Pattern: Counterclockwise\nDirection: Counterclockwise play',
+    },
+    turnFlow: '1. First dealer chosen randomly, deals 3 cards to each player and 4 to table\n2. If 2+ Aces on table, reshuffle and redeal\n3. Players take turns counterclockwise\n4. On turn: Play one card to capture cards summing to 15 (including by matching a single 15-value card, or making combinations that sum to 15)\n5. If capture made: Take captured cards and played card, store as trick\n6. If no capture: Played card stays on table\n7. After all play their 3 cards, dealer deals 3 more to each player\n8. Continue until all cards played\n9. Last player to capture takes remaining table cards\n10. Score points based on captured cards and declarations',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'See game rules.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score points by capturing cards from the table (making combinations that sum to 15) and declaring special three-card combinations in hand. The game is played to an agreed target score (commonly 21 or 31 points).',
+      'Turn-flow example: 1. First dealer chosen randomly, deals 3 cards to each player and 4 to table\n2. If 2+ Aces on table, reshuffle and redeal\n3. Players take turns counterclockwise\n4. On turn: Play one card to capture cards summing to 15 (including by matching a single 15-value card, or making combinations that sum to 15)\n5. If capture made: Take captured cards and played card, store as trick\n6. If no capture: Played card stays on table\n7. After all play their 3 cards, dealer deals 3 more to each player\n8. Continue until all cards played\n9. Last player to capture takes remaining table cards\n10. Score points based on captured cards and declarations',
+      'Scoring example: Points or match rules. Win by game rules..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'chorizo.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing cards from the table (making combinations that sum to 15) and declaring special three-card combinations in hand. The game is played to an agreed target score (commonly 21 or 31 points).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chorizo.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. First dealer chosen randomly, deals 3 cards to each player and 4 to table\n2. If 2+ Aces on table, reshuffle and redeal\n3. Players take turns counterclockwise\n4. On turn: Play one card to capture cards summing to 15 (including by matching a single 15-value card, or making combinations that sum to 15)\n5. If capture made: Take captured cards and played card, store as trick\n6. If no capture: Played card stays on table\n7. After all play their 3 cards, dealer deals 3 more to each player\n8. Continue until all cards played\n9. Last player to capture takes remaining table cards\n10. Score points based on captured cards and declarations',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chorizo.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 4\nOptimal Players: 2 or 4 (partnerships)\nPartnerships: Yes for 4 players (partners opposite)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chorizo.setup.deck',
+        title: 'Deck',
+        text: 'Type: Spanish 40-card deck\nNumber of Decks: 1\nJokers: Not included\nCard Values: Ace=1, 2-7=face value, Sota (Jack)=8, Caballo (Horse)=9, Rey (King)=10',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chorizo.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish 40-card deck\nScore sheet\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chorizo.setup.dealing',
+        title: 'Deal',
+        text: 'Initial Deal: 3 cards to each player, 4 cards face-up to table\nSubsequent Deals: 3 cards each when hands are empty (no more table cards)\nDealing Pattern: Counterclockwise\nDirection: Counterclockwise play',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chorizo.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chorizo.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chorizo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Captures must sum to exactly 15',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chorizo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A single card can capture if it matches a table card of same value',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chorizo.rules.key.3',
+        title: 'Key rule 3',
+        text: "Multiple table cards can be captured if they sum to the played card's value",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chorizo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Escoba (sweep): Capturing all table cards at once - worth 1 point',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'chorizo.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Declaration bonuses are announced before playing, with specific procedures',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'chorizo.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Wild cards may be used in some variants (e.g., 7 of cups)',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'chorizo.rules.key.7',
+        title: 'Key rule 7',
+        text: "If dealer's initial 4 table cards sum to 15, dealer captures them for bonus",
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chorizo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chorizo.rules.objective',
+          'chorizo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chorizo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chorizo.setup.players',
+          'chorizo.setup.deck',
+          'chorizo.setup.equipment',
+          'chorizo.setup.dealing',
+        ],
+      },
+      {
+        id: 'chorizo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chorizo.rules.key.1',
+          'chorizo.rules.key.2',
+          'chorizo.rules.key.3',
+          'chorizo.rules.key.4',
+          'chorizo.rules.key.5',
+          'chorizo.rules.key.6',
+          'chorizo.rules.key.7',
+        ],
+      },
+      {
+        id: 'chorizo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chorizo.score.description',
+          'chorizo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chorizo.setup.dealing',
+        'chorizo.rules.objective',
+      ],
+      play_card: [
+        'chorizo.rules.gameplay',
+      ],
+    },
+  },
+}

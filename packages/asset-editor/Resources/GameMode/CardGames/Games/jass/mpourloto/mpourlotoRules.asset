@@ -1,0 +1,218 @@
+{
+  system: {
+    guid: 'ea6636f6-b3cb-4e62-a6b8-16d628cada07',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/mpourloto/mpourlotoRules.asset',
+    gameId: 'mpourloto',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Player left of dealer leads. Must follow suit if possible. If unable, must play a trump. Must beat the highest card played so far if possible (overtaking is compulsory).',
+    Player: 'Player left of dealer leads. Must follow suit if possible. If unable, must play a trump. Must beat the highest card played so far if possible (overtaking is compulsory).',
+    objective: 'Be the first partnership to reach 1000 points by winning tricks, capturing valuable cards, and declaring melds.',
+    gameplay: 'Player left of dealer leads. Must follow suit if possible. If unable, must play a trump. Must beat the highest card played so far if possible (overtaking is compulsory).',
+    keyRules: [
+      'Jack and 9 of trumps are highest cards',
+      'All melds count toward score',
+      'Must follow suit, must trump if void',
+      'Must overtake if possible',
+      'Mesa: failed contract gives all points to opponents',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in fixed partnerships, partners sitting opposite each other.',
+      deck: '32-card pack (7 through Ace in each suit: Hearts, Diamonds, Clubs, Spades).',
+      equipment: '32-card deck, score sheet.',
+      dealing: '5 cards to each player, one at a time. The next card is turned face up to propose trumps. After bidding, 3 more cards are dealt to each player.',
+    },
+    turnFlow: 'Player left of dealer leads. Must follow suit if possible. If unable, must play a trump. Must beat the highest card played so far if possible (overtaking is compulsory).',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'See game rules.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first partnership to reach 1000 points by winning tricks, capturing valuable cards, and declaring melds.',
+      'Turn-flow example: Player left of dealer leads. Must follow suit if possible. If unable, must play a trump. Must beat the highest card played so far if possible (overtaking is compulsory).',
+      'Scoring example: Points from melds, card values, and bonuses. Target is 1000 points. First partnership to reach 1000 points wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'mpourloto.rules.objective',
+        title: 'Objective',
+        text: 'Be the first partnership to reach 1000 points by winning tricks, capturing valuable cards, and declaring melds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Player left of dealer leads. Must follow suit if possible. If unable, must play a trump. Must beat the highest card played so far if possible (overtaking is compulsory).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mpourloto.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships, partners sitting opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mpourloto.setup.deck',
+        title: 'Deck',
+        text: '32-card pack (7 through Ace in each suit: Hearts, Diamonds, Clubs, Spades).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mpourloto.setup.equipment',
+        title: 'Equipment',
+        text: '32-card deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mpourloto.setup.dealing',
+        title: 'Deal',
+        text: '5 cards to each player, one at a time. The next card is turned face up to propose trumps. After bidding, 3 more cards are dealt to each player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mpourloto.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 1000 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mpourloto.score.description',
+        title: 'Scoring',
+        text: 'Points from melds, card values, and bonuses. Target is 1000 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Jack and 9 of trumps are highest cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All melds count toward score',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must follow suit, must trump if void',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Must overtake if possible',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Mesa: failed contract gives all points to opponents',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mpourloto.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mpourloto.rules.objective',
+          'mpourloto.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mpourloto.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mpourloto.setup.players',
+          'mpourloto.setup.deck',
+          'mpourloto.setup.equipment',
+          'mpourloto.setup.dealing',
+        ],
+      },
+      {
+        id: 'mpourloto.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mpourloto.rules.key.1',
+          'mpourloto.rules.key.2',
+          'mpourloto.rules.key.3',
+          'mpourloto.rules.key.4',
+          'mpourloto.rules.key.5',
+        ],
+      },
+      {
+        id: 'mpourloto.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mpourloto.score.description',
+          'mpourloto.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mpourloto.setup.dealing',
+        'mpourloto.rules.objective',
+      ],
+      play_card: [
+        'mpourloto.rules.gameplay',
+      ],
+    },
+  },
+}

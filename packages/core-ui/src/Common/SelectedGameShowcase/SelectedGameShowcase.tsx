@@ -374,16 +374,17 @@ const DEFAULT_SELECTED_GAME_SHOWCASE_CONFIG = {
 };
 
 const NARROW_CONFIG_OVERRIDES = {
-  canvas: { vw: 760, vh: 1320 },
-  page: { x: 24, y: 92, width: 712, height: 1040 },
-  tabGroup: { y: 28, tabW: 92, tabH: 40, tabGap: 4, fontSize: 11, bgPadX: 8 },
-  body: { aRatio: 0.34, rowGap: 12, bottomInset: 18 },
-  sideA: { logoFont: 36, taglineFont: 13, statsY: 132, statsH: 46, statsGap: 5, artY: 210, artBottomPad: 420 },
-  overview: { titleFont: 15, titleLetterSpacing: 2, bodyFont: 10, lineGap: 16, paraGap: 32, imageRatio: 0.28 },
-  howTo: { yOffset: -2, topGap: 12, height: 300, titleFont: 16, stepTitleFont: 11, stepBodyFont: 8, arrowW: 12, stepsPerPage: 2 },
-  strip: { topGap: 12, height: 210, insetX: 18, arrowOutsideGap: -4, cardMinWidth: 116, cardMaxWidth: 160, bulletFont: 8, headerTitleFont: 10, headerTitleInsetX: 34, headerLetterSpacing: 1 },
-  tip: { sideInset: 54, height: 92, textFont: 12, textX: 96 },
-  button: { railHeight: 74, width: 260, height: 52, fontSize: 15, letterSpacing: 1.5 },
+  canvas: { vw: 390, vh: 760 },
+  visibility: { stats: false },
+  page: { x: 12, y: 47, width: 366, height: 535 },
+  tabGroup: { y: 14, tabW: 47, tabH: 28, tabGap: 3, fontSize: 7.4, bgPadX: 4, bgPadY: 4 },
+  body: { aRatio: 0.34, rowGap: 9, bottomInset: 12 },
+  sideA: { logoXPad: 12, logoY: 18, logoFont: 22, taglineFont: 9.2, taglineGap: 16, statsY: 74, statsH: 30, statsGap: 4, artY: 106, artBottomPad: 220 },
+  overview: { xPad: 10, textX: 16, titleY: 24, titleFont: 12.5, titleLetterSpacing: 1.2, bodyY: 48, bodyFont: 8.8, lineGap: 12, paraGap: 42, imageRatio: 0.25 },
+  howTo: { yOffset: 0, topGap: 10, height: 190, xPad: 10, headerH: 48, bodyPadX: 9, bodyPadBottom: 8, arrowW: 14, titleFont: 11, titleLetterSpacing: 1.1, stepTitleFont: 8.8, stepBodyFont: 6.8, stepsPerPage: 2, pagerArrowWidth: 18, pagerArrowHeight: 34, pagerSideInset: -22 },
+  strip: { topGap: 10, height: 145, insetX: 10, arrowWidth: 20, arrowHeight: 34, arrowOutsideGap: -20, cardGap: 8, cardMinWidth: 82, cardMaxWidth: 112, bulletFont: 6.8, headerTitleFont: 8.2, headerTitleInsetX: 24, headerIconInsetX: 9, headerIconSize: 14, headerLetterSpacing: 0.4, bulletTop: 42, bulletGap: 4, bulletInsetX: 10, bodyLineHeight: 9.8 },
+  tip: { sideInset: 28, height: 48, iconX: 16, textX: 54, iconFont: 14, textFont: 9.2 },
+  button: { railHeight: 52, railInsetX: 24, width: 260, height: 36, fontSize: 7.2, letterSpacing: 0.25, innerBoxW: 18, arrowSize: 6 },
 };
 
 function cloneDefaultConfig(): SelectedGameShowcaseConfig {
@@ -409,27 +410,44 @@ function cloneConfig(config: SelectedGameShowcaseConfig): SelectedGameShowcaseCo
   return JSON.parse(JSON.stringify(config)) as SelectedGameShowcaseConfig;
 }
 
+function isUnsafeConfigPathPart(part: string): boolean {
+  return part === '__proto__' || part === 'prototype' || part === 'constructor' || part.length === 0;
+}
+
+function setConfigProperty(target: ConfigRecord, key: string, value: unknown): void {
+  Object.defineProperty(target, key, {
+    configurable: true,
+    enumerable: true,
+    value,
+    writable: true,
+  });
+}
+
 function getByPath(obj: ConfigRecord, path: string): unknown {
+  if (!isAllowedConfigPath(path)) return undefined;
   return path.split('.').reduce<unknown>((acc, part) => {
     if (typeof acc !== 'object' || acc === null) return undefined;
-    if (part === '__proto__' || part === 'prototype' || part === 'constructor') return undefined;
+    if (isUnsafeConfigPathPart(part)) return undefined;
     return (acc as ConfigRecord)[part];
   }, obj);
 }
 
 function setByPath<T extends ConfigRecord>(obj: T, path: string, value: unknown): T {
+  if (!isAllowedConfigPath(path)) return obj;
   const parts = path.split('.');
-  if (parts.some(part => part === '__proto__' || part === 'prototype' || part === 'constructor')) {
+  if (parts.some(isUnsafeConfigPathPart)) {
     return obj;
   }
   const root = { ...obj };
   let cursor: ConfigRecord = root;
   for (let i = 0; i < parts.length - 1; i += 1) {
-    const current = cursor[parts[i]];
-    cursor[parts[i]] = typeof current === 'object' && current !== null ? { ...(current as ConfigRecord) } : {};
-    cursor = cursor[parts[i]] as ConfigRecord;
+    const part = parts[i];
+    const current = cursor[part];
+    const next = typeof current === 'object' && current !== null ? { ...(current as ConfigRecord) } : {};
+    setConfigProperty(cursor, part, next);
+    cursor = next;
   }
-  cursor[parts[parts.length - 1]] = value;
+  setConfigProperty(cursor, parts[parts.length - 1], value);
   return root as T;
 }
 
@@ -478,7 +496,7 @@ function estimateStripCardWidth(card: GoalCardInfo, c: SelectedGameShowcaseConfi
   return Math.min(c.cardMaxWidth, Math.max(c.cardMinWidth, titleW, bulletW));
 }
 
-function SvgFitText({ x, y, width, height, text, maxFontSize, minFontSize = 8, fontWeight = '400', fill = '#ffffff' }: {
+function SvgFitText({ x, y, width, height, text, maxFontSize, minFontSize = 8, fontWeight = '400', fill = '#ffffff', fontFamily = 'Arial', stroke, strokeWidth, paintOrder = 'normal' }: {
   x: number;
   y: number;
   width: number;
@@ -488,15 +506,19 @@ function SvgFitText({ x, y, width, height, text, maxFontSize, minFontSize = 8, f
   minFontSize?: number;
   fontWeight?: string;
   fill?: string;
+  fontFamily?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  paintOrder?: string;
 }) {
   const approxWidthAtMax = text.length * maxFontSize * 0.52;
   const widthScale = width / Math.max(1, approxWidthAtMax);
   const heightScale = height / Math.max(1, maxFontSize * 1.2);
   const fontSize = Math.max(minFontSize, Math.min(maxFontSize, maxFontSize * Math.min(1, widthScale, heightScale)));
-  return <text x={x + width / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="central" fontFamily="Arial" fontSize={fontSize} fontWeight={fontWeight} fill={fill}>{text}</text>;
+  return <text x={x + width / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="central" fontFamily={fontFamily} fontSize={fontSize} fontWeight={fontWeight} fill={fill} stroke={stroke} strokeWidth={strokeWidth} paintOrder={paintOrder}>{text}</text>;
 }
 
-function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 7, lineHeight = 1.16, fill = '#cbd5ff' }: {
+function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 7, lineHeight = 1.16, fill = '#cbd5ff', fontFamily = 'Arial', fontWeight = '400', stroke, strokeWidth, paintOrder = 'normal', textAnchor = 'middle', verticalAlign = 'middle', maxLines }: {
   x: number;
   y: number;
   width: number;
@@ -506,17 +528,36 @@ function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 
   minFontSize?: number;
   lineHeight?: number;
   fill?: string;
+  fontFamily?: string;
+  fontWeight?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  paintOrder?: string;
+  textAnchor?: 'start' | 'middle' | 'end';
+  verticalAlign?: 'start' | 'middle';
+  maxLines?: number;
 }) {
+  const anchorX = textAnchor === 'start' ? x : textAnchor === 'end' ? x + width : x + width / 2;
   const makeLines = (fontSize: number) => wrapText(text, Math.max(8, Math.floor(width / (fontSize * 0.5))));
+  const fitLines = (source: string[], limit: number | undefined) => {
+    const effectiveLimit = Math.max(1, Math.floor(limit ?? source.length));
+    if (source.length <= effectiveLimit) return source;
+    const visible = source.slice(0, effectiveLimit);
+    const last = visible.at(-1) ?? '';
+    visible[visible.length - 1] = last.length > 3 ? `${last.replace(/[.,;:\s]+$/g, '').slice(0, Math.max(1, last.length - 1))}...` : `${last}...`;
+    return visible;
+  };
   let fontSize = maxFontSize;
-  let lines = makeLines(fontSize);
+  let lines = fitLines(makeLines(fontSize), maxLines);
   while (fontSize > minFontSize && lines.length * fontSize * lineHeight > height) {
     fontSize -= 0.5;
-    lines = makeLines(fontSize);
+    lines = fitLines(makeLines(fontSize), maxLines);
   }
+  const naturalMaxLines = Math.max(1, Math.floor(height / Math.max(1, fontSize * lineHeight)));
+  lines = fitLines(lines, naturalMaxLines);
   const totalH = lines.length * fontSize * lineHeight;
-  const firstY = y + Math.max(0, (height - totalH) / 2) + fontSize * 0.78;
-  return <text x={x + width / 2} y={firstY} textAnchor="middle" fontFamily="Arial" fontSize={fontSize} fill={fill}>{lines.map((line, index) => <tspan key={`${line}-${index}`} x={x + width / 2} dy={index === 0 ? 0 : fontSize * lineHeight}>{line}</tspan>)}</text>;
+  const firstY = y + (verticalAlign === 'start' ? 0 : Math.max(0, (height - totalH) / 2)) + fontSize * 0.78;
+  return <text x={anchorX} y={firstY} textAnchor={textAnchor} fontFamily={fontFamily} fontSize={fontSize} fontWeight={fontWeight} fill={fill} stroke={stroke} strokeWidth={strokeWidth} paintOrder={paintOrder}>{lines.map((line, index) => <tspan key={`${line}-${index}`} x={anchorX} dy={index === 0 ? 0 : fontSize * lineHeight}>{line}</tspan>)}</text>;
 }
 
 function DebugLabel({ x, y, label, cfg }: {
@@ -668,18 +709,38 @@ function HeroSummary({ x, y, w, cfg, logoUrl, presentation }: {
   const subtitle = taglineLines[0] ?? '';
   const detail = taglineLines[1] ?? presentation.hero.badges[0] ?? '';
   const logoH = Math.min(94, Math.max(56, cfg.sideA.logoFont * 1.24));
+  const fallbackTitleH = Math.min(120, Math.max(70, cfg.sideA.logoFont * 1.72));
   const logoY = y;
-  const subtitleY = logoUrl ? logoY + logoH + 2 : y + 112;
-  const detailY = logoUrl ? subtitleY + 24 : y + 142;
+  const titleH = logoUrl ? logoH : fallbackTitleH;
+  const subtitleY = logoY + titleH + (logoUrl ? 2 : 8);
+  const detailY = subtitleY + (logoUrl ? 24 : 30);
+  const narrowCanvas = cfg.canvas.vw <= 500;
+  const subtitleMinFont = narrowCanvas ? 5 : 9;
+  const detailMinFont = narrowCanvas ? 5 : 8;
   return (
     <g>
       {logoUrl ? (
         <image href={logoUrl} x={x + w * 0.12} y={logoY} width={w * 0.76} height={logoH} preserveAspectRatio="xMidYMid meet" />
       ) : (
-        <text x={x + w / 2} y={y + 74} textAnchor="middle" dominantBaseline="central" fontFamily="Impact, Arial Black" fontSize={Math.min(cfg.sideA.logoFont, 78)} fontWeight="900" fill="#f4f7ff" stroke="#071321" strokeWidth="3" paintOrder="stroke">{title.toUpperCase()}</text>
+        <SvgWrappedText
+          x={x + 18}
+          y={logoY + 2}
+          width={w - 36}
+          height={fallbackTitleH}
+          text={title.toUpperCase()}
+          maxFontSize={Math.min(cfg.sideA.logoFont, 58)}
+          minFontSize={cfg.canvas.vw <= 500 ? 8 : 12}
+          lineHeight={0.96}
+          fontFamily="Impact, Arial Black"
+          fontWeight="900"
+          fill="#f4f7ff"
+          stroke="#071321"
+          strokeWidth={3}
+          paintOrder="stroke"
+        />
       )}
-      {subtitle && <SvgFitText x={x + 14} y={subtitleY} width={w - 28} height={28} text={subtitle} maxFontSize={cfg.sideA.taglineFont} minFontSize={9} fontWeight="800" fill="#ffffff" />}
-      {detail && <SvgWrappedText x={x + 26} y={detailY} width={w - 52} height={42} text={detail} maxFontSize={Math.max(9, cfg.sideA.taglineFont * 0.72)} minFontSize={8} fill="#cbd5ff" />}
+      {subtitle && <SvgFitText x={x + 14} y={subtitleY} width={w - 28} height={28} text={subtitle} maxFontSize={cfg.sideA.taglineFont} minFontSize={subtitleMinFont} fontWeight="800" fill="#ffffff" />}
+      {detail && <SvgWrappedText x={x + 26} y={detailY} width={w - 52} height={42} text={detail} maxFontSize={Math.max(9, cfg.sideA.taglineFont * 0.72)} minFontSize={detailMinFont} fill="#cbd5ff" />}
     </g>
   );
 }
@@ -881,6 +942,11 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
   const hasChunkSelector = chunks.length > 1;
   const textShiftY = hasChunkSelector ? 42 : 0;
   const chunkSelectorMaxW = Math.max(120, w - o.textX - 72);
+  const textColumnW = Math.max(80, w - o.textX - 24);
+  const bodyTextY = y + o.bodyY + textShiftY;
+  const bodyTextH = Math.max(28, imageBottomY - bodyTextY - 14);
+  const bodyText = content.paragraphs.flat().filter(Boolean).join(' ');
+  const bodyMaxLines = Math.max(2, Math.floor(bodyTextH / Math.max(1, o.bodyFont * 1.18)));
   return (
     <g>
       <defs>
@@ -903,12 +969,20 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
       <ChunkSelectorRow x={textX} y={y + 14} maxW={chunkSelectorMaxW} chunks={chunks} activeChunkId={activeChunkId} cfg={cfg} onSelectChunk={onSelectChunk} />
       <text x={textX} y={y + o.titleY + textShiftY} fontFamily="Arial" fontSize="18" fontWeight="900" fill={cfg.colors.iconPurple}>{content.eyebrow}</text>
       <text x={textX + 30} y={y + o.titleY + textShiftY} fontFamily="Impact, Arial Black" fontSize={o.titleFont} letterSpacing={o.titleLetterSpacing} fill={cfg.colors.titlePurple}>{content.title}</text>
-      {content.paragraphs.map((lines, paragraphIndex) => {
-        const startY = y + o.bodyY + textShiftY + paragraphIndex * o.paraGap;
-        return lines.map((line, lineIndex) => (
-          <text key={`${paragraphIndex}-${lineIndex}`} x={textX} y={startY + lineIndex * o.lineGap} fontFamily="Arial" fontSize={o.bodyFont} fill={cfg.colors.textPrimary}>{line}</text>
-        ));
-      })}
+      <SvgWrappedText
+        x={textX}
+        y={bodyTextY}
+        width={textColumnW}
+        height={bodyTextH}
+        text={bodyText}
+        maxFontSize={o.bodyFont}
+        minFontSize={Math.max(7, o.bodyFont * 0.68)}
+        lineHeight={o.lineGap / Math.max(1, o.bodyFont)}
+        fill={cfg.colors.textPrimary}
+        textAnchor="start"
+        verticalAlign="start"
+        maxLines={bodyMaxLines}
+      />
       <DebugLabel x={x + 8} y={y + 16} label="overview" cfg={cfg} />
     </g>
   );
@@ -1077,7 +1151,18 @@ function GoalCard({ x, y, w, h, card, active, onClick, config, clipPrefix }: {
       <path d={roundedRectPath(x + 1.5, y + 1.5, iconTileW, headerH, Math.max(0, c.cardRadius - 2), 0, 0, Math.max(0, c.cardRadius - 2))} fill={active ? 'url(#tabCountGoldFill)' : hover ? 'url(#tabHoverFill)' : 'url(#navIdle)'} stroke={active ? '#f7c84a' : hover ? colors.arrowHover : colors.stripStroke} strokeWidth="1.1" strokeOpacity={active || hover ? 0.86 : 0.42} />
       <path d={roundedRectPath(x + 1.5, y + 1.5, iconTileW, Math.max(7, headerH * 0.48), Math.max(0, c.cardRadius - 2), 0, 0, 0)} fill="url(#tabCountGoldShine)" opacity={active ? 0.28 : 0.08} pointerEvents="none" />
       <text x={x + iconTileW / 2 + 1} y={y + headerH / 2 + 1} textAnchor="middle" dominantBaseline="central" fontFamily="Georgia, serif" fontSize={c.headerIconSize} fill={active ? '#fff3b6' : hover ? '#9dffc2' : card.iconColor}>{card.icon}</text>
-      <text x={x + Math.max(c.headerTitleInsetX, iconTileW + 12)} y={y + headerH / 2 + 1} dominantBaseline="central" fontFamily="Arial Narrow, Arial" fontSize={c.headerTitleFont} fontWeight="900" letterSpacing={c.headerLetterSpacing} fill={active ? colors.stripActiveStroke : hover ? '#9dffc2' : '#d9edff'}>{card.title.toUpperCase()}</text>
+      <SvgFitText
+        x={x + Math.max(c.headerTitleInsetX, iconTileW + 12)}
+        y={y + 5}
+        width={Math.max(24, w - Math.max(c.headerTitleInsetX, iconTileW + 12) - c.cardTextPadRight)}
+        height={Math.max(12, headerH - 10)}
+        text={card.title.toUpperCase()}
+        maxFontSize={c.headerTitleFont}
+        minFontSize={Math.max(6, c.headerTitleFont * 0.54)}
+        fontFamily="Arial Narrow, Arial"
+        fontWeight="900"
+        fill={active ? colors.stripActiveStroke : hover ? '#9dffc2' : '#d9edff'}
+      />
       <g clipPath={`url(#${clipId})`}>
         {bulletRows.map((row) => (
           <g key={row.key}>
@@ -1322,6 +1407,16 @@ const CONTROL_GROUPS: Record<string, ControlGroup> = {
     ],
   },
 };
+
+const ALLOWED_CONFIG_PATHS = new Set<string>(
+  Object.values(CONTROL_GROUPS).flatMap((group) =>
+    group.sections.flatMap((section) => section.fields.map((field) => field[0]))
+  )
+);
+
+function isAllowedConfigPath(path: string): boolean {
+  return ALLOWED_CONFIG_PATHS.has(path);
+}
 
 const ControlNumberField = React.memo(function ControlNumberField({ config, setConfig, path, label, min, max, step = 1 }: {
   config: SelectedGameShowcaseConfig;
@@ -1598,7 +1693,8 @@ export function SelectedGameShowcase({
   const viewButtonY = actionRailY - cfg.button.height / 2;
   const actionGap = Math.max(10, Math.min(24, cfg.button.width * 0.08));
   const actionCount = Math.max(1, visibleActions.length);
-  const maxActionButtonW = Math.max(120, (actionRailW - actionGap * (actionCount - 1)) / actionCount);
+  const minimumActionButtonW = cfg.canvas.vw <= 500 ? 78 : 120;
+  const maxActionButtonW = Math.max(minimumActionButtonW, (actionRailW - actionGap * (actionCount - 1)) / actionCount);
   const actionButtonW = Math.min(cfg.button.width, maxActionButtonW);
   const actionGroupW = actionButtonW * actionCount + actionGap * (actionCount - 1);
   const actionStartX = actionRailX + actionRailW / 2 - actionGroupW / 2;
@@ -1767,7 +1863,7 @@ export function SelectedGameShowcase({
                       x={mainX + cfg.overview.xPad}
                       y={bodyY}
                       w={mainW - cfg.overview.xPad}
-                      imageBottomY={bandBY}
+                      imageBottomY={showHowTo ? Math.max(bodyY + 96, howToY - cfg.body.rowGap) : bandBY}
                       cfg={cfg}
                       content={activeContent}
                       imageUrl={overviewImageUrl}

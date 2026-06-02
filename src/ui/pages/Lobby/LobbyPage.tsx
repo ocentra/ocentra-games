@@ -245,7 +245,6 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
         joinedRoom={joinedRoom}
         friends={sideServices.friends}
         chatMessages={chatMessages}
-        lobbyChatMessages={sideServices.lobbyChatMessages}
         reward={sideServices.reward}
         party={sideServices.party}
         server={sideServices.server ?? server}
@@ -316,11 +315,6 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
           });
         }}
         onSendRoomChat={sendRoomChat}
-        onSendLobbyChat={(message) => {
-          void runWithSession(async (activeUser) => {
-            await sideServices.sendLobbyChat(message, activeUser.uid);
-          });
-        }}
         onAddFriend={(friendId) => {
           void runWithSession(async (activeUser) => {
             await sideServices.addFriend(friendId, activeUser.uid);

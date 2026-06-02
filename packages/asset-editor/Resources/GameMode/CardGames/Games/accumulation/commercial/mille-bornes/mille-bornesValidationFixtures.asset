@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '1847743a-c0f4-4805-aedc-ec3c9c0d534a',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/accumulation/commercial/mille-bornes/mille-bornesValidationFixtures.asset',
+    gameId: 'mille-bornes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'mille-bornes',
+    familyVariant: 'Point-collection',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'mille-bornes.core-runtime-contracts',
+        title: 'Mille Bornes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'mille-bornes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 36,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Mille Bornes must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'mille-bornes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'mille-bornes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+              'discard',
+            ],
+            explanation: 'Mille Bornes must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'mille-bornes.setup.initial-deal',
+              'mille-bornes.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'draw',
+              'play_card',
+              'discard',
+            ],
+          },
+          {
+            id: 'mille-bornes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '5000',
+            scoringDirection: 'high_wins',
+            targetScore: 5000,
+            cardValues: {},
+            explanation: 'Points per hand: 1 per km traveled; 100 per safety; 300 bonus for all four safeties; 300 per coup-fourré; 400 for completing the trip; 300 delayed action (trip after stock exhausted); 300 safe trip (no 200 km cards); 200 extension bonus; 500 shutout (opponent played no distance). Game ends when one side reaches 5000 points; if both exceed 5000 in the same hand, higher total wins.',
+            linkedRuleIds: [
+              'mille-bornes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'mille-bornes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

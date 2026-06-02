@@ -1,0 +1,241 @@
+{
+  system: {
+    guid: '89455bae-d2d1-439b-92de-96c3ab39495a',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/sviten-special/sviten-specialRules.asset',
+    gameId: 'sviten-special',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Blinds are posted. Each player receives five cards and a pre-flop betting round follows. Dealer burns one and deals three community cards (flop); second betting round. Each player may then discard zero to five cards and receive that many replacements from the deck. Dealer burns one and deals the turn card; third betting round. Dealer burns one and deals the river; fourth betting round. At showdown the pot is split between the best five-card hand (private cards only) and the best Omaha hand (exactly two hole cards plus exactly three board cards).',
+    Player: 'Blinds are posted. Each player receives five cards and a pre-flop betting round follows. Dealer burns one and deals three community cards (flop); second betting round. Each player may then discard zero to five cards and receive that many replacements from the deck. Dealer burns one and deals the turn card; third betting round. Dealer burns one and deals the river; fourth betting round. At showdown the pot is split between the best five-card hand (private cards only) and the best Omaha hand (exactly two hole cards plus exactly three board cards).',
+    objective: 'Win chips by having the best five-card hand (from your five private cards) and the best Omaha hand (two of your cards plus three board cards) at showdown; the pot is split between these two halves.',
+    gameplay: 'Blinds are posted. Each player receives five cards and a pre-flop betting round follows. Dealer burns one and deals three community cards (flop); second betting round. Each player may then discard zero to five cards and receive that many replacements from the deck. Dealer burns one and deals the turn card; third betting round. Dealer burns one and deals the river; fourth betting round. At showdown the pot is split between the best five-card hand (private cards only) and the best Omaha hand (exactly two hole cards plus exactly three board cards).',
+    keyRules: [
+      "Pot limit betting. Blinds and order as in Texas Hold'em and Omaha.",
+      'After the flop betting round, each player may discard 0-5 cards and receive an equal number of replacements.',
+      'Pot splits between best five-card hand (all five in hand) and best Omaha hand (two from hand, three from board).',
+      'Standard poker hand rankings for both halves. One player can scoop the entire pot by winning both halves.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Five to seven players; optimum is 5 or 6. Up to 9 can play but the deck may need recycling from the muck for replacements.',
+      deck: 'Standard international 52-card deck (four suits, Ace through King).',
+      equipment: 'Standard international 52-card deck (four suits, Ace through King).',
+      dealing: 'Deal 5 cards each. Small Blind/Big Blind.',
+    },
+    turnFlow: 'Blinds are posted. Each player receives five cards and a pre-flop betting round follows. Dealer burns one and deals three community cards (flop); second betting round. Each player may then discard zero to five cards and receive that many replacements from the deck. Dealer burns one and deals the turn card; third betting round. Dealer burns one and deals the river; fourth betting round. At showdown the pot is split between the best five-card hand (private cards only) and the best Omaha hand (exactly two hole cards plus exactly three board cards).',
+    moveValidityConditions: {
+      ante: 'Base game uses blinds only; ante appears only in Communist Pot variation.',
+      deal: 'Dealer only; performed at start of hand.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Legal when it is your turn in a betting round.',
+      check: 'Legal only when no bet has been made in the current round (or you have already matched the current bet).',
+      call: 'Legal when a bet has been made and you have not yet matched it.',
+      bet: 'Legal when no bet has been made in the current round; maximum bet is the current pot size (pot limit).',
+      raise: 'Legal when a bet has been made; raise amount is limited to current pot (pot limit).',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Legal at showdown when you are an active player.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Sviten Special has no card play to the table during rounds; only betting, draw replacement, and showdown.',
+      draw: 'Legal in draw_replace phase after discarding; draw from stock (deck). If deck is exhausted, muck is shuffled to form new deck.',
+      discard: 'Legal in draw_replace phase; must discard before drawing; number discarded determines number of replacements.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win chips by having the best five-card hand (from your five private cards) and the best Omaha hand (two of your cards plus three board cards) at showdown; the pot is split between these two halves.',
+      'Turn-flow example: Blinds are posted. Each player receives five cards and a pre-flop betting round follows. Dealer burns one and deals three community cards (flop); second betting round. Each player may then discard zero to five cards and receive that many replacements from the deck. Dealer burns one and deals the turn card; third betting round. Dealer burns one and deals the river; fourth betting round. At showdown the pot is split between the best five-card hand (private cards only) and the best Omaha hand (exactly two hole cards plus exactly three board cards).',
+      "Scoring example: Pot is split between the best five-card hand (using only the player's five private cards) and the best Omaha hand (exactly two hole cards plus exactly three board cards). Same player can scoop both halves. Win one or both halves of the pot at showdown: best five-card hand and best Omaha hand (two from hand, three from board). Standard poker hand rankings for both..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'sviten-special.rules.objective',
+        title: 'Objective',
+        text: 'Win chips by having the best five-card hand (from your five private cards) and the best Omaha hand (two of your cards plus three board cards) at showdown; the pot is split between these two halves.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sviten-special.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Blinds are posted. Each player receives five cards and a pre-flop betting round follows. Dealer burns one and deals three community cards (flop); second betting round. Each player may then discard zero to five cards and receive that many replacements from the deck. Dealer burns one and deals the turn card; third betting round. Dealer burns one and deals the river; fourth betting round. At showdown the pot is split between the best five-card hand (private cards only) and the best Omaha hand (exactly two hole cards plus exactly three board cards).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sviten-special.setup.players',
+        title: 'Players',
+        text: 'Five to seven players; optimum is 5 or 6. Up to 9 can play but the deck may need recycling from the muck for replacements.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sviten-special.setup.deck',
+        title: 'Deck',
+        text: 'Standard international 52-card deck (four suits, Ace through King).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sviten-special.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard international 52-card deck (four suits, Ace through King).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sviten-special.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 5 cards each. Small Blind/Big Blind.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sviten-special.score.win-condition',
+        title: 'Win condition',
+        text: 'Win one or both halves of the pot at showdown: best five-card hand and best Omaha hand (two from hand, three from board). Standard poker hand rankings for both.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sviten-special.score.description',
+        title: 'Scoring',
+        text: "Pot is split between the best five-card hand (using only the player's five private cards) and the best Omaha hand (exactly two hole cards plus exactly three board cards). Same player can scoop both halves.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sviten-special.rules.key.1',
+        title: 'Key rule 1',
+        text: "Pot limit betting. Blinds and order as in Texas Hold'em and Omaha.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sviten-special.rules.key.2',
+        title: 'Key rule 2',
+        text: 'After the flop betting round, each player may discard 0-5 cards and receive an equal number of replacements.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sviten-special.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Pot splits between best five-card hand (all five in hand) and best Omaha hand (two from hand, three from board).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'sviten-special.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Standard poker hand rankings for both halves. One player can scoop the entire pot by winning both halves.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sviten-special.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sviten-special.rules.objective',
+          'sviten-special.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sviten-special.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sviten-special.setup.players',
+          'sviten-special.setup.deck',
+          'sviten-special.setup.equipment',
+          'sviten-special.setup.dealing',
+        ],
+      },
+      {
+        id: 'sviten-special.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sviten-special.rules.key.1',
+          'sviten-special.rules.key.2',
+          'sviten-special.rules.key.3',
+          'sviten-special.rules.key.4',
+        ],
+      },
+      {
+        id: 'sviten-special.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sviten-special.score.description',
+          'sviten-special.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sviten-special.setup.dealing',
+        'sviten-special.rules.objective',
+      ],
+      deal: [
+        'sviten-special.rules.gameplay',
+      ],
+      fold: [
+        'sviten-special.rules.gameplay',
+      ],
+      check: [
+        'sviten-special.rules.gameplay',
+      ],
+      call: [
+        'sviten-special.rules.gameplay',
+      ],
+      bet: [
+        'sviten-special.rules.gameplay',
+      ],
+      raise: [
+        'sviten-special.rules.gameplay',
+      ],
+      reveal_hand: [
+        'sviten-special.rules.gameplay',
+      ],
+      draw: [
+        'sviten-special.rules.gameplay',
+      ],
+      discard: [
+        'sviten-special.rules.gameplay',
+      ],
+      deal_flop: [
+        'sviten-special.rules.gameplay',
+      ],
+      deal_turn: [
+        'sviten-special.rules.gameplay',
+      ],
+      deal_river: [
+        'sviten-special.rules.gameplay',
+      ],
+    },
+  },
+}

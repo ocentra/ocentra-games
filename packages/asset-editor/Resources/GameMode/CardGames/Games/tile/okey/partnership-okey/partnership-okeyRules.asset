@@ -1,0 +1,217 @@
+{
+  system: {
+    guid: 'f56de4d9-7878-4033-9cb6-972398df784a',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tile/okey/partnership-okey/partnership-okeyRules.asset',
+    gameId: 'partnership-okey',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Indicator tile determines joker: the tile of same color and one number higher (e.g. Green 10 face-up â†’ Green 11s are jokers). False jokers represent the joker tile only. 2. Player to dealer's right discards first. 3. Each turn: draw one tile (from centre or previous player's discard) and discard one. 4. No melding until the end; first to complete a valid hand exposes it and wins. 5. Winning hand: 14 tiles in sets (3-4 same number, different colors) and/or runs (3+ consecutive same color; 1 may follow 13). Alternative: seven identical pairs.",
+    Player: "1. Indicator tile determines joker: the tile of same color and one number higher (e.g. Green 10 face-up â†’ Green 11s are jokers). False jokers represent the joker tile only. 2. Player to dealer's right discards first. 3. Each turn: draw one tile (from centre or previous player's discard) and discard one. 4. No melding until the end; first to complete a valid hand exposes it and wins. 5. Winning hand: 14 tiles in sets (3-4 same number, different colors) and/or runs (3+ consecutive same color; 1 may follow 13). Alternative: seven identical pairs.",
+    objective: 'Be the first to form a winning hand of 14 tilesâ€”all in valid sets and runsâ€”and expose it after your discard.',
+    gameplay: "1. Indicator tile determines joker: the tile of same color and one number higher (e.g. Green 10 face-up â†’ Green 11s are jokers). False jokers represent the joker tile only. 2. Player to dealer's right discards first. 3. Each turn: draw one tile (from centre or previous player's discard) and discard one. 4. No melding until the end; first to complete a valid hand exposes it and wins. 5. Winning hand: 14 tiles in sets (3-4 same number, different colors) and/or runs (3+ consecutive same color; 1 may follow 13). Alternative: seven identical pairs.",
+    keyRules: [
+      'Joker = same color, one number higher than indicator. False jokers = only that joker tile.',
+      'Runs: 1-2-3 or 12-13-1 valid; 13-1-2 invalid.',
+      "Winning with a joker discard doubles opponents' point loss (gÃ¶sterme).",
+      'If the matching indicator is in hand at start, player may show it for 1 point from each opponent.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players (2-3 possible). Each uses a rack (Istaka).',
+      deck: '106 tiles: numbers 1-13 in red, yellow, green, black (8 per number); 2 unmarked false jokers. One 6-sided die.',
+      equipment: '106 tiles, racks, one die.',
+      dealing: "Tiles mixed face-down, stacked in 21 piles of 5. Dealer throws die twice to select indicator tile. Player to dealer's right gets 15 tiles, others 14. Play proceeds anticlockwise.",
+    },
+    turnFlow: "1. Indicator tile determines joker: the tile of same color and one number higher (e.g. Green 10 face-up â†’ Green 11s are jokers). False jokers represent the joker tile only. 2. Player to dealer's right discards first. 3. Each turn: draw one tile (from centre or previous player's discard) and discard one. 4. No melding until the end; first to complete a valid hand exposes it and wins. 5. Winning hand: 14 tiles in sets (3-4 same number, different colors) and/or runs (3+ consecutive same color; 1 may follow 13). Alternative: seven identical pairs.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'See game rules.',
+      draw: "Start of turn; must draw before discarding except for the first player (to dealer's right) who begins by discarding only.",
+      discard: "After drawing, or as the only action for the first player (to dealer's right).",
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'Legal only when all 14 tiles form valid combinations (sets of 3-4 same number different colours, runs of 3+ consecutive same colour, or seven identical pairs).',
+    },
+    exampleHands: [
+      'Setup example: 14 card(s) per player.',
+      'Rule example: Be the first to form a winning hand of 14 tilesâ€”all in valid sets and runsâ€”and expose it after your discard.',
+      "Turn-flow example: 1. Indicator tile determines joker: the tile of same color and one number higher (e.g. Green 10 face-up â†’ Green 11s are jokers). False jokers represent the joker tile only. 2. Player to dealer's right discards first. 3. Each turn: draw one tile (from centre or previous player's discard) and discard one. 4. No melding until the end; first to complete a valid hand exposes it and wins. 5. Winning hand: 14 tiles in sets (3-4 same number, different colors) and/or runs (3+ consecutive same color; 1 may follow 13). Alternative: seven identical pairs.",
+      'Scoring example: Each player starts with 20 points. Losing points when opponents win: ordinary win -2, seven pairs or joker-discard win -4, gÃ¶sterme -1. First team (or last players) to have two with highest scores when someone reaches 0 or below..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'partnership-okey.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to form a winning hand of 14 tilesâ€”all in valid sets and runsâ€”and expose it after your discard.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'partnership-okey.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Indicator tile determines joker: the tile of same color and one number higher (e.g. Green 10 face-up â†’ Green 11s are jokers). False jokers represent the joker tile only. 2. Player to dealer's right discards first. 3. Each turn: draw one tile (from centre or previous player's discard) and discard one. 4. No melding until the end; first to complete a valid hand exposes it and wins. 5. Winning hand: 14 tiles in sets (3-4 same number, different colors) and/or runs (3+ consecutive same color; 1 may follow 13). Alternative: seven identical pairs.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'partnership-okey.setup.players',
+        title: 'Players',
+        text: '4 players (2-3 possible). Each uses a rack (Istaka).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'partnership-okey.setup.deck',
+        title: 'Deck',
+        text: '106 tiles: numbers 1-13 in red, yellow, green, black (8 per number); 2 unmarked false jokers. One 6-sided die.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'partnership-okey.setup.equipment',
+        title: 'Equipment',
+        text: '106 tiles, racks, one die.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'partnership-okey.setup.dealing',
+        title: 'Deal',
+        text: "Tiles mixed face-down, stacked in 21 piles of 5. Dealer throws die twice to select indicator tile. Player to dealer's right gets 15 tiles, others 14. Play proceeds anticlockwise.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'partnership-okey.score.win-condition',
+        title: 'Win condition',
+        text: 'First team (or last players) to have two with highest scores when someone reaches 0 or below.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'partnership-okey.score.description',
+        title: 'Scoring',
+        text: 'Each player starts with 20 points. Losing points when opponents win: ordinary win -2, seven pairs or joker-discard win -4, gÃ¶sterme -1.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'partnership-okey.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Joker = same color, one number higher than indicator. False jokers = only that joker tile.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'partnership-okey.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Runs: 1-2-3 or 12-13-1 valid; 13-1-2 invalid.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'partnership-okey.rules.key.3',
+        title: 'Key rule 3',
+        text: "Winning with a joker discard doubles opponents' point loss (gÃ¶sterme).",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'partnership-okey.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If the matching indicator is in hand at start, player may show it for 1 point from each opponent.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'partnership-okey.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'partnership-okey.rules.objective',
+          'partnership-okey.rules.gameplay',
+        ],
+      },
+      {
+        id: 'partnership-okey.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'partnership-okey.setup.players',
+          'partnership-okey.setup.deck',
+          'partnership-okey.setup.equipment',
+          'partnership-okey.setup.dealing',
+        ],
+      },
+      {
+        id: 'partnership-okey.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'partnership-okey.rules.key.1',
+          'partnership-okey.rules.key.2',
+          'partnership-okey.rules.key.3',
+          'partnership-okey.rules.key.4',
+        ],
+      },
+      {
+        id: 'partnership-okey.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'partnership-okey.score.description',
+          'partnership-okey.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'partnership-okey.setup.dealing',
+        'partnership-okey.rules.objective',
+      ],
+      play_card: [
+        'partnership-okey.rules.gameplay',
+      ],
+      draw: [
+        'partnership-okey.rules.gameplay',
+      ],
+      discard: [
+        'partnership-okey.rules.gameplay',
+      ],
+      go_out: [
+        'partnership-okey.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,238 @@
+{
+  system: {
+    guid: '4b3f149e-4503-4568-b743-679d9717d8d9',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/asszorti/asszortiRules.asset',
+    gameId: 'asszorti',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Bidding**: Players bid the number of talon cards they wish to exchange. Hierarchy (lowest to highest): 'Three', 'Two', 'One', 'Hand' (Solo/Zero). 2. **The Exchange**: The winner takes the specified number of cards from the talon, adds them to their hand, and discards the same number. (In 'Hand' bids, the talon is ignored). 3. **Trump Selection**: The soloist declares a Trump suit. 4. **Announcements**: Before play, the soloist may announce 'ArrivÃ¡zs' (winning the last 3 tricks). Defenders can 'Double' (Kontra) the game or the announcement. 5. **Play**: Soloist leads first. Standard trick rules (follow suit). 6. **Scoring**: Winning 6+ tricks wins the game. Winning < 6 loses. ArrivÃ¡zs is scored separately.",
+    Player: "1. **Bidding**: Players bid the number of talon cards they wish to exchange. Hierarchy (lowest to highest): 'Three', 'Two', 'One', 'Hand' (Solo/Zero). 2. **The Exchange**: The winner takes the specified number of cards from the talon, adds them to their hand, and discards the same number. (In 'Hand' bids, the talon is ignored). 3. **Trump Selection**: The soloist declares a Trump suit. 4. **Announcements**: Before play, the soloist may announce 'ArrivÃ¡zs' (winning the last 3 tricks). Defenders can 'Double' (Kontra) the game or the announcement. 5. **Play**: Soloist leads first. Standard trick rules (follow suit). 6. **Scoring**: Winning 6+ tricks wins the game. Winning < 6 loses. ArrivÃ¡zs is scored separately.",
+    objective: 'For the soloist: Win at least 6 tricks. For the defenders: Prevent the soloist from winning 6 tricks.',
+    gameplay: "1. **Bidding**: Players bid the number of talon cards they wish to exchange. Hierarchy (lowest to highest): 'Three', 'Two', 'One', 'Hand' (Solo/Zero). 2. **The Exchange**: The winner takes the specified number of cards from the talon, adds them to their hand, and discards the same number. (In 'Hand' bids, the talon is ignored). 3. **Trump Selection**: The soloist declares a Trump suit. 4. **Announcements**: Before play, the soloist may announce 'ArrivÃ¡zs' (winning the last 3 tricks). Defenders can 'Double' (Kontra) the game or the announcement. 5. **Play**: Soloist leads first. Standard trick rules (follow suit). 6. **Scoring**: Winning 6+ tricks wins the game. Winning < 6 loses. ArrivÃ¡zs is scored separately.",
+    keyRules: [
+      'Bidding Hierarchy: Taking FEWER cards is a HIGHER bid. (Hand > One > Two > Three).',
+      'ArrivÃ¡zs: A commitment to win tricks 9, 10, and 11. Can be announced or performed silently (for half score).',
+      'Kontra (Double): Defenders can double the game score or the ArrivÃ¡zs score independently.',
+      "Talon constraints: If you bid 'Two', you look at top 2 talon cards only. 'One' looks at top 1.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Three players. No partnerships; the highest bidder becomes the declarer and plays alone against the other two defenders. Deal and play are clockwise.',
+      deck: '36-card French-suited deck (remove 2s, 3s, 4s, 5s). Rank: A (high) > K > Q > J > 10 > 9 > 8 > 7 > 6.',
+      equipment: 'Standard deck stripped to 36 cards, score sheet.',
+      dealing: "Deal 11 cards to each player. The remaining 3 cards form the face-down 'Talon'.",
+    },
+    turnFlow: "1. **Bidding**: Players bid the number of talon cards they wish to exchange. Hierarchy (lowest to highest): 'Three', 'Two', 'One', 'Hand' (Solo/Zero). 2. **The Exchange**: The winner takes the specified number of cards from the talon, adds them to their hand, and discards the same number. (In 'Hand' bids, the talon is ignored). 3. **Trump Selection**: The soloist declares a Trump suit. 4. **Announcements**: Before play, the soloist may announce 'ArrivÃ¡zs' (winning the last 3 tricks). Defenders can 'Double' (Kontra) the game or the announcement. 5. **Play**: Soloist leads first. Standard trick rules (follow suit). 6. **Scoring**: Winning 6+ tricks wins the game. Winning < 6 loses. ArrivÃ¡zs is scored separately.",
+    moveValidityConditions: {
+      ante: 'Asszorti is a trick game; no antes or betting.',
+      deal: 'Dealer deals 11 cards each and 3 to talon; not a player action.',
+      reveal_market: 'No market; talon is the only extra cards.',
+      buy_market: 'Talon exchange is a swap, not buying from stock.',
+      buy_stock: 'Trick-taking game; no folding out of hands.',
+      fold: 'No betting; only talon bids and Kontra.',
+      check: 'No chip betting in Asszorti.',
+      call: 'Scoring is by tricks and contracts, not bets.',
+      bet: 'No betting rounds in this trick game.',
+      raise: 'Trump is declared in exchange phase via custom action.',
+      declare: 'Hands are played to tricks; no showdown reveal.',
+      reveal_hand: 'Scoring by trick count and contract; no pot.',
+      award_pot: 'Scoring by trick count and contract; no pot.',
+      play_card: 'Standard.',
+      draw: 'Talon exchange discards are part of custom exchange action.',
+      discard: 'Talon exchange discards are part of custom exchange action.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Bidding is talon count (Three/Two/One/Hand) via custom action.',
+      meld: 'Trick-taking game; no melds.',
+      go_out: 'Game ends after 11 tricks and contract scoring.',
+    },
+    exampleHands: [
+      'Setup example: 11 card(s) per player.',
+      'Rule example: For the soloist: Win at least 6 tricks. For the defenders: Prevent the soloist from winning 6 tricks.',
+      "Turn-flow example: 1. **Bidding**: Players bid the number of talon cards they wish to exchange. Hierarchy (lowest to highest): 'Three', 'Two', 'One', 'Hand' (Solo/Zero). 2. **The Exchange**: The winner takes the specified number of cards from the talon, adds them to their hand, and discards the same number. (In 'Hand' bids, the talon is ignored). 3. **Trump Selection**: The soloist declares a Trump suit. 4. **Announcements**: Before play, the soloist may announce 'ArrivÃ¡zs' (winning the last 3 tricks). Defenders can 'Double' (Kontra) the game or the announcement. 5. **Play**: Soloist leads first. Standard trick rules (follow suit). 6. **Scoring**: Winning 6+ tricks wins the game. Winning < 6 loses. ArrivÃ¡zs is scored separately.",
+      'Scoring example: Base points are multiplied by the bid level and any Doubles. Highest score after a set number of rounds or reaching a target (e.g., 50)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'asszorti.rules.objective',
+        title: 'Objective',
+        text: 'For the soloist: Win at least 6 tricks. For the defenders: Prevent the soloist from winning 6 tricks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'asszorti.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding**: Players bid the number of talon cards they wish to exchange. Hierarchy (lowest to highest): 'Three', 'Two', 'One', 'Hand' (Solo/Zero). 2. **The Exchange**: The winner takes the specified number of cards from the talon, adds them to their hand, and discards the same number. (In 'Hand' bids, the talon is ignored). 3. **Trump Selection**: The soloist declares a Trump suit. 4. **Announcements**: Before play, the soloist may announce 'ArrivÃ¡zs' (winning the last 3 tricks). Defenders can 'Double' (Kontra) the game or the announcement. 5. **Play**: Soloist leads first. Standard trick rules (follow suit). 6. **Scoring**: Winning 6+ tricks wins the game. Winning < 6 loses. ArrivÃ¡zs is scored separately.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'asszorti.setup.players',
+        title: 'Players',
+        text: 'Three players. No partnerships; the highest bidder becomes the declarer and plays alone against the other two defenders. Deal and play are clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'asszorti.setup.deck',
+        title: 'Deck',
+        text: '36-card French-suited deck (remove 2s, 3s, 4s, 5s). Rank: A (high) > K > Q > J > 10 > 9 > 8 > 7 > 6.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'asszorti.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck stripped to 36 cards, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'asszorti.setup.dealing',
+        title: 'Deal',
+        text: "Deal 11 cards to each player. The remaining 3 cards form the face-down 'Talon'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'asszorti.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score after a set number of rounds or reaching a target (e.g., 50).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'asszorti.score.description',
+        title: 'Scoring',
+        text: 'Base points are multiplied by the bid level and any Doubles.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'asszorti.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bidding Hierarchy: Taking FEWER cards is a HIGHER bid. (Hand > One > Two > Three).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'asszorti.rules.key.2',
+        title: 'Key rule 2',
+        text: 'ArrivÃ¡zs: A commitment to win tricks 9, 10, and 11. Can be announced or performed silently (for half score).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'asszorti.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Kontra (Double): Defenders can double the game score or the ArrivÃ¡zs score independently.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'asszorti.rules.key.4',
+        title: 'Key rule 4',
+        text: "Talon constraints: If you bid 'Two', you look at top 2 talon cards only. 'One' looks at top 1.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'asszorti.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'asszorti.rules.objective',
+          'asszorti.rules.gameplay',
+        ],
+      },
+      {
+        id: 'asszorti.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'asszorti.setup.players',
+          'asszorti.setup.deck',
+          'asszorti.setup.equipment',
+          'asszorti.setup.dealing',
+        ],
+      },
+      {
+        id: 'asszorti.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'asszorti.rules.key.1',
+          'asszorti.rules.key.2',
+          'asszorti.rules.key.3',
+          'asszorti.rules.key.4',
+        ],
+      },
+      {
+        id: 'asszorti.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'asszorti.score.description',
+          'asszorti.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'asszorti.setup.dealing',
+        'asszorti.rules.objective',
+      ],
+      play_card: [
+        'asszorti.rules.gameplay',
+      ],
+      pass: [
+        'asszorti.rules.gameplay',
+      ],
+      deal_asszorti: [
+        'asszorti.rules.gameplay',
+      ],
+      bid_talon_count: [
+        'asszorti.rules.gameplay',
+      ],
+      draw_talon: [
+        'asszorti.rules.gameplay',
+      ],
+      discard_cards: [
+        'asszorti.rules.gameplay',
+      ],
+      declare_trump: [
+        'asszorti.rules.gameplay',
+      ],
+      announce_arrivazs: [
+        'asszorti.rules.gameplay',
+      ],
+      double_game: [
+        'asszorti.rules.gameplay',
+      ],
+      double_arrivazs: [
+        'asszorti.rules.gameplay',
+      ],
+      calculate_score: [
+        'asszorti.rules.gameplay',
+      ],
+    },
+  },
+}

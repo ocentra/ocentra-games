@@ -1,0 +1,83 @@
+{
+  system: {
+    guid: 'cfde4745-5d96-4d46-852d-26069d077d86',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/garrafina/garrafinaStateEventModel.asset',
+    gameId: 'garrafina',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'garrafina',
+    familyVariant: 'Line / Scoring',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+        },
+        {
+          id: 'table',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: 'face_down',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        min_players: 2,
+        max_players: 4,
+        hand_size: 7,
+        target_score: 100,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'lead',
+        'play_loop',
+        'resolution',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'buy_stock',
+        'award_pot',
+        'play_card',
+        'discard',
+        'pass',
+        'go_out',
+      ],
+    },
+    examples: [],
+  },
+}

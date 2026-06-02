@@ -1,0 +1,268 @@
+{
+  system: {
+    guid: 'f2bb21bf-df87-4371-b98f-5b7d66f67fd0',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/chinese-poker/chinese-pokerRules.asset',
+    gameId: 'chinese-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Each player receives 13 cards and arranges them into three hands face down: back hand (5 cards, strongest), middle hand (5 cards, middle strength), front hand (3 cards, weakest). Back must beat middle, middle must beat front. Players expose hands simultaneously. Each pair of players compares corresponding hands, winning one unit per hand beaten.',
+    Player: 'Each player receives 13 cards and arranges them into three hands face down: back hand (5 cards, strongest), middle hand (5 cards, middle strength), front hand (3 cards, weakest). Back must beat middle, middle must beat front. Players expose hands simultaneously. Each pair of players compares corresponding hands, winning one unit per hand beaten.',
+    objective: "Arrange 13 cards into three poker hands (back: 5 cards, middle: 5 cards, front: 3 cards) where back ≥ middle ≥ front in strength. Win units by beating opponents' corresponding hands.",
+    gameplay: 'Each player receives 13 cards and arranges them into three hands face down: back hand (5 cards, strongest), middle hand (5 cards, middle strength), front hand (3 cards, weakest). Back must beat middle, middle must beat front. Players expose hands simultaneously. Each pair of players compares corresponding hands, winning one unit per hand beaten.',
+    keyRules: [
+      '13 cards dealt to each player',
+      'Arrange into back (5), middle (5), front (3) hands',
+      'Back hand must be strongest, then middle, then front',
+      'Standard poker hand rankings apply',
+      'Front hand: only 3-of-a-kind, pair, or high card possible',
+      "Straights and flushes don't count in front hand",
+      'Win 1 unit per hand beaten against each opponent',
+      'Bonus payments for strong hands',
+      'Special 13-card hands win automatically',
+      'Foul (mis-set) hands lose all three hands to all opponents',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Minimum Players: 2\nMaximum Players: 4\nOptimal Players: 4\nPartnerships: No, each plays for themselves',
+      deck: 'Type: Standard 52-card pack\nNumber of Decks: 1\nJokers: None\nNo wild cards',
+      equipment: 'Standard 52-card pack\nAgreed stake per unit\nTable space for arranging hands',
+      dealing: 'Cards per Player: 13 cards each\nDealing Pattern: Singly, clockwise\nAll cards dealt at once',
+    },
+    turnFlow: 'Each player receives 13 cards and arranges them into three hands face down: back hand (5 cards, strongest), middle hand (5 cards, middle strength), front hand (3 cards, weakest). Back must beat middle, middle must beat front. Players expose hands simultaneously. Each pair of players compares corresponding hands, winning one unit per hand beaten.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'See game rules.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Arrange 13 cards into three poker hands (back: 5 cards, middle: 5 cards, front: 3 cards) where back ≥ middle ≥ front in strength. Win units by beating opponents' corresponding hands.",
+      'Turn-flow example: Each player receives 13 cards and arranges them into three hands face down: back hand (5 cards, strongest), middle hand (5 cards, middle strength), front hand (3 cards, weakest). Back must beat middle, middle must beat front. Players expose hands simultaneously. Each pair of players compares corresponding hands, winning one unit per hand beaten.',
+      "Scoring example: Basic scoring: Win 1 unit for each corresponding hand you beat, lose 1 unit for each hand that beats you. Special hands: Three of a kind in front wins 3 units instead of 1. Full house in middle wins 2 units. Four of a kind in back/middle wins 4 units. Royal/straight flush in back/middle wins 5 units. Special 13-card hands win automatically: Six pairs (3 units), Three straights (3 units), Three flushes (3 units), Complete straight A-K (13 units). Arrange 13 cards into three poker hands (back: 5 cards, middle: 5 cards, front: 3 cards) where back ≥ middle ≥ front in strength. Win units by beating opponents' corresponding hands..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'chinese-poker.rules.objective',
+        title: 'Objective',
+        text: "Arrange 13 cards into three poker hands (back: 5 cards, middle: 5 cards, front: 3 cards) where back ≥ middle ≥ front in strength. Win units by beating opponents' corresponding hands.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each player receives 13 cards and arranges them into three hands face down: back hand (5 cards, strongest), middle hand (5 cards, middle strength), front hand (3 cards, weakest). Back must beat middle, middle must beat front. Players expose hands simultaneously. Each pair of players compares corresponding hands, winning one unit per hand beaten.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chinese-poker.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 4\nOptimal Players: 4\nPartnerships: No, each plays for themselves',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chinese-poker.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card pack\nNumber of Decks: 1\nJokers: None\nNo wild cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chinese-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack\nAgreed stake per unit\nTable space for arranging hands',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chinese-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 13 cards each\nDealing Pattern: Singly, clockwise\nAll cards dealt at once',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chinese-poker.score.win-condition',
+        title: 'Win condition',
+        text: "Arrange 13 cards into three poker hands (back: 5 cards, middle: 5 cards, front: 3 cards) where back ≥ middle ≥ front in strength. Win units by beating opponents' corresponding hands.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chinese-poker.score.description',
+        title: 'Scoring',
+        text: 'Basic scoring: Win 1 unit for each corresponding hand you beat, lose 1 unit for each hand that beats you. Special hands: Three of a kind in front wins 3 units instead of 1. Full house in middle wins 2 units. Four of a kind in back/middle wins 4 units. Royal/straight flush in back/middle wins 5 units. Special 13-card hands win automatically: Six pairs (3 units), Three straights (3 units), Three flushes (3 units), Complete straight A-K (13 units).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: '13 cards dealt to each player',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Arrange into back (5), middle (5), front (3) hands',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Back hand must be strongest, then middle, then front',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Standard poker hand rankings apply',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Front hand: only 3-of-a-kind, pair, or high card possible',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.6',
+        title: 'Key rule 6',
+        text: "Straights and flushes don't count in front hand",
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Win 1 unit per hand beaten against each opponent',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Bonus payments for strong hands',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.9',
+        title: 'Key rule 9',
+        text: 'Special 13-card hands win automatically',
+        sourceFields: [
+          'rules.keyRules.8',
+        ],
+      },
+      {
+        id: 'chinese-poker.rules.key.10',
+        title: 'Key rule 10',
+        text: 'Foul (mis-set) hands lose all three hands to all opponents',
+        sourceFields: [
+          'rules.keyRules.9',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chinese-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chinese-poker.rules.objective',
+          'chinese-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chinese-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chinese-poker.setup.players',
+          'chinese-poker.setup.deck',
+          'chinese-poker.setup.equipment',
+          'chinese-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'chinese-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chinese-poker.rules.key.1',
+          'chinese-poker.rules.key.2',
+          'chinese-poker.rules.key.3',
+          'chinese-poker.rules.key.4',
+          'chinese-poker.rules.key.5',
+          'chinese-poker.rules.key.6',
+          'chinese-poker.rules.key.7',
+          'chinese-poker.rules.key.8',
+          'chinese-poker.rules.key.9',
+          'chinese-poker.rules.key.10',
+        ],
+      },
+      {
+        id: 'chinese-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chinese-poker.score.description',
+          'chinese-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chinese-poker.setup.dealing',
+        'chinese-poker.rules.objective',
+      ],
+      play_card: [
+        'chinese-poker.rules.gameplay',
+      ],
+    },
+  },
+}

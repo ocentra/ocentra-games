@@ -1,0 +1,207 @@
+{
+  system: {
+    guid: '3c74a1b5-8f27-4972-a59c-8413de3107fa',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/singaporean-mahjong/singaporean-mahjongRules.asset',
+    gameId: 'singaporean-mahjong',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Players draw and discard in turn while claiming legal sets by priority rules. Bonus/animal tiles are resolved by profile conventions and can affect scoring outcomes.',
+    Player: 'Players draw and discard in turn while claiming legal sets by priority rules. Bonus/animal tiles are resolved by profile conventions and can affect scoring outcomes.',
+    objective: 'Complete a legal winning hand and satisfy active Singaporean scoring and bonus rules.',
+    gameplay: 'Players draw and discard in turn while claiming legal sets by priority rules. Bonus/animal tiles are resolved by profile conventions and can affect scoring outcomes.',
+    keyRules: [
+      'Draw then discard is the core loop.',
+      'Claim legality and priority determine interruptions.',
+      'Bonus and animal resolution follows profile scoring conventions.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players seated by wind position.',
+      deck: '148-tile Mahjong set with suited tiles, honors, flowers/seasons, and animal bonus tiles.',
+      equipment: '148-tile Mahjong set with suited tiles, honors, flowers/seasons, and animal bonus tiles.',
+      dealing: 'Each player receives 13 tiles; dealer receives 14 and discards first.',
+    },
+    turnFlow: 'Players draw and discard in turn while claiming legal sets by priority rules. Bonus/animal tiles are resolved by profile conventions and can affect scoring outcomes.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is setup, not a player action.',
+      reveal_market: 'No market zone is used.',
+      buy_market: 'No market purchase mechanic exists.',
+      buy_stock: 'No stock buying mechanic exists.',
+      fold: 'This game has no fold action.',
+      check: 'No betting rounds are used.',
+      call: 'No call action exists.',
+      bet: 'No betting actions exist.',
+      raise: 'No betting actions exist.',
+      declare: 'No separate declaration phase is modeled.',
+      reveal_hand: 'Reveal is part of win resolution.',
+      award_pot: 'No pot mechanic is used.',
+      play_card: 'Mahjong flow is modeled through draw/discard/meld actions.',
+      draw: 'Legal at start of turn.',
+      discard: 'Required after draw unless winning.',
+      pass: 'Pass is not required in this shared model.',
+      bid: 'No bidding mechanic exists.',
+      meld: 'Claim restrictions apply by type and seat.',
+      go_out: 'Hand must satisfy profile validity and scoring rules.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Complete a legal winning hand and satisfy active Singaporean scoring and bonus rules.',
+      'Turn-flow example: Players draw and discard in turn while claiming legal sets by priority rules. Bonus/animal tiles are resolved by profile conventions and can affect scoring outcomes.',
+      'Scoring example: Points or match rules. Win by game rules..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'singaporean-mahjong.rules.objective',
+        title: 'Objective',
+        text: 'Complete a legal winning hand and satisfy active Singaporean scoring and bonus rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and discard in turn while claiming legal sets by priority rules. Bonus/animal tiles are resolved by profile conventions and can affect scoring outcomes.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.setup.players',
+        title: 'Players',
+        text: '4 players seated by wind position.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.setup.deck',
+        title: 'Deck',
+        text: '148-tile Mahjong set with suited tiles, honors, flowers/seasons, and animal bonus tiles.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.setup.equipment',
+        title: 'Equipment',
+        text: '148-tile Mahjong set with suited tiles, honors, flowers/seasons, and animal bonus tiles.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 tiles; dealer receives 14 and discards first.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw then discard is the core loop.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Claim legality and priority determine interruptions.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bonus and animal resolution follows profile scoring conventions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'singaporean-mahjong.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'singaporean-mahjong.rules.objective',
+          'singaporean-mahjong.rules.gameplay',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'singaporean-mahjong.setup.players',
+          'singaporean-mahjong.setup.deck',
+          'singaporean-mahjong.setup.equipment',
+          'singaporean-mahjong.setup.dealing',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'singaporean-mahjong.rules.key.1',
+          'singaporean-mahjong.rules.key.2',
+          'singaporean-mahjong.rules.key.3',
+        ],
+      },
+      {
+        id: 'singaporean-mahjong.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'singaporean-mahjong.score.description',
+          'singaporean-mahjong.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'singaporean-mahjong.setup.dealing',
+        'singaporean-mahjong.rules.objective',
+      ],
+      draw: [
+        'singaporean-mahjong.rules.gameplay',
+      ],
+      discard: [
+        'singaporean-mahjong.rules.gameplay',
+      ],
+      meld: [
+        'singaporean-mahjong.rules.gameplay',
+      ],
+      go_out: [
+        'singaporean-mahjong.rules.gameplay',
+      ],
+    },
+  },
+}

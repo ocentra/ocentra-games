@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
 import { GamePhase } from '@ocentra/game-domain/types/game';
 import { validateAssetFile } from '@/schemas/asset/asset-file-schema';
-import { CardGameMechanicsDataSchema } from '@/schemas/asset/card-game-mechanics-data.schema';
+import { decodeCardGameMechanicsData } from '@/schemas/asset/card-game-mechanics-data.schema';
 import { toMechanicsSpec } from './MechanicsTranslator';
 import { createItalian40DeckProvider } from './testDeckProviders';
 
@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../../../..');
 const briscolaMechanicsAssetPath = path.resolve(
   repoRoot,
-  'packages/asset-editor/Resources/GameMode/CardGames/Games/briscola/briscolaMechanics.asset',
+  'packages/asset-editor/Resources/GameMode/CardGames/Games/trick-taking/briscola/briscolaMechanics.asset',
 );
 
 describe('Briscola mechanics asset smoke', () => {
@@ -24,7 +24,7 @@ describe('Briscola mechanics asset smoke', () => {
     const validation = validateAssetFile(parsed);
     expect(validation.success).toBe(true);
 
-    const data = CardGameMechanicsDataSchema.parse((parsed as { data: unknown }).data);
+    const data = decodeCardGameMechanicsData((parsed as { data: unknown }).data);
     const spec = toMechanicsSpec(data);
 
     const engine = new GameEngine({

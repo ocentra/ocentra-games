@@ -1,0 +1,214 @@
+{
+  system: {
+    guid: '0d77e86e-d524-4cd0-95c0-65f56ad82f66',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/patience/aces-up/aces-upRules.asset',
+    gameId: 'aces-up',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Compare the top cards of the four tableau piles. 2. If two or more top cards share a suit, discard any lower-ranked card(s) of that suit; ace is highest. 3. If a tableau pile is empty, move any top card from another pile into that space. 4. When no further discard or move is available (or chosen), deal one new card onto each pile from stock. 5. Continue until stock is empty and no legal move remains.',
+    Player: '1. Compare the top cards of the four tableau piles. 2. If two or more top cards share a suit, discard any lower-ranked card(s) of that suit; ace is highest. 3. If a tableau pile is empty, move any top card from another pile into that space. 4. When no further discard or move is available (or chosen), deal one new card onto each pile from stock. 5. Continue until stock is empty and no legal move remains.',
+    objective: 'The player wins by discarding all cards except the four aces. When the game ends, only the four aces should remain in the tableau; a maximum score of 48 discarded cards indicates a win, hence the name Aces Up.',
+    gameplay: '1. Compare the top cards of the four tableau piles. 2. If two or more top cards share a suit, discard any lower-ranked card(s) of that suit; ace is highest. 3. If a tableau pile is empty, move any top card from another pile into that space. 4. When no further discard or move is available (or chosen), deal one new card onto each pile from stock. 5. Continue until stock is empty and no legal move remains.',
+    keyRules: [
+      'Only top cards are playable.',
+      'Aces are high and therefore never discarded by same-suit comparison.',
+      'Any top card may fill an empty pile in standard Aces Up.',
+      'No redeal of stock in the standard game.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'One player only. Aces Up is a patience (solitaire) game played by a single player using one deck and four tableau piles, with a space for discards.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'One shuffled deck and table space for four tableau piles.',
+      dealing: 'Deal four cards face up, one to each tableau pile. The rest of the deck is the stock.',
+    },
+    turnFlow: '1. Compare the top cards of the four tableau piles. 2. If two or more top cards share a suit, discard any lower-ranked card(s) of that suit; ace is highest. 3. If a tableau pile is empty, move any top card from another pile into that space. 4. When no further discard or move is available (or chosen), deal one new card onto each pile from stock. 5. Continue until stock is empty and no legal move remains.',
+    moveValidityConditions: {
+      ante: 'Aces Up is solitaire; there is no ante or betting.',
+      deal: 'Allowed when stock has at least one full row remaining for all piles in standard play.',
+      reveal_market: 'Solitaire; no market, cards come from stock to tableau.',
+      buy_market: 'Solitaire; no market, cards are dealt from stock to tableau.',
+      buy_stock: 'Cards move from stock to tableau by deal, not a buy action.',
+      fold: 'Single-player patience; no folding.',
+      check: 'Solitaire; no betting or check.',
+      call: 'Solitaire; no betting or call.',
+      bet: 'Solitaire; no betting or bet action.',
+      raise: 'Solitaire; no betting or raise.',
+      declare: 'Patience game; no declaration phase.',
+      reveal_hand: 'Solitaire; no hand reveal, tableau is always visible.',
+      award_pot: 'Solitaire; no pot or award, win by reducing to one pile.',
+      play_card: 'Source must be a top card; destination pile must be empty.',
+      draw: 'Cards move from stock to tableau by deal action, not draw.',
+      discard: 'Both cards must be top cards and same suit; discarded card must be lower rank.',
+      pass: 'Solitaire; pass is a trick-taking concept, not used here.',
+      bid: 'Solitaire; no bidding.',
+      meld: 'Aces Up is patience; no melding of sets or runs.',
+      go_out: 'Game ends when one pile remains or no moves; no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: The player wins by discarding all cards except the four aces. When the game ends, only the four aces should remain in the tableau; a maximum score of 48 discarded cards indicates a win, hence the name Aces Up.',
+      'Turn-flow example: 1. Compare the top cards of the four tableau piles. 2. If two or more top cards share a suit, discard any lower-ranked card(s) of that suit; ace is highest. 3. If a tableau pile is empty, move any top card from another pile into that space. 4. When no further discard or move is available (or chosen), deal one new card onto each pile from stock. 5. Continue until stock is empty and no legal move remains.',
+      'Scoring example: Score by discarded cards; 48 discarded (4 aces left) is a complete win. Exactly four cards remain and they are the four aces..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'aces-up.rules.objective',
+        title: 'Objective',
+        text: 'The player wins by discarding all cards except the four aces. When the game ends, only the four aces should remain in the tableau; a maximum score of 48 discarded cards indicates a win, hence the name Aces Up.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'aces-up.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Compare the top cards of the four tableau piles. 2. If two or more top cards share a suit, discard any lower-ranked card(s) of that suit; ace is highest. 3. If a tableau pile is empty, move any top card from another pile into that space. 4. When no further discard or move is available (or chosen), deal one new card onto each pile from stock. 5. Continue until stock is empty and no legal move remains.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'aces-up.setup.players',
+        title: 'Players',
+        text: 'One player only. Aces Up is a patience (solitaire) game played by a single player using one deck and four tableau piles, with a space for discards.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'aces-up.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'aces-up.setup.equipment',
+        title: 'Equipment',
+        text: 'One shuffled deck and table space for four tableau piles.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'aces-up.setup.dealing',
+        title: 'Deal',
+        text: 'Deal four cards face up, one to each tableau pile. The rest of the deck is the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'aces-up.score.win-condition',
+        title: 'Win condition',
+        text: 'Exactly four cards remain and they are the four aces.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'aces-up.score.description',
+        title: 'Scoring',
+        text: 'Score by discarded cards; 48 discarded (4 aces left) is a complete win.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'aces-up.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only top cards are playable.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'aces-up.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces are high and therefore never discarded by same-suit comparison.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'aces-up.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Any top card may fill an empty pile in standard Aces Up.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'aces-up.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No redeal of stock in the standard game.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'aces-up.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'aces-up.rules.objective',
+          'aces-up.rules.gameplay',
+        ],
+      },
+      {
+        id: 'aces-up.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'aces-up.setup.players',
+          'aces-up.setup.deck',
+          'aces-up.setup.equipment',
+          'aces-up.setup.dealing',
+        ],
+      },
+      {
+        id: 'aces-up.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'aces-up.rules.key.1',
+          'aces-up.rules.key.2',
+          'aces-up.rules.key.3',
+          'aces-up.rules.key.4',
+        ],
+      },
+      {
+        id: 'aces-up.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'aces-up.score.description',
+          'aces-up.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'aces-up.setup.dealing',
+        'aces-up.rules.objective',
+      ],
+      deal: [
+        'aces-up.rules.gameplay',
+      ],
+      play_card: [
+        'aces-up.rules.gameplay',
+      ],
+      discard: [
+        'aces-up.rules.gameplay',
+      ],
+    },
+  },
+}

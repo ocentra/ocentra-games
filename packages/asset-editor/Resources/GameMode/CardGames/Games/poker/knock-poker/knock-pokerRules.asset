@@ -1,0 +1,229 @@
+{
+  system: {
+    guid: '3e47a50d-b9e4-4b1e-bd55-c0465e8d8d42',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/knock-poker/knock-pokerRules.asset',
+    gameId: 'knock-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Ante**: Each player pays one chip to the central pot before the deal.\n2. **Turn Structure**: Players take turns clockwise, starting with the player to dealer's left.\n3. **Drawing**: On your turn, draw one card either from the top of the stock pile (face down) or take the top card of the face-up discard pile.\n4. **Knocking (Optional)**: If you believe you have the best poker hand, you may knock by knocking on the table or saying 'I knock'. This signals that play will end after each other player has one more turn.\n5. **Discarding**: After drawing (and optionally knocking), discard one card face up on the discard pile. You cannot discard the same card you just took from the discard pile in the same turn.\n6. **Immediate Knock**: A player satisfied with their original dealt hand may knock on their first turn without drawing or discarding.",
+    Player: "1. **Ante**: Each player pays one chip to the central pot before the deal.\n2. **Turn Structure**: Players take turns clockwise, starting with the player to dealer's left.\n3. **Drawing**: On your turn, draw one card either from the top of the stock pile (face down) or take the top card of the face-up discard pile.\n4. **Knocking (Optional)**: If you believe you have the best poker hand, you may knock by knocking on the table or saying 'I knock'. This signals that play will end after each other player has one more turn.\n5. **Discarding**: After drawing (and optionally knocking), discard one card face up on the discard pile. You cannot discard the same card you just took from the discard pile in the same turn.\n6. **Immediate Knock**: A player satisfied with their original dealt hand may knock on their first turn without drawing or discarding.",
+    objective: 'Collect the best five-card poker hand and be the first to knock when confident of having the strongest hand.',
+    gameplay: "1. **Ante**: Each player pays one chip to the central pot before the deal.\n2. **Turn Structure**: Players take turns clockwise, starting with the player to dealer's left.\n3. **Drawing**: On your turn, draw one card either from the top of the stock pile (face down) or take the top card of the face-up discard pile.\n4. **Knocking (Optional)**: If you believe you have the best poker hand, you may knock by knocking on the table or saying 'I knock'. This signals that play will end after each other player has one more turn.\n5. **Discarding**: After drawing (and optionally knocking), discard one card face up on the discard pile. You cannot discard the same card you just took from the discard pile in the same turn.\n6. **Immediate Knock**: A player satisfied with their original dealt hand may knock on their first turn without drawing or discarding.",
+    keyRules: [
+      'Draw from stock or discard pile each turn',
+      'Must discard after drawing',
+      'Can knock to end round',
+      'Best poker hand wins the pot',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 to 5 players optimal. Can be played with 2 or more than 5 using the same rules.',
+      deck: 'Standard 52-card Anglo-American deck without jokers.',
+      equipment: 'Poker chips or coins for scoring and a central pot.',
+      dealing: "Cards are shuffled, cut by the player to dealer's right, and dealt one at a time until each player has five cards. The remainder forms a draw pile, with the top card turned face up to start the discard pile.",
+    },
+    turnFlow: "1. **Ante**: Each player pays one chip to the central pot before the deal.\n2. **Turn Structure**: Players take turns clockwise, starting with the player to dealer's left.\n3. **Drawing**: On your turn, draw one card either from the top of the stock pile (face down) or take the top card of the face-up discard pile.\n4. **Knocking (Optional)**: If you believe you have the best poker hand, you may knock by knocking on the table or saying 'I knock'. This signals that play will end after each other player has one more turn.\n5. **Discarding**: After drawing (and optionally knocking), discard one card face up on the discard pile. You cannot discard the same card you just took from the discard pile in the same turn.\n6. **Immediate Knock**: A player satisfied with their original dealt hand may knock on their first turn without drawing or discarding.",
+    moveValidityConditions: {
+      ante: 'Required before deal; amount per table rules.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Pay 1 chip to knocker',
+      check: 'This game has no check or betting.',
+      call: 'Allowed only during betting phases within table limits.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Allowed only in phases that list this action as legal.',
+      award_pot: 'Best poker hand wins',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'One card per turn',
+      discard: 'Cannot discard card just drawn from discard',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Collect the best five-card poker hand and be the first to knock when confident of having the strongest hand.',
+      "Turn-flow example: 1. **Ante**: Each player pays one chip to the central pot before the deal.\n2. **Turn Structure**: Players take turns clockwise, starting with the player to dealer's left.\n3. **Drawing**: On your turn, draw one card either from the top of the stock pile (face down) or take the top card of the face-up discard pile.\n4. **Knocking (Optional)**: If you believe you have the best poker hand, you may knock by knocking on the table or saying 'I knock'. This signals that play will end after each other player has one more turn.\n5. **Discarding**: After drawing (and optionally knocking), discard one card face up on the discard pile. You cannot discard the same card you just took from the discard pile in the same turn.\n6. **Immediate Knock**: A player satisfied with their original dealt hand may knock on their first turn without drawing or discarding.",
+      'Scoring example: Best poker hand wins the pot. Knocker wins: others pay 2 chips each. Knocker loses: pays 2 chips to each staying player. Folders pay 1 chip to knocker. Have the highest-ranking five-card poker hand at showdown.',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'knock-poker.rules.objective',
+        title: 'Objective',
+        text: 'Collect the best five-card poker hand and be the first to knock when confident of having the strongest hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'knock-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Ante**: Each player pays one chip to the central pot before the deal.\n2. **Turn Structure**: Players take turns clockwise, starting with the player to dealer's left.\n3. **Drawing**: On your turn, draw one card either from the top of the stock pile (face down) or take the top card of the face-up discard pile.\n4. **Knocking (Optional)**: If you believe you have the best poker hand, you may knock by knocking on the table or saying 'I knock'. This signals that play will end after each other player has one more turn.\n5. **Discarding**: After drawing (and optionally knocking), discard one card face up on the discard pile. You cannot discard the same card you just took from the discard pile in the same turn.\n6. **Immediate Knock**: A player satisfied with their original dealt hand may knock on their first turn without drawing or discarding.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'knock-poker.setup.players',
+        title: 'Players',
+        text: '3 to 5 players optimal. Can be played with 2 or more than 5 using the same rules.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'knock-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card Anglo-American deck without jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'knock-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Poker chips or coins for scoring and a central pot.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'knock-poker.setup.dealing',
+        title: 'Deal',
+        text: "Cards are shuffled, cut by the player to dealer's right, and dealt one at a time until each player has five cards. The remainder forms a draw pile, with the top card turned face up to start the discard pile.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'knock-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Have the highest-ranking five-card poker hand at showdown',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'knock-poker.score.description',
+        title: 'Scoring',
+        text: 'Best poker hand wins the pot. Knocker wins: others pay 2 chips each. Knocker loses: pays 2 chips to each staying player. Folders pay 1 chip to knocker.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'knock-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw from stock or discard pile each turn',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'knock-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must discard after drawing',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'knock-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Can knock to end round',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'knock-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Best poker hand wins the pot',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'knock-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'knock-poker.rules.objective',
+          'knock-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'knock-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'knock-poker.setup.players',
+          'knock-poker.setup.deck',
+          'knock-poker.setup.equipment',
+          'knock-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'knock-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'knock-poker.rules.key.1',
+          'knock-poker.rules.key.2',
+          'knock-poker.rules.key.3',
+          'knock-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'knock-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'knock-poker.score.description',
+          'knock-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'knock-poker.setup.dealing',
+        'knock-poker.rules.objective',
+      ],
+      ante: [
+        'knock-poker.rules.gameplay',
+      ],
+      deal: [
+        'knock-poker.rules.gameplay',
+      ],
+      fold: [
+        'knock-poker.rules.gameplay',
+      ],
+      call: [
+        'knock-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'knock-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'knock-poker.rules.gameplay',
+      ],
+      draw: [
+        'knock-poker.rules.gameplay',
+      ],
+      discard: [
+        'knock-poker.rules.gameplay',
+      ],
+    },
+  },
+}

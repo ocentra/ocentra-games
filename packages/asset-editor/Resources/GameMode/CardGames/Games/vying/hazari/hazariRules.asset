@@ -1,0 +1,217 @@
+{
+  system: {
+    guid: 'a42de995-93a2-495b-9c01-289bddcd3b89',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/hazari/hazariRules.asset',
+    gameId: 'hazari',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. PARTITIONING: Each player arranges their 13 cards into four sets. Three sets contain 3 cards each, and the fourth (final) set contains 4 cards. Players must arrange them so they are played from strongest to weakest (though this is a strategy, not a restriction).\n2. CALLING: When all players have partitioned their cards, they call 'Up' or 'Ready'.\n3. COMPARISONS: There are four rounds of comparison. In each, players reveal one set. The winner of a comparison takes all cards from that round. The winner of Comparison 1 leads Comparison 2, and so on.\n4. POINT SCORING: High cards (A, K, Q, J, 10) are worth 10 points each. Other cards (2-9) are worth 0 points.",
+    Player: "1. PARTITIONING: Each player arranges their 13 cards into four sets. Three sets contain 3 cards each, and the fourth (final) set contains 4 cards. Players must arrange them so they are played from strongest to weakest (though this is a strategy, not a restriction).\n2. CALLING: When all players have partitioned their cards, they call 'Up' or 'Ready'.\n3. COMPARISONS: There are four rounds of comparison. In each, players reveal one set. The winner of a comparison takes all cards from that round. The winner of Comparison 1 leads Comparison 2, and so on.\n4. POINT SCORING: High cards (A, K, Q, J, 10) are worth 10 points each. Other cards (2-9) are worth 0 points.",
+    objective: 'Be the first player to reach a cumulative score of 1000 points by winning card comparisons.',
+    gameplay: "1. PARTITIONING: Each player arranges their 13 cards into four sets. Three sets contain 3 cards each, and the fourth (final) set contains 4 cards. Players must arrange them so they are played from strongest to weakest (though this is a strategy, not a restriction).\n2. CALLING: When all players have partitioned their cards, they call 'Up' or 'Ready'.\n3. COMPARISONS: There are four rounds of comparison. In each, players reveal one set. The winner of a comparison takes all cards from that round. The winner of Comparison 1 leads Comparison 2, and so on.\n4. POINT SCORING: High cards (A, K, Q, J, 10) are worth 10 points each. Other cards (2-9) are worth 0 points.",
+    keyRules: [
+      'Ranking of 3rd-card sets (highest to lowest): 1. Troy (Three of a Kind), 2. Color Run (Straight Flush), 3. Run (Straight), 4. Color (Flush), 5. Pair, 6. High Card.',
+      'Points: A=10, K=10, Q=10, J=10, 10=10.',
+      'Total points in the deck are 200.',
+      'If sets are equal in rank, the highest card within the set determines the winner.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players playing individually.',
+      deck: 'Standard 52-card deck. Ace is high.',
+      equipment: 'Standard deck, score sheet.',
+      dealing: 'Dealer deals 13 cards to each player in batches (e.g., 4-4-5 or all at once).',
+    },
+    turnFlow: "1. PARTITIONING: Each player arranges their 13 cards into four sets. Three sets contain 3 cards each, and the fourth (final) set contains 4 cards. Players must arrange them so they are played from strongest to weakest (though this is a strategy, not a restriction).\n2. CALLING: When all players have partitioned their cards, they call 'Up' or 'Ready'.\n3. COMPARISONS: There are four rounds of comparison. In each, players reveal one set. The winner of a comparison takes all cards from that round. The winner of Comparison 1 leads Comparison 2, and so on.\n4. POINT SCORING: High cards (A, K, Q, J, 10) are worth 10 points each. Other cards (2-9) are worth 0 points.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'Must have allocated all 13 cards correctly.',
+      reveal_hand: 'Triggered in sequence during comparison phase.',
+      award_pot: 'Automated at end of each comparison round.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Be the first player to reach a cumulative score of 1000 points by winning card comparisons.',
+      "Turn-flow example: 1. PARTITIONING: Each player arranges their 13 cards into four sets. Three sets contain 3 cards each, and the fourth (final) set contains 4 cards. Players must arrange them so they are played from strongest to weakest (though this is a strategy, not a restriction).\n2. CALLING: When all players have partitioned their cards, they call 'Up' or 'Ready'.\n3. COMPARISONS: There are four rounds of comparison. In each, players reveal one set. The winner of a comparison takes all cards from that round. The winner of Comparison 1 leads Comparison 2, and so on.\n4. POINT SCORING: High cards (A, K, Q, J, 10) are worth 10 points each. Other cards (2-9) are worth 0 points.",
+      'Scoring example: All Aces, Kings, Queens, Jacks, and 10s are worth 10 points each. All other cards are 0 points. First player to reach 1000 total points wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'hazari.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to reach a cumulative score of 1000 points by winning card comparisons.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hazari.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. PARTITIONING: Each player arranges their 13 cards into four sets. Three sets contain 3 cards each, and the fourth (final) set contains 4 cards. Players must arrange them so they are played from strongest to weakest (though this is a strategy, not a restriction).\n2. CALLING: When all players have partitioned their cards, they call 'Up' or 'Ready'.\n3. COMPARISONS: There are four rounds of comparison. In each, players reveal one set. The winner of a comparison takes all cards from that round. The winner of Comparison 1 leads Comparison 2, and so on.\n4. POINT SCORING: High cards (A, K, Q, J, 10) are worth 10 points each. Other cards (2-9) are worth 0 points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hazari.setup.players',
+        title: 'Players',
+        text: '4 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hazari.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ace is high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hazari.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hazari.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals 13 cards to each player in batches (e.g., 4-4-5 or all at once).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hazari.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 1000 total points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hazari.score.description',
+        title: 'Scoring',
+        text: 'All Aces, Kings, Queens, Jacks, and 10s are worth 10 points each. All other cards are 0 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hazari.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Ranking of 3rd-card sets (highest to lowest): 1. Troy (Three of a Kind), 2. Color Run (Straight Flush), 3. Run (Straight), 4. Color (Flush), 5. Pair, 6. High Card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hazari.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Points: A=10, K=10, Q=10, J=10, 10=10.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hazari.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Total points in the deck are 200.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hazari.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If sets are equal in rank, the highest card within the set determines the winner.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hazari.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hazari.rules.objective',
+          'hazari.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hazari.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hazari.setup.players',
+          'hazari.setup.deck',
+          'hazari.setup.equipment',
+          'hazari.setup.dealing',
+        ],
+      },
+      {
+        id: 'hazari.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hazari.rules.key.1',
+          'hazari.rules.key.2',
+          'hazari.rules.key.3',
+          'hazari.rules.key.4',
+        ],
+      },
+      {
+        id: 'hazari.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hazari.score.description',
+          'hazari.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hazari.setup.dealing',
+        'hazari.rules.objective',
+      ],
+      deal: [
+        'hazari.rules.gameplay',
+      ],
+      declare: [
+        'hazari.rules.gameplay',
+      ],
+      reveal_hand: [
+        'hazari.rules.gameplay',
+      ],
+      award_pot: [
+        'hazari.rules.gameplay',
+      ],
+    },
+  },
+}

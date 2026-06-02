@@ -1,0 +1,225 @@
+{
+  system: {
+    guid: '3b471021-18d2-4b8b-adae-e77394ffd83c',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/compendium/barbu/barbuRules.asset',
+    gameId: 'barbu',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'For all contracts except Domino, standard trick-taking rules apply: must follow suit; highest card of suit led wins the trick (unless trumps are involved).',
+    Player: 'For all contracts except Domino, standard trick-taking rules apply: must follow suit; highest card of suit led wins the trick (unless trumps are involved).',
+    objective: 'Accumulate the highest positive score (or lowest negative) at the end of the 28-hand cycle.',
+    gameplay: 'For all contracts except Domino, standard trick-taking rules apply: must follow suit; highest card of suit led wins the trick (unless trumps are involved).',
+    keyRules: [
+      'No Trumps in negative contracts.',
+      'The declarer must play all 7 contracts exactly once during their tenure.',
+      "In 'No Hearts', you cannot lead a heart until a heart has been discarded (broken suit).",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Exactly 4 players, playing individually.',
+      deck: 'Standard 52 cards (Ace high, 2 low).',
+      equipment: 'Standard pack, specialized Barbu score sheet (to track 28 rounds).',
+      dealing: 'Dealer (rotating) deals all cards. Each player receives 13 cards.',
+    },
+    turnFlow: 'For all contracts except Domino, standard trick-taking rules apply: must follow suit; highest card of suit led wins the trick (unless trumps are involved).',
+    moveValidityConditions: {
+      ante: 'Barbu uses point scoring only; no betting or antes.',
+      deal: 'Dealer deals all 13 cards; no player deal action.',
+      reveal_market: 'No market; only hand cards.',
+      buy_market: 'No market in Barbu; full deal only.',
+      buy_stock: 'All cards dealt at start; no stock draw.',
+      fold: 'Trick-taking game; no fold.',
+      check: 'No betting; points only.',
+      call: 'No betting in Barbu.',
+      bet: 'Scoring by points only; no bets.',
+      raise: 'No betting in Barbu.',
+      declare: 'Contract chosen by declarer at round start.',
+      reveal_hand: 'Hands stay private until cards played.',
+      award_pot: 'No pot; points recorded on score sheet.',
+      play_card: 'Follow suit or play any.',
+      draw: 'Full deal; no draw from stock.',
+      discard: 'Cards played to tricks, not discarded.',
+      pass: 'Must play one card per trick; no pass.',
+      bid: 'Declarer chooses contract; no bidding.',
+      meld: 'Trick-taking only; no melds.',
+      go_out: 'Round ends when all cards played.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Accumulate the highest positive score (or lowest negative) at the end of the 28-hand cycle.',
+      'Turn-flow example: For all contracts except Domino, standard trick-taking rules apply: must follow suit; highest card of suit led wins the trick (unless trumps are involved).',
+      'Scoring example: Total points are tracked across 28 hands. Because points in negative contracts equal points in positive contracts, the total sum of all player scores at the end of the game should be zero. Highest net score after 28 rounds..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'barbu.rules.objective',
+        title: 'Objective',
+        text: 'Accumulate the highest positive score (or lowest negative) at the end of the 28-hand cycle.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'barbu.rules.gameplay',
+        title: 'Turn flow',
+        text: 'For all contracts except Domino, standard trick-taking rules apply: must follow suit; highest card of suit led wins the trick (unless trumps are involved).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'barbu.setup.players',
+        title: 'Players',
+        text: 'Exactly 4 players, playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'barbu.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards (Ace high, 2 low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'barbu.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, specialized Barbu score sheet (to track 28 rounds).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'barbu.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer (rotating) deals all cards. Each player receives 13 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'barbu.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest net score after 28 rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'barbu.score.description',
+        title: 'Scoring',
+        text: 'Total points are tracked across 28 hands. Because points in negative contracts equal points in positive contracts, the total sum of all player scores at the end of the game should be zero.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'barbu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No Trumps in negative contracts.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'barbu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The declarer must play all 7 contracts exactly once during their tenure.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'barbu.rules.key.3',
+        title: 'Key rule 3',
+        text: "In 'No Hearts', you cannot lead a heart until a heart has been discarded (broken suit).",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'barbu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'barbu.rules.objective',
+          'barbu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'barbu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'barbu.setup.players',
+          'barbu.setup.deck',
+          'barbu.setup.equipment',
+          'barbu.setup.dealing',
+        ],
+      },
+      {
+        id: 'barbu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'barbu.rules.key.1',
+          'barbu.rules.key.2',
+          'barbu.rules.key.3',
+        ],
+      },
+      {
+        id: 'barbu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'barbu.score.description',
+          'barbu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'barbu.setup.dealing',
+        'barbu.rules.objective',
+      ],
+      play_card: [
+        'barbu.rules.gameplay',
+      ],
+      initialize_28_hand_grid: [
+        'barbu.rules.gameplay',
+      ],
+      select_contract_from_remaining: [
+        'barbu.rules.gameplay',
+      ],
+      double_declarer: [
+        'barbu.rules.gameplay',
+      ],
+      double_opponent: [
+        'barbu.rules.gameplay',
+      ],
+      stay: [
+        'barbu.rules.gameplay',
+      ],
+      trick_play: [
+        'barbu.rules.gameplay',
+      ],
+      domino_play: [
+        'barbu.rules.gameplay',
+      ],
+      apply_doubles: [
+        'barbu.rules.gameplay',
+      ],
+      update_compendium_grid: [
+        'barbu.rules.gameplay',
+      ],
+    },
+  },
+}

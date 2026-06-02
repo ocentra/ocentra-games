@@ -1,0 +1,66 @@
+{
+  system: {
+    guid: '0a8aaa7f-0a68-4f0e-9b5c-cf1540cbb563',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/match-pot/match-potStateEventModel.asset',
+    gameId: 'match-pot',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'match-pot',
+    familyVariant: 'Stud / Penalty',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_up',
+        initialDeal: 'face_up',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'NA',
+        tableauCards: 'NA',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'play',
+      ],
+      actions: [
+        'setup_round',
+        'play_card',
+      ],
+    },
+    examples: [],
+  },
+}

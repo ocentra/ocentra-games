@@ -1,0 +1,128 @@
+{
+  system: {
+    guid: '9ead1f8d-0d7a-427c-9022-40ee3864634b',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/kujong/kujongValidationFixtures.asset',
+    gameId: 'kujong',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kujong',
+    familyVariant: 'Jass / Point-trick',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'kujong.core-runtime-contracts',
+        title: 'Kujong (Couillon) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'kujong.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 6,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 24,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Kujong (Couillon) must start by giving each active player 6 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'kujong.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'kujong.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'call',
+              'play_card',
+              'pass',
+              'reveal_trump',
+              'count_points',
+            ],
+            explanation: 'Kujong (Couillon) must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'kujong.setup.initial-deal',
+              'kujong.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+              'reveal_trump',
+            ],
+          },
+          {
+            id: 'kujong.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '10',
+            scoringDirection: 'low_wins',
+            targetScore: 10,
+            cardValues: {
+              ace: '4',
+              king: '3',
+              queen: '2',
+              jack: '1',
+              ten: '0',
+              nine: '0',
+            },
+            explanation: 'Win 21+ of 40 points to erase a branch. First team to erase all branches wins.',
+            linkedRuleIds: [
+              'kujong.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'kujong.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 6,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

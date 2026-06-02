@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: '4e161aa6-2020-4705-9b26-4902f3091686',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/wall-street-poker/wall-street-pokerValidationFixtures.asset',
+    gameId: 'wall-street-poker',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'wall-street-poker',
+    familyVariant: 'Stud Variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'wall-street-poker.core-runtime-contracts',
+        title: 'Wall Street Poker Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'wall-street-poker.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 7,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 35,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Wall Street Poker must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'wall-street-poker.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'wall-street-poker.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'buy_market',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'play_card',
+            ],
+            explanation: 'Wall Street Poker must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'wall-street-poker.setup.initial-deal',
+              'wall-street-poker.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'wall-street-poker.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Best 5-card poker hand from 7 cards.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Standard poker hand rankings.',
+            linkedRuleIds: [
+              'wall-street-poker.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'wall-street-poker.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

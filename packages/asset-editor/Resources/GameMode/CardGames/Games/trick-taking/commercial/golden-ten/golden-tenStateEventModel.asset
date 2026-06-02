@@ -1,0 +1,75 @@
+{
+  system: {
+    guid: '4016cc13-9813-4386-aca8-6f29356902c2',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/commercial/golden-ten/golden-tenStateEventModel.asset',
+    gameId: 'golden-ten',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'golden-ten',
+    familyVariant: 'Avoidance / Hearts Family',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 56,
+        },
+        {
+          id: 'trick',
+          type: 'area',
+          visibility: 'public',
+          owner: 'table',
+          capacity: null,
+        },
+        {
+          id: 'tableau',
+          type: 'track',
+          visibility: 'public',
+          owner: 'table',
+          capacity: null,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        round_limit: 6,
+        deck_count: 1,
+        min_players: 3,
+        max_players: 7,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'trick_loop',
+        'resolution',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'award_pot',
+        'play_card',
+      ],
+    },
+    examples: [],
+  },
+}

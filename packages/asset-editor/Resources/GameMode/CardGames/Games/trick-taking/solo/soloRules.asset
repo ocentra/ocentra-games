@@ -1,0 +1,217 @@
+{
+  system: {
+    guid: 'e414b598-2529-4dd6-aab0-943521a6201f',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/solo/soloRules.asset',
+    gameId: 'solo',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "After the deal, bidding starts with the player to dealer's left. Each player may bid once (or pass). Bids in ascending order: Question, IsIt, Kicker, Having the Ladies, Solo, IsIt Solo, 6 Trick Solo, Bronco, Bull Solo, Solo 2. Highest bidder becomes declarer; in some bids the declarer calls an ace (not in hand) and its holder is partner. Trump is determined by the bid (e.g. Solo: declarer chooses; IsIt: clubs). Play: player to dealer's left leads; must follow suit when possible; trick won by highest card of led suit or highest trump. Trick winner leads next.",
+    Player: "After the deal, bidding starts with the player to dealer's left. Each player may bid once (or pass). Bids in ascending order: Question, IsIt, Kicker, Having the Ladies, Solo, IsIt Solo, 6 Trick Solo, Bronco, Bull Solo, Solo 2. Highest bidder becomes declarer; in some bids the declarer calls an ace (not in hand) and its holder is partner. Trump is determined by the bid (e.g. Solo: declarer chooses; IsIt: clubs). Play: player to dealer's left leads; must follow suit when possible; trick won by highest card of led suit or highest trump. Trick winner leads next.",
+    objective: 'As declarer (alone or with a called partner), make your contract: win the agreed number of tricks (e.g. 5 for Question/IsIt/Ladies/Solo, 6 for 6 Trick Solo, 8 for Bull Solo or Solo 2). As defenders, set the declarer by preventing the contract.',
+    gameplay: "After the deal, bidding starts with the player to dealer's left. Each player may bid once (or pass). Bids in ascending order: Question, IsIt, Kicker, Having the Ladies, Solo, IsIt Solo, 6 Trick Solo, Bronco, Bull Solo, Solo 2. Highest bidder becomes declarer; in some bids the declarer calls an ace (not in hand) and its holder is partner. Trump is determined by the bid (e.g. Solo: declarer chooses; IsIt: clubs). Play: player to dealer's left leads; must follow suit when possible; trick won by highest card of led suit or highest trump. Trick winner leads next.",
+    keyRules: [
+      'Top three trumps are fixed: Queen of Clubs (highest), 7 of trump (second), Queen of Spades (third).',
+      'Must follow suit when possible.',
+      'Bidder or partners must make the contracted number of tricks to score; otherwise defenders score.',
+      'In Kicker and Bronco the declarer must take zero tricks.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Four players (standard); five or six with dealer sitting out or buying a hand.',
+      deck: '32 cards: A, K, Q, J, 10, 9, 8, 7 in each suit. For six players the 8 of hearts and 8 of diamonds are removed; 30 cards remain, 5 per player.',
+      equipment: 'Standard playing cards; optionally chips or money for scoring.',
+      dealing: "Deal 8 cards each (4 players). A 3-2-3 or similar pattern; dealing starts to dealer's left. Dealer must verify each player has 8 cards before turning cards or a misdeal may be called. Deal rotates left after each hand.",
+    },
+    turnFlow: "After the deal, bidding starts with the player to dealer's left. Each player may bid once (or pass). Bids in ascending order: Question, IsIt, Kicker, Having the Ladies, Solo, IsIt Solo, 6 Trick Solo, Bronco, Bull Solo, Solo 2. Highest bidder becomes declarer; in some bids the declarer calls an ace (not in hand) and its holder is partner. Trump is determined by the bid (e.g. Solo: declarer chooses; IsIt: clubs). Play: player to dealer's left leads; must follow suit when possible; trick won by highest card of led suit or highest trump. Trick winner leads next.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Only the dealer acts during deal phase.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: "Legal during bidding when it is the player's turn and they have not yet passed.",
+      bid: "Legal during bidding when it is the player's turn; bid must exceed any previous bid in the auction.",
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      'Rule example: As declarer (alone or with a called partner), make your contract: win the agreed number of tricks (e.g. 5 for Question/IsIt/Ladies/Solo, 6 for 6 Trick Solo, 8 for Bull Solo or Solo 2). As defenders, set the declarer by preventing the contract.',
+      "Turn-flow example: After the deal, bidding starts with the player to dealer's left. Each player may bid once (or pass). Bids in ascending order: Question, IsIt, Kicker, Having the Ladies, Solo, IsIt Solo, 6 Trick Solo, Bronco, Bull Solo, Solo 2. Highest bidder becomes declarer; in some bids the declarer calls an ace (not in hand) and its holder is partner. Trump is determined by the bid (e.g. Solo: declarer chooses; IsIt: clubs). Play: player to dealer's left leads; must follow suit when possible; trick won by highest card of led suit or highest trump. Trick winner leads next.",
+      'Scoring example: Score by bid value (e.g. Nickel Solo: bid value times 5 cents per opponent). Declarer pays each opponent if set; opponents pay declarer if contract is made. Mackers and First/Last add bonuses. Declarer (and partner if applicable) must win the contracted number of tricks (e.g. 5 for Question/IsIt/Solo, 6 for 6 Trick Solo, 8 for Bull Solo). If successful, declarer scores; otherwise defenders score..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'solo.rules.objective',
+        title: 'Objective',
+        text: 'As declarer (alone or with a called partner), make your contract: win the agreed number of tricks (e.g. 5 for Question/IsIt/Ladies/Solo, 6 for 6 Trick Solo, 8 for Bull Solo or Solo 2). As defenders, set the declarer by preventing the contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'solo.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal, bidding starts with the player to dealer's left. Each player may bid once (or pass). Bids in ascending order: Question, IsIt, Kicker, Having the Ladies, Solo, IsIt Solo, 6 Trick Solo, Bronco, Bull Solo, Solo 2. Highest bidder becomes declarer; in some bids the declarer calls an ace (not in hand) and its holder is partner. Trump is determined by the bid (e.g. Solo: declarer chooses; IsIt: clubs). Play: player to dealer's left leads; must follow suit when possible; trick won by highest card of led suit or highest trump. Trick winner leads next.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'solo.setup.players',
+        title: 'Players',
+        text: 'Four players (standard); five or six with dealer sitting out or buying a hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'solo.setup.deck',
+        title: 'Deck',
+        text: '32 cards: A, K, Q, J, 10, 9, 8, 7 in each suit. For six players the 8 of hearts and 8 of diamonds are removed; 30 cards remain, 5 per player.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'solo.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard playing cards; optionally chips or money for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'solo.setup.dealing',
+        title: 'Deal',
+        text: "Deal 8 cards each (4 players). A 3-2-3 or similar pattern; dealing starts to dealer's left. Dealer must verify each player has 8 cards before turning cards or a misdeal may be called. Deal rotates left after each hand.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'solo.score.win-condition',
+        title: 'Win condition',
+        text: 'Declarer (and partner if applicable) must win the contracted number of tricks (e.g. 5 for Question/IsIt/Solo, 6 for 6 Trick Solo, 8 for Bull Solo). If successful, declarer scores; otherwise defenders score.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'solo.score.description',
+        title: 'Scoring',
+        text: 'Score by bid value (e.g. Nickel Solo: bid value times 5 cents per opponent). Declarer pays each opponent if set; opponents pay declarer if contract is made. Mackers and First/Last add bonuses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'solo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Top three trumps are fixed: Queen of Clubs (highest), 7 of trump (second), Queen of Spades (third).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'solo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must follow suit when possible.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'solo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bidder or partners must make the contracted number of tricks to score; otherwise defenders score.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'solo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'In Kicker and Bronco the declarer must take zero tricks.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'solo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'solo.rules.objective',
+          'solo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'solo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'solo.setup.players',
+          'solo.setup.deck',
+          'solo.setup.equipment',
+          'solo.setup.dealing',
+        ],
+      },
+      {
+        id: 'solo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'solo.rules.key.1',
+          'solo.rules.key.2',
+          'solo.rules.key.3',
+          'solo.rules.key.4',
+        ],
+      },
+      {
+        id: 'solo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'solo.score.description',
+          'solo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'solo.setup.dealing',
+        'solo.rules.objective',
+      ],
+      deal: [
+        'solo.rules.gameplay',
+      ],
+      play_card: [
+        'solo.rules.gameplay',
+      ],
+      pass: [
+        'solo.rules.gameplay',
+      ],
+      bid: [
+        'solo.rules.gameplay',
+      ],
+    },
+  },
+}

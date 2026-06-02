@@ -1,0 +1,125 @@
+{
+  system: {
+    guid: '6c78e861-532d-4a3f-9c28-d1f74a5fd9b2',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/kap-tai-shap/kap-tai-shapValidationFixtures.asset',
+    gameId: 'kap-tai-shap',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kap-tai-shap',
+    familyVariant: 'Chinese Dominoes',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'kap-tai-shap.core-runtime-contracts',
+        title: "K'ap Tai Shap Core Runtime Contracts",
+        fixtures: [
+          {
+            id: 'kap-tai-shap.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 0,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 20,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 0,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: "K'ap Tai Shap must start by giving each active player 0 card(s), matching the processed setup and engine initialHandSize.",
+            linkedRuleIds: [
+              'kap-tai-shap.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'kap-tai-shap.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'setup_wall',
+            supportedActionIds: [
+              'setup_round',
+              'reveal_hand',
+              'discard',
+              'build_wall',
+              'deal_hands',
+              'take_discard',
+              'draw_wall',
+              'declare_win',
+              'call_kap',
+              'collect_pot',
+            ],
+            explanation: "K'ap Tai Shap must run setup_round first, then enter setup_wall with the processed legal actions.",
+            linkedRuleIds: [
+              'kap-tai-shap.setup.initial-deal',
+              'kap-tai-shap.flow.setup_wall',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup_wall',
+            firstPlayableLegalActions: [
+              'build_wall',
+            ],
+          },
+          {
+            id: 'kap-tai-shap.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {
+              '[4-2]': '3',
+            },
+            explanation: 'The game is typically played for a pot funded by equal antes from all players. The winner collects the entire pot.',
+            linkedRuleIds: [
+              'kap-tai-shap.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'kap-tai-shap.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 0,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 20,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

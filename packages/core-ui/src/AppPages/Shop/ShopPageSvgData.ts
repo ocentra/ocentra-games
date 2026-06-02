@@ -256,10 +256,10 @@ export const SHOP_TABS: ShopTab[] = [
 ];
 
 export const SHOP_HEADER_STATS = [
-  { label: 'Owned', value: 'N/A' },
-  { label: 'Tables', value: 'N/A' },
-  { label: 'Tickets', value: 'N/A' },
-  { label: 'Events', value: 'N/A' },
+  { label: 'Owned', value: 'Sign in' },
+  { label: 'Tables', value: '0' },
+  { label: 'Tickets', value: 'Sign in' },
+  { label: 'Events', value: 'Closed' },
 ];
 
 export const SHOP_SIDE_ITEMS: ShopSideItem[] = [
@@ -495,21 +495,21 @@ export const SHOP_RIGHT_TABS: ShopRightTab[] = [
 export const SHOP_RIGHT_ROWS = {
   wallet: [
     ['Arena Credits', 'AC'],
-    ['Tournament Tickets', 'N/A'],
-    ['Season Points', 'N/A'],
-    ['Owned Items', 'N/A'],
-    ['Active Tables', 'N/A'],
+    ['Tournament Tickets', 'Sign in'],
+    ['Season Points', 'No season'],
+    ['Owned Items', 'Sign in'],
+    ['Active Tables', '0'],
   ],
   events: [
-    ['Published Schedule', 'N/A', 'Check Later'],
-    ['Open Entries', 'N/A', 'Check Later'],
-    ['Reward Calendar', 'N/A', 'Check Later'],
+    ['Published Schedule', 'No events', 'View Events'],
+    ['Open Entries', 'Closed', 'View Events'],
+    ['Reward Calendar', 'No season', 'View Events'],
   ],
   recent: [
-    ['Purchase History', 'N/A'],
-    ['Last Checkout', 'N/A'],
-    ['Last Reward Sync', 'N/A'],
-    ['Inventory Change', 'N/A'],
+    ['Purchase History', 'No purchases'],
+    ['Last Checkout', 'No checkout'],
+    ['Last Reward Sync', 'No sync'],
+    ['Inventory Change', 'No changes'],
   ],
 } as const;
 
@@ -573,23 +573,23 @@ export const SHOP_UI_COPY = {
     checkVerify: 'Check Verify',
     verifySpin: 'Verify & Spin',
   },
-  rightPanel: {
+    rightPanel: {
     walletTitle: 'WALLET & BALANCE',
     passTitle: 'ACTIVE PASS',
     eventsTitle: 'UPCOMING EVENTS',
     recentTitle: 'RECENT PURCHASES',
     accountTitle: 'ACCOUNT PREVIEW',
-    passName: 'N/A',
+    passName: 'No pass',
     managePass: 'Manage Pass',
     viewProfile: 'View Profile',
-    profileName: 'N/A',
-    profileElo: 'N/A',
-    emailUnavailable: 'Email N/A',
+    profileName: 'Sign in',
+    profileElo: 'No rating',
+    emailUnavailable: 'Sign in required',
     guestProfile: 'Guest profile',
-    initialsUnavailable: 'NA',
-    ratingUnavailable: 'Rating N/A',
-    gamesUnavailable: 'Games N/A',
-    winRateUnavailable: 'Win rate N/A',
+    initialsUnavailable: 'IN',
+    ratingUnavailable: 'No rating',
+    gamesUnavailable: 'No games',
+    winRateUnavailable: 'No win rate',
     eloPrefix: 'ELO',
     gamesSuffix: 'games',
     winRateSuffix: 'win',
@@ -647,7 +647,7 @@ export const SHOP_UI_COPY = {
     cardBackAlt: 'Back',
     cardBackLabel: 'Back',
     missingImage: 'Missing image',
-    priceUnavailable: 'N/A',
+    priceUnavailable: 'Unavailable',
     previousCardImage: 'Previous card image',
     nextCardImage: 'Next card image',
     closeCardDetail: 'Close card detail',
@@ -656,7 +656,7 @@ export const SHOP_UI_COPY = {
   status: {
     loadingMarketplace: 'Loading marketplace...',
     clearError: 'Clear Error',
-    unknownValue: 'N/A',
+    unknownValue: 'Pending',
   },
   footer: [
     { title: 'Secure Checkout', sub: '256-bit SSL Encryption', icon: 'shield', tone: 'green' },

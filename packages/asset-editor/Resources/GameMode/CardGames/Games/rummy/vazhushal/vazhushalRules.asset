@@ -1,0 +1,236 @@
+{
+  system: {
+    guid: '1588668d-07eb-4626-aff4-13789120c973',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/vazhushal/vazhushalRules.asset',
+    gameId: 'vazhushal',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Draw from stock or discard LINE. Deepest card from line must form NEW meld immediately. First meld needs pure sequence. Sets (3-4 same rank) and Runs (3+ sequential same suit). Can rearrange own melds. Can't lay off on opponents. Jokers wild.",
+    Player: "Draw from stock or discard LINE. Deepest card from line must form NEW meld immediately. First meld needs pure sequence. Sets (3-4 same rank) and Runs (3+ sequential same suit). Can rearrange own melds. Can't lay off on opponents. Jokers wild.",
+    objective: 'Meld all cards into valid combinations (sequences and sets) and go out first by discarding your last card; or when the stock is exhausted, win by having the highest net score (meld value minus hand value).',
+    gameplay: "Draw from stock or discard LINE. Deepest card from line must form NEW meld immediately. First meld needs pure sequence. Sets (3-4 same rank) and Runs (3+ sequential same suit). Can rearrange own melds. Can't lay off on opponents. Jokers wild.",
+    keyRules: [
+      'Discard LINE (all visible)',
+      'Deep draw requires immediate meld',
+      'Pure sequence required for first meld',
+      'Rearrange own melds',
+      'No laying off on opponents',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: '52 cards + jokers. A high or low (no wrap).',
+      equipment: 'Cards',
+      dealing: '13 each. Discard LINE (spread out, all visible).',
+    },
+    turnFlow: "Draw from stock or discard LINE. Deepest card from line must form NEW meld immediately. First meld needs pure sequence. Sets (3-4 same rank) and Runs (3+ sequential same suit). Can rearrange own melds. Can't lay off on opponents. Jokers wild.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only; if any player has three or more identical pairs, redeal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Vazhushal is rummy; players draw, meld, and discard, not play to tricks.',
+      draw: 'Once per turn; alternative to taking from the discard line.',
+      discard: 'Exactly one card per turn after drawing or taking from the line; ends the turn.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: "After draw or take-from-line; at least one pure sequence always required; no laying off on opponents' melds.",
+      go_out: 'After drawing or taking from line; all cards in hand except one must form valid melds; then discard the final card.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Meld all cards into valid combinations (sequences and sets) and go out first by discarding your last card; or when the stock is exhausted, win by having the highest net score (meld value minus hand value).',
+      "Turn-flow example: Draw from stock or discard LINE. Deepest card from line must form NEW meld immediately. First meld needs pure sequence. Sets (3-4 same rank) and Runs (3+ sequential same suit). Can rearrange own melds. Can't lay off on opponents. Jokers wild.",
+      'Scoring example: First out wins. Meld all cards. Go out first..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'vazhushal.rules.objective',
+        title: 'Objective',
+        text: 'Meld all cards into valid combinations (sequences and sets) and go out first by discarding your last card; or when the stock is exhausted, win by having the highest net score (meld value minus hand value).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'vazhushal.rules.gameplay',
+        title: 'Turn flow',
+        text: "Draw from stock or discard LINE. Deepest card from line must form NEW meld immediately. First meld needs pure sequence. Sets (3-4 same rank) and Runs (3+ sequential same suit). Can rearrange own melds. Can't lay off on opponents. Jokers wild.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'vazhushal.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'vazhushal.setup.deck',
+        title: 'Deck',
+        text: '52 cards + jokers. A high or low (no wrap).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'vazhushal.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'vazhushal.setup.dealing',
+        title: 'Deal',
+        text: '13 each. Discard LINE (spread out, all visible).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'vazhushal.score.win-condition',
+        title: 'Win condition',
+        text: 'Meld all cards. Go out first.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'vazhushal.score.description',
+        title: 'Scoring',
+        text: 'First out wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'vazhushal.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Discard LINE (all visible)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'vazhushal.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Deep draw requires immediate meld',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'vazhushal.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Pure sequence required for first meld',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'vazhushal.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Rearrange own melds',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'vazhushal.rules.key.5',
+        title: 'Key rule 5',
+        text: 'No laying off on opponents',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'vazhushal.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'vazhushal.rules.objective',
+          'vazhushal.rules.gameplay',
+        ],
+      },
+      {
+        id: 'vazhushal.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'vazhushal.setup.players',
+          'vazhushal.setup.deck',
+          'vazhushal.setup.equipment',
+          'vazhushal.setup.dealing',
+        ],
+      },
+      {
+        id: 'vazhushal.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'vazhushal.rules.key.1',
+          'vazhushal.rules.key.2',
+          'vazhushal.rules.key.3',
+          'vazhushal.rules.key.4',
+          'vazhushal.rules.key.5',
+        ],
+      },
+      {
+        id: 'vazhushal.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'vazhushal.score.description',
+          'vazhushal.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'vazhushal.setup.dealing',
+        'vazhushal.rules.objective',
+      ],
+      deal: [
+        'vazhushal.rules.gameplay',
+      ],
+      draw: [
+        'vazhushal.rules.gameplay',
+      ],
+      discard: [
+        'vazhushal.rules.gameplay',
+      ],
+      meld: [
+        'vazhushal.rules.gameplay',
+      ],
+      go_out: [
+        'vazhushal.rules.gameplay',
+      ],
+      take_from_discard_line: [
+        'vazhushal.rules.gameplay',
+      ],
+      finalize_game: [
+        'vazhushal.rules.gameplay',
+      ],
+    },
+  },
+}

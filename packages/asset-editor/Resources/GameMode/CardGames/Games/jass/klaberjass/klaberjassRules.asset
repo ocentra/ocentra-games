@@ -1,0 +1,226 @@
+{
+  system: {
+    guid: '9c1c89c1-2688-4c3c-a1ba-d834ab4d90d4',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/klaberjass/klaberjassRules.asset',
+    gameId: 'klaberjass',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Must follow suit. If unable, must trump if possible.\n2. **Bella**: Playing the King and Queen of trumps scores 20 points (must be announced).\n3. **Meld**: Sequences of 3 (20 pts) or 4 (50 pts) in the same suit score. Only the highest meld on either side scores for the team.\n4. **Last Trick**: 10 points.',
+    Player: '1. Must follow suit. If unable, must trump if possible.\n2. **Bella**: Playing the King and Queen of trumps scores 20 points (must be announced).\n3. **Meld**: Sequences of 3 (20 pts) or 4 (50 pts) in the same suit score. Only the highest meld on either side scores for the team.\n4. **Last Trick**: 10 points.',
+    objective: 'Score 500 points by winning tricks containing point cards and declaring melds.',
+    gameplay: '1. Must follow suit. If unable, must trump if possible.\n2. **Bella**: Playing the King and Queen of trumps scores 20 points (must be announced).\n3. **Meld**: Sequences of 3 (20 pts) or 4 (50 pts) in the same suit score. Only the highest meld on either side scores for the team.\n4. **Last Trick**: 10 points.',
+    keyRules: [
+      'Trump ranking: Jack (20), Nine (14), Ace (11), Ten (10), King (4), Queen (3), Eight (0), Seven (0)',
+      'Plain suit ranking: Ace (11), Ten (10), King (4), Queen (3), Jack (2), Nine (0), Eight (0), Seven (0)',
+      'Must follow suit, must trump if cannot follow',
+      'Bella bonus for King-Queen of trumps',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two players. The game is played head-to-head; each player receives six cards initially, then after trump is determined each receives three more for a total of nine cards per hand.',
+      deck: '32 cards (7, 8, 9, 10, J, Q, K, A).',
+      equipment: '32 cards (7, 8, 9, 10, J, Q, K, A).',
+      dealing: 'Each player is dealt 6 cards (3 then 3). One card is turned up to start trump determination. After trump is set, another 3 cards are dealt to each player (total 9 per hand).',
+    },
+    turnFlow: '1. Must follow suit. If unable, must trump if possible.\n2. **Bella**: Playing the King and Queen of trumps scores 20 points (must be announced).\n3. **Meld**: Sequences of 3 (20 pts) or 4 (50 pts) in the same suit score. Only the highest meld on either side scores for the team.\n4. **Last Trick**: 10 points.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Allowed only in phases that list this action as legal.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'Must have valid combination',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow suit, must trump if cannot follow',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Allowed only in phases that list this action as legal.',
+      meld: '3+ cards in sequence, same suit',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Score 500 points by winning tricks containing point cards and declaring melds.',
+      'Turn-flow example: 1. Must follow suit. If unable, must trump if possible.\n2. **Bella**: Playing the King and Queen of trumps scores 20 points (must be announced).\n3. **Meld**: Sequences of 3 (20 pts) or 4 (50 pts) in the same suit score. Only the highest meld on either side scores for the team.\n4. **Last Trick**: 10 points.',
+      'Scoring example: Points from card values, Bella (20), melds (20-50), and last trick (10). First to 500 wins. First player to reach 500 points.',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'klaberjass.rules.objective',
+        title: 'Objective',
+        text: 'Score 500 points by winning tricks containing point cards and declaring melds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'klaberjass.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must follow suit. If unable, must trump if possible.\n2. **Bella**: Playing the King and Queen of trumps scores 20 points (must be announced).\n3. **Meld**: Sequences of 3 (20 pts) or 4 (50 pts) in the same suit score. Only the highest meld on either side scores for the team.\n4. **Last Trick**: 10 points.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'klaberjass.setup.players',
+        title: 'Players',
+        text: 'Two players. The game is played head-to-head; each player receives six cards initially, then after trump is determined each receives three more for a total of nine cards per hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'klaberjass.setup.deck',
+        title: 'Deck',
+        text: '32 cards (7, 8, 9, 10, J, Q, K, A).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'klaberjass.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards (7, 8, 9, 10, J, Q, K, A).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'klaberjass.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 6 cards (3 then 3). One card is turned up to start trump determination. After trump is set, another 3 cards are dealt to each player (total 9 per hand).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'klaberjass.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 500 points',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'klaberjass.score.description',
+        title: 'Scoring',
+        text: 'Points from card values, Bella (20), melds (20-50), and last trick (10). First to 500 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'klaberjass.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump ranking: Jack (20), Nine (14), Ace (11), Ten (10), King (4), Queen (3), Eight (0), Seven (0)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'klaberjass.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Plain suit ranking: Ace (11), Ten (10), King (4), Queen (3), Jack (2), Nine (0), Eight (0), Seven (0)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'klaberjass.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must follow suit, must trump if cannot follow',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'klaberjass.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bella bonus for King-Queen of trumps',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'klaberjass.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'klaberjass.rules.objective',
+          'klaberjass.rules.gameplay',
+        ],
+      },
+      {
+        id: 'klaberjass.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'klaberjass.setup.players',
+          'klaberjass.setup.deck',
+          'klaberjass.setup.equipment',
+          'klaberjass.setup.dealing',
+        ],
+      },
+      {
+        id: 'klaberjass.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'klaberjass.rules.key.1',
+          'klaberjass.rules.key.2',
+          'klaberjass.rules.key.3',
+          'klaberjass.rules.key.4',
+        ],
+      },
+      {
+        id: 'klaberjass.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'klaberjass.score.description',
+          'klaberjass.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'klaberjass.setup.dealing',
+        'klaberjass.rules.objective',
+      ],
+      deal: [
+        'klaberjass.rules.gameplay',
+      ],
+      declare: [
+        'klaberjass.rules.gameplay',
+      ],
+      play_card: [
+        'klaberjass.rules.gameplay',
+      ],
+      pass: [
+        'klaberjass.rules.gameplay',
+      ],
+      bid: [
+        'klaberjass.rules.gameplay',
+      ],
+      meld: [
+        'klaberjass.rules.gameplay',
+      ],
+      score_round: [
+        'klaberjass.rules.gameplay',
+      ],
+    },
+  },
+}

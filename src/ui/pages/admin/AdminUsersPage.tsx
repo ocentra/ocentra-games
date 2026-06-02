@@ -11,6 +11,7 @@ import {
   AdminUsersPageContent,
   type AdminActivityRow,
   type AdminUserRow,
+  type AppPageSvgControls,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
 import {
   isRouteEnabled,
@@ -28,11 +29,13 @@ import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { AdminActivityAction } from '@/constants/admin';
 import { requestJson } from '@ocentra/api-domain/httpClient';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { loadPageLayoutData, recordOf } from '@/ui/pages/pageLayoutData';
 
 const log = MainAppLogger.instance;
 log.register(import.meta.url);
 const ADMIN_AUTH_TRACE_STORAGE_KEY = 'ocentra:debug:admin-auth';
 const ADMIN_AUTH_TRACE_GLOBAL_KEY = '__OCENTRA_ADMIN_AUTH_TRACE';
+const ADMIN_PAGE_LAYOUT_ASSET_PATH = 'Resources/Pages/AdminPageLayout.asset';
 
 const logInfo = (message: string, data?: unknown) => {
   log.logInfo(`[AdminUsersPage] ${message}`, getStackTrace(), data);
@@ -118,11 +121,31 @@ export const AdminUsersPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<AdminUserRow | null>(null);
   const [pendingAction, setPendingAction] = useState<AdminActivityAction | null>(null);
+  const [layoutControls, setLayoutControls] = useState<Partial<AppPageSvgControls> | null>(null);
   const hasLoadedRef = useRef(false);
 
   useEffect(() => {
     const hideLoading = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
     hideLoading?.();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadPageLayoutData(ADMIN_PAGE_LAYOUT_ASSET_PATH)
+      .then((data) => {
+        if (cancelled) return;
+        const controls = recordOf(data?.pageControls);
+        setLayoutControls(Object.keys(controls).length > 0 ? controls as Partial<AppPageSvgControls> : null);
+      })
+      .catch((layoutError) => {
+        if (!cancelled) {
+          setLayoutControls(null);
+          logWarn('Failed to load admin page layout asset', layoutError);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const loadAdminDashboardData = useCallback(async () => {
@@ -326,6 +349,7 @@ export const AdminUsersPage: React.FC = () => {
         }}
         onConfirmDialog={confirmToggleAdmin}
         currentUserId={user?.uid}
+        layoutControls={layoutControls}
       />
     </UnifiedPageShell>
   );

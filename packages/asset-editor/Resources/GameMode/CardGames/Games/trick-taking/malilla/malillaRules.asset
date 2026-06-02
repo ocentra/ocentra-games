@@ -1,0 +1,218 @@
+{
+  system: {
+    guid: 'f95f5a54-f005-4dd4-808b-bff96ab82d8e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/malilla/malillaRules.asset',
+    gameId: 'malilla',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Must follow suit if possible.\n2. Must try to win the trick if possible (Overtake).\n3. If unable to follow suit, you must play a trump card if you have one.\n4. The winner of the trick leads the next.',
+    Player: '1. Must follow suit if possible.\n2. Must try to win the trick if possible (Overtake).\n3. If unable to follow suit, you must play a trump card if you have one.\n4. The winner of the trick leads the next.',
+    objective: 'Your partnership must win tricks containing the high-value point cards (Seven=5, Ace=4, King=3, Horse=2, Jack=1) plus one point per trick, and be the first team to reach 35 or more cumulative points to win the game.',
+    gameplay: '1. Must follow suit if possible.\n2. Must try to win the trick if possible (Overtake).\n3. If unable to follow suit, you must play a trump card if you have one.\n4. The winner of the trick leads the next.',
+    keyRules: [
+      'Must follow suit if possible.',
+      'If an opponent is winning the trick, must beat their card if able (subject to follow suit).',
+      'When unable to follow suit, must play a trump if you have one.',
+      'Cannot discard a seven of a non-trump suit until that suit has been led to a trick.',
+      "Trump is the suit of the dealer's last card, turned face up. Winner of each trick leads to the next.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in two partnerships.',
+      deck: '40 cards: Suits are Oros (Coins), Copas (Cups), Espadas (Swords), Bastos (Clubs).',
+      equipment: '40 cards: Suits are Oros (Coins), Copas (Cups), Espadas (Swords), Bastos (Clubs).',
+      dealing: 'Each player receives 10 cards. The dealer flips the last card to determine the Trump suit.',
+    },
+    turnFlow: '1. Must follow suit if possible.\n2. Must try to win the trick if possible (Overtake).\n3. If unable to follow suit, you must play a trump card if you have one.\n4. The winner of the trick leads the next.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: "Follow suit when possible; beat opponent's winning card when possible; trump when cannot follow suit; cannot discard 7 of unled non-trump suit.",
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Your partnership must win tricks containing the high-value point cards (Seven=5, Ace=4, King=3, Horse=2, Jack=1) plus one point per trick, and be the first team to reach 35 or more cumulative points to win the game.',
+      'Turn-flow example: 1. Must follow suit if possible.\n2. Must try to win the trick if possible (Overtake).\n3. If unable to follow suit, you must play a trump card if you have one.\n4. The winner of the trick leads the next.',
+      'Scoring example: Card points (Seven=5, Ace=4, King=3, Horse=2, Jack=1) plus one point per trick won (la negra). Total 70 points per deal. Team with more than 35 scores the difference; first to 35 cumulative wins. First partnership to reach 35 or more cumulative points wins. Capote: win all 10 tricks to score 35 and win the game in one deal. Zapato: reach 35 while opponents have zero..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'malilla.rules.objective',
+        title: 'Objective',
+        text: 'Your partnership must win tricks containing the high-value point cards (Seven=5, Ace=4, King=3, Horse=2, Jack=1) plus one point per trick, and be the first team to reach 35 or more cumulative points to win the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'malilla.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must follow suit if possible.\n2. Must try to win the trick if possible (Overtake).\n3. If unable to follow suit, you must play a trump card if you have one.\n4. The winner of the trick leads the next.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'malilla.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'malilla.setup.deck',
+        title: 'Deck',
+        text: '40 cards: Suits are Oros (Coins), Copas (Cups), Espadas (Swords), Bastos (Clubs).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'malilla.setup.equipment',
+        title: 'Equipment',
+        text: '40 cards: Suits are Oros (Coins), Copas (Cups), Espadas (Swords), Bastos (Clubs).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'malilla.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 10 cards. The dealer flips the last card to determine the Trump suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'malilla.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 35 or more cumulative points wins. Capote: win all 10 tricks to score 35 and win the game in one deal. Zapato: reach 35 while opponents have zero.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'malilla.score.description',
+        title: 'Scoring',
+        text: 'Card points (Seven=5, Ace=4, King=3, Horse=2, Jack=1) plus one point per trick won (la negra). Total 70 points per deal. Team with more than 35 scores the difference; first to 35 cumulative wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'malilla.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'malilla.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If an opponent is winning the trick, must beat their card if able (subject to follow suit).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'malilla.rules.key.3',
+        title: 'Key rule 3',
+        text: 'When unable to follow suit, must play a trump if you have one.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'malilla.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cannot discard a seven of a non-trump suit until that suit has been led to a trick.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'malilla.rules.key.5',
+        title: 'Key rule 5',
+        text: "Trump is the suit of the dealer's last card, turned face up. Winner of each trick leads to the next.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'malilla.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'malilla.rules.objective',
+          'malilla.rules.gameplay',
+        ],
+      },
+      {
+        id: 'malilla.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'malilla.setup.players',
+          'malilla.setup.deck',
+          'malilla.setup.equipment',
+          'malilla.setup.dealing',
+        ],
+      },
+      {
+        id: 'malilla.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'malilla.rules.key.1',
+          'malilla.rules.key.2',
+          'malilla.rules.key.3',
+          'malilla.rules.key.4',
+          'malilla.rules.key.5',
+        ],
+      },
+      {
+        id: 'malilla.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'malilla.score.description',
+          'malilla.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'malilla.setup.dealing',
+        'malilla.rules.objective',
+      ],
+      play_card: [
+        'malilla.rules.gameplay',
+      ],
+    },
+  },
+}

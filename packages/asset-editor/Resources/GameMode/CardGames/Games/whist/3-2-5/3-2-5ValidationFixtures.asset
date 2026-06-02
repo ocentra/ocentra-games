@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '2ea823e2-b8c3-4c5a-90b7-07f20ced735c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/3-2-5/3-2-5ValidationFixtures.asset',
+    gameId: '3-2-5',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '3-2-5',
+    familyVariant: 'Indian Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '3-2-5.core-runtime-contracts',
+        title: 'Teen Do Panch (3-2-5) Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '3-2-5.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 15,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Teen Do Panch (3-2-5) must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '3-2-5.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '3-2-5.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Teen Do Panch (3-2-5) must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              '3-2-5.setup.initial-deal',
+              '3-2-5.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: '3-2-5.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win at least your quota of tricks. Dealer 2, right of dealer 5, left of dealer 3. Player with 5-trick quota chooses trump and leads. Those above quota can pull one card per excess trick from those below quota before the next deal.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'No point scoring—meeting or exceeding trick quota matters; pulling cards is the penalty/reward.',
+            linkedRuleIds: [
+              '3-2-5.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '3-2-5.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

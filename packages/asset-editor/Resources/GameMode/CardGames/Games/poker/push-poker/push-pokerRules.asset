@@ -1,0 +1,232 @@
+{
+  system: {
+    guid: '327d0a44-8c37-4a83-bcdd-26c07954c277',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/push-poker/push-pokerRules.asset',
+    gameId: 'push-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "After one hole card each, the dealer offers one card face up to the player to his left. That player may accept it or pay the agreed price to push it and receive the next card from the deck (must accept the second). The next player is offered the pushed card if the previous player pushed, otherwise a new card; same accept-or-push choice. This continues until all have received a card; any card pushed by the last player is discarded. Betting round begins with the player showing the highest hand. Three more rounds of offering and pushing (each starting with a fresh card to the first active player to dealer's left), each followed by a betting round. After the fourth round all active players have five cards (four face up). Showdown: highest hand wins.",
+    Player: "After one hole card each, the dealer offers one card face up to the player to his left. That player may accept it or pay the agreed price to push it and receive the next card from the deck (must accept the second). The next player is offered the pushed card if the previous player pushed, otherwise a new card; same accept-or-push choice. This continues until all have received a card; any card pushed by the last player is discarded. Betting round begins with the player showing the highest hand. Three more rounds of offering and pushing (each starting with a fresh card to the first active player to dealer's left), each followed by a betting round. After the fourth round all active players have five cards (four face up). Showdown: highest hand wins.",
+    objective: 'Win the pot by having the highest five-card poker hand at showdown.',
+    gameplay: "After one hole card each, the dealer offers one card face up to the player to his left. That player may accept it or pay the agreed price to push it and receive the next card from the deck (must accept the second). The next player is offered the pushed card if the previous player pushed, otherwise a new card; same accept-or-push choice. This continues until all have received a card; any card pushed by the last player is discarded. Betting round begins with the player showing the highest hand. Three more rounds of offering and pushing (each starting with a fresh card to the first active player to dealer's left), each followed by a betting round. After the fourth round all active players have five cards (four face up). Showdown: highest hand wins.",
+    keyRules: [
+      'Push price (e.g. 5× minimum bet) must be agreed before play.',
+      'Second card when pushing must be accepted.',
+      "First card offered in each new round is always a fresh card from the deck to the first active player to dealer's left.",
+      'Betting rounds are begun by the player with the highest hand showing.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 to 9 players. Best with 5 to 7.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Standard deck and chips. Push price (e.g. 5 times minimum bet) agreed in advance.',
+      dealing: 'One hole card face down to each player. Then the dealer offers one card face up to the player to his left; that player may accept it or pay the agreed price to push it and receive the next card from the deck (second card must be accepted). The next player is offered the pushed card or a new card; this continues for all players. After each of four such rounds there is a betting round. Final hand is five cards (one hole, four up); highest hand wins.',
+    },
+    turnFlow: "After one hole card each, the dealer offers one card face up to the player to his left. That player may accept it or pay the agreed price to push it and receive the next card from the deck (must accept the second). The next player is offered the pushed card if the previous player pushed, otherwise a new card; same accept-or-push choice. This continues until all have received a card; any card pushed by the last player is discarded. Betting round begins with the player showing the highest hand. Three more rounds of offering and pushing (each starting with a fresh card to the first active player to dealer's left), each followed by a betting round. After the fourth round all active players have five cards (four face up). Showdown: highest hand wins.",
+    moveValidityConditions: {
+      ante: 'Push is typically played without ante; betting rounds follow each card round.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Legal during any betting round when it is your turn to act.',
+      check: 'Legal only when no one has bet in the current betting round.',
+      call: 'Legal when a bet has been made and you have not yet matched it.',
+      bet: 'Legal when it is your turn and no bet has been made, or to open the round.',
+      raise: 'Legal when a bet has been made and you have not yet acted, or to reraise.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Legal at showdown when you are still active.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Push uses accept or push (pay to reject) for offered cards; no card is played to a trick.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'Push means pay to reject an offered card; there is no pass-to-neighbor action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Win the pot by having the highest five-card poker hand at showdown.',
+      "Turn-flow example: After one hole card each, the dealer offers one card face up to the player to his left. That player may accept it or pay the agreed price to push it and receive the next card from the deck (must accept the second). The next player is offered the pushed card if the previous player pushed, otherwise a new card; same accept-or-push choice. This continues until all have received a card; any card pushed by the last player is discarded. Betting round begins with the player showing the highest hand. Three more rounds of offering and pushing (each starting with a fresh card to the first active player to dealer's left), each followed by a betting round. After the fourth round all active players have five cards (four face up). Showdown: highest hand wins.",
+      'Scoring example: Pot is won by the highest five-card poker hand at showdown, or by the last player remaining after all others fold. Highest five-card hand at showdown wins the pot; standard poker hand ranking..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'push-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest five-card poker hand at showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'push-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: "After one hole card each, the dealer offers one card face up to the player to his left. That player may accept it or pay the agreed price to push it and receive the next card from the deck (must accept the second). The next player is offered the pushed card if the previous player pushed, otherwise a new card; same accept-or-push choice. This continues until all have received a card; any card pushed by the last player is discarded. Betting round begins with the player showing the highest hand. Three more rounds of offering and pushing (each starting with a fresh card to the first active player to dealer's left), each followed by a betting round. After the fourth round all active players have five cards (four face up). Showdown: highest hand wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'push-poker.setup.players',
+        title: 'Players',
+        text: '4 to 9 players. Best with 5 to 7.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'push-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'push-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck and chips. Push price (e.g. 5 times minimum bet) agreed in advance.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'push-poker.setup.dealing',
+        title: 'Deal',
+        text: 'One hole card face down to each player. Then the dealer offers one card face up to the player to his left; that player may accept it or pay the agreed price to push it and receive the next card from the deck (second card must be accepted). The next player is offered the pushed card or a new card; this continues for all players. After each of four such rounds there is a betting round. Final hand is five cards (one hole, four up); highest hand wins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'push-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest five-card hand at showdown wins the pot; standard poker hand ranking.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'push-poker.score.description',
+        title: 'Scoring',
+        text: 'Pot is won by the highest five-card poker hand at showdown, or by the last player remaining after all others fold.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'push-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Push price (e.g. 5× minimum bet) must be agreed before play.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'push-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Second card when pushing must be accepted.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'push-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: "First card offered in each new round is always a fresh card from the deck to the first active player to dealer's left.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'push-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Betting rounds are begun by the player with the highest hand showing.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'push-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'push-poker.rules.objective',
+          'push-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'push-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'push-poker.setup.players',
+          'push-poker.setup.deck',
+          'push-poker.setup.equipment',
+          'push-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'push-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'push-poker.rules.key.1',
+          'push-poker.rules.key.2',
+          'push-poker.rules.key.3',
+          'push-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'push-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'push-poker.score.description',
+          'push-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'push-poker.setup.dealing',
+        'push-poker.rules.objective',
+      ],
+      fold: [
+        'push-poker.rules.gameplay',
+      ],
+      check: [
+        'push-poker.rules.gameplay',
+      ],
+      call: [
+        'push-poker.rules.gameplay',
+      ],
+      bet: [
+        'push-poker.rules.gameplay',
+      ],
+      raise: [
+        'push-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'push-poker.rules.gameplay',
+      ],
+      deal_hole: [
+        'push-poker.rules.gameplay',
+      ],
+      accept_card: [
+        'push-poker.rules.gameplay',
+      ],
+      push_card: [
+        'push-poker.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: 'dd1a836b-bcae-4fdf-9d52-e35a48e3a1ce',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/dobbm/dobbmRules.asset',
+    gameId: 'dobbm',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Bidding: Players bid 'Ordinary' or 'Solo'. In an Ordinary game, the declarer takes the 'Dobb' and discards 4 cards (points count for them).\n2. Trumps: Declarer names the trump suit.\n3. The Dobb: In a Solo, the Dobb points count for the dealer (who is celebrating), not the soloist.\n4. Card Play: Clockwise. Must follow suit. If unable, must play a trump if possible.",
+    Player: "1. Bidding: Players bid 'Ordinary' or 'Solo'. In an Ordinary game, the declarer takes the 'Dobb' and discards 4 cards (points count for them).\n2. Trumps: Declarer names the trump suit.\n3. The Dobb: In a Solo, the Dobb points count for the dealer (who is celebrating), not the soloist.\n4. Card Play: Clockwise. Must follow suit. If unable, must play a trump if possible.",
+    objective: 'Win tricks to capture point cards and reach a target score. Points are: Ace/Sow (11), Ten (10), King (4), Ober (3), Unter (2). Total: 120 points per hand.',
+    gameplay: "1. Bidding: Players bid 'Ordinary' or 'Solo'. In an Ordinary game, the declarer takes the 'Dobb' and discards 4 cards (points count for them).\n2. Trumps: Declarer names the trump suit.\n3. The Dobb: In a Solo, the Dobb points count for the dealer (who is celebrating), not the soloist.\n4. Card Play: Clockwise. Must follow suit. If unable, must play a trump if possible.",
+    keyRules: [
+      "The 6 of Bells ('Weli') is just a normal card in Dobbm.",
+      "The Ace is called the 'Sow' (Sau).",
+      "Defenders can 'schieben' (smear) points on their partner's trick.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: "4 active players. If 5 play, the dealer 'feiert' (takes a holiday) and sits out.",
+      deck: '36 German-suited (Tell) cards. Suits: Hearts, Leaves, Acorns, Bells.',
+      equipment: '36-card deck, score sheet.',
+      dealing: "8 cards to each player dealt in batches of 4. Four cards go face-down to the center as the 'Dobb'. The dealer for a hand is always the 'declarer' from the previous hand.",
+    },
+    turnFlow: "1. Bidding: Players bid 'Ordinary' or 'Solo'. In an Ordinary game, the declarer takes the 'Dobb' and discards 4 cards (points count for them).\n2. Trumps: Declarer names the trump suit.\n3. The Dobb: In a Solo, the Dobb points count for the dealer (who is celebrating), not the soloist.\n4. Card Play: Clockwise. Must follow suit. If unable, must play a trump if possible.",
+    moveValidityConditions: {
+      ante: 'Dobbm is scored by card points and contracts, not ante betting.',
+      deal: 'Dealer only at hand start.',
+      reveal_market: 'Dobbm has no market reveal phase.',
+      buy_market: 'Cards are dealt and drawn from Dobb rules, not purchased.',
+      buy_stock: 'There is no stock-buy mechanic in Dobbm.',
+      fold: 'Players complete the contract hand; no fold action.',
+      check: 'No poker-style betting rounds exist.',
+      call: 'Call does not apply because betting pots are not used.',
+      bet: 'Scoring is contract and trick-point based, not bets.',
+      raise: 'No raise action is used in this trick contract game.',
+      declare: 'Bidding determines game type; separate declare action is unnecessary.',
+      reveal_hand: 'Hands are revealed through normal trick play.',
+      award_pot: 'System action after all tricks.',
+      play_card: 'Must follow suit and trump if void where required.',
+      draw: 'After deal and Dobb exchange, no turn-by-turn draw occurs.',
+      discard: 'Only declarer discards and only in game types that use Dobb.',
+      pass: 'Active players must play a legal card to each trick.',
+      bid: 'Occurs in bidding phase before trick play.',
+      meld: 'Dobbm does not score meld declarations.',
+      go_out: 'Hand ends when tricks are exhausted, not by going out.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Win tricks to capture point cards and reach a target score. Points are: Ace/Sow (11), Ten (10), King (4), Ober (3), Unter (2). Total: 120 points per hand.',
+      "Turn-flow example: 1. Bidding: Players bid 'Ordinary' or 'Solo'. In an Ordinary game, the declarer takes the 'Dobb' and discards 4 cards (points count for them).\n2. Trumps: Declarer names the trump suit.\n3. The Dobb: In a Solo, the Dobb points count for the dealer (who is celebrating), not the soloist.\n4. Card Play: Clockwise. Must follow suit. If unable, must play a trump if possible.",
+      'Scoring example: Points are counted from captured ace-ten cards and contract success. Highest cumulative score after agreed hands or local target wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'dobbm.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks to capture point cards and reach a target score. Points are: Ace/Sow (11), Ten (10), King (4), Ober (3), Unter (2). Total: 120 points per hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dobbm.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Bidding: Players bid 'Ordinary' or 'Solo'. In an Ordinary game, the declarer takes the 'Dobb' and discards 4 cards (points count for them).\n2. Trumps: Declarer names the trump suit.\n3. The Dobb: In a Solo, the Dobb points count for the dealer (who is celebrating), not the soloist.\n4. Card Play: Clockwise. Must follow suit. If unable, must play a trump if possible.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dobbm.setup.players',
+        title: 'Players',
+        text: "4 active players. If 5 play, the dealer 'feiert' (takes a holiday) and sits out.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dobbm.setup.deck',
+        title: 'Deck',
+        text: '36 German-suited (Tell) cards. Suits: Hearts, Leaves, Acorns, Bells.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dobbm.setup.equipment',
+        title: 'Equipment',
+        text: '36-card deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dobbm.setup.dealing',
+        title: 'Deal',
+        text: "8 cards to each player dealt in batches of 4. Four cards go face-down to the center as the 'Dobb'. The dealer for a hand is always the 'declarer' from the previous hand.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dobbm.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest cumulative score after agreed hands or local target wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dobbm.score.description',
+        title: 'Scoring',
+        text: 'Points are counted from captured ace-ten cards and contract success.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dobbm.rules.key.1',
+        title: 'Key rule 1',
+        text: "The 6 of Bells ('Weli') is just a normal card in Dobbm.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dobbm.rules.key.2',
+        title: 'Key rule 2',
+        text: "The Ace is called the 'Sow' (Sau).",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dobbm.rules.key.3',
+        title: 'Key rule 3',
+        text: "Defenders can 'schieben' (smear) points on their partner's trick.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dobbm.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dobbm.rules.objective',
+          'dobbm.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dobbm.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dobbm.setup.players',
+          'dobbm.setup.deck',
+          'dobbm.setup.equipment',
+          'dobbm.setup.dealing',
+        ],
+      },
+      {
+        id: 'dobbm.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dobbm.rules.key.1',
+          'dobbm.rules.key.2',
+          'dobbm.rules.key.3',
+        ],
+      },
+      {
+        id: 'dobbm.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dobbm.score.description',
+          'dobbm.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dobbm.setup.dealing',
+        'dobbm.rules.objective',
+      ],
+      deal: [
+        'dobbm.rules.gameplay',
+      ],
+      award_pot: [
+        'dobbm.rules.gameplay',
+      ],
+      play_card: [
+        'dobbm.rules.gameplay',
+      ],
+      discard: [
+        'dobbm.rules.gameplay',
+      ],
+      bid: [
+        'dobbm.rules.gameplay',
+      ],
+    },
+  },
+}

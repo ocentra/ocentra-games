@@ -1,0 +1,204 @@
+{
+  system: {
+    guid: '27759dab-e5ef-45e0-8bd4-5d82b2c47401',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/kap-shap/kap-shapRules.asset',
+    gameId: 'kap-shap',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. First player discards a tile.\n2. Next players can either take the discard (if it completes their winning hand) or draw from the wall.\n3. Every turn must end with a discard unless the player declares a win.',
+    Player: '1. First player discards a tile.\n2. Next players can either take the discard (if it completes their winning hand) or draw from the wall.\n3. Every turn must end with a discard unless the player declares a win.',
+    objective: "Form a 'Legal Hand' consisting of one identical pair and four additive pairs (totaling 10 or 20).",
+    gameplay: '1. First player discards a tile.\n2. Next players can either take the discard (if it completes their winning hand) or draw from the wall.\n3. Every turn must end with a discard unless the player declares a win.',
+    keyRules: [
+      'Winning hand: one identical pair (eye) plus four pairs summing to 10 or 20 pips; the 4-2 tile counts as 3 pips.',
+      'First player may discard without drawing; others may take a face-up tile from the table or draw from the wall, then discard one.',
+      'Game begins with each player putting an equal ante into the pot; winner collects the pot.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2-20 players (larger groups use more sets).',
+      deck: '32 Chinese domino tiles (Civil and Military pairs).',
+      equipment: '32 Chinese domino tiles (Civil and Military pairs).',
+      dealing: 'First player gets 10 tiles, others get 9. Tiles are shuffled face-down and stacked in a wall.',
+    },
+    turnFlow: '1. First player discards a tile.\n2. Next players can either take the discard (if it completes their winning hand) or draw from the wall.\n3. Every turn must end with a discard unless the player declares a win.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: "K'ap Shap uses draw and discard, not trick play.",
+      draw: 'Start of turn; optionally from table, then always one from wall. First player does not draw on first turn.',
+      discard: 'After draw; must discard one tile if not declaring win.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'Only when hand is legally complete.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      "Rule example: Form a 'Legal Hand' consisting of one identical pair and four additive pairs (totaling 10 or 20).",
+      'Turn-flow example: 1. First player discards a tile.\n2. Next players can either take the discard (if it completes their winning hand) or draw from the wall.\n3. Every turn must end with a discard unless the player declares a win.',
+      'Scoring example: No points; first player to complete a legal hand wins and collects the ante pot. First player to complete a legal hand (one identical pair plus four pairs summing to 10 or 20 pips, the 4-2 tile counting as 3) wins and collects the pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'kap-shap.rules.objective',
+        title: 'Objective',
+        text: "Form a 'Legal Hand' consisting of one identical pair and four additive pairs (totaling 10 or 20).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kap-shap.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. First player discards a tile.\n2. Next players can either take the discard (if it completes their winning hand) or draw from the wall.\n3. Every turn must end with a discard unless the player declares a win.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kap-shap.setup.players',
+        title: 'Players',
+        text: '2-20 players (larger groups use more sets).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kap-shap.setup.deck',
+        title: 'Deck',
+        text: '32 Chinese domino tiles (Civil and Military pairs).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kap-shap.setup.equipment',
+        title: 'Equipment',
+        text: '32 Chinese domino tiles (Civil and Military pairs).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kap-shap.setup.dealing',
+        title: 'Deal',
+        text: 'First player gets 10 tiles, others get 9. Tiles are shuffled face-down and stacked in a wall.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kap-shap.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to complete a legal hand (one identical pair plus four pairs summing to 10 or 20 pips, the 4-2 tile counting as 3) wins and collects the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kap-shap.score.description',
+        title: 'Scoring',
+        text: 'No points; first player to complete a legal hand wins and collects the ante pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kap-shap.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Winning hand: one identical pair (eye) plus four pairs summing to 10 or 20 pips; the 4-2 tile counts as 3 pips.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kap-shap.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First player may discard without drawing; others may take a face-up tile from the table or draw from the wall, then discard one.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kap-shap.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Game begins with each player putting an equal ante into the pot; winner collects the pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kap-shap.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kap-shap.rules.objective',
+          'kap-shap.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kap-shap.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kap-shap.setup.players',
+          'kap-shap.setup.deck',
+          'kap-shap.setup.equipment',
+          'kap-shap.setup.dealing',
+        ],
+      },
+      {
+        id: 'kap-shap.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kap-shap.rules.key.1',
+          'kap-shap.rules.key.2',
+          'kap-shap.rules.key.3',
+        ],
+      },
+      {
+        id: 'kap-shap.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kap-shap.score.description',
+          'kap-shap.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kap-shap.setup.dealing',
+        'kap-shap.rules.objective',
+      ],
+      draw: [
+        'kap-shap.rules.gameplay',
+      ],
+      discard: [
+        'kap-shap.rules.gameplay',
+      ],
+      go_out: [
+        'kap-shap.rules.gameplay',
+      ],
+    },
+  },
+}

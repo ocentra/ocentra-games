@@ -1,6 +1,6 @@
 import type { ResourceRequest } from '@ocentra/network-domain/router-types';
 import type { StorageConfig } from '@/services/storage/StorageConfig';
-import { HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { HttpContentType, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { setCachedSlice } from '@/adapters/assets/ContentSliceCache';
 import { DesktopAssetCache } from '@/adapters/assets/DesktopAssetCache';
@@ -12,6 +12,7 @@ import {
   type PlatformAssetRuntimeDebugInfo,
   ENTRY_INDEX_TTL_MS,
   resolveAssetDownloadUrl,
+  clearAssetDownloadUrlResolveCacheForRequest,
   getCachedJsonSlice,
   setCachedJsonSlice,
   getSliceUrl,
@@ -92,7 +93,18 @@ async function fetchDesktopAssetResponse(
   ifNoneMatch?: string | null
 ): Promise<Response> {
   const resolved = await resolveAssetDownloadUrl(request, storageConfig);
-  return await invokeDesktopFetch(resolved, ifNoneMatch);
+  const response = await invokeDesktopFetch(resolved, ifNoneMatch);
+  if (
+    response.status !== HttpStatus.Unauthorized &&
+    response.status !== HttpStatus.Forbidden &&
+    response.status !== HttpStatus.Gone
+  ) {
+    return response;
+  }
+
+  await response.text().catch(() => undefined);
+  clearAssetDownloadUrlResolveCacheForRequest(request);
+  return await invokeDesktopFetch(await resolveAssetDownloadUrl(request, storageConfig), ifNoneMatch);
 }
 
 async function fetchEntryIndexFromSlices(url: string) {

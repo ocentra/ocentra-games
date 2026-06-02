@@ -1,0 +1,241 @@
+{
+  system: {
+    guid: '635f0af0-7764-4395-876d-da522669c628',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/bauernschnapsen/bauernschnapsenRules.asset',
+    gameId: 'bauernschnapsen',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Bidding**: Forehand determines trump or everyone bids for special contracts. 2. **Marriages**: King and Queen of the same suit score bonus points (40 for trump, 20 for others) when one is led. 3. **Tricks**: Players must follow suit. If unable to follow suit, players MUST play a trump (Stechzwang). 4. **Counting**: Ace=11, 10=10, K=4, Q=3, J=2. Total in deck is 120 points.',
+    Player: '1. **Bidding**: Forehand determines trump or everyone bids for special contracts. 2. **Marriages**: King and Queen of the same suit score bonus points (40 for trump, 20 for others) when one is led. 3. **Tricks**: Players must follow suit. If unable to follow suit, players MUST play a trump (Stechzwang). 4. **Counting**: Ace=11, 10=10, K=4, Q=3, J=2. Total in deck is 120 points.',
+    objective: 'Score 66 points in a deal to win the round, or satisfy a higher bid contract. First team to reach 24 game points (counting down) wins the session.',
+    gameplay: '1. **Bidding**: Forehand determines trump or everyone bids for special contracts. 2. **Marriages**: King and Queen of the same suit score bonus points (40 for trump, 20 for others) when one is led. 3. **Tricks**: Players must follow suit. If unable to follow suit, players MUST play a trump (Stechzwang). 4. **Counting**: Ace=11, 10=10, K=4, Q=3, J=2. Total in deck is 120 points.',
+    keyRules: [
+      'Must follow suit if possible.',
+      'Must trump if void in the led suit (Stechzwang).',
+      'Winning the last trick scores no extra points, but provides the final tally.',
+      'If a team reaches 66 points, they stop the game immediately.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in two fixed partnerships; partners sit opposite each other.',
+      deck: '20 cards. Ranks: Ace (11), 10 (10), King (4), Queen (Ober, 3), Jack (Unter, 2) in four suits.',
+      equipment: 'Standard 20-card deck (French or German suited), score sheet.',
+      dealing: 'Dealer deals 3 cards to each player. Forehand (left of dealer) calls trump or knocks. Then 2 more cards are dealt to each player.',
+    },
+    turnFlow: '1. **Bidding**: Forehand determines trump or everyone bids for special contracts. 2. **Marriages**: King and Queen of the same suit score bonus points (40 for trump, 20 for others) when one is led. 3. **Tricks**: Players must follow suit. If unable to follow suit, players MUST play a trump (Stechzwang). 4. **Counting**: Ace=11, 10=10, K=4, Q=3, J=2. Total in deck is 120 points.',
+    moveValidityConditions: {
+      ante: 'Bauernschnapsen is a point-based trick-taking game and does not require pre-hand monetary antes.',
+      deal: 'The initial distribution of five cards per player is performed by the system automated dealer.',
+      reveal_market: 'All twenty cards are distributed to the players; there is no public market or shared pool of cards.',
+      buy_market: 'There is no card market area in this game; players succeed using only the hand they were dealt.',
+      buy_stock: 'The entire 20-card deck is dealt out at the start of the round; no stock remains to be purchased.',
+      fold: "Players are committed to their partnership's contract and must participate until the hand concludes.",
+      check: 'The game uses a trick-taking structure rather than a vying structure where checking would be an option.',
+      call: 'There is no bet to match in this game; competition is based on contract declarations and trick points.',
+      bet: 'Progress is measured by game points subtracted from a target total rather than financial betting.',
+      raise: 'The value of the round is fixed by the declared contract and cannot be raised through wagering.',
+      declare: 'During trick play or bidding phase.',
+      reveal_hand: 'Hands stay private until cards are played into tricks; there is no dedicated reveal phase.',
+      award_pot: "Game points are awarded to the team's total score rather than distributing a physical pot of assets.",
+      play_card: 'Must follow suit; must trump if void in suit.',
+      draw: 'All cards are distributed during the two-part deal; no drawing occurs during the actual play of tricks.',
+      discard: "Every card in the player's hand must be played into a trick; no cards are discarded or buried.",
+      pass: 'Players must play one card per trick; passing a turn without action is not permitted in trick play.',
+      bid: 'During bidding phase.',
+      meld: 'Set collection is handled through marriage declarations rather than a separate melding action.',
+      go_out: 'The round concludes automatically once all five tricks have been played by all participants.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score 66 points in a deal to win the round, or satisfy a higher bid contract. First team to reach 24 game points (counting down) wins the session.',
+      'Turn-flow example: 1. **Bidding**: Forehand determines trump or everyone bids for special contracts. 2. **Marriages**: King and Queen of the same suit score bonus points (40 for trump, 20 for others) when one is led. 3. **Tricks**: Players must follow suit. If unable to follow suit, players MUST play a trump (Stechzwang). 4. **Counting**: Ace=11, 10=10, K=4, Q=3, J=2. Total in deck is 120 points.',
+      'Scoring example: Points are tallied from tricks and marriages. The team reaching 66 points first wins the hand. The first team to reach 24 game points (counting down) or satisfy the declared contract..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bauernschnapsen.rules.objective',
+        title: 'Objective',
+        text: 'Score 66 points in a deal to win the round, or satisfy a higher bid contract. First team to reach 24 game points (counting down) wins the session.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Bidding**: Forehand determines trump or everyone bids for special contracts. 2. **Marriages**: King and Queen of the same suit score bonus points (40 for trump, 20 for others) when one is led. 3. **Tricks**: Players must follow suit. If unable to follow suit, players MUST play a trump (Stechzwang). 4. **Counting**: Ace=11, 10=10, K=4, Q=3, J=2. Total in deck is 120 points.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships; partners sit opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.setup.deck',
+        title: 'Deck',
+        text: '20 cards. Ranks: Ace (11), 10 (10), King (4), Queen (Ober, 3), Jack (Unter, 2) in four suits.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 20-card deck (French or German suited), score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals 3 cards to each player. Forehand (left of dealer) calls trump or knocks. Then 2 more cards are dealt to each player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.score.win-condition',
+        title: 'Win condition',
+        text: 'The first team to reach 24 game points (counting down) or satisfy the declared contract.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.score.description',
+        title: 'Scoring',
+        text: 'Points are tallied from tricks and marriages. The team reaching 66 points first wins the hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must trump if void in the led suit (Stechzwang).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning the last trick scores no extra points, but provides the final tally.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If a team reaches 66 points, they stop the game immediately.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bauernschnapsen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bauernschnapsen.rules.objective',
+          'bauernschnapsen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bauernschnapsen.setup.players',
+          'bauernschnapsen.setup.deck',
+          'bauernschnapsen.setup.equipment',
+          'bauernschnapsen.setup.dealing',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bauernschnapsen.rules.key.1',
+          'bauernschnapsen.rules.key.2',
+          'bauernschnapsen.rules.key.3',
+          'bauernschnapsen.rules.key.4',
+        ],
+      },
+      {
+        id: 'bauernschnapsen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bauernschnapsen.score.description',
+          'bauernschnapsen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bauernschnapsen.setup.dealing',
+        'bauernschnapsen.rules.objective',
+      ],
+      declare: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      play_card: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      bid: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      deal_3_cards: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      deal_2_cards: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      call_trump: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      knock_dealer: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      declare_normal: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      declare_solo: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      declare_gang: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      declare_bauern: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+      calculate_game_points: [
+        'bauernschnapsen.rules.gameplay',
+      ],
+    },
+  },
+}

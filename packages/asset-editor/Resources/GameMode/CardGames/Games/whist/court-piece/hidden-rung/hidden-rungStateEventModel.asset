@@ -1,0 +1,76 @@
+{
+  system: {
+    guid: 'efa596c0-2a75-49e9-a097-8dd589c4872b',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/court-piece/hidden-rung/hidden-rungStateEventModel.asset',
+    gameId: 'hidden-rung',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hidden-rung',
+    familyVariant: 'Partnership / Hidden Trump',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 13,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+        {
+          id: 'custom:trump_zone',
+          type: 'area',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 1,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: null,
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {
+        trick_count: 13,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'initial_deal',
+        'trump_selection',
+        'final_deal',
+        'trick_play',
+        'scoring',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'declare',
+        'play_card',
+        'tally_tricks',
+        'reveal_trump',
+      ],
+    },
+    examples: [],
+  },
+}

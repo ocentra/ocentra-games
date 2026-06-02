@@ -1,0 +1,233 @@
+{
+  system: {
+    guid: '088df9df-aa44-435f-9471-cfb016c41b35',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/panjpar/panjparRules.asset',
+    gameId: 'panjpar',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Attack**: Play 1, 3, or 5 cards. 1 = any card. 3 = pair + third (e.g. 7-7-9). 5 = two pairs + fifth (e.g. K-K-4-4-7). 2. **Defend**: Beat each attack card with a higher same-suit card, or any trump on non-trump. Trump beats trump only with higher trump. 3. **Result**: Beat all â†’ defender attacks next. Unbeaten â†’ defender picks up those cards; attacker attacks again. 4. **Draw**: After each battle, both draw to 5 from stock (attacker first). 5. **Endgame**: When stock empty, no draws. Cannot attack with more cards than opponent holds. First to empty hand wins.',
+    Player: '1. **Attack**: Play 1, 3, or 5 cards. 1 = any card. 3 = pair + third (e.g. 7-7-9). 5 = two pairs + fifth (e.g. K-K-4-4-7). 2. **Defend**: Beat each attack card with a higher same-suit card, or any trump on non-trump. Trump beats trump only with higher trump. 3. **Result**: Beat all â†’ defender attacks next. Unbeaten â†’ defender picks up those cards; attacker attacks again. 4. **Draw**: After each battle, both draw to 5 from stock (attacker first). 5. **Endgame**: When stock empty, no draws. Cannot attack with more cards than opponent holds. First to empty hand wins.',
+    objective: 'Empty your hand before your opponent. The player left with cards when the other goes out loses.',
+    gameplay: '1. **Attack**: Play 1, 3, or 5 cards. 1 = any card. 3 = pair + third (e.g. 7-7-9). 5 = two pairs + fifth (e.g. K-K-4-4-7). 2. **Defend**: Beat each attack card with a higher same-suit card, or any trump on non-trump. Trump beats trump only with higher trump. 3. **Result**: Beat all â†’ defender attacks next. Unbeaten â†’ defender picks up those cards; attacker attacks again. 4. **Draw**: After each battle, both draw to 5 from stock (attacker first). 5. **Endgame**: When stock empty, no draws. Cannot attack with more cards than opponent holds. First to empty hand wins.',
+    keyRules: [
+      'Beat with higher same suit, or any trump on non-trump; higher trump on trump.',
+      'Defender may choose to pick up any cards instead of beating.',
+      'Cannot attack with more cards than opponent has.',
+      'Trump indicator stays in place until stock drawn; no exchange for low trump (unlike Durak).',
+      'Draw can end in tie if both empty in final battle.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two players. A standard 52-card pack is used; each player receives five cards. The next card is turned face up for trump and the remainder form the stock. Before the deal, one player guesses the trump colour; the correct guesser attacks first.',
+      deck: 'Standard 52-card pack. Rank A (high) to 2 (low).',
+      equipment: 'Standard deck.',
+      dealing: 'Five cards to each player. Next card turned face up = trump. Remainder stacked face down on trump card (trump visible) = stock. Before deal, one player guesses trump colour; correct guesser attacks first.',
+    },
+    turnFlow: '1. **Attack**: Play 1, 3, or 5 cards. 1 = any card. 3 = pair + third (e.g. 7-7-9). 5 = two pairs + fifth (e.g. K-K-4-4-7). 2. **Defend**: Beat each attack card with a higher same-suit card, or any trump on non-trump. Trump beats trump only with higher trump. 3. **Result**: Beat all â†’ defender attacks next. Unbeaten â†’ defender picks up those cards; attacker attacks again. 4. **Draw**: After each battle, both draw to 5 from stock (attacker first). 5. **Endgame**: When stock empty, no draws. Cannot attack with more cards than opponent holds. First to empty hand wins.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Empty your hand before your opponent. The player left with cards when the other goes out loses.',
+      'Turn-flow example: 1. **Attack**: Play 1, 3, or 5 cards. 1 = any card. 3 = pair + third (e.g. 7-7-9). 5 = two pairs + fifth (e.g. K-K-4-4-7). 2. **Defend**: Beat each attack card with a higher same-suit card, or any trump on non-trump. Trump beats trump only with higher trump. 3. **Result**: Beat all â†’ defender attacks next. Unbeaten â†’ defender picks up those cards; attacker attacks again. 4. **Draw**: After each battle, both draw to 5 from stock (attacker first). 5. **Endgame**: When stock empty, no draws. Cannot attack with more cards than opponent holds. First to empty hand wins.',
+      'Scoring example: Single-deal game. First to empty hand wins; opponent loses. Play all your cards before opponent..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'panjpar.rules.objective',
+        title: 'Objective',
+        text: 'Empty your hand before your opponent. The player left with cards when the other goes out loses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'panjpar.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Attack**: Play 1, 3, or 5 cards. 1 = any card. 3 = pair + third (e.g. 7-7-9). 5 = two pairs + fifth (e.g. K-K-4-4-7). 2. **Defend**: Beat each attack card with a higher same-suit card, or any trump on non-trump. Trump beats trump only with higher trump. 3. **Result**: Beat all â†’ defender attacks next. Unbeaten â†’ defender picks up those cards; attacker attacks again. 4. **Draw**: After each battle, both draw to 5 from stock (attacker first). 5. **Endgame**: When stock empty, no draws. Cannot attack with more cards than opponent holds. First to empty hand wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'panjpar.setup.players',
+        title: 'Players',
+        text: 'Two players. A standard 52-card pack is used; each player receives five cards. The next card is turned face up for trump and the remainder form the stock. Before the deal, one player guesses the trump colour; the correct guesser attacks first.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'panjpar.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Rank A (high) to 2 (low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'panjpar.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'panjpar.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards to each player. Next card turned face up = trump. Remainder stacked face down on trump card (trump visible) = stock. Before deal, one player guesses trump colour; correct guesser attacks first.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'panjpar.score.win-condition',
+        title: 'Win condition',
+        text: 'Play all your cards before opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'panjpar.score.description',
+        title: 'Scoring',
+        text: 'Single-deal game. First to empty hand wins; opponent loses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'panjpar.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Beat with higher same suit, or any trump on non-trump; higher trump on trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'panjpar.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Defender may choose to pick up any cards instead of beating.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'panjpar.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cannot attack with more cards than opponent has.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'panjpar.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Trump indicator stays in place until stock drawn; no exchange for low trump (unlike Durak).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'panjpar.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Draw can end in tie if both empty in final battle.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'panjpar.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'panjpar.rules.objective',
+          'panjpar.rules.gameplay',
+        ],
+      },
+      {
+        id: 'panjpar.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'panjpar.setup.players',
+          'panjpar.setup.deck',
+          'panjpar.setup.equipment',
+          'panjpar.setup.dealing',
+        ],
+      },
+      {
+        id: 'panjpar.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'panjpar.rules.key.1',
+          'panjpar.rules.key.2',
+          'panjpar.rules.key.3',
+          'panjpar.rules.key.4',
+          'panjpar.rules.key.5',
+        ],
+      },
+      {
+        id: 'panjpar.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'panjpar.score.description',
+          'panjpar.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'panjpar.setup.dealing',
+        'panjpar.rules.objective',
+      ],
+      deal: [
+        'panjpar.rules.gameplay',
+      ],
+      guess_trump_colour: [
+        'panjpar.rules.gameplay',
+      ],
+      attack: [
+        'panjpar.rules.gameplay',
+      ],
+      beat: [
+        'panjpar.rules.gameplay',
+      ],
+      pick_up: [
+        'panjpar.rules.gameplay',
+      ],
+      draw_to_five: [
+        'panjpar.rules.gameplay',
+      ],
+    },
+  },
+}

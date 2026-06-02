@@ -1,0 +1,204 @@
+{
+  system: {
+    guid: '91f68c82-6a52-4a81-8bc9-2000708fec8f',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/ta-gou-ta-doi/ta-gou-ta-doiRules.asset',
+    gameId: 'ta-gou-ta-doi',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Each turn: draw one piece (from discard or from table in distribution order), then discard one. Starting player may declare immediately if holding three sets; otherwise discards. First player to hold three valid sets after drawing declares and wins. If the table is exhausted with no declaration, there is no winner.',
+    Player: 'Each turn: draw one piece (from discard or from table in distribution order), then discard one. Starting player may declare immediately if holding three sets; otherwise discards. First player to hold three valid sets after drawing declares and wins. If the table is exhausted with no declaration, there is no winner.',
+    objective: 'Collect three valid sets of two pieces and declare to win. Sets are Gou (two pieces whose values sum to 9) or Doi (pair of same value; in hard variant, same colour or the value-2 pair only).',
+    gameplay: 'Each turn: draw one piece (from discard or from table in distribution order), then discard one. Starting player may declare immediately if holding three sets; otherwise discards. First player to hold three valid sets after drawing declares and wins. If the table is exhausted with no declaration, there is no winner.',
+    keyRules: [
+      'Draw one, discard one per turn.',
+      'Gou: two pieces summing to 9; Doi: pair same value (easy) or identical piece or value-2 pair only (hard).',
+      'Win by declaring when holding three valid sets.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2, 3 or 4 (best for 3).',
+      deck: '32 Xiangqi pieces mixed face down, arranged in stacks of two in a circle.',
+      equipment: 'Chinese chess (Xiangqi) set of 32 pieces; table.',
+      dealing: 'Starting player determined by turning one stack face up and counting by total value. Players take stacks clockwise until each has two stacks; first player takes a third stack, then each takes one piece from next stacks so each has 5 pieces. Pieces held face down in a row.',
+    },
+    turnFlow: 'Each turn: draw one piece (from discard or from table in distribution order), then discard one. Starting player may declare immediately if holding three sets; otherwise discards. First player to hold three valid sets after drawing declares and wins. If the table is exhausted with no declaration, there is no winner.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'Legal after draw when three valid sets are held.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Ta Gou Ta Doi uses draw, discard and declare; no trick or card-play phase.',
+      draw: 'Once per turn at start of turn; must draw before discard.',
+      discard: 'Exactly one discard per turn after drawing (or on first turn if not declaring).',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Collect three valid sets of two pieces and declare to win. Sets are Gou (two pieces whose values sum to 9) or Doi (pair of same value; in hard variant, same colour or the value-2 pair only).',
+      'Turn-flow example: Each turn: draw one piece (from discard or from table in distribution order), then discard one. Starting player may declare immediately if holding three sets; otherwise discards. First player to hold three valid sets after drawing declares and wins. If the table is exhausted with no declaration, there is no winner.',
+      'Scoring example: No point scoring; first player to hold three valid sets of two and declare wins. If table is exhausted with no declaration, there is no winner. First player to hold six pieces forming three valid sets of two (Gou or Doi) and declare wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'ta-gou-ta-doi.rules.objective',
+        title: 'Objective',
+        text: 'Collect three valid sets of two pieces and declare to win. Sets are Gou (two pieces whose values sum to 9) or Doi (pair of same value; in hard variant, same colour or the value-2 pair only).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each turn: draw one piece (from discard or from table in distribution order), then discard one. Starting player may declare immediately if holding three sets; otherwise discards. First player to hold three valid sets after drawing declares and wins. If the table is exhausted with no declaration, there is no winner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.setup.players',
+        title: 'Players',
+        text: '2, 3 or 4 (best for 3).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.setup.deck',
+        title: 'Deck',
+        text: '32 Xiangqi pieces mixed face down, arranged in stacks of two in a circle.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.setup.equipment',
+        title: 'Equipment',
+        text: 'Chinese chess (Xiangqi) set of 32 pieces; table.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.setup.dealing',
+        title: 'Deal',
+        text: 'Starting player determined by turning one stack face up and counting by total value. Players take stacks clockwise until each has two stacks; first player takes a third stack, then each takes one piece from next stacks so each has 5 pieces. Pieces held face down in a row.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to hold six pieces forming three valid sets of two (Gou or Doi) and declare wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.score.description',
+        title: 'Scoring',
+        text: 'No point scoring; first player to hold three valid sets of two and declare wins. If table is exhausted with no declaration, there is no winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw one, discard one per turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Gou: two pieces summing to 9; Doi: pair same value (easy) or identical piece or value-2 pair only (hard).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by declaring when holding three valid sets.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ta-gou-ta-doi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ta-gou-ta-doi.rules.objective',
+          'ta-gou-ta-doi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ta-gou-ta-doi.setup.players',
+          'ta-gou-ta-doi.setup.deck',
+          'ta-gou-ta-doi.setup.equipment',
+          'ta-gou-ta-doi.setup.dealing',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ta-gou-ta-doi.rules.key.1',
+          'ta-gou-ta-doi.rules.key.2',
+          'ta-gou-ta-doi.rules.key.3',
+        ],
+      },
+      {
+        id: 'ta-gou-ta-doi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ta-gou-ta-doi.score.description',
+          'ta-gou-ta-doi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ta-gou-ta-doi.setup.dealing',
+        'ta-gou-ta-doi.rules.objective',
+      ],
+      declare: [
+        'ta-gou-ta-doi.rules.gameplay',
+      ],
+      draw: [
+        'ta-gou-ta-doi.rules.gameplay',
+      ],
+      discard: [
+        'ta-gou-ta-doi.rules.gameplay',
+      ],
+    },
+  },
+}

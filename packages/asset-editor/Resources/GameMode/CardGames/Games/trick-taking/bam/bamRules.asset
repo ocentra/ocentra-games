@@ -1,0 +1,231 @@
+{
+  system: {
+    guid: '766480c2-42e8-4de7-89ca-db1cffaca8be',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bam/bamRules.asset',
+    gameId: 'bam',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Plucking** (Hand 2+): If a player missed their quota in the previous hand, they are 'plucked'. They must pass their highest card of the plucker's requested suit to the plucker, who returns any card of their choice. 2. **Lead**: The player holding the 2♣ MUST lead it to the first trick. 3. **Trumps**: Trump cannot be led until broken (unless the 2♣ led is a club and clubs are trump). 4. **Following**: Must follow suit. Jokers are part of the Trump suit.",
+    Player: "1. **Plucking** (Hand 2+): If a player missed their quota in the previous hand, they are 'plucked'. They must pass their highest card of the plucker's requested suit to the plucker, who returns any card of their choice. 2. **Lead**: The player holding the 2♣ MUST lead it to the first trick. 3. **Trumps**: Trump cannot be led until broken (unless the 2♣ led is a club and clubs are trump). 4. **Following**: Must follow suit. Jokers are part of the Trump suit.",
+    objective: 'Be the first to reach a target score (usually 10 points) by winning tricks in excess of your quota.',
+    gameplay: "1. **Plucking** (Hand 2+): If a player missed their quota in the previous hand, they are 'plucked'. They must pass their highest card of the plucker's requested suit to the plucker, who returns any card of their choice. 2. **Lead**: The player holding the 2♣ MUST lead it to the first trick. 3. **Trumps**: Trump cannot be led until broken (unless the 2♣ led is a club and clubs are trump). 4. **Following**: Must follow suit. Jokers are part of the Trump suit.",
+    keyRules: [
+      "The 'Pluck': The winner asks for a suit (usually Trumps). The loser MUST give their highest card of that suit. If void, they show their hand/give nothing.",
+      '2 of Clubs Lead: The holder of the 2♣ leads it. If they win the trick, they lead next.',
+      'Jokers are Trumps: They rank above the Ace of trumps.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 players (Cutthroat).',
+      deck: '51 Cards: remove 2♦, 2♥, 2♠. Keep 2♣. Add 2 distinct Jokers (Big and Little).',
+      equipment: 'Deck, scorepad.',
+      dealing: 'Deal all cards. Each player receives 17 cards. (4-player version deals 13 cards).',
+    },
+    turnFlow: "1. **Plucking** (Hand 2+): If a player missed their quota in the previous hand, they are 'plucked'. They must pass their highest card of the plucker's requested suit to the plucker, who returns any card of their choice. 2. **Lead**: The player holding the 2♣ MUST lead it to the first trick. 3. **Trumps**: Trump cannot be led until broken (unless the 2♣ led is a club and clubs are trump). 4. **Following**: Must follow suit. Jokers are part of the Trump suit.",
+    moveValidityConditions: {
+      ante: 'Bam is trick-taking with quotas; no antes.',
+      deal: 'Deal is performed by the dealer (system); all cards dealt out.',
+      reveal_market: 'Bam has no market; plucking is player-to-player exchange.',
+      buy_market: 'Bam has no market; cards are dealt and plucked only.',
+      buy_stock: 'All cards dealt at start; no buying from stock.',
+      fold: 'Bam is trick-taking; no folding; all play every trick.',
+      check: 'No betting in Bam; scoring is by trick quotas.',
+      call: 'Bam has no pot betting; dealer calls trump only.',
+      bet: 'Bam uses trick quotas and plucking; no stakes betting.',
+      raise: 'No betting rounds in Bam.',
+      declare: 'Dealer declares trump only; no separate declare action.',
+      reveal_hand: 'Cards are played to tricks; no hand reveal phase.',
+      award_pot: 'Scoring is by trick quotas and points; no pot.',
+      play_card: 'Must follow suit if possible; first trick: 2♣ holder must lead it.',
+      draw: 'All cards dealt at start; no drawing during play.',
+      discard: 'Cards are played to tricks or exchanged in pluck; no discard pile.',
+      pass: 'No pass action; plucker requests suit, pluckee returns highest of suit.',
+      bid: 'No bidding; dealer chooses trump after plucking.',
+      meld: 'Bam is trick-taking with plucking; no melding.',
+      go_out: 'Hand ends after all tricks are played; no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 17 card(s) per player.',
+      'Rule example: Be the first to reach a target score (usually 10 points) by winning tricks in excess of your quota.',
+      "Turn-flow example: 1. **Plucking** (Hand 2+): If a player missed their quota in the previous hand, they are 'plucked'. They must pass their highest card of the plucker's requested suit to the plucker, who returns any card of their choice. 2. **Lead**: The player holding the 2♣ MUST lead it to the first trick. 3. **Trumps**: Trump cannot be led until broken (unless the 2♣ led is a club and clubs are trump). 4. **Following**: Must follow suit. Jokers are part of the Trump suit.",
+      "Scoring example: Points are awarded only for 'Over-tricks'. First player to 10 points..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bam.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach a target score (usually 10 points) by winning tricks in excess of your quota.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bam.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Plucking** (Hand 2+): If a player missed their quota in the previous hand, they are 'plucked'. They must pass their highest card of the plucker's requested suit to the plucker, who returns any card of their choice. 2. **Lead**: The player holding the 2♣ MUST lead it to the first trick. 3. **Trumps**: Trump cannot be led until broken (unless the 2♣ led is a club and clubs are trump). 4. **Following**: Must follow suit. Jokers are part of the Trump suit.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bam.setup.players',
+        title: 'Players',
+        text: '3 players (Cutthroat).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bam.setup.deck',
+        title: 'Deck',
+        text: '51 Cards: remove 2♦, 2♥, 2♠. Keep 2♣. Add 2 distinct Jokers (Big and Little).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bam.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, scorepad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bam.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards. Each player receives 17 cards. (4-player version deals 13 cards).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bam.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to 10 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bam.score.description',
+        title: 'Scoring',
+        text: "Points are awarded only for 'Over-tricks'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bam.rules.key.1',
+        title: 'Key rule 1',
+        text: "The 'Pluck': The winner asks for a suit (usually Trumps). The loser MUST give their highest card of that suit. If void, they show their hand/give nothing.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bam.rules.key.2',
+        title: 'Key rule 2',
+        text: '2 of Clubs Lead: The holder of the 2♣ leads it. If they win the trick, they lead next.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bam.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Jokers are Trumps: They rank above the Ace of trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bam.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bam.rules.objective',
+          'bam.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bam.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bam.setup.players',
+          'bam.setup.deck',
+          'bam.setup.equipment',
+          'bam.setup.dealing',
+        ],
+      },
+      {
+        id: 'bam.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bam.rules.key.1',
+          'bam.rules.key.2',
+          'bam.rules.key.3',
+        ],
+      },
+      {
+        id: 'bam.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bam.score.description',
+          'bam.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bam.setup.dealing',
+        'bam.rules.objective',
+      ],
+      play_card: [
+        'bam.rules.gameplay',
+      ],
+      deal_all_cards: [
+        'bam.rules.gameplay',
+      ],
+      request_card_from_loser: [
+        'bam.rules.gameplay',
+      ],
+      return_fodder_card: [
+        'bam.rules.gameplay',
+      ],
+      choose_trump_suit: [
+        'bam.rules.gameplay',
+      ],
+      lead_2_clubs_first: [
+        'bam.rules.gameplay',
+      ],
+      lead_card: [
+        'bam.rules.gameplay',
+      ],
+      follow_suit: [
+        'bam.rules.gameplay',
+      ],
+      trump_in: [
+        'bam.rules.gameplay',
+      ],
+      check_quotas: [
+        'bam.rules.gameplay',
+      ],
+      assign_points: [
+        'bam.rules.gameplay',
+      ],
+      determine_next_pluckers: [
+        'bam.rules.gameplay',
+      ],
+    },
+  },
+}

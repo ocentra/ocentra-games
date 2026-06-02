@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: '5222c2df-2f70-45b4-8f6f-7ed839605951',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/marriage/pinochle-single-deck-partnership/pinochle-single-deck-partnershipValidationFixtures.asset',
+    gameId: 'pinochle-single-deck-partnership',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'pinochle-single-deck-partnership',
+    familyVariant: 'Trick-taking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'pinochle-single-deck-partnership.core-runtime-contracts',
+        title: 'Pinochle Single Deck Partnership Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'pinochle-single-deck-partnership.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 12,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 48,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Pinochle Single Deck Partnership must start by giving each active player 12 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'pinochle-single-deck-partnership.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'pinochle-single-deck-partnership.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'pass',
+              'bid',
+              'meld',
+              'deal_12_each',
+            ],
+            explanation: 'Pinochle Single Deck Partnership must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'pinochle-single-deck-partnership.setup.initial-deal',
+              'pinochle-single-deck-partnership.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_12_each',
+            ],
+          },
+          {
+            id: 'pinochle-single-deck-partnership.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '1000',
+            scoringDirection: 'high_wins',
+            targetScore: 1000,
+            cardValues: {},
+            explanation: 'Meld points (runs, marriages, pinochles, arounds, dix) plus trick points (aces and tens 10 each, kings and queens 5 each, last trick 10). Bidding team must make at least their bid or be set (bid subtracted).',
+            linkedRuleIds: [
+              'pinochle-single-deck-partnership.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'pinochle-single-deck-partnership.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 12,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

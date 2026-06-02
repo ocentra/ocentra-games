@@ -1,0 +1,207 @@
+{
+  system: {
+    guid: '7719cd39-57df-49c4-9880-8cf02540d3e2',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/tianjin-mahjong/tianjin-mahjongRules.asset',
+    gameId: 'tianjin-mahjong',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Players draw and discard in turn. Discards may be claimed for legal sets under claim priority rules. A player wins when a valid complete hand satisfies profile constraints.',
+    Player: 'Players draw and discard in turn. Discards may be claimed for legal sets under claim priority rules. A player wins when a valid complete hand satisfies profile constraints.',
+    objective: 'Complete a legal winning hand under the active Tianjin scoring profile.',
+    gameplay: 'Players draw and discard in turn. Discards may be claimed for legal sets under claim priority rules. A player wins when a valid complete hand satisfies profile constraints.',
+    keyRules: [
+      'Draw then discard is the core loop.',
+      'Claims must follow legal set and priority constraints.',
+      'Winning requires profile-valid complete hand structure.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players seated by wind position.',
+      deck: '136-tile Mahjong set with suited tiles and honors; flowers and seasons removed.',
+      equipment: '136-tile Mahjong set with suited tiles and honors; flowers and seasons removed.',
+      dealing: 'Each player receives 13 tiles; dealer receives 14 and discards first.',
+    },
+    turnFlow: 'Players draw and discard in turn. Discards may be claimed for legal sets under claim priority rules. A player wins when a valid complete hand satisfies profile constraints.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is part of setup and not a player action.',
+      reveal_market: 'No market zone is used.',
+      buy_market: 'No market purchase mechanic exists.',
+      buy_stock: 'No stock buying mechanic exists.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no betting rounds.',
+      call: 'This game has no call action.',
+      bet: 'This game has no betting actions.',
+      raise: 'This game has no betting actions.',
+      declare: 'No separate declaration phase is modeled.',
+      reveal_hand: 'Reveal is part of win resolution, not a standalone action.',
+      award_pot: 'No pot award mechanic is used.',
+      play_card: 'Mahjong flow is modeled through draw/discard/meld actions.',
+      draw: 'Legal at start of turn.',
+      discard: 'Required after draw unless winning.',
+      pass: 'Pass is not required in this shared model.',
+      bid: 'No bidding mechanic exists.',
+      meld: 'Claim restrictions apply by type and seat.',
+      go_out: 'Hand must satisfy profile validity and scoring rules.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Complete a legal winning hand under the active Tianjin scoring profile.',
+      'Turn-flow example: Players draw and discard in turn. Discards may be claimed for legal sets under claim priority rules. A player wins when a valid complete hand satisfies profile constraints.',
+      'Scoring example: Points or match rules. Win by game rules..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'tianjin-mahjong.rules.objective',
+        title: 'Objective',
+        text: 'Complete a legal winning hand under the active Tianjin scoring profile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and discard in turn. Discards may be claimed for legal sets under claim priority rules. A player wins when a valid complete hand satisfies profile constraints.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.setup.players',
+        title: 'Players',
+        text: '4 players seated by wind position.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.setup.deck',
+        title: 'Deck',
+        text: '136-tile Mahjong set with suited tiles and honors; flowers and seasons removed.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.setup.equipment',
+        title: 'Equipment',
+        text: '136-tile Mahjong set with suited tiles and honors; flowers and seasons removed.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 tiles; dealer receives 14 and discards first.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw then discard is the core loop.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Claims must follow legal set and priority constraints.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning requires profile-valid complete hand structure.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tianjin-mahjong.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tianjin-mahjong.rules.objective',
+          'tianjin-mahjong.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tianjin-mahjong.setup.players',
+          'tianjin-mahjong.setup.deck',
+          'tianjin-mahjong.setup.equipment',
+          'tianjin-mahjong.setup.dealing',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tianjin-mahjong.rules.key.1',
+          'tianjin-mahjong.rules.key.2',
+          'tianjin-mahjong.rules.key.3',
+        ],
+      },
+      {
+        id: 'tianjin-mahjong.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tianjin-mahjong.score.description',
+          'tianjin-mahjong.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tianjin-mahjong.setup.dealing',
+        'tianjin-mahjong.rules.objective',
+      ],
+      draw: [
+        'tianjin-mahjong.rules.gameplay',
+      ],
+      discard: [
+        'tianjin-mahjong.rules.gameplay',
+      ],
+      meld: [
+        'tianjin-mahjong.rules.gameplay',
+      ],
+      go_out: [
+        'tianjin-mahjong.rules.gameplay',
+      ],
+    },
+  },
+}

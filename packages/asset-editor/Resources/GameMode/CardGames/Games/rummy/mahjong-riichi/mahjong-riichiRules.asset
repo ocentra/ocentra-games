@@ -1,0 +1,230 @@
+{
+  system: {
+    guid: 'ee8bc7bb-6035-4b48-9c5b-2c8c35bb5a29',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/mahjong-riichi/mahjong-riichiRules.asset',
+    gameId: 'mahjong-riichi',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Four players draw one tile from the wall (stock) each turn and discard one face-up. Players may call chii (sequence from left neighbor's discard), pon (triplet from any discard), or kan (quad). Declare Riichi when one tile from tenpai (ready hand). Win by completing 14 tiles (4 melds and 1 pair) with at least one Yaku (scoring pattern), either by self-draw (tsumo) or on an opponent's discard (ron).",
+    Player: "Four players draw one tile from the wall (stock) each turn and discard one face-up. Players may call chii (sequence from left neighbor's discard), pon (triplet from any discard), or kan (quad). Declare Riichi when one tile from tenpai (ready hand). Win by completing 14 tiles (4 melds and 1 pair) with at least one Yaku (scoring pattern), either by self-draw (tsumo) or on an opponent's discard (ron).",
+    objective: "Complete a 14-tile hand with at least one 'Yaku' (scoring pattern).",
+    gameplay: "Four players draw one tile from the wall (stock) each turn and discard one face-up. Players may call chii (sequence from left neighbor's discard), pon (triplet from any discard), or kan (quad). Declare Riichi when one tile from tenpai (ready hand). Win by completing 14 tiles (4 melds and 1 pair) with at least one Yaku (scoring pattern), either by self-draw (tsumo) or on an opponent's discard (ron).",
+    keyRules: [
+      'Each turn: draw one tile from the wall, then discard one face-up.',
+      "Call chii (sequence) only from left neighbor; pon (triplet) and kan (quad) from any player's discard.",
+      'Riichi: declare when one tile from tenpai; hand becomes closed for bonus.',
+      'Win with 14 tiles (4 melds + 1 pair) and at least one Yaku.',
+      'Furiten: if you could win on a discarded tile but did not call, you cannot win on discard until next turn.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players. Wind rotation (East/South).',
+      deck: "136 tiles: 3 suits (1-9), Winds, Dragons. One 'Dora' indicator is turned over in the dead wall.",
+      equipment: "136 tiles: 3 suits (1-9), Winds, Dragons. One 'Dora' indicator is turned over in the dead wall.",
+      dealing: 'Each player starts with 13 tiles; dealer with 14.',
+    },
+    turnFlow: "Four players draw one tile from the wall (stock) each turn and discard one face-up. Players may call chii (sequence from left neighbor's discard), pon (triplet from any discard), or kan (quad). Declare Riichi when one tile from tenpai (ready hand). Win by completing 14 tiles (4 melds and 1 pair) with at least one Yaku (scoring pattern), either by self-draw (tsumo) or on an opponent's discard (ron).",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal only after drawing; must discard exactly one tile per turn unless calling (chii/pon/kan) or winning.',
+      draw: 'Once per turn at turn start; from the live wall only, not the dead wall.',
+      discard: 'Must discard exactly one tile after drawing (or after calling) each turn.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: "Chii only from the player to your left; pon and kan from any player's last discard. Must be declared before next player draws.",
+      go_out: 'Legal when hand is complete and has at least one Yaku; ron only if not in Furiten.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      "Rule example: Complete a 14-tile hand with at least one 'Yaku' (scoring pattern).",
+      "Turn-flow example: Four players draw one tile from the wall (stock) each turn and discard one face-up. Players may call chii (sequence from left neighbor's discard), pon (triplet from any discard), or kan (quad). Declare Riichi when one tile from tenpai (ready hand). Win by completing 14 tiles (4 melds and 1 pair) with at least one Yaku (scoring pattern), either by self-draw (tsumo) or on an opponent's discard (ron).",
+      "Scoring example: Complete a 14-tile hand with at least one 'Yaku' (scoring pattern). Complete a 14-tile hand with at least one 'Yaku' (scoring pattern)..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'mahjong-riichi.rules.objective',
+        title: 'Objective',
+        text: "Complete a 14-tile hand with at least one 'Yaku' (scoring pattern).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.rules.gameplay',
+        title: 'Turn flow',
+        text: "Four players draw one tile from the wall (stock) each turn and discard one face-up. Players may call chii (sequence from left neighbor's discard), pon (triplet from any discard), or kan (quad). Declare Riichi when one tile from tenpai (ready hand). Win by completing 14 tiles (4 melds and 1 pair) with at least one Yaku (scoring pattern), either by self-draw (tsumo) or on an opponent's discard (ron).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.setup.players',
+        title: 'Players',
+        text: '4 players. Wind rotation (East/South).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.setup.deck',
+        title: 'Deck',
+        text: "136 tiles: 3 suits (1-9), Winds, Dragons. One 'Dora' indicator is turned over in the dead wall.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.setup.equipment',
+        title: 'Equipment',
+        text: "136 tiles: 3 suits (1-9), Winds, Dragons. One 'Dora' indicator is turned over in the dead wall.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.setup.dealing',
+        title: 'Deal',
+        text: 'Each player starts with 13 tiles; dealer with 14.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.score.win-condition',
+        title: 'Win condition',
+        text: "Complete a 14-tile hand with at least one 'Yaku' (scoring pattern).",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.score.description',
+        title: 'Scoring',
+        text: "Complete a 14-tile hand with at least one 'Yaku' (scoring pattern).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each turn: draw one tile from the wall, then discard one face-up.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.rules.key.2',
+        title: 'Key rule 2',
+        text: "Call chii (sequence) only from left neighbor; pon (triplet) and kan (quad) from any player's discard.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Riichi: declare when one tile from tenpai; hand becomes closed for bonus.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Win with 14 tiles (4 melds + 1 pair) and at least one Yaku.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Furiten: if you could win on a discarded tile but did not call, you cannot win on discard until next turn.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mahjong-riichi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mahjong-riichi.rules.objective',
+          'mahjong-riichi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mahjong-riichi.setup.players',
+          'mahjong-riichi.setup.deck',
+          'mahjong-riichi.setup.equipment',
+          'mahjong-riichi.setup.dealing',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mahjong-riichi.rules.key.1',
+          'mahjong-riichi.rules.key.2',
+          'mahjong-riichi.rules.key.3',
+          'mahjong-riichi.rules.key.4',
+          'mahjong-riichi.rules.key.5',
+        ],
+      },
+      {
+        id: 'mahjong-riichi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mahjong-riichi.score.description',
+          'mahjong-riichi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mahjong-riichi.setup.dealing',
+        'mahjong-riichi.rules.objective',
+      ],
+      play_card: [
+        'mahjong-riichi.rules.gameplay',
+      ],
+      draw: [
+        'mahjong-riichi.rules.gameplay',
+      ],
+      discard: [
+        'mahjong-riichi.rules.gameplay',
+      ],
+      meld: [
+        'mahjong-riichi.rules.gameplay',
+      ],
+      go_out: [
+        'mahjong-riichi.rules.gameplay',
+      ],
+    },
+  },
+}

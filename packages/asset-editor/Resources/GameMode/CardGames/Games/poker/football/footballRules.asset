@@ -1,0 +1,222 @@
+{
+  system: {
+    guid: '66858f34-8943-42cd-9983-b354850fce88',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/football/footballRules.asset',
+    gameId: 'football',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Initial Deal: 3 cards (2 down, 1 up). Betting starts with the low card (Bring-In).\n2. Streets 4-6: One card dealt face-up per player. Betting occurs after each deal.\n3. The 2-Rule: If anyone receives a 2 face-up, they immediately get one extra face-up card before the next player is dealt. Some players may hold more than seven cards.\n4. Showdown: Best five-card poker hand wins. 3s and 6s are wild; Five-of-a-Kind is highest.',
+    Player: '1. Initial Deal: 3 cards (2 down, 1 up). Betting starts with the low card (Bring-In).\n2. Streets 4-6: One card dealt face-up per player. Betting occurs after each deal.\n3. The 2-Rule: If anyone receives a 2 face-up, they immediately get one extra face-up card before the next player is dealt. Some players may hold more than seven cards.\n4. Showdown: Best five-card poker hand wins. 3s and 6s are wild; Five-of-a-Kind is highest.',
+    objective: 'Form the highest five-card poker hand using your seven (or more) cards and the designated wild cards.',
+    gameplay: '1. Initial Deal: 3 cards (2 down, 1 up). Betting starts with the low card (Bring-In).\n2. Streets 4-6: One card dealt face-up per player. Betting occurs after each deal.\n3. The 2-Rule: If anyone receives a 2 face-up, they immediately get one extra face-up card before the next player is dealt. Some players may hold more than seven cards.\n4. Showdown: Best five-card poker hand wins. 3s and 6s are wild; Five-of-a-Kind is highest.',
+    keyRules: [
+      'Wild cards: All 3s and 6s are wild and can substitute for any card; Five-of-a-Kind is the highest hand.',
+      'Extra card: If a player is dealt a 2 face-up, they immediately receive one extra face-up card before the next player is dealt.',
+      'Winning condition: Form the highest five-card poker hand using your seven (or more) cards and the designated wild cards.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: "2 to 6 players. Limited to 6 due to the 'extra card' rule potentially exhausting the deck.",
+      deck: 'Standard 52-card deck.',
+      equipment: 'Standard 52-card deck.',
+      dealing: 'Standard Seven Card Stud format: 2 cards face-down, 4 cards face-up, 1 final card face-down.',
+    },
+    turnFlow: '1. Initial Deal: 3 cards (2 down, 1 up). Betting starts with the low card (Bring-In).\n2. Streets 4-6: One card dealt face-up per player. Betting occurs after each deal.\n3. The 2-Rule: If anyone receives a 2 face-up, they immediately get one extra face-up card before the next player is dealt. Some players may hold more than seven cards.\n4. Showdown: Best five-card poker hand wins. 3s and 6s are wild; Five-of-a-Kind is highest.',
+    moveValidityConditions: {
+      ante: 'Football uses the custom action post_ante for the mandatory ante; the standard ante action is not used.',
+      deal: 'Dealer acts in deal phases; 2s trigger extra card per game rules.',
+      reveal_market: 'This game does not support reveal market.',
+      buy_market: 'This game does not support buy market.',
+      buy_stock: 'This game does not support buy stock.',
+      fold: 'Legal during any betting round when you are facing a bet or when it is your turn to act.',
+      check: 'Only legal when no one has bet in the current round.',
+      call: 'Legal when at least one player has bet and you have not yet acted or matched the current bet.',
+      bet: 'Legal when no bet has been made this round (open) or when raising. Betting order starts with the player showing the lowest card (Bring-In) on the first round.',
+      raise: 'Legal when a bet has been made and you have not yet acted or when you are matching and raising.',
+      declare: 'This game does not support declare.',
+      reveal_hand: 'This game does not support reveal hand.',
+      award_pot: 'This game does not support award pot.',
+      play_card: 'This game does not support play card.',
+      draw: 'This game does not support draw.',
+      discard: 'This game does not support discard.',
+      pass: 'This game does not support pass.',
+      bid: 'This game does not support bid.',
+      meld: 'This game does not support meld.',
+      go_out: 'This game does not support go out.',
+    },
+    exampleHands: [
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Form the highest five-card poker hand using your seven (or more) cards and the designated wild cards.',
+      'Turn-flow example: 1. Initial Deal: 3 cards (2 down, 1 up). Betting starts with the low card (Bring-In).\n2. Streets 4-6: One card dealt face-up per player. Betting occurs after each deal.\n3. The 2-Rule: If anyone receives a 2 face-up, they immediately get one extra face-up card before the next player is dealt. Some players may hold more than seven cards.\n4. Showdown: Best five-card poker hand wins. 3s and 6s are wild; Five-of-a-Kind is highest.',
+      'Scoring example: Scored through betting rounds and Poker hand rankings. All 3s and 6s are wild; 2s grant an extra card when dealt face-up. Cash or chip-based play. Highest 5-card Poker hand at showdown wins the pot. Five-of-a-Kind is highest hand, possible due to wild cards..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'football.rules.objective',
+        title: 'Objective',
+        text: 'Form the highest five-card poker hand using your seven (or more) cards and the designated wild cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'football.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Initial Deal: 3 cards (2 down, 1 up). Betting starts with the low card (Bring-In).\n2. Streets 4-6: One card dealt face-up per player. Betting occurs after each deal.\n3. The 2-Rule: If anyone receives a 2 face-up, they immediately get one extra face-up card before the next player is dealt. Some players may hold more than seven cards.\n4. Showdown: Best five-card poker hand wins. 3s and 6s are wild; Five-of-a-Kind is highest.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'football.setup.players',
+        title: 'Players',
+        text: "2 to 6 players. Limited to 6 due to the 'extra card' rule potentially exhausting the deck.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'football.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'football.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'football.setup.dealing',
+        title: 'Deal',
+        text: 'Standard Seven Card Stud format: 2 cards face-down, 4 cards face-up, 1 final card face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'football.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest 5-card Poker hand at showdown wins the pot. Five-of-a-Kind is highest hand, possible due to wild cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'football.score.description',
+        title: 'Scoring',
+        text: 'Scored through betting rounds and Poker hand rankings. All 3s and 6s are wild; 2s grant an extra card when dealt face-up. Cash or chip-based play.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'football.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Wild cards: All 3s and 6s are wild and can substitute for any card; Five-of-a-Kind is the highest hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'football.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Extra card: If a player is dealt a 2 face-up, they immediately receive one extra face-up card before the next player is dealt.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'football.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Form the highest five-card poker hand using your seven (or more) cards and the designated wild cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'football.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'football.rules.objective',
+          'football.rules.gameplay',
+        ],
+      },
+      {
+        id: 'football.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'football.setup.players',
+          'football.setup.deck',
+          'football.setup.equipment',
+          'football.setup.dealing',
+        ],
+      },
+      {
+        id: 'football.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'football.rules.key.1',
+          'football.rules.key.2',
+          'football.rules.key.3',
+        ],
+      },
+      {
+        id: 'football.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'football.score.description',
+          'football.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'football.setup.dealing',
+        'football.rules.objective',
+      ],
+      deal: [
+        'football.rules.gameplay',
+      ],
+      fold: [
+        'football.rules.gameplay',
+      ],
+      check: [
+        'football.rules.gameplay',
+      ],
+      call: [
+        'football.rules.gameplay',
+      ],
+      bet: [
+        'football.rules.gameplay',
+      ],
+      raise: [
+        'football.rules.gameplay',
+      ],
+      apply_2_rule: [
+        'football.rules.gameplay',
+      ],
+      post_ante: [
+        'football.rules.gameplay',
+      ],
+      show_hand: [
+        'football.rules.gameplay',
+      ],
+    },
+  },
+}

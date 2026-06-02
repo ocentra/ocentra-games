@@ -1,0 +1,245 @@
+{
+  system: {
+    guid: '5716ebf2-8ac2-4c6f-85b2-92711b8967cd',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/bismarck/bismarckRules.asset',
+    gameId: 'bismarck',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Forehand leads to the first trick. Any card may be led. Players must follow suit if possible; if void, may play any card. With trumps the trick is won by the highest trump; with no trumps, by the highest card of the led suit. There is no obligation to beat or to overtrump. The winner of each trick leads to the next. After 16 tricks, players are scored against their quota for the chosen contract.',
+    Player: 'Forehand leads to the first trick. Any card may be led. Players must follow suit if possible; if void, may play any card. With trumps the trick is won by the highest trump; with no trumps, by the highest card of the led suit. There is no obligation to beat or to overtrump. The winner of each trick leads to the next. After 16 tricks, players are scored against their quota for the chosen contract.',
+    objective: 'Over 12 deals (each player is forehand 4 times), score the highest cumulative total by managing your tricks relative to your quota.',
+    gameplay: 'Forehand leads to the first trick. Any card may be led. Players must follow suit if possible; if void, may play any card. With trumps the trick is won by the highest trump; with no trumps, by the highest card of the led suit. There is no obligation to beat or to overtrump. The winner of each trick leads to the next. After 16 tricks, players are scored against their quota for the chosen contract.',
+    keyRules: [
+      'Forehand sees 4 face-up cards BEFORE choosing their contract â€” critical information for decision-making.',
+      'Forehand picks up the 4 face-up cards and discards 4, keeping 16 for play.',
+      'Each contract must be used exactly once per player over 12 deals.',
+      '16 tricks per deal (3 players Ã— 16 cards Ã· 3? No â€” 48 cards Ã· 3 = 16 each, so 16 tricks).',
+      'Zero-sum scoring: all three scores always add to zero.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Exactly 3 players.',
+      deck: 'Standard 52-card deck, no Jokers. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+      equipment: '52-card deck. Score sheet with grid (rows: players, columns: contracts).',
+      dealing: "Dealer shuffles; player to dealer's right cuts. Dealer deals the top 4 cards face-up on the table, then deals the remaining 48 cards face-down to the three players (16 each). Forehand (left of dealer) picks up the 4 face-up cards (total 20 cards) and discards any 4 face-down.",
+    },
+    turnFlow: 'Forehand leads to the first trick. Any card may be led. Players must follow suit if possible; if void, may play any card. With trumps the trick is won by the highest trump; with no trumps, by the highest card of the led suit. There is no obligation to beat or to overtrump. The winner of each trick leads to the next. After 16 tricks, players are scored against their quota for the chosen contract.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal when it is your turn in play_tricks; must follow suit if holding the led suit.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 16 card(s) per player.',
+      'Rule example: Over 12 deals (each player is forehand 4 times), score the highest cumulative total by managing your tricks relative to your quota.',
+      'Turn-flow example: Forehand leads to the first trick. Any card may be led. Players must follow suit if possible; if void, may play any card. With trumps the trick is won by the highest trump; with no trumps, by the highest card of the led suit. There is no obligation to beat or to overtrump. The winner of each trick leads to the next. After 16 tricks, players are scored against their quota for the chosen contract.',
+      'Scoring example: Quota-based: +1 per trick over quota, -1 per trick under. Zero-sum across 3 players. Tracked on a grid with cumulative totals. Highest cumulative score after all 12 deals..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'bismarck.rules.objective',
+        title: 'Objective',
+        text: 'Over 12 deals (each player is forehand 4 times), score the highest cumulative total by managing your tricks relative to your quota.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bismarck.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Forehand leads to the first trick. Any card may be led. Players must follow suit if possible; if void, may play any card. With trumps the trick is won by the highest trump; with no trumps, by the highest card of the led suit. There is no obligation to beat or to overtrump. The winner of each trick leads to the next. After 16 tricks, players are scored against their quota for the chosen contract.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bismarck.setup.players',
+        title: 'Players',
+        text: 'Exactly 3 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bismarck.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck, no Jokers. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bismarck.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck. Score sheet with grid (rows: players, columns: contracts).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bismarck.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles; player to dealer's right cuts. Dealer deals the top 4 cards face-up on the table, then deals the remaining 48 cards face-down to the three players (16 each). Forehand (left of dealer) picks up the 4 face-up cards (total 20 cards) and discards any 4 face-down.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bismarck.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest cumulative score after all 12 deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bismarck.score.description',
+        title: 'Scoring',
+        text: 'Quota-based: +1 per trick over quota, -1 per trick under. Zero-sum across 3 players. Tracked on a grid with cumulative totals.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bismarck.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Forehand sees 4 face-up cards BEFORE choosing their contract â€” critical information for decision-making.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bismarck.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Forehand picks up the 4 face-up cards and discards 4, keeping 16 for play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bismarck.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each contract must be used exactly once per player over 12 deals.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bismarck.rules.key.4',
+        title: 'Key rule 4',
+        text: '16 tricks per deal (3 players Ã— 16 cards Ã· 3? No â€” 48 cards Ã· 3 = 16 each, so 16 tricks).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'bismarck.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Zero-sum scoring: all three scores always add to zero.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bismarck.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bismarck.rules.objective',
+          'bismarck.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bismarck.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bismarck.setup.players',
+          'bismarck.setup.deck',
+          'bismarck.setup.equipment',
+          'bismarck.setup.dealing',
+        ],
+      },
+      {
+        id: 'bismarck.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bismarck.rules.key.1',
+          'bismarck.rules.key.2',
+          'bismarck.rules.key.3',
+          'bismarck.rules.key.4',
+          'bismarck.rules.key.5',
+        ],
+      },
+      {
+        id: 'bismarck.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bismarck.score.description',
+          'bismarck.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bismarck.setup.dealing',
+        'bismarck.rules.objective',
+      ],
+      play_card: [
+        'bismarck.rules.gameplay',
+      ],
+      deal_4_faceup: [
+        'bismarck.rules.gameplay',
+      ],
+      deal_16_each: [
+        'bismarck.rules.gameplay',
+      ],
+      choose_sang: [
+        'bismarck.rules.gameplay',
+      ],
+      choose_pass: [
+        'bismarck.rules.gameplay',
+      ],
+      choose_spader: [
+        'bismarck.rules.gameplay',
+      ],
+      choose_valfri: [
+        'bismarck.rules.gameplay',
+      ],
+      pickup_table_cards: [
+        'bismarck.rules.gameplay',
+      ],
+      discard_4: [
+        'bismarck.rules.gameplay',
+      ],
+      calculate_quota_score: [
+        'bismarck.rules.gameplay',
+      ],
+    },
+  },
+}

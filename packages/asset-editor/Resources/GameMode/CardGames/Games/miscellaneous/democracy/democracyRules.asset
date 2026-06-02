@@ -1,0 +1,234 @@
+{
+  system: {
+    guid: 'c2d16086-394b-4dbf-a0e4-d0dd1d274b14',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/miscellaneous/democracy/democracyRules.asset',
+    gameId: 'democracy',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Dealer flips card from voting pool to determine trump suit\n2. Each player selects one card from hand and places it face down\n3. On dealer's signal, all simultaneously reveal cards\n4. If trumps played: highest trump wins (except 6 beats 5 of trumps if both played)\n5. If no trumps: highest card wins regardless of suit\n6. Winner takes all played cards and voting card\n7. In case of tie for highest (no trumps): each takes own card, voting card discarded\n8. Jokers can represent any non-trump card\n9. Continue until all cards played, then score",
+    Player: "1. Dealer flips card from voting pool to determine trump suit\n2. Each player selects one card from hand and places it face down\n3. On dealer's signal, all simultaneously reveal cards\n4. If trumps played: highest trump wins (except 6 beats 5 of trumps if both played)\n5. If no trumps: highest card wins regardless of suit\n6. Winner takes all played cards and voting card\n7. In case of tie for highest (no trumps): each takes own card, voting card discarded\n8. Jokers can represent any non-trump card\n9. Continue until all cards played, then score",
+    objective: "Collect majority of points in suits to score 'tribes' (game points). First player to reach agreed number of tribes (usually 5, 7, or 10) wins the match.",
+    gameplay: "1. Dealer flips card from voting pool to determine trump suit\n2. Each player selects one card from hand and places it face down\n3. On dealer's signal, all simultaneously reveal cards\n4. If trumps played: highest trump wins (except 6 beats 5 of trumps if both played)\n5. If no trumps: highest card wins regardless of suit\n6. Winner takes all played cards and voting card\n7. In case of tie for highest (no trumps): each takes own card, voting card discarded\n8. Jokers can represent any non-trump card\n9. Continue until all cards played, then score",
+    keyRules: [
+      'All players select and reveal cards simultaneously',
+      'No requirement to follow suit or play trump',
+      'Special rule: 6 of trumps beats 5 of trumps if both played',
+      'Jokers represent any non-trump card (lose to any trump)',
+      'Tie for highest (no trumps): each player keeps own card only',
+      "Game played in two 'days' with half the deck each",
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 3-5\nPartnerships: None - individual play',
+      deck: 'Type: Modified standard deck\nNumber of Decks: 1\nJokers: Added for 4 players (2 jokers), 6 players (1 joker)\nCard removal: All twos removed (48 cards base)\nSpecial ranking: 5-4-3-A-K-Q-J-10-9-8-7-6 (high to low)',
+      equipment: 'Standard 52-card deck\nScore sheet for tracking tribes\nTable space for voting pool',
+      dealing: "Cards dealt face down clockwise\nExtra 'voting pool' hand dealt to center\nTwo-day structure: half deck each day (or play variations)\nExample: 4 players = 5 cards each + 5 in pool per day",
+    },
+    turnFlow: "1. Dealer flips card from voting pool to determine trump suit\n2. Each player selects one card from hand and places it face down\n3. On dealer's signal, all simultaneously reveal cards\n4. If trumps played: highest trump wins (except 6 beats 5 of trumps if both played)\n5. If no trumps: highest card wins regardless of suit\n6. Winner takes all played cards and voting card\n7. In case of tie for highest (no trumps): each takes own card, voting card discarded\n8. Jokers can represent any non-trump card\n9. Continue until all cards played, then score",
+    moveValidityConditions: {
+      ante: 'Democracy does not use ante posting.',
+      deal: 'Dealer-only at the start of each day/hand.',
+      reveal_market: 'The game has no market reveal mechanic.',
+      buy_market: 'Players do not buy cards from a market in Democracy.',
+      buy_stock: 'Stock purchase is not part of Democracy gameplay.',
+      fold: 'Players continue through card reveals; folding is not used.',
+      check: 'Checking is a betting action and not part of Democracy.',
+      call: 'There are no call actions in this non-betting game.',
+      bet: 'Democracy uses trick capture scoring, not wagers.',
+      raise: 'Raise mechanics are not used in this game.',
+      declare: 'No separate declaration phase exists beyond simultaneous card reveal.',
+      reveal_hand: 'Outcomes are resolved per reveal trick, not by full-hand reveal.',
+      award_pot: 'Executed after all reveal-tricks in the day/hand are resolved.',
+      play_card: 'Each active player chooses one card per reveal; highest trump or rank takes cards.',
+      draw: 'Players do not draw new cards after initial deal.',
+      discard: 'There is no independent discard action in Democracy.',
+      pass: 'Active players must submit a card each simultaneous reveal round.',
+      bid: 'Democracy has no contract bidding mechanic.',
+      meld: 'Meld declarations are not part of this game.',
+      go_out: 'The game ends by exhausting reveal rounds, not by going out.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Collect majority of points in suits to score 'tribes' (game points). First player to reach agreed number of tribes (usually 5, 7, or 10) wins the match.",
+      "Turn-flow example: 1. Dealer flips card from voting pool to determine trump suit\n2. Each player selects one card from hand and places it face down\n3. On dealer's signal, all simultaneously reveal cards\n4. If trumps played: highest trump wins (except 6 beats 5 of trumps if both played)\n5. If no trumps: highest card wins regardless of suit\n6. Winner takes all played cards and voting card\n7. In case of tie for highest (no trumps): each takes own card, voting card discarded\n8. Jokers can represent any non-trump card\n9. Continue until all cards played, then score",
+      'Scoring example: Players earn tribe points by capturing majority point value in suits over the hand/day. First player to the agreed tribe total wins the match..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'democracy.rules.objective',
+        title: 'Objective',
+        text: "Collect majority of points in suits to score 'tribes' (game points). First player to reach agreed number of tribes (usually 5, 7, or 10) wins the match.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'democracy.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Dealer flips card from voting pool to determine trump suit\n2. Each player selects one card from hand and places it face down\n3. On dealer's signal, all simultaneously reveal cards\n4. If trumps played: highest trump wins (except 6 beats 5 of trumps if both played)\n5. If no trumps: highest card wins regardless of suit\n6. Winner takes all played cards and voting card\n7. In case of tie for highest (no trumps): each takes own card, voting card discarded\n8. Jokers can represent any non-trump card\n9. Continue until all cards played, then score",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'democracy.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 3-5\nPartnerships: None - individual play',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'democracy.setup.deck',
+        title: 'Deck',
+        text: 'Type: Modified standard deck\nNumber of Decks: 1\nJokers: Added for 4 players (2 jokers), 6 players (1 joker)\nCard removal: All twos removed (48 cards base)\nSpecial ranking: 5-4-3-A-K-Q-J-10-9-8-7-6 (high to low)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'democracy.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet for tracking tribes\nTable space for voting pool',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'democracy.setup.dealing',
+        title: 'Deal',
+        text: "Cards dealt face down clockwise\nExtra 'voting pool' hand dealt to center\nTwo-day structure: half deck each day (or play variations)\nExample: 4 players = 5 cards each + 5 in pool per day",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'democracy.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to the agreed tribe total wins the match.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'democracy.score.description',
+        title: 'Scoring',
+        text: 'Players earn tribe points by capturing majority point value in suits over the hand/day.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'democracy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'All players select and reveal cards simultaneously',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'democracy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No requirement to follow suit or play trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'democracy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Special rule: 6 of trumps beats 5 of trumps if both played',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'democracy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Jokers represent any non-trump card (lose to any trump)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'democracy.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Tie for highest (no trumps): each player keeps own card only',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'democracy.rules.key.6',
+        title: 'Key rule 6',
+        text: "Game played in two 'days' with half the deck each",
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'democracy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'democracy.rules.objective',
+          'democracy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'democracy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'democracy.setup.players',
+          'democracy.setup.deck',
+          'democracy.setup.equipment',
+          'democracy.setup.dealing',
+        ],
+      },
+      {
+        id: 'democracy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'democracy.rules.key.1',
+          'democracy.rules.key.2',
+          'democracy.rules.key.3',
+          'democracy.rules.key.4',
+          'democracy.rules.key.5',
+          'democracy.rules.key.6',
+        ],
+      },
+      {
+        id: 'democracy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'democracy.score.description',
+          'democracy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'democracy.setup.dealing',
+        'democracy.rules.objective',
+      ],
+      deal: [
+        'democracy.rules.gameplay',
+      ],
+      award_pot: [
+        'democracy.rules.gameplay',
+      ],
+      play_card: [
+        'democracy.rules.gameplay',
+      ],
+    },
+  },
+}

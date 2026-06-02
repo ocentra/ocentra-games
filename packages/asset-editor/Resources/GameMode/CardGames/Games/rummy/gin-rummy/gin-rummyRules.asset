@@ -1,0 +1,232 @@
+{
+  system: {
+    guid: '48db72c1-498a-41b8-abd1-6876b4ce9e97',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/gin-rummy/gin-rummyRules.asset',
+    gameId: 'gin-rummy',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'On each turn draw one card from stock or top discard, then discard one card face up. If you took the top discard this turn, you cannot discard that same card immediately. Melds are sets (3-4 equal ranks) and runs (3+ same-suit consecutive cards); a card cannot count in two melds at once. Ace is always low, so A-2-3 is valid but A-K-Q is not. A player may knock after drawing if deadwood is 10 or less by discarding face down, then both hands are exposed. If knocker did not go gin, opponent may lay off unmatched cards on knocker melds. If stock reaches two cards and no one has knocked, hand is cancelled and redealt.',
+    Player: 'On each turn draw one card from stock or top discard, then discard one card face up. If you took the top discard this turn, you cannot discard that same card immediately. Melds are sets (3-4 equal ranks) and runs (3+ same-suit consecutive cards); a card cannot count in two melds at once. Ace is always low, so A-2-3 is valid but A-K-Q is not. A player may knock after drawing if deadwood is 10 or less by discarding face down, then both hands are exposed. If knocker did not go gin, opponent may lay off unmatched cards on knocker melds. If stock reaches two cards and no one has knocked, hand is cancelled and redealt.',
+    objective: 'Win points by ending hands with lower deadwood than opponent and reach game target first.',
+    gameplay: 'On each turn draw one card from stock or top discard, then discard one card face up. If you took the top discard this turn, you cannot discard that same card immediately. Melds are sets (3-4 equal ranks) and runs (3+ same-suit consecutive cards); a card cannot count in two melds at once. Ace is always low, so A-2-3 is valid but A-K-Q is not. A player may knock after drawing if deadwood is 10 or less by discarding face down, then both hands are exposed. If knocker did not go gin, opponent may lay off unmatched cards on knocker melds. If stock reaches two cards and no one has knocked, hand is cancelled and redealt.',
+    keyRules: [
+      'First turn is special: non-dealer may take upcard; if declined, dealer may take it; if both decline, non-dealer draws stock.',
+      'Knock requires deadwood 10 or less; going gin means deadwood 0.',
+      'Opponent cannot lay off when knocker goes gin.',
+      'Cancelled hand (stock down to two cards without knock) scores no points and same dealer deals again.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two players only, head-to-head; no partnerships. Each player receives ten cards per hand. Dealership alternates from round to round; the first dealer is often chosen by drawing cards from the pack (lower card deals), and subsequently the winner of the previous hand deals.',
+      deck: 'Standard 52-card deck, ace low in runs.',
+      equipment: 'Scorepad for cumulative hand and game bonuses.',
+      dealing: 'Deal 10 cards to each player one at a time. Turn the next card face up as first discard and place the rest face down as stock.',
+    },
+    turnFlow: 'On each turn draw one card from stock or top discard, then discard one card face up. If you took the top discard this turn, you cannot discard that same card immediately. Melds are sets (3-4 equal ranks) and runs (3+ same-suit consecutive cards); a card cannot count in two melds at once. Ace is always low, so A-2-3 is valid but A-K-Q is not. A player may knock after drawing if deadwood is 10 or less by discarding face down, then both hands are exposed. If knocker did not go gin, opponent may lay off unmatched cards on knocker melds. If stock reaches two cards and no one has knocked, hand is cancelled and redealt.',
+    moveValidityConditions: {
+      ante: 'Gin Rummy has no ante mechanic.',
+      deal: 'Dealer action at hand start.',
+      reveal_market: 'No market in Gin Rummy.',
+      buy_market: 'No market buying in Gin Rummy.',
+      buy_stock: 'Players draw from stock, not buy from stock.',
+      fold: 'No fold action in Gin Rummy.',
+      check: 'No betting round with checks in Gin Rummy.',
+      call: 'No betting round with calls in Gin Rummy.',
+      bet: 'No stake betting action in base Gin Rummy.',
+      raise: 'No stake raising action in base Gin Rummy.',
+      declare: 'Declarations are modeled by knock/go_gin custom actions.',
+      reveal_hand: 'After hand-ending declaration only.',
+      award_pot: 'Resolution phase only.',
+      play_card: 'Gin Rummy uses draw-discard turns, not trick play cards.',
+      draw: 'Start of turn and before discard.',
+      discard: 'Exactly one discard after draw.',
+      pass: 'No generic pass action during normal turns.',
+      bid: 'No bidding mechanic in Gin Rummy.',
+      meld: 'Resolution context only.',
+      go_out: 'Hand ends by knock/gin declaration, not shedding to empty first.',
+    },
+    exampleHands: [
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win points by ending hands with lower deadwood than opponent and reach game target first.',
+      'Turn-flow example: On each turn draw one card from stock or top discard, then discard one card face up. If you took the top discard this turn, you cannot discard that same card immediately. Melds are sets (3-4 equal ranks) and runs (3+ same-suit consecutive cards); a card cannot count in two melds at once. Ace is always low, so A-2-3 is valid but A-K-Q is not. A player may knock after drawing if deadwood is 10 or less by discarding face down, then both hands are exposed. If knocker did not go gin, opponent may lay off unmatched cards on knocker melds. If stock reaches two cards and no one has knocked, hand is cancelled and redealt.',
+      'Scoring example: Hand scoring uses deadwood difference plus bonus events, and game scoring continues across hands. Reach 100 or more cumulative points first, then apply game and line bonuses..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'gin-rummy.rules.objective',
+        title: 'Objective',
+        text: 'Win points by ending hands with lower deadwood than opponent and reach game target first.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gin-rummy.rules.gameplay',
+        title: 'Turn flow',
+        text: 'On each turn draw one card from stock or top discard, then discard one card face up. If you took the top discard this turn, you cannot discard that same card immediately. Melds are sets (3-4 equal ranks) and runs (3+ same-suit consecutive cards); a card cannot count in two melds at once. Ace is always low, so A-2-3 is valid but A-K-Q is not. A player may knock after drawing if deadwood is 10 or less by discarding face down, then both hands are exposed. If knocker did not go gin, opponent may lay off unmatched cards on knocker melds. If stock reaches two cards and no one has knocked, hand is cancelled and redealt.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gin-rummy.setup.players',
+        title: 'Players',
+        text: 'Two players only, head-to-head; no partnerships. Each player receives ten cards per hand. Dealership alternates from round to round; the first dealer is often chosen by drawing cards from the pack (lower card deals), and subsequently the winner of the previous hand deals.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gin-rummy.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck, ace low in runs.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gin-rummy.setup.equipment',
+        title: 'Equipment',
+        text: 'Scorepad for cumulative hand and game bonuses.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gin-rummy.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 10 cards to each player one at a time. Turn the next card face up as first discard and place the rest face down as stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gin-rummy.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach 100 or more cumulative points first, then apply game and line bonuses.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gin-rummy.score.description',
+        title: 'Scoring',
+        text: 'Hand scoring uses deadwood difference plus bonus events, and game scoring continues across hands.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gin-rummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'First turn is special: non-dealer may take upcard; if declined, dealer may take it; if both decline, non-dealer draws stock.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gin-rummy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Knock requires deadwood 10 or less; going gin means deadwood 0.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gin-rummy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Opponent cannot lay off when knocker goes gin.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'gin-rummy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cancelled hand (stock down to two cards without knock) scores no points and same dealer deals again.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gin-rummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gin-rummy.rules.objective',
+          'gin-rummy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gin-rummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gin-rummy.setup.players',
+          'gin-rummy.setup.deck',
+          'gin-rummy.setup.equipment',
+          'gin-rummy.setup.dealing',
+        ],
+      },
+      {
+        id: 'gin-rummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gin-rummy.rules.key.1',
+          'gin-rummy.rules.key.2',
+          'gin-rummy.rules.key.3',
+          'gin-rummy.rules.key.4',
+        ],
+      },
+      {
+        id: 'gin-rummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gin-rummy.score.description',
+          'gin-rummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gin-rummy.setup.dealing',
+        'gin-rummy.rules.objective',
+      ],
+      deal: [
+        'gin-rummy.rules.gameplay',
+      ],
+      reveal_hand: [
+        'gin-rummy.rules.gameplay',
+      ],
+      award_pot: [
+        'gin-rummy.rules.gameplay',
+      ],
+      draw: [
+        'gin-rummy.rules.gameplay',
+      ],
+      discard: [
+        'gin-rummy.rules.gameplay',
+      ],
+      meld: [
+        'gin-rummy.rules.gameplay',
+      ],
+      knock: [
+        'gin-rummy.rules.gameplay',
+      ],
+      go_gin: [
+        'gin-rummy.rules.gameplay',
+      ],
+      layoff: [
+        'gin-rummy.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,271 @@
+{
+  system: {
+    guid: '63f3f42a-8176-446e-85a8-85e564a524cb',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/pick-a-partner/pick-a-partnerRules.asset',
+    gameId: 'pick-a-partner',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'After ante and deal, all players roll one card simultaneously. Partner selection proceeds by rank of the exposed card: highest picks first, then highest unpartnered, until all are paired. Each partnership combines their eight remaining cards and selects three to use with their two upcards to form a five-card hand. There are three betting rounds; after each round one of the three chosen cards is turned face up. Partners play as a team but bet as individuals: if one folds the other may continue. At showdown the team with the highest hand shares the pot; if one partner folded, the other wins the whole pot.',
+    Player: 'After ante and deal, all players roll one card simultaneously. Partner selection proceeds by rank of the exposed card: highest picks first, then highest unpartnered, until all are paired. Each partnership combines their eight remaining cards and selects three to use with their two upcards to form a five-card hand. There are three betting rounds; after each round one of the three chosen cards is turned face up. Partners play as a team but bet as individuals: if one folds the other may continue. At showdown the team with the highest hand shares the pot; if one partner folded, the other wins the whole pot.',
+    objective: 'Win the pot by having the best five-card poker hand at showdown as a partnership, or by being the last partnership with a member still in the hand. If one member of the winning partnership folded, the remaining partner wins the whole pot.',
+    gameplay: 'After ante and deal, all players roll one card simultaneously. Partner selection proceeds by rank of the exposed card: highest picks first, then highest unpartnered, until all are paired. Each partnership combines their eight remaining cards and selects three to use with their two upcards to form a five-card hand. There are three betting rounds; after each round one of the three chosen cards is turned face up. Partners play as a team but bet as individuals: if one folds the other may continue. At showdown the team with the highest hand shares the pot; if one partner folded, the other wins the whole pot.',
+    keyRules: [
+      'Even number of players only. Everyone antes and is dealt five cards face down.',
+      'Roll is simultaneous: everyone selects and exposes one card at once.',
+      'Partner selection order is by rank of exposed card, highest first.',
+      'Partnership combines eight cards and selects three to use with two upcards for a five-card hand.',
+      'Three betting rounds with one card revealed after each round.',
+      'Partners bet individually; one partner can fold while the other continues.',
+      'Winning team shares pot; if one winner folded, the other wins the whole pot.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Even number of players (2, 4, or 6).',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Poker chips, standard deck.',
+      dealing: 'Each player antes. Dealer deals five cards face down to each player. All players simultaneously expose one card (roll). Highest card holder selects a partner; then the highest unpartnered player selects a partner, and so on until all are paired. Each partnership combines their eight remaining cards and selects three to use with their two upcards to form a five-card hand. Three betting rounds follow, with one of the three chosen cards turned face up after each round.',
+    },
+    turnFlow: 'After ante and deal, all players roll one card simultaneously. Partner selection proceeds by rank of the exposed card: highest picks first, then highest unpartnered, until all are paired. Each partnership combines their eight remaining cards and selects three to use with their two upcards to form a five-card hand. There are three betting rounds; after each round one of the three chosen cards is turned face up. Partners play as a team but bet as individuals: if one folds the other may continue. At showdown the team with the highest hand shares the pot; if one partner folded, the other wins the whole pot.',
+    moveValidityConditions: {
+      ante: 'Required once per hand before dealing.',
+      deal: 'Dealer-only in initial deal phase.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Available during betting rounds; one partner may fold while the other continues.',
+      check: 'Available only when action is unopened.',
+      call: 'Only when there is an open wager.',
+      bet: 'Only when no bet has been placed yet.',
+      raise: 'Only when a bet or raise is already open.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Showdown only for non-folded partnerships.',
+      award_pot: 'System action after showdown or fold-out.',
+      play_card: 'In roll: each player plays one card. In reveal: partnership plays one of the three selected cards.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the best five-card poker hand at showdown as a partnership, or by being the last partnership with a member still in the hand. If one member of the winning partnership folded, the remaining partner wins the whole pot.',
+      'Turn-flow example: After ante and deal, all players roll one card simultaneously. Partner selection proceeds by rank of the exposed card: highest picks first, then highest unpartnered, until all are paired. Each partnership combines their eight remaining cards and selects three to use with their two upcards to form a five-card hand. There are three betting rounds; after each round one of the three chosen cards is turned face up. Partners play as a team but bet as individuals: if one folds the other may continue. At showdown the team with the highest hand shares the pot; if one partner folded, the other wins the whole pot.',
+      'Scoring example: Points or match rules. Partnership with the best five-card poker hand at showdown wins and shares the pot; if one member of the winning partnership folded, the remaining partner wins the whole pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'pick-a-partner.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best five-card poker hand at showdown as a partnership, or by being the last partnership with a member still in the hand. If one member of the winning partnership folded, the remaining partner wins the whole pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pick-a-partner.rules.gameplay',
+        title: 'Turn flow',
+        text: 'After ante and deal, all players roll one card simultaneously. Partner selection proceeds by rank of the exposed card: highest picks first, then highest unpartnered, until all are paired. Each partnership combines their eight remaining cards and selects three to use with their two upcards to form a five-card hand. There are three betting rounds; after each round one of the three chosen cards is turned face up. Partners play as a team but bet as individuals: if one folds the other may continue. At showdown the team with the highest hand shares the pot; if one partner folded, the other wins the whole pot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pick-a-partner.setup.players',
+        title: 'Players',
+        text: 'Even number of players (2, 4, or 6).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pick-a-partner.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pick-a-partner.setup.equipment',
+        title: 'Equipment',
+        text: 'Poker chips, standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pick-a-partner.setup.dealing',
+        title: 'Deal',
+        text: 'Each player antes. Dealer deals five cards face down to each player. All players simultaneously expose one card (roll). Highest card holder selects a partner; then the highest unpartnered player selects a partner, and so on until all are paired. Each partnership combines their eight remaining cards and selects three to use with their two upcards to form a five-card hand. Three betting rounds follow, with one of the three chosen cards turned face up after each round.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pick-a-partner.score.win-condition',
+        title: 'Win condition',
+        text: 'Partnership with the best five-card poker hand at showdown wins and shares the pot; if one member of the winning partnership folded, the remaining partner wins the whole pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pick-a-partner.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pick-a-partner.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Even number of players only. Everyone antes and is dealt five cards face down.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pick-a-partner.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Roll is simultaneous: everyone selects and exposes one card at once.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pick-a-partner.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Partner selection order is by rank of exposed card, highest first.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pick-a-partner.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Partnership combines eight cards and selects three to use with two upcards for a five-card hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pick-a-partner.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Three betting rounds with one card revealed after each round.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'pick-a-partner.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Partners bet individually; one partner can fold while the other continues.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'pick-a-partner.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Winning team shares pot; if one winner folded, the other wins the whole pot.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pick-a-partner.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pick-a-partner.rules.objective',
+          'pick-a-partner.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pick-a-partner.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pick-a-partner.setup.players',
+          'pick-a-partner.setup.deck',
+          'pick-a-partner.setup.equipment',
+          'pick-a-partner.setup.dealing',
+        ],
+      },
+      {
+        id: 'pick-a-partner.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pick-a-partner.rules.key.1',
+          'pick-a-partner.rules.key.2',
+          'pick-a-partner.rules.key.3',
+          'pick-a-partner.rules.key.4',
+          'pick-a-partner.rules.key.5',
+          'pick-a-partner.rules.key.6',
+          'pick-a-partner.rules.key.7',
+        ],
+      },
+      {
+        id: 'pick-a-partner.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pick-a-partner.score.description',
+          'pick-a-partner.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pick-a-partner.setup.dealing',
+        'pick-a-partner.rules.objective',
+      ],
+      ante: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      deal: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      fold: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      check: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      call: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      bet: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      raise: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      reveal_hand: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      award_pot: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      play_card: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      assign_partners: [
+        'pick-a-partner.rules.gameplay',
+      ],
+      select_partnership_hand: [
+        'pick-a-partner.rules.gameplay',
+      ],
+    },
+  },
+}

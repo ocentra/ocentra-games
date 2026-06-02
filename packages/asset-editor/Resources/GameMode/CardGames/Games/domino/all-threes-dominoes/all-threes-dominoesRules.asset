@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: 'd2981662-421e-4040-953c-a6af60836610',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/all-threes-dominoes/all-threes-dominoesRules.asset',
+    gameId: 'all-threes-dominoes',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Opening**: The player with the highest double leads (or by agreement). 2. **Matching**: Subsequent players must match the pips of one of the two open ends of the line. 3. **Scoring**: After each play, add the pips on the two exposed ends. If the total is divisible by 3, you score 1 point for every 3 in that total. For example: Sum 9 = 3 pts, Sum 12 = 4 pts, Sum 15 = 5 pts, Sum 18 = 6 pts. 4. **Drawing**: If a player cannot move, they must draw from the Boneyard until they can play or the boneyard is empty.',
+    Player: '1. **Opening**: The player with the highest double leads (or by agreement). 2. **Matching**: Subsequent players must match the pips of one of the two open ends of the line. 3. **Scoring**: After each play, add the pips on the two exposed ends. If the total is divisible by 3, you score 1 point for every 3 in that total. For example: Sum 9 = 3 pts, Sum 12 = 4 pts, Sum 15 = 5 pts, Sum 18 = 6 pts. 4. **Drawing**: If a player cannot move, they must draw from the Boneyard until they can play or the boneyard is empty.',
+    objective: 'Be the first to reach a target score (usually 150 or 250) by making the ends of the layout sum to a multiple of three.',
+    gameplay: '1. **Opening**: The player with the highest double leads (or by agreement). 2. **Matching**: Subsequent players must match the pips of one of the two open ends of the line. 3. **Scoring**: After each play, add the pips on the two exposed ends. If the total is divisible by 3, you score 1 point for every 3 in that total. For example: Sum 9 = 3 pts, Sum 12 = 4 pts, Sum 15 = 5 pts, Sum 18 = 6 pts. 4. **Drawing**: If a player cannot move, they must draw from the Boneyard until they can play or the boneyard is empty.',
+    keyRules: [
+      'Doubles: Placed crosswise. For scoring, you count the TOTAL pips on the double (e.g., a Double-6 counts as 12).',
+      'No Spinner: Only the two ends of the single line are ever open for play.',
+      "Blocked Game: If no one can play and the boneyard is empty, the player with the lowest pip count in their hand wins the hand's residue points.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 (7 tiles each), 3 (5 tiles each), or 4 (5 tiles each).',
+      deck: 'Standard Double-six set of 28 tiles.',
+      equipment: 'Domino tiles, cribbage board or score sheet.',
+      dealing: "Tiles are 'shuffled' face down (the 'wash'). Players draw their hand; remainders go to the 'Boneyard'.",
+    },
+    turnFlow: '1. **Opening**: The player with the highest double leads (or by agreement). 2. **Matching**: Subsequent players must match the pips of one of the two open ends of the line. 3. **Scoring**: After each play, add the pips on the two exposed ends. If the total is divisible by 3, you score 1 point for every 3 in that total. For example: Sum 9 = 3 pts, Sum 12 = 4 pts, Sum 15 = 5 pts, Sum 18 = 6 pts. 4. **Drawing**: If a player cannot move, they must draw from the Boneyard until they can play or the boneyard is empty.',
+    moveValidityConditions: {
+      ante: 'All Threes dominoes scores by multiples of three; no ante.',
+      deal: 'Dealer-only at hand start.',
+      reveal_market: 'Layout domino game with boneyard; no market.',
+      buy_market: 'Tiles drawn from boneyard when blocked; no market.',
+      buy_stock: 'Draw from boneyard when unable to play; no stock buy.',
+      fold: 'Layout domino game; no fold.',
+      check: 'Score by multiples of three; no betting.',
+      call: 'All Threes is layout scoring only.',
+      bet: 'No betting rounds; target score 250.',
+      raise: 'No betting rounds; target score 250.',
+      declare: 'Points at hand end from layout and residue; no declare.',
+      reveal_hand: 'Tiles played to layout; no showdown.',
+      award_pot: 'System-only at hand end.',
+      play_card: 'Played tile must match one open end; doubles are played crosswise and count both ends for scoring.',
+      draw: 'Must continue drawing until playable tile found or boneyard is empty.',
+      discard: 'Tiles played to layout; no discard pile.',
+      pass: 'Only legal after draw attempts fail due to empty boneyard.',
+      bid: 'Domino layout game; no bidding.',
+      meld: 'Layout domino game; no melds.',
+      go_out: 'Round ends when one player empties hand or all blocked.',
+    },
+    exampleHands: [
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first to reach a target score (usually 150 or 250) by making the ends of the layout sum to a multiple of three.',
+      'Turn-flow example: 1. **Opening**: The player with the highest double leads (or by agreement). 2. **Matching**: Subsequent players must match the pips of one of the two open ends of the line. 3. **Scoring**: After each play, add the pips on the two exposed ends. If the total is divisible by 3, you score 1 point for every 3 in that total. For example: Sum 9 = 3 pts, Sum 12 = 4 pts, Sum 15 = 5 pts, Sum 18 = 6 pts. 4. **Drawing**: If a player cannot move, they must draw from the Boneyard until they can play or the boneyard is empty.',
+      'Scoring example: Scoring is done incrementally during play and a bonus is given at the end of each hand. First player to reach the target score wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'all-threes-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach a target score (usually 150 or 250) by making the ends of the layout sum to a multiple of three.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Opening**: The player with the highest double leads (or by agreement). 2. **Matching**: Subsequent players must match the pips of one of the two open ends of the line. 3. **Scoring**: After each play, add the pips on the two exposed ends. If the total is divisible by 3, you score 1 point for every 3 in that total. For example: Sum 9 = 3 pts, Sum 12 = 4 pts, Sum 15 = 5 pts, Sum 18 = 6 pts. 4. **Drawing**: If a player cannot move, they must draw from the Boneyard until they can play or the boneyard is empty.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.setup.players',
+        title: 'Players',
+        text: '2 (7 tiles each), 3 (5 tiles each), or 4 (5 tiles each).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Standard Double-six set of 28 tiles.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino tiles, cribbage board or score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.setup.dealing',
+        title: 'Deal',
+        text: "Tiles are 'shuffled' face down (the 'wash'). Players draw their hand; remainders go to the 'Boneyard'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach the target score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Scoring is done incrementally during play and a bonus is given at the end of each hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Doubles: Placed crosswise. For scoring, you count the TOTAL pips on the double (e.g., a Double-6 counts as 12).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No Spinner: Only the two ends of the single line are ever open for play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: "Blocked Game: If no one can play and the boneyard is empty, the player with the lowest pip count in their hand wins the hand's residue points.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'all-threes-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'all-threes-dominoes.rules.objective',
+          'all-threes-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'all-threes-dominoes.setup.players',
+          'all-threes-dominoes.setup.deck',
+          'all-threes-dominoes.setup.equipment',
+          'all-threes-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'all-threes-dominoes.rules.key.1',
+          'all-threes-dominoes.rules.key.2',
+          'all-threes-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'all-threes-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'all-threes-dominoes.score.description',
+          'all-threes-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'all-threes-dominoes.setup.dealing',
+        'all-threes-dominoes.rules.objective',
+      ],
+      deal: [
+        'all-threes-dominoes.rules.gameplay',
+      ],
+      award_pot: [
+        'all-threes-dominoes.rules.gameplay',
+      ],
+      play_card: [
+        'all-threes-dominoes.rules.gameplay',
+      ],
+      draw: [
+        'all-threes-dominoes.rules.gameplay',
+      ],
+      pass: [
+        'all-threes-dominoes.rules.gameplay',
+      ],
+    },
+  },
+}

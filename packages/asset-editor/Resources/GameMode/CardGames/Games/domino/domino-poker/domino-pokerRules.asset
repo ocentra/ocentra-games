@@ -1,0 +1,220 @@
+{
+  system: {
+    guid: '04a1f21f-6960-414f-9a48-cb4b12db27a1',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/domino-poker/domino-pokerRules.asset',
+    gameId: 'domino-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Players receive starting tiles, then perform draw/discard rounds to improve combinations. After final draw, all active players reveal hands and compare according to agreed domino poker ranking table.',
+    Player: 'Players receive starting tiles, then perform draw/discard rounds to improve combinations. After final draw, all active players reveal hands and compare according to agreed domino poker ranking table.',
+    objective: 'Build the highest-ranking domino poker hand by draw and replacement, then win at showdown.',
+    gameplay: 'Players receive starting tiles, then perform draw/discard rounds to improve combinations. After final draw, all active players reveal hands and compare according to agreed domino poker ranking table.',
+    keyRules: [
+      'Hand rankings are defined by domino-specific combination table.',
+      'Draws come from the boneyard while tiles remain.',
+      'Final comparison resolves winner by ranking then tie-break pips.',
+      'All players reveal simultaneously at showdown.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 to 4 players.',
+      deck: 'One double-six set (28 tiles).',
+      equipment: 'Dominoes and score/pot tracking.',
+      dealing: 'Each player is dealt a starting hand; remaining tiles form boneyard for draw phases.',
+    },
+    turnFlow: 'Players receive starting tiles, then perform draw/discard rounds to improve combinations. After final draw, all active players reveal hands and compare according to agreed domino poker ranking table.',
+    moveValidityConditions: {
+      ante: 'Ante is optional house rule, not core required action.',
+      deal: 'Dealer-only at round start.',
+      reveal_market: 'Domino Poker uses no market board.',
+      buy_market: 'Tiles are drawn from stock, not bought.',
+      buy_stock: 'No paid stock-buy action exists.',
+      fold: 'Base rules resolve by showdown among active players.',
+      check: 'No betting street modeled in core flow.',
+      call: 'Call is not needed without explicit betting.',
+      bet: 'Core variant is hand comparison without structured betting rounds.',
+      raise: 'Raise is absent because no betting ladder is modeled.',
+      declare: 'No declaration phase is used.',
+      reveal_hand: 'All active players reveal at showdown.',
+      award_pot: 'System resolution after showdown.',
+      play_card: 'No trick or tableau play action is required.',
+      draw: 'Only during draw phase and while stock remains.',
+      discard: 'Discard count follows table draw-limit rule.',
+      pass: 'Players execute draw/discard sequence each round.',
+      bid: 'No bidding step exists in this modeled variant.',
+      meld: 'Hand comparison uses ranking table, not meld declarations.',
+      go_out: 'Round ends at showdown rather than go-out event.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Build the highest-ranking domino poker hand by draw and replacement, then win at showdown.',
+      'Turn-flow example: Players receive starting tiles, then perform draw/discard rounds to improve combinations. After final draw, all active players reveal hands and compare according to agreed domino poker ranking table.',
+      'Scoring example: Winning hand is determined by domino poker ranking at showdown. Highest-ranked revealed hand wins the round..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'domino-poker.rules.objective',
+        title: 'Objective',
+        text: 'Build the highest-ranking domino poker hand by draw and replacement, then win at showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'domino-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players receive starting tiles, then perform draw/discard rounds to improve combinations. After final draw, all active players reveal hands and compare according to agreed domino poker ranking table.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-poker.setup.players',
+        title: 'Players',
+        text: '2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'domino-poker.setup.deck',
+        title: 'Deck',
+        text: 'One double-six set (28 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'domino-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Dominoes and score/pot tracking.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'domino-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt a starting hand; remaining tiles form boneyard for draw phases.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest-ranked revealed hand wins the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'domino-poker.score.description',
+        title: 'Scoring',
+        text: 'Winning hand is determined by domino poker ranking at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'domino-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hand rankings are defined by domino-specific combination table.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'domino-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Draws come from the boneyard while tiles remain.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'domino-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Final comparison resolves winner by ranking then tie-break pips.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'domino-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'All players reveal simultaneously at showdown.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'domino-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'domino-poker.rules.objective',
+          'domino-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'domino-poker.setup.players',
+          'domino-poker.setup.deck',
+          'domino-poker.setup.equipment',
+          'domino-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'domino-poker.rules.key.1',
+          'domino-poker.rules.key.2',
+          'domino-poker.rules.key.3',
+          'domino-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'domino-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'domino-poker.score.description',
+          'domino-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'domino-poker.setup.dealing',
+        'domino-poker.rules.objective',
+      ],
+      deal: [
+        'domino-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'domino-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'domino-poker.rules.gameplay',
+      ],
+      draw: [
+        'domino-poker.rules.gameplay',
+      ],
+      discard: [
+        'domino-poker.rules.gameplay',
+      ],
+    },
+  },
+}

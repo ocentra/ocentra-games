@@ -1,0 +1,211 @@
+{
+  system: {
+    guid: '0ac5aa74-91ed-46eb-a6d8-f5b7a9598188',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/spitzer/spitzerRules.asset',
+    gameId: 'spitzer',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "After the deal, players may call for a partner (holder of black queens), go alone (zola, stealer, or zola schneider/schwartz), or announce Schneider. Player to dealer's left leads; must follow suit; if unable, must play trump. Highest trump wins, else highest card of led suit. Winner of trick leads next. Eight tricks per hand; trick points (A=11, 10=10, K=4, Q=3, J=2, 9/8/7=0) determine game points.",
+    Player: "After the deal, players may call for a partner (holder of black queens), go alone (zola, stealer, or zola schneider/schwartz), or announce Schneider. Player to dealer's left leads; must follow suit; if unable, must play trump. Highest trump wins, else highest card of led suit. Winner of trick leads next. Eight tricks per hand; trick points (A=11, 10=10, K=4, Q=3, J=2, 9/8/7=0) determine game points.",
+    objective: 'Win tricks containing valuable cards; be the first to reach 42 or more game points. Partnerships are temporary each hand (two vs two, or one vs three if a player goes alone).',
+    gameplay: "After the deal, players may call for a partner (holder of black queens), go alone (zola, stealer, or zola schneider/schwartz), or announce Schneider. Player to dealer's left leads; must follow suit; if unable, must play trump. Highest trump wins, else highest card of led suit. Winner of trick leads next. Eight tricks per hand; trick points (A=11, 10=10, K=4, Q=3, J=2, 9/8/7=0) determine game points.",
+    keyRules: [
+      '14 trumps: all queens, jacks, and diamonds; rank high to low: Club Q, Diamond 7 (Spitzer), Spade Q, Heart Q, Diamond Q, Club J, Spade J, Heart J, Diamond J, Diamond A, 10, K, 9, 8.',
+      'Non-trump (fail) in each suit rank A, 10, K, 9, 8, 7.',
+      'Must follow suit; if void, must trump.',
+      'Winning team needs more than 60 trick points; 31+ points is brush; game points from table by hand type and result.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Four players. This is a trick-taking game; players form temporary partnerships each hand (two vs two or one vs three) but keep separate scores. The object is to be the first to reach 42 or more game points.',
+      deck: '32 cards (standard deck with 2 through 6 removed).',
+      equipment: 'Cards.',
+      dealing: "First dealer chosen by any method; deal passes left after each hand. Dealer shuffles, player to dealer's right cuts. Deal 8 cards to each player in packets: 3, then 2, then 3 to each.",
+    },
+    turnFlow: "After the deal, players may call for a partner (holder of black queens), go alone (zola, stealer, or zola schneider/schwartz), or announce Schneider. Player to dealer's left leads; must follow suit; if unable, must play trump. Highest trump wins, else highest card of led suit. Winner of trick leads next. Eight tricks per hand; trick points (A=11, 10=10, K=4, Q=3, J=2, 9/8/7=0) determine game points.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: "Must follow suit; if void in led suit must trump. Only legal when it is the player's turn in the trick order.",
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Win tricks containing valuable cards; be the first to reach 42 or more game points. Partnerships are temporary each hand (two vs two, or one vs three if a player goes alone).',
+      "Turn-flow example: After the deal, players may call for a partner (holder of black queens), go alone (zola, stealer, or zola schneider/schwartz), or announce Schneider. Player to dealer's left leads; must follow suit; if unable, must play trump. Highest trump wins, else highest card of led suit. Winner of trick leads next. Eight tricks per hand; trick points (A=11, 10=10, K=4, Q=3, J=2, 9/8/7=0) determine game points.",
+      'Scoring example: Trick points: A=11, 10=10, K=4, Q=3, J=2 (120 per deck). Game points awarded per hand from table by hand type and result; partners or solo vs rest. First to 42 game points wins. First player to reach 42 or more game points wins the game..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'spitzer.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks containing valuable cards; be the first to reach 42 or more game points. Partnerships are temporary each hand (two vs two, or one vs three if a player goes alone).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spitzer.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal, players may call for a partner (holder of black queens), go alone (zola, stealer, or zola schneider/schwartz), or announce Schneider. Player to dealer's left leads; must follow suit; if unable, must play trump. Highest trump wins, else highest card of led suit. Winner of trick leads next. Eight tricks per hand; trick points (A=11, 10=10, K=4, Q=3, J=2, 9/8/7=0) determine game points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spitzer.setup.players',
+        title: 'Players',
+        text: 'Four players. This is a trick-taking game; players form temporary partnerships each hand (two vs two or one vs three) but keep separate scores. The object is to be the first to reach 42 or more game points.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spitzer.setup.deck',
+        title: 'Deck',
+        text: '32 cards (standard deck with 2 through 6 removed).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spitzer.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spitzer.setup.dealing',
+        title: 'Deal',
+        text: "First dealer chosen by any method; deal passes left after each hand. Dealer shuffles, player to dealer's right cuts. Deal 8 cards to each player in packets: 3, then 2, then 3 to each.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spitzer.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 42 or more game points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spitzer.score.description',
+        title: 'Scoring',
+        text: 'Trick points: A=11, 10=10, K=4, Q=3, J=2 (120 per deck). Game points awarded per hand from table by hand type and result; partners or solo vs rest. First to 42 game points wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spitzer.rules.key.1',
+        title: 'Key rule 1',
+        text: '14 trumps: all queens, jacks, and diamonds; rank high to low: Club Q, Diamond 7 (Spitzer), Spade Q, Heart Q, Diamond Q, Club J, Spade J, Heart J, Diamond J, Diamond A, 10, K, 9, 8.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spitzer.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Non-trump (fail) in each suit rank A, 10, K, 9, 8, 7.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spitzer.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must follow suit; if void, must trump.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'spitzer.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Winning team needs more than 60 trick points; 31+ points is brush; game points from table by hand type and result.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spitzer.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spitzer.rules.objective',
+          'spitzer.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spitzer.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spitzer.setup.players',
+          'spitzer.setup.deck',
+          'spitzer.setup.equipment',
+          'spitzer.setup.dealing',
+        ],
+      },
+      {
+        id: 'spitzer.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spitzer.rules.key.1',
+          'spitzer.rules.key.2',
+          'spitzer.rules.key.3',
+          'spitzer.rules.key.4',
+        ],
+      },
+      {
+        id: 'spitzer.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spitzer.score.description',
+          'spitzer.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spitzer.setup.dealing',
+        'spitzer.rules.objective',
+      ],
+      play_card: [
+        'spitzer.rules.gameplay',
+      ],
+      deal_8_3_2_3: [
+        'spitzer.rules.gameplay',
+      ],
+    },
+  },
+}

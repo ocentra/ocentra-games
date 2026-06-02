@@ -1,0 +1,124 @@
+{
+  system: {
+    guid: '86c8620f-0ddf-4693-b6be-565fb66558c9',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/french-dominoes/french-dominoesValidationFixtures.asset',
+    gameId: 'french-dominoes',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'french-dominoes',
+    familyVariant: 'Cross',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'french-dominoes.core-runtime-contracts',
+        title: 'French Dominoes Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'french-dominoes.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 28,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'French Dominoes must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'french-dominoes.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'french-dominoes.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'setup',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'draw',
+              'pass',
+              'pose_double_zero',
+              'play_blank_tile',
+              'play_arm_double',
+              'play_domino',
+              'resolve_round',
+            ],
+            explanation: 'French Dominoes must run setup_round first, then enter setup with the processed legal actions.',
+            linkedRuleIds: [
+              'french-dominoes.setup.initial-deal',
+              'french-dominoes.flow.setup',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'setup',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'french-dominoes.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '100',
+            scoringDirection: 'low_wins',
+            targetScore: 100,
+            cardValues: {
+              pips: '1',
+            },
+            explanation: 'Points are awarded based on remaining pips (dots) on dominoes. Lower scores are better. Players accumulate points across multiple rounds.',
+            linkedRuleIds: [
+              'french-dominoes.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'french-dominoes.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

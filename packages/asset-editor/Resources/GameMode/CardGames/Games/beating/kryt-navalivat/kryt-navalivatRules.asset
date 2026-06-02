@@ -1,0 +1,243 @@
+{
+  system: {
+    guid: 'e0e591d0-7fb9-4887-84d4-32dfa039484d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/kryt-navalivat/kryt-navalivatRules.asset',
+    gameId: 'kryt-navalivat',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Lead**: One player leads a card to the 'Play Pile'.\n2. **Response**: The opponent MUST beat the top card (higher of same suit or any Trump). If they beat it, they MUST 'Pile Up' a second card from their hand on top.\n3. **Failure to Beat**: If you cannot beat the card:\n   - If a plain card: Pick up only that card.\n   - If a Trump (not Ace): Pick up the top 3 cards of the pile.\n   - If the Ace of Trumps: Pick up the entire pile.",
+    Player: "1. **Lead**: One player leads a card to the 'Play Pile'.\n2. **Response**: The opponent MUST beat the top card (higher of same suit or any Trump). If they beat it, they MUST 'Pile Up' a second card from their hand on top.\n3. **Failure to Beat**: If you cannot beat the card:\n   - If a plain card: Pick up only that card.\n   - If a Trump (not Ace): Pick up the top 3 cards of the pile.\n   - If the Ace of Trumps: Pick up the entire pile.",
+    objective: 'Avoid being the last player left with cards in your hand after the stock is exhausted.',
+    gameplay: "1. **Lead**: One player leads a card to the 'Play Pile'.\n2. **Response**: The opponent MUST beat the top card (higher of same suit or any Trump). If they beat it, they MUST 'Pile Up' a second card from their hand on top.\n3. **Failure to Beat**: If you cannot beat the card:\n   - If a plain card: Pick up only that card.\n   - If a Trump (not Ace): Pick up the top 3 cards of the pile.\n   - If the Ace of Trumps: Pick up the entire pile.",
+    keyRules: [
+      'Must beat the top card if possible',
+      'After beating, must pile up a second card',
+      'Cannot beat: pickup penalty based on card type',
+      'Plain card: pickup 1 card',
+      'Trump (not Ace): pickup 3 cards',
+      'Ace of Trumps: pickup entire pile',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 players is the standard competitive format.',
+      deck: '36 cards. Rank: A (High) > K > Q > J > 10 > 9 > 8 > 7 > 6 (Low).',
+      equipment: '36 cards. Rank: A (High) > K > Q > J > 10 > 9 > 8 > 7 > 6 (Low).',
+      dealing: 'Each player is dealt 3 cards. The next card is turned up to set the Trump suit. The rest form a draw stock.',
+    },
+    turnFlow: "1. **Lead**: One player leads a card to the 'Play Pile'.\n2. **Response**: The opponent MUST beat the top card (higher of same suit or any Trump). If they beat it, they MUST 'Pile Up' a second card from their hand on top.\n3. **Failure to Beat**: If you cannot beat the card:\n   - If a plain card: Pick up only that card.\n   - If a Trump (not Ace): Pick up the top 3 cards of the pile.\n   - If the Ace of Trumps: Pick up the entire pile.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must beat if possible; must pile up after beating',
+      draw: 'After turn ends',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'First to empty hand wins',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Avoid being the last player left with cards in your hand after the stock is exhausted.',
+      "Turn-flow example: 1. **Lead**: One player leads a card to the 'Play Pile'.\n2. **Response**: The opponent MUST beat the top card (higher of same suit or any Trump). If they beat it, they MUST 'Pile Up' a second card from their hand on top.\n3. **Failure to Beat**: If you cannot beat the card:\n   - If a plain card: Pick up only that card.\n   - If a Trump (not Ace): Pick up the top 3 cards of the pile.\n   - If the Ace of Trumps: Pick up the entire pile.",
+      "Scoring example: First player to empty their hand wins. Last player with cards is the 'Fool'. First to empty hand; avoid being last with cards.",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'kryt-navalivat.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the last player left with cards in your hand after the stock is exhausted.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Lead**: One player leads a card to the 'Play Pile'.\n2. **Response**: The opponent MUST beat the top card (higher of same suit or any Trump). If they beat it, they MUST 'Pile Up' a second card from their hand on top.\n3. **Failure to Beat**: If you cannot beat the card:\n   - If a plain card: Pick up only that card.\n   - If a Trump (not Ace): Pick up the top 3 cards of the pile.\n   - If the Ace of Trumps: Pick up the entire pile.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.setup.players',
+        title: 'Players',
+        text: '2 players is the standard competitive format.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.setup.deck',
+        title: 'Deck',
+        text: '36 cards. Rank: A (High) > K > Q > J > 10 > 9 > 8 > 7 > 6 (Low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.setup.equipment',
+        title: 'Equipment',
+        text: '36 cards. Rank: A (High) > K > Q > J > 10 > 9 > 8 > 7 > 6 (Low).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 3 cards. The next card is turned up to set the Trump suit. The rest form a draw stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.score.win-condition',
+        title: 'Win condition',
+        text: 'First to empty hand; avoid being last with cards',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.score.description',
+        title: 'Scoring',
+        text: "First player to empty their hand wins. Last player with cards is the 'Fool'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must beat the top card if possible',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.rules.key.2',
+        title: 'Key rule 2',
+        text: 'After beating, must pile up a second card',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cannot beat: pickup penalty based on card type',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Plain card: pickup 1 card',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Trump (not Ace): pickup 3 cards',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Ace of Trumps: pickup entire pile',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kryt-navalivat.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kryt-navalivat.rules.objective',
+          'kryt-navalivat.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kryt-navalivat.setup.players',
+          'kryt-navalivat.setup.deck',
+          'kryt-navalivat.setup.equipment',
+          'kryt-navalivat.setup.dealing',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kryt-navalivat.rules.key.1',
+          'kryt-navalivat.rules.key.2',
+          'kryt-navalivat.rules.key.3',
+          'kryt-navalivat.rules.key.4',
+          'kryt-navalivat.rules.key.5',
+          'kryt-navalivat.rules.key.6',
+        ],
+      },
+      {
+        id: 'kryt-navalivat.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kryt-navalivat.score.description',
+          'kryt-navalivat.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kryt-navalivat.setup.dealing',
+        'kryt-navalivat.rules.objective',
+      ],
+      deal: [
+        'kryt-navalivat.rules.gameplay',
+      ],
+      play_card: [
+        'kryt-navalivat.rules.gameplay',
+      ],
+      draw: [
+        'kryt-navalivat.rules.gameplay',
+      ],
+      go_out: [
+        'kryt-navalivat.rules.gameplay',
+      ],
+      reveal_trump: [
+        'kryt-navalivat.rules.gameplay',
+      ],
+      check_winner: [
+        'kryt-navalivat.rules.gameplay',
+      ],
+    },
+  },
+}

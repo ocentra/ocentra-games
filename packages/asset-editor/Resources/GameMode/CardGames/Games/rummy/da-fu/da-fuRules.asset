@@ -1,0 +1,196 @@
+{
+  system: {
+    guid: '002f9115-eebe-42c0-9154-5895d9355e2d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/da-fu/da-fuRules.asset',
+    gameId: 'da-fu',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Play is anticlockwise. The dealer begins by discarding one card face up. Only the most recently discarded card may be taken. Priority to take the discard: (1) any player who can complete eight pairs and win; (2) any player who can form a Dui (identical pair) with the discard; (3) the player to the right of the discarder, who may take it if no one else does. If you take the discard to form a Dui, place the pair face up in front of you and discard one card; the player to your right plays next. If no one takes the discard, the next player in turn may either take the discard or draw the top card from the stock, then discards one card face up. Play continues until someone has eight pairs and wins.',
+    Player: 'Play is anticlockwise. The dealer begins by discarding one card face up. Only the most recently discarded card may be taken. Priority to take the discard: (1) any player who can complete eight pairs and win; (2) any player who can form a Dui (identical pair) with the discard; (3) the player to the right of the discarder, who may take it if no one else does. If you take the discard to form a Dui, place the pair face up in front of you and discard one card; the player to your right plays next. If no one takes the discard, the next player in turn may either take the discard or draw the top card from the stock, then discards one card face up. Play continues until someone has eight pairs and wins.',
+    objective: 'The object is to collect a 16-card hand consisting of eight pairs (dui or ka). The first player to do so exposes their cards and wins the agreed stake from each opponent; if all eight pairs are identical (dui), the winner collects double stake (quan dui).',
+    gameplay: 'Play is anticlockwise. The dealer begins by discarding one card face up. Only the most recently discarded card may be taken. Priority to take the discard: (1) any player who can complete eight pairs and win; (2) any player who can form a Dui (identical pair) with the discard; (3) the player to the right of the discarder, who may take it if no one else does. If you take the discard to form a Dui, place the pair face up in front of you and discard one card; the player to your right plays next. If no one takes the discard, the next player in turn may either take the discard or draw the top card from the stock, then discards one card face up. Play continues until someone has eight pairs and wins.',
+    keyRules: [
+      'Dui is a pair of identical cards; Ka is a pair of same number in different suits. The three odd cards count as ones. Completing eight pairs wins; all eight Dui (quan dui) pays double stake. Winner may optionally continue playing for quan dui instead of claiming with mixed Ka and Dui, unless the final pair was claimed from the discard as Ka.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 is most common.',
+      deck: '120 cards (3 suits: Coins, Strings, Myriads; 4 sets of 1-9 each; plus 3 Special cards).',
+      equipment: '120 cards (3 suits: Coins, Strings, Myriads; 4 sets of 1-9 each; plus 3 Special cards).',
+      dealing: 'Dealer gets 16 cards, others get 15. Counter-clockwise play.',
+    },
+    turnFlow: 'Play is anticlockwise. The dealer begins by discarding one card face up. Only the most recently discarded card may be taken. Priority to take the discard: (1) any player who can complete eight pairs and win; (2) any player who can form a Dui (identical pair) with the discard; (3) the player to the right of the discarder, who may take it if no one else does. If you take the discard to form a Dui, place the pair face up in front of you and discard one card; the player to your right plays next. If no one takes the discard, the next player in turn may either take the discard or draw the top card from the stock, then discards one card face up. Play continues until someone has eight pairs and wins.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only, at start of hand.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Exactly one discard per turn after gaining a card (draw or claim).',
+      draw: 'When in turn and not claiming the top discard; only the player to the right of the last discarder may draw if no one claimed the discard.',
+      discard: 'After drawing or after claiming the discard to form a Dui; each turn ends with exactly one discard.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'Only when you have eight pairs; mandatory if you claimed the discard to complete your final Ka.',
+    },
+    exampleHands: [
+      'Setup example: 15 card(s) per player.',
+      'Rule example: The object is to collect a 16-card hand consisting of eight pairs (dui or ka). The first player to do so exposes their cards and wins the agreed stake from each opponent; if all eight pairs are identical (dui), the winner collects double stake (quan dui).',
+      'Turn-flow example: Play is anticlockwise. The dealer begins by discarding one card face up. Only the most recently discarded card may be taken. Priority to take the discard: (1) any player who can complete eight pairs and win; (2) any player who can form a Dui (identical pair) with the discard; (3) the player to the right of the discarder, who may take it if no one else does. If you take the discard to form a Dui, place the pair face up in front of you and discard one card; the player to your right plays next. If no one takes the discard, the next player in turn may either take the discard or draw the top card from the stock, then discards one card face up. Play continues until someone has eight pairs and wins.',
+      'Scoring example: Winner collects agreed stake from each other player; if all eight pairs are Dui (quan dui), double stake is collected. First player to form eight pairs (16 cards) wins the hand. Expose your hand and collect one stake per opponent; if all eight pairs are identical-card Dui, collect double stake (quan dui)..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'da-fu.rules.objective',
+        title: 'Objective',
+        text: 'The object is to collect a 16-card hand consisting of eight pairs (dui or ka). The first player to do so exposes their cards and wins the agreed stake from each opponent; if all eight pairs are identical (dui), the winner collects double stake (quan dui).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'da-fu.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play is anticlockwise. The dealer begins by discarding one card face up. Only the most recently discarded card may be taken. Priority to take the discard: (1) any player who can complete eight pairs and win; (2) any player who can form a Dui (identical pair) with the discard; (3) the player to the right of the discarder, who may take it if no one else does. If you take the discard to form a Dui, place the pair face up in front of you and discard one card; the player to your right plays next. If no one takes the discard, the next player in turn may either take the discard or draw the top card from the stock, then discards one card face up. Play continues until someone has eight pairs and wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'da-fu.setup.players',
+        title: 'Players',
+        text: '4 is most common.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'da-fu.setup.deck',
+        title: 'Deck',
+        text: '120 cards (3 suits: Coins, Strings, Myriads; 4 sets of 1-9 each; plus 3 Special cards).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'da-fu.setup.equipment',
+        title: 'Equipment',
+        text: '120 cards (3 suits: Coins, Strings, Myriads; 4 sets of 1-9 each; plus 3 Special cards).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'da-fu.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gets 16 cards, others get 15. Counter-clockwise play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'da-fu.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to form eight pairs (16 cards) wins the hand. Expose your hand and collect one stake per opponent; if all eight pairs are identical-card Dui, collect double stake (quan dui).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'da-fu.score.description',
+        title: 'Scoring',
+        text: 'Winner collects agreed stake from each other player; if all eight pairs are Dui (quan dui), double stake is collected.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'da-fu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dui is a pair of identical cards; Ka is a pair of same number in different suits. The three odd cards count as ones. Completing eight pairs wins; all eight Dui (quan dui) pays double stake. Winner may optionally continue playing for quan dui instead of claiming with mixed Ka and Dui, unless the final pair was claimed from the discard as Ka.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'da-fu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'da-fu.rules.objective',
+          'da-fu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'da-fu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'da-fu.setup.players',
+          'da-fu.setup.deck',
+          'da-fu.setup.equipment',
+          'da-fu.setup.dealing',
+        ],
+      },
+      {
+        id: 'da-fu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'da-fu.rules.key.1',
+        ],
+      },
+      {
+        id: 'da-fu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'da-fu.score.description',
+          'da-fu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'da-fu.setup.dealing',
+        'da-fu.rules.objective',
+      ],
+      deal: [
+        'da-fu.rules.gameplay',
+      ],
+      play_card: [
+        'da-fu.rules.gameplay',
+      ],
+      draw: [
+        'da-fu.rules.gameplay',
+      ],
+      discard: [
+        'da-fu.rules.gameplay',
+      ],
+      go_out: [
+        'da-fu.rules.gameplay',
+      ],
+      claim_discard_to_win: [
+        'da-fu.rules.gameplay',
+      ],
+      claim_discard_for_dui: [
+        'da-fu.rules.gameplay',
+      ],
+    },
+  },
+}

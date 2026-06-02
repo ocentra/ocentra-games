@@ -1,0 +1,117 @@
+{
+  system: {
+    guid: 'c0c63be2-4e62-4cf7-8c83-1a59a614a66c',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/basic-trains/basic-trainsValidationFixtures.asset',
+    gameId: 'basic-trains',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'basic-trains',
+    familyVariant: 'Connecting / Train',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'basic-trains.core-runtime-contracts',
+        title: 'Basic Trains Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'basic-trains.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 13,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 10,
+              recommended: 6,
+            },
+            expectedTotalInitialCards: 130,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Basic Trains must start by giving each active player 13 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'basic-trains.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'basic-trains.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'play',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+              'draw',
+            ],
+            explanation: 'Basic Trains must run setup_round first, then enter play with the processed legal actions.',
+            linkedRuleIds: [
+              'basic-trains.setup.initial-deal',
+              'basic-trains.flow.play',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'play',
+            firstPlayableLegalActions: [
+              'play_card',
+              'draw',
+            ],
+          },
+          {
+            id: 'basic-trains.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win by emptying your hand or by having the lowest remaining pip total when the hand is blocked.',
+            scoringDirection: 'low_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'When a player empties or the game stops, players score the pip totals left in hand; lower is better for the hand.',
+            linkedRuleIds: [
+              'basic-trains.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'basic-trains.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 13,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 10,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

@@ -1,0 +1,218 @@
+{
+  system: {
+    guid: '3f0ea559-c56a-46a8-8f56-bcd9181adb9d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/jass/mittlere-jass/mittlere-jassRules.asset',
+    gameId: 'mittlere-jass',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Player to dealer's right leads to first trick. Must follow suit if possible. If unable to follow, may play any card - if no trump is established, this card's suit becomes trumps. Once trump is established, must follow suit or trump if void.",
+    Player: "Player to dealer's right leads to first trick. Must follow suit if possible. If unable to follow, may play any card - if no trump is established, this card's suit becomes trumps. Once trump is established, must follow suit or trump if void.",
+    objective: 'Avoid having the middle score. Score points by winning tricks, but avoid being caught in the middle.',
+    gameplay: "Player to dealer's right leads to first trick. Must follow suit if possible. If unable to follow, may play any card - if no trump is established, this card's suit becomes trumps. Once trump is established, must follow suit or trump if void.",
+    keyRules: [
+      'First void play determines trumps',
+      'Avoid the middle score',
+      'Total 157 points in deck',
+      'Sticks are good, potatoes are bad',
+      '12 hands per game',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 players, each playing for themselves.',
+      deck: '36-card Jass deck (6 through Ace in four suits: Acorns, Shields, Flowers, Bells). Can use standard deck with 5s and below removed.',
+      equipment: '36-card Jass deck or modified standard deck, scoring slate (for sticks and potatoes).',
+      dealing: 'All 36 cards dealt out, 12 to each player, in packets of 3. Deal and play are anticlockwise.',
+    },
+    turnFlow: "Player to dealer's right leads to first trick. Must follow suit if possible. If unable to follow, may play any card - if no trump is established, this card's suit becomes trumps. Once trump is established, must follow suit or trump if void.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Follow suit if possible. If void, may play any card (first void play sets trumps). Once trumps set: follow suit or play trump; may play lower trump only when void in led suit. Puur optional when trumps led and it is your only trump.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Avoid having the middle score. Score points by winning tricks, but avoid being caught in the middle.',
+      "Turn-flow example: Player to dealer's right leads to first trick. Must follow suit if possible. If unable to follow, may play any card - if no trump is established, this card's suit becomes trumps. Once trump is established, must follow suit or trump if void.",
+      'Scoring example: Scoring uses sticks (positive) and potatoes (negative). Check scoring conditions in priority order and apply only the first that applies. After 12 hands, player with most sticks (or fewest potatoes) wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'mittlere-jass.rules.objective',
+        title: 'Objective',
+        text: 'Avoid having the middle score. Score points by winning tricks, but avoid being caught in the middle.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mittlere-jass.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's right leads to first trick. Must follow suit if possible. If unable to follow, may play any card - if no trump is established, this card's suit becomes trumps. Once trump is established, must follow suit or trump if void.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mittlere-jass.setup.players',
+        title: 'Players',
+        text: '3 players, each playing for themselves.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mittlere-jass.setup.deck',
+        title: 'Deck',
+        text: '36-card Jass deck (6 through Ace in four suits: Acorns, Shields, Flowers, Bells). Can use standard deck with 5s and below removed.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mittlere-jass.setup.equipment',
+        title: 'Equipment',
+        text: '36-card Jass deck or modified standard deck, scoring slate (for sticks and potatoes).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mittlere-jass.setup.dealing',
+        title: 'Deal',
+        text: 'All 36 cards dealt out, 12 to each player, in packets of 3. Deal and play are anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mittlere-jass.score.win-condition',
+        title: 'Win condition',
+        text: 'After 12 hands, player with most sticks (or fewest potatoes) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mittlere-jass.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses sticks (positive) and potatoes (negative). Check scoring conditions in priority order and apply only the first that applies.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mittlere-jass.rules.key.1',
+        title: 'Key rule 1',
+        text: 'First void play determines trumps',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mittlere-jass.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Avoid the middle score',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mittlere-jass.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Total 157 points in deck',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mittlere-jass.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sticks are good, potatoes are bad',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mittlere-jass.rules.key.5',
+        title: 'Key rule 5',
+        text: '12 hands per game',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mittlere-jass.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mittlere-jass.rules.objective',
+          'mittlere-jass.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mittlere-jass.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mittlere-jass.setup.players',
+          'mittlere-jass.setup.deck',
+          'mittlere-jass.setup.equipment',
+          'mittlere-jass.setup.dealing',
+        ],
+      },
+      {
+        id: 'mittlere-jass.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mittlere-jass.rules.key.1',
+          'mittlere-jass.rules.key.2',
+          'mittlere-jass.rules.key.3',
+          'mittlere-jass.rules.key.4',
+          'mittlere-jass.rules.key.5',
+        ],
+      },
+      {
+        id: 'mittlere-jass.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mittlere-jass.score.description',
+          'mittlere-jass.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mittlere-jass.setup.dealing',
+        'mittlere-jass.rules.objective',
+      ],
+      play_card: [
+        'mittlere-jass.rules.gameplay',
+      ],
+    },
+  },
+}

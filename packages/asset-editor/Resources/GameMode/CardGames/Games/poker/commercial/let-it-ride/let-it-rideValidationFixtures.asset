@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: '91ca0a87-7be4-46ed-b053-c3afa3499b71',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/commercial/let-it-ride/let-it-rideValidationFixtures.asset',
+    gameId: 'let-it-ride',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'let-it-ride',
+    familyVariant: 'Poker-based',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'let-it-ride.core-runtime-contracts',
+        title: 'Let It Ride Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'let-it-ride.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 1,
+              max: 7,
+              recommended: 1,
+            },
+            expectedTotalInitialCards: 21,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Let It Ride must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'let-it-ride.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'let-it-ride.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'place_bets',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'bet',
+              'let_it_ride',
+              'pull_back',
+              'reveal',
+              'pay',
+            ],
+            explanation: 'Let It Ride must run setup_round first, then enter place_bets with the processed legal actions.',
+            linkedRuleIds: [
+              'let-it-ride.setup.initial-deal',
+              'let-it-ride.flow.place_bets',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'place_bets',
+            firstPlayableLegalActions: [
+              'bet',
+            ],
+          },
+          {
+            id: 'let-it-ride.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Pair of 10s or better wins according to paytable. Lower hands lose all remaining bets.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Payouts based on final 5-card poker hand strength. Each remaining bet is paid separately.',
+            linkedRuleIds: [
+              'let-it-ride.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'let-it-ride.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 1,
+          max: 7,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

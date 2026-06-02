@@ -1,0 +1,208 @@
+{
+  system: {
+    guid: 'd69d6fbd-b412-4ec4-a442-02a5aabc590a',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/fishing/mate/mateRules.asset',
+    gameId: 'mate',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Players take turns playing one card from hand to the table. 2. If the played card matches the value of a card on the table, the player captures both cards. 3. Multiple cards can be captured if their values sum to the played card's value. 4. If no capture is possible, the card remains on the table. 5. After playing, players draw a replacement card from the stock if available.",
+    Player: "1. Players take turns playing one card from hand to the table. 2. If the played card matches the value of a card on the table, the player captures both cards. 3. Multiple cards can be captured if their values sum to the played card's value. 4. If no capture is possible, the card remains on the table. 5. After playing, players draw a replacement card from the stock if available.",
+    objective: 'Capture cards from the table by matching their values. Score points for capturing specific cards (Kings, the 7 of Coins, etc.) and for capturing the most cards overall.',
+    gameplay: "1. Players take turns playing one card from hand to the table. 2. If the played card matches the value of a card on the table, the player captures both cards. 3. Multiple cards can be captured if their values sum to the played card's value. 4. If no capture is possible, the card remains on the table. 5. After playing, players draw a replacement card from the stock if available.",
+    keyRules: [
+      'Play one card per turn',
+      'Capture cards of matching value',
+      'Draw replacement card after playing',
+      'Score for specific captured cards and sweeps',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2-4 players (best with 2).',
+      deck: '40-card Italian deck (remove 8s, 9s, 10s from standard deck). Suits: Coins, Cups, Swords, Clubs. Ranking: King (highest), Queen, Jack, 7, 6, 5, 4, 3, 2, Ace (lowest).',
+      equipment: '40-card Italian deck or modified standard deck.',
+      dealing: '4 cards to each player and 4 cards face-up to the table. Remaining cards form the stock.',
+    },
+    turnFlow: "1. Players take turns playing one card from hand to the table. 2. If the played card matches the value of a card on the table, the player captures both cards. 3. Multiple cards can be captured if their values sum to the played card's value. 4. If no capture is possible, the card remains on the table. 5. After playing, players draw a replacement card from the stock if available.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'See game rules.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Capture cards from the table by matching their values. Score points for capturing specific cards (Kings, the 7 of Coins, etc.) and for capturing the most cards overall.',
+      "Turn-flow example: 1. Players take turns playing one card from hand to the table. 2. If the played card matches the value of a card on the table, the player captures both cards. 3. Multiple cards can be captured if their values sum to the played card's value. 4. If no capture is possible, the card remains on the table. 5. After playing, players draw a replacement card from the stock if available.",
+      'Scoring example: Points are awarded for: each King captured (1 point), the 7 of Coins (1 point), capturing the majority of cards (1 point), and each sweep/scopa (1 point). First player to reach a target score (typically 11 or 21 points) wins, or highest score when stock is exhausted..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'mate.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards from the table by matching their values. Score points for capturing specific cards (Kings, the 7 of Coins, etc.) and for capturing the most cards overall.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mate.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players take turns playing one card from hand to the table. 2. If the played card matches the value of a card on the table, the player captures both cards. 3. Multiple cards can be captured if their values sum to the played card's value. 4. If no capture is possible, the card remains on the table. 5. After playing, players draw a replacement card from the stock if available.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mate.setup.players',
+        title: 'Players',
+        text: '2-4 players (best with 2).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mate.setup.deck',
+        title: 'Deck',
+        text: '40-card Italian deck (remove 8s, 9s, 10s from standard deck). Suits: Coins, Cups, Swords, Clubs. Ranking: King (highest), Queen, Jack, 7, 6, 5, 4, 3, 2, Ace (lowest).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mate.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Italian deck or modified standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mate.setup.dealing',
+        title: 'Deal',
+        text: '4 cards to each player and 4 cards face-up to the table. Remaining cards form the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mate.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach a target score (typically 11 or 21 points) wins, or highest score when stock is exhausted.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mate.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded for: each King captured (1 point), the 7 of Coins (1 point), capturing the majority of cards (1 point), and each sweep/scopa (1 point).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mate.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play one card per turn',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mate.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Capture cards of matching value',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mate.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Draw replacement card after playing',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mate.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Score for specific captured cards and sweeps',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mate.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mate.rules.objective',
+          'mate.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mate.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mate.setup.players',
+          'mate.setup.deck',
+          'mate.setup.equipment',
+          'mate.setup.dealing',
+        ],
+      },
+      {
+        id: 'mate.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mate.rules.key.1',
+          'mate.rules.key.2',
+          'mate.rules.key.3',
+          'mate.rules.key.4',
+        ],
+      },
+      {
+        id: 'mate.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mate.score.description',
+          'mate.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mate.setup.dealing',
+        'mate.rules.objective',
+      ],
+      play_card: [
+        'mate.rules.gameplay',
+      ],
+    },
+  },
+}

@@ -1,0 +1,227 @@
+{
+  system: {
+    guid: '4e49fbf0-6e91-42dc-90b9-c8a86b641e4c',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/tien-gow/tien-gowRules.asset',
+    gameId: 'tien-gow',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Opening**: The dealer (East) leads the first trick. 2. **Leading**: A player can lead a single tile, a pair (e.g., Heaven Pair), a triple, or a quad. 3. **Following**: Others must play the same number of tiles. To win, tiles must be higher in rank and of the same suit (Civil/Military). If a player cannot beat the lead, they discard tiles face down. 4. **Suits**: The tiles are divided into 22 'Civil' tiles (11 pairs) and 10 'Military' tiles. Civil leads must be beaten by Civil; Military by Military. 5. **Final Trick**: The winner of the 8th (final) trick becomes the dealer for the next round and scores points. Winning the final trick is the primary goal.",
+    Player: "1. **Opening**: The dealer (East) leads the first trick. 2. **Leading**: A player can lead a single tile, a pair (e.g., Heaven Pair), a triple, or a quad. 3. **Following**: Others must play the same number of tiles. To win, tiles must be higher in rank and of the same suit (Civil/Military). If a player cannot beat the lead, they discard tiles face down. 4. **Suits**: The tiles are divided into 22 'Civil' tiles (11 pairs) and 10 'Military' tiles. Civil leads must be beaten by Civil; Military by Military. 5. **Final Trick**: The winner of the 8th (final) trick becomes the dealer for the next round and scores points. Winning the final trick is the primary goal.",
+    objective: "Score points by winning the final trick of each round and by capturing 'special' high-ranking tricks.",
+    gameplay: "1. **Opening**: The dealer (East) leads the first trick. 2. **Leading**: A player can lead a single tile, a pair (e.g., Heaven Pair), a triple, or a quad. 3. **Following**: Others must play the same number of tiles. To win, tiles must be higher in rank and of the same suit (Civil/Military). If a player cannot beat the lead, they discard tiles face down. 4. **Suits**: The tiles are divided into 22 'Civil' tiles (11 pairs) and 10 'Military' tiles. Civil leads must be beaten by Civil; Military by Military. 5. **Final Trick**: The winner of the 8th (final) trick becomes the dealer for the next round and scores points. Winning the final trick is the primary goal.",
+    keyRules: [
+      'Only the winner of a trick can lead the next trick.',
+      'Civil pairs (e.g., 6-6 and 6-6) can only be beaten by higher-ranking Civil pairs.',
+      'Mixed sets (Civil + Military) have specific complex ranking rules.',
+      "If you win the 8th trick after winning no other tricks, you 'Small Win'.",
+      "Winning the 8th trick having won all previous tricks is 'Great Win' (very rare).",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players, each playing for themselves (no partnerships).',
+      deck: 'Full set of 32 Chinese dominoes. No wild cards.',
+      equipment: '32 tiles (traditionally wood or bone), 4 dice (to determine dealer/seat), and score markers.',
+      dealing: 'The 32 tiles are shuffled face down. Each player receives 8 tiles, usually dealt in batches of 4 (wood stacks).',
+    },
+    turnFlow: "1. **Opening**: The dealer (East) leads the first trick. 2. **Leading**: A player can lead a single tile, a pair (e.g., Heaven Pair), a triple, or a quad. 3. **Following**: Others must play the same number of tiles. To win, tiles must be higher in rank and of the same suit (Civil/Military). If a player cannot beat the lead, they discard tiles face down. 4. **Suits**: The tiles are divided into 22 'Civil' tiles (11 pairs) and 10 'Military' tiles. Civil leads must be beaten by Civil; Military by Military. 5. **Final Trick**: The winner of the 8th (final) trick becomes the dealer for the next round and scores points. Winning the final trick is the primary goal.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Only the dealer at the start of the round.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must match the number of tiles led and the suit (Civil/Military).',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'Mandatory when following but unable to beat the lead.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 8 card(s) per player.',
+      "Rule example: Score points by winning the final trick of each round and by capturing 'special' high-ranking tricks.",
+      "Turn-flow example: 1. **Opening**: The dealer (East) leads the first trick. 2. **Leading**: A player can lead a single tile, a pair (e.g., Heaven Pair), a triple, or a quad. 3. **Following**: Others must play the same number of tiles. To win, tiles must be higher in rank and of the same suit (Civil/Military). If a player cannot beat the lead, they discard tiles face down. 4. **Suits**: The tiles are divided into 22 'Civil' tiles (11 pairs) and 10 'Military' tiles. Civil leads must be beaten by Civil; Military by Military. 5. **Final Trick**: The winner of the 8th (final) trick becomes the dealer for the next round and scores points. Winning the final trick is the primary goal.",
+      'Scoring example: Points are awarded to the winner of the 8th trick. Bonuses for capture of high-ranking pairs or triplets. Highest point total after 4 rounds (North, East, South, West) wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'tien-gow.rules.objective',
+        title: 'Objective',
+        text: "Score points by winning the final trick of each round and by capturing 'special' high-ranking tricks.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tien-gow.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Opening**: The dealer (East) leads the first trick. 2. **Leading**: A player can lead a single tile, a pair (e.g., Heaven Pair), a triple, or a quad. 3. **Following**: Others must play the same number of tiles. To win, tiles must be higher in rank and of the same suit (Civil/Military). If a player cannot beat the lead, they discard tiles face down. 4. **Suits**: The tiles are divided into 22 'Civil' tiles (11 pairs) and 10 'Military' tiles. Civil leads must be beaten by Civil; Military by Military. 5. **Final Trick**: The winner of the 8th (final) trick becomes the dealer for the next round and scores points. Winning the final trick is the primary goal.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tien-gow.setup.players',
+        title: 'Players',
+        text: '4 players, each playing for themselves (no partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tien-gow.setup.deck',
+        title: 'Deck',
+        text: 'Full set of 32 Chinese dominoes. No wild cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tien-gow.setup.equipment',
+        title: 'Equipment',
+        text: '32 tiles (traditionally wood or bone), 4 dice (to determine dealer/seat), and score markers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tien-gow.setup.dealing',
+        title: 'Deal',
+        text: 'The 32 tiles are shuffled face down. Each player receives 8 tiles, usually dealt in batches of 4 (wood stacks).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tien-gow.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest point total after 4 rounds (North, East, South, West) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tien-gow.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded to the winner of the 8th trick. Bonuses for capture of high-ranking pairs or triplets.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tien-gow.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only the winner of a trick can lead the next trick.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tien-gow.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Civil pairs (e.g., 6-6 and 6-6) can only be beaten by higher-ranking Civil pairs.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tien-gow.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Mixed sets (Civil + Military) have specific complex ranking rules.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tien-gow.rules.key.4',
+        title: 'Key rule 4',
+        text: "If you win the 8th trick after winning no other tricks, you 'Small Win'.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'tien-gow.rules.key.5',
+        title: 'Key rule 5',
+        text: "Winning the 8th trick having won all previous tricks is 'Great Win' (very rare).",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tien-gow.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tien-gow.rules.objective',
+          'tien-gow.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tien-gow.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tien-gow.setup.players',
+          'tien-gow.setup.deck',
+          'tien-gow.setup.equipment',
+          'tien-gow.setup.dealing',
+        ],
+      },
+      {
+        id: 'tien-gow.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tien-gow.rules.key.1',
+          'tien-gow.rules.key.2',
+          'tien-gow.rules.key.3',
+          'tien-gow.rules.key.4',
+          'tien-gow.rules.key.5',
+        ],
+      },
+      {
+        id: 'tien-gow.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tien-gow.score.description',
+          'tien-gow.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tien-gow.setup.dealing',
+        'tien-gow.rules.objective',
+      ],
+      deal: [
+        'tien-gow.rules.gameplay',
+      ],
+      play_card: [
+        'tien-gow.rules.gameplay',
+      ],
+      discard: [
+        'tien-gow.rules.gameplay',
+      ],
+      resolve_trick_winner: [
+        'tien-gow.rules.gameplay',
+      ],
+    },
+  },
+}

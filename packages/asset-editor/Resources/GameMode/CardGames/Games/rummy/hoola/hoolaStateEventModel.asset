@@ -1,0 +1,73 @@
+{
+  system: {
+    guid: 'bc81c9e0-d380-434b-864c-bffa23b10064',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/hoola/hoolaStateEventModel.asset',
+    gameId: 'hoola',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hoola',
+    familyVariant: 'Draw and Discard / Meld',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 52,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: 'face_up',
+        discardTop: 'face_up',
+        tableauCards: 'NA',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'main_play',
+        'round_end',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'meld',
+        'draw_stock',
+        'claim_discard',
+        'knock',
+        'score_round',
+      ],
+    },
+    examples: [],
+  },
+}

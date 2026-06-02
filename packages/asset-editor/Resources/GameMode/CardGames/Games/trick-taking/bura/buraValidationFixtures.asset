@@ -1,0 +1,127 @@
+{
+  system: {
+    guid: '8b1e68d1-4cae-44e9-8f84-f7ded7f27651',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/bura/buraValidationFixtures.asset',
+    gameId: 'bura',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'bura',
+    familyVariant: 'Point-Trick / Draw',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'bura.core-runtime-contracts',
+        title: 'Bura Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'bura.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 6,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Bura must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'bura.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'bura.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal_3_turn_trump',
+              'play_any_card',
+              'declare_bura',
+            ],
+            explanation: 'Bura must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'bura.setup.initial-deal',
+              'bura.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal_3_turn_trump',
+            ],
+          },
+          {
+            id: 'bura.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '31',
+            scoringDirection: 'high_wins',
+            targetScore: 31,
+            cardValues: {
+              '6': '0 points',
+              '7': '0 points',
+              '8': '0 points',
+              '9': '0 points',
+              '10': '10 points',
+              A: '11 points',
+              K: '4 points',
+              Q: '3 points',
+              J: '2 points',
+            },
+            explanation: '31 card points to win.',
+            linkedRuleIds: [
+              'bura.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'bura.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

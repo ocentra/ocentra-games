@@ -1,0 +1,72 @@
+{
+  system: {
+    guid: '8e50ec1a-ec85-42e3-b94b-8bf063f1a260',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/petit-paquet-gambling/petit-paquet-gamblingStateEventModel.asset',
+    gameId: 'petit-paquet-gambling',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'petit-paquet-gambling',
+    familyVariant: 'Partition / Banking',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'trick',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 4,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: null,
+        tableauCards: null,
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'place_bets',
+        'deal_packets',
+        'reveal_compare',
+        'settle',
+      ],
+      actions: [
+        'setup_round',
+        'bet',
+        'deal_packets',
+        'reveal_top_cards',
+        'pay_packet_wins',
+      ],
+    },
+    examples: [],
+  },
+}

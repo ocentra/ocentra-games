@@ -1,0 +1,122 @@
+{
+  system: {
+    guid: 'fc5e14f9-e72c-4c75-bcf7-4b59b59acf3d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/blind-watten/blind-wattenValidationFixtures.asset',
+    gameId: 'blind-watten',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'blind-watten',
+    familyVariant: 'Watten Family / Alpine Games',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'blind-watten.core-runtime-contracts',
+        title: 'Blind Watten Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'blind-watten.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Blind Watten must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'blind-watten.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'blind-watten.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'dealing',
+            supportedActionIds: [
+              'setup_round',
+              'raise',
+              'play_card',
+              'pass',
+              'deal_5_each',
+              'forehand_shows_schlag',
+              'dealer_shows_trump_suit',
+              'calculate_match_points',
+              'propose_raise',
+            ],
+            explanation: 'Blind Watten must run setup_round first, then enter dealing with the processed legal actions.',
+            linkedRuleIds: [
+              'blind-watten.setup.initial-deal',
+              'blind-watten.flow.dealing',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'dealing',
+            firstPlayableLegalActions: [
+              'deal_5_each',
+            ],
+          },
+          {
+            id: 'blind-watten.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '15',
+            scoringDirection: 'high_wins',
+            targetScore: 15,
+            cardValues: {},
+            explanation: 'Win 3+ of 5 tricks = 2 points (or higher if stakes were raised by betting). First team to target score wins.',
+            linkedRuleIds: [
+              'blind-watten.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'blind-watten.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

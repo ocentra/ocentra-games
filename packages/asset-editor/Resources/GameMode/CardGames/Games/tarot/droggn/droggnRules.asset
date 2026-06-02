@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: '9cd0893a-6a91-438b-baed-5306851d7e40',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/tarot/droggn/droggnRules.asset',
+    gameId: 'droggn',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. Bidding: Players compete for the contract.\n2. Talon Exchange: Declarer can swap cards with the blind.\n3. Trick Play: High and low Pip rankings exist. Tarocks always win. Follow suit required; Trumping required if void.',
+    Player: '1. Bidding: Players compete for the contract.\n2. Talon Exchange: Declarer can swap cards with the blind.\n3. Trick Play: High and low Pip rankings exist. Tarocks always win. Follow suit required; Trumping required if void.',
+    objective: 'As declarer, take at least 37 card points (half of 74) in tricks to win the contract.',
+    gameplay: '1. Bidding: Players compete for the contract.\n2. Talon Exchange: Declarer can swap cards with the blind.\n3. Trick Play: High and low Pip rankings exist. Tarocks always win. Follow suit required; Trumping required if void.',
+    keyRules: [
+      'The Gstieß (fool) is not a trump; it may be played anytime and never wins except last trick of Super Mord.',
+      'Ultimo: A bonus for winning the final trick with the weakest trump (card I, der Kleine).',
+      'Point total in pack: 74 card points (counted in threes, minus 2 per group).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 active players. 4th player (dealer) sits out.',
+      deck: '66-card deck (Industrie und Glück pattern with lowest cards removed). 22 Tarocks, 44 suit cards.',
+      equipment: '66-card Tarock deck, score sheet.',
+      dealing: '21 cards per player, dealt in batches of 7. 3-card talon face down in centre.',
+    },
+    turnFlow: '1. Bidding: Players compete for the contract.\n2. Talon Exchange: Declarer can swap cards with the blind.\n3. Trick Play: High and low Pip rankings exist. Tarocks always win. Follow suit required; Trumping required if void.',
+    moveValidityConditions: {
+      ante: 'Droggn does not use ante as a core action in its documented ruleset.',
+      deal: 'Dealer only at hand start.',
+      reveal_market: 'Droggn does not use reveal market as a core action in its documented ruleset.',
+      buy_market: 'Droggn does not use buy market as a core action in its documented ruleset.',
+      buy_stock: 'Droggn does not use buy stock as a core action in its documented ruleset.',
+      fold: 'Droggn does not use fold as a core action in its documented ruleset.',
+      check: 'Droggn does not use check as a core action in its documented ruleset.',
+      call: 'Droggn does not use call as a core action in its documented ruleset.',
+      bet: 'Droggn does not use bet as a core action in its documented ruleset.',
+      raise: 'Droggn does not use raise as a core action in its documented ruleset.',
+      declare: 'Only legal in the current phase and turn context.',
+      reveal_hand: 'Droggn does not use reveal hand as a core action in its documented ruleset.',
+      award_pot: 'Droggn does not use award pot as a core action in its documented ruleset.',
+      play_card: 'Follow suit when able; if void, must trump. Gstieß may be played to any trick.',
+      draw: 'Droggn does not use draw as a core action in its documented ruleset.',
+      discard: 'Droggn does not use discard as a core action in its documented ruleset.',
+      pass: 'Droggn does not use pass as a core action in its documented ruleset.',
+      bid: 'Only legal in the current phase and turn context.',
+      meld: 'Droggn does not use meld as a core action in its documented ruleset.',
+      go_out: 'Droggn does not use go out as a core action in its documented ruleset.',
+    },
+    exampleHands: [
+      'Setup example: 21 card(s) per player.',
+      'Rule example: As declarer, take at least 37 card points (half of 74) in tricks to win the contract.',
+      'Turn-flow example: 1. Bidding: Players compete for the contract.\n2. Talon Exchange: Declarer can swap cards with the blind.\n3. Trick Play: High and low Pip rankings exist. Tarocks always win. Follow suit required; Trumping required if void.',
+      'Scoring example: Honors (Kings, SkÃ¼s, 21, 1) = 5. Queens = 4. Cavaliers = 3. Jacks = 2. All others = 1. Declarer wins the contract by taking at least 37 card points (half of 74) in tricks..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'droggn.rules.objective',
+        title: 'Objective',
+        text: 'As declarer, take at least 37 card points (half of 74) in tricks to win the contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'droggn.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Bidding: Players compete for the contract.\n2. Talon Exchange: Declarer can swap cards with the blind.\n3. Trick Play: High and low Pip rankings exist. Tarocks always win. Follow suit required; Trumping required if void.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'droggn.setup.players',
+        title: 'Players',
+        text: '3 active players. 4th player (dealer) sits out.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'droggn.setup.deck',
+        title: 'Deck',
+        text: '66-card deck (Industrie und Glück pattern with lowest cards removed). 22 Tarocks, 44 suit cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'droggn.setup.equipment',
+        title: 'Equipment',
+        text: '66-card Tarock deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'droggn.setup.dealing',
+        title: 'Deal',
+        text: '21 cards per player, dealt in batches of 7. 3-card talon face down in centre.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'droggn.score.win-condition',
+        title: 'Win condition',
+        text: 'Declarer wins the contract by taking at least 37 card points (half of 74) in tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'droggn.score.description',
+        title: 'Scoring',
+        text: 'Honors (Kings, SkÃ¼s, 21, 1) = 5. Queens = 4. Cavaliers = 3. Jacks = 2. All others = 1.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'droggn.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The Gstieß (fool) is not a trump; it may be played anytime and never wins except last trick of Super Mord.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'droggn.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ultimo: A bonus for winning the final trick with the weakest trump (card I, der Kleine).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'droggn.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Point total in pack: 74 card points (counted in threes, minus 2 per group).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'droggn.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'droggn.rules.objective',
+          'droggn.rules.gameplay',
+        ],
+      },
+      {
+        id: 'droggn.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'droggn.setup.players',
+          'droggn.setup.deck',
+          'droggn.setup.equipment',
+          'droggn.setup.dealing',
+        ],
+      },
+      {
+        id: 'droggn.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'droggn.rules.key.1',
+          'droggn.rules.key.2',
+          'droggn.rules.key.3',
+        ],
+      },
+      {
+        id: 'droggn.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'droggn.score.description',
+          'droggn.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'droggn.setup.dealing',
+        'droggn.rules.objective',
+      ],
+      deal: [
+        'droggn.rules.gameplay',
+      ],
+      declare: [
+        'droggn.rules.gameplay',
+      ],
+      play_card: [
+        'droggn.rules.gameplay',
+      ],
+      bid: [
+        'droggn.rules.gameplay',
+      ],
+      weiter: [
+        'droggn.rules.gameplay',
+      ],
+    },
+  },
+}

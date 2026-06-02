@@ -49,36 +49,36 @@ export type ShopRightDetailRows =
 
 const DEFAULT_RIGHT_DETAILS: ShopRightDetailRows = {
   account: [
-    { label: 'Profile', value: 'N/A', detail: 'Identity appears here when the signed-in account summary is available.' },
-    { label: 'Rating', value: 'N/A', detail: 'Competitive rating will display after the profile service is connected.' },
-    { label: 'Owned items', value: 'N/A', detail: 'Inventory count will display after entitlement sync is connected.' },
-    { label: 'Active tables', value: 'N/A', detail: 'Live table usage will display after account capacity sync is connected.' },
-    { label: 'Status', value: 'N/A', detail: 'Account and wallet state will display after checkout sync is connected.' },
+    { label: 'Profile', value: 'Sign in', detail: 'Identity appears here after a real account signs in.' },
+    { label: 'Rating', value: 'No rating', detail: 'Competitive rating appears after ranked play is recorded.' },
+    { label: 'Owned items', value: 'Sign in', detail: 'Inventory count appears after entitlement sync for the signed-in account.' },
+    { label: 'Active tables', value: '0', detail: 'Live table usage appears after account capacity sync is connected.' },
+    { label: 'Status', value: 'Signed out', detail: 'Account and wallet state appears after sign-in.' },
   ],
   wallet: [
     { label: 'Arena Credits', value: 'AC', detail: 'Spendable balance used for packs, entries, cosmetics, and pass purchases.' },
-    { label: 'Tournament Tickets', value: 'N/A', detail: 'Ticket balance will display after event inventory sync is connected.' },
-    { label: 'Season Points', value: 'N/A', detail: 'Season progress will display after ladder sync is connected.' },
-    { label: 'Owned Items', value: 'N/A', detail: 'Inventory count will display after entitlement sync is connected.' },
-    { label: 'Active Tables', value: 'N/A', detail: 'Live table usage will display after account capacity sync is connected.' },
+    { label: 'Tournament Tickets', value: 'Sign in', detail: 'Ticket balance appears after event inventory sync for the signed-in account.' },
+    { label: 'Season Points', value: 'No season', detail: 'Season progress appears after a season is published.' },
+    { label: 'Owned Items', value: 'Sign in', detail: 'Inventory count appears after entitlement sync for the signed-in account.' },
+    { label: 'Active Tables', value: '0', detail: 'Live table usage appears after account capacity sync is connected.' },
   ],
   pass: [
-    { label: 'Active pass', value: 'N/A', detail: 'Pass tier will display after subscription state is connected.' },
-    { label: 'Monthly AC', value: 'N/A', detail: 'Recurring allowance will display after pass benefits sync is connected.' },
-    { label: 'Premium rooms', value: 'N/A', detail: 'Room access will display after entitlement sync is connected.' },
-    { label: 'Season drops', value: 'N/A', detail: 'Seasonal drops will display after reward sync is connected.' },
-    { label: 'Renewal', value: 'N/A', detail: 'Renewal cadence will display after billing state is connected.' },
+    { label: 'Active pass', value: 'No pass', detail: 'Pass tier appears after subscription state is connected.' },
+    { label: 'Monthly AC', value: 'No pass', detail: 'Recurring allowance appears after pass benefits sync is connected.' },
+    { label: 'Premium rooms', value: 'No pass', detail: 'Room access appears after entitlement sync is connected.' },
+    { label: 'Season drops', value: 'No season', detail: 'Seasonal drops appear after reward sync is connected.' },
+    { label: 'Renewal', value: 'No pass', detail: 'Renewal cadence appears after billing state is connected.' },
   ],
   events: [
-    { label: 'Published Schedule', value: 'N/A', detail: 'Live event windows will display after the schedule feed is connected.' },
-    { label: 'Open Entries', value: 'N/A', detail: 'Entry availability will display after event products are connected.' },
-    { label: 'Reward Calendar', value: 'N/A', detail: 'Reward timing will display after season cadence is connected.' },
+    { label: 'Published Schedule', value: 'No events', detail: 'Live event windows appear after the schedule feed is connected.' },
+    { label: 'Open Entries', value: 'Closed', detail: 'Entry availability appears after event products are connected.' },
+    { label: 'Reward Calendar', value: 'No season', detail: 'Reward timing appears after season cadence is connected.' },
   ],
   recent: [
-    { label: 'Purchase History', value: 'N/A', detail: 'Completed checkout activity will display after order history is connected.' },
-    { label: 'Last Checkout', value: 'N/A', detail: 'Most recent checkout status will display after checkout sync is connected.' },
-    { label: 'Last Reward Sync', value: 'N/A', detail: 'Reward grants will display after entitlement sync is connected.' },
-    { label: 'Inventory Change', value: 'N/A', detail: 'Cosmetic and deck changes will display after inventory sync is connected.' },
+    { label: 'Purchase History', value: 'No purchases', detail: 'Completed checkout activity appears after order history is connected.' },
+    { label: 'Last Checkout', value: 'No checkout', detail: 'Most recent checkout status appears after checkout sync is connected.' },
+    { label: 'Last Reward Sync', value: 'No sync', detail: 'Reward grants appear after entitlement sync is connected.' },
+    { label: 'Inventory Change', value: 'No changes', detail: 'Cosmetic and deck changes appear after inventory sync is connected.' },
   ],
 };
 
@@ -134,13 +134,51 @@ function mergeKnownValue<T>(fallback: T, source: unknown): T {
   return typeof source === typeof fallback ? source as T : fallback;
 }
 
+function isUnavailablePlaceholder(value: string): boolean {
+  const trimmed = value.trim();
+  return trimmed === 'N/A' || trimmed === 'NA' || trimmed.includes('N/A');
+}
+
+function replaceUnavailablePlaceholder(value: string, fallback: unknown): string {
+  if (typeof fallback === 'string' && !isUnavailablePlaceholder(fallback)) {
+    return fallback;
+  }
+  if (value.trim() === 'NA') {
+    return 'Unavailable';
+  }
+  return value.replace(/N\/A/g, 'Unavailable');
+}
+
+function replaceUnavailablePlaceholders<T>(source: T, fallback: unknown): T {
+  if (typeof source === 'string') {
+    return (isUnavailablePlaceholder(source) ? replaceUnavailablePlaceholder(source, fallback) : source) as T;
+  }
+  if (Array.isArray(source)) {
+    const fallbackArray = Array.isArray(fallback) ? fallback : [];
+    return source.map((value, index) => replaceUnavailablePlaceholders(value, fallbackArray[index])) as T;
+  }
+  if (source && typeof source === 'object') {
+    const fallbackRecord = asRecord(fallback);
+    const next: JsonRecord = {};
+    for (const [key, value] of Object.entries(source as JsonRecord)) {
+      next[key] = replaceUnavailablePlaceholders(value, fallbackRecord[key]);
+    }
+    return next as T;
+  }
+  return source;
+}
+
+function sanitizeShopPageContent(content: ShopPageContentData): ShopPageContentData {
+  return ShopPageContentDataSchema.parse(replaceUnavailablePlaceholders(content, DEFAULT_SHOP_PAGE_CONTENT));
+}
+
 export function normalizeShopPageContent(
   content?: Partial<ShopPageContentData> | null,
 ): ShopPageContentData {
   const merged = mergeKnownValue(cloneContent(), content);
-  return ShopPageContentDataSchema.parse(merged);
+  return sanitizeShopPageContent(ShopPageContentDataSchema.parse(merged));
 }
 
 export function parseShopPageContent(content: unknown): ShopPageContentData {
-  return ShopPageContentDataSchema.parse(content);
+  return sanitizeShopPageContent(ShopPageContentDataSchema.parse(content));
 }

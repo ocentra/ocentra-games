@@ -1,0 +1,120 @@
+{
+  system: {
+    guid: 'd5abcda1-1aaa-48f5-bc51-27da72b72ecf',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/stud/7-card-stud-with-wild-cards/7-card-stud-with-wild-cardsValidationFixtures.asset',
+    gameId: '7-card-stud-with-wild-cards',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '7-card-stud-with-wild-cards',
+    familyVariant: 'Stud / Wild Cards',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '7-card-stud-with-wild-cards.core-runtime-contracts',
+        title: '7 Card Stud with Wild Cards Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '7-card-stud-with-wild-cards.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 7,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 42,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '7 Card Stud with Wild Cards must start by giving each active player 7 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '7-card-stud-with-wild-cards.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '7-card-stud-with-wild-cards.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+            ],
+            explanation: '7 Card Stud with Wild Cards must run setup_round first, then enter ante with the processed legal actions.',
+            linkedRuleIds: [
+              '7-card-stud-with-wild-cards.setup.initial-deal',
+              '7-card-stud-with-wild-cards.flow.ante',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
+            ],
+          },
+          {
+            id: '7-card-stud-with-wild-cards.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Make the best five-card poker hand from your seven cards; wild cards substitute for any card.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Pot to winner; hand ranking unchanged with wilds.',
+            linkedRuleIds: [
+              '7-card-stud-with-wild-cards.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '7-card-stud-with-wild-cards.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 7,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

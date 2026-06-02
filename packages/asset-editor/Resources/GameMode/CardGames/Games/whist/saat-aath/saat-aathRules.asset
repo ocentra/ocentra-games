@@ -1,0 +1,239 @@
+{
+  system: {
+    guid: 'c1cdc77e-1fa2-40b0-a367-38487e792df8',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/whist/saat-aath/saat-aathRules.asset',
+    gameId: 'saat-aath',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Lead**: Non-dealer leads first trick. 2. **Follow suit**: Second player must follow suit if possible from hand or currently face-up table cards. 3. **If void**: Any available card may be played; trumps can cut. 4. **Trick winner**: Higher card of same suit wins, otherwise trump wins, otherwise first played card wins when neither card is trump. 5. **Card availability**: You may play from hand or any face-up table card; when a face-up table card is played, its face-down undercard is revealed for future tricks. 6. **Continuation**: Winner of each trick leads next. 7. **End**: After 15 tricks, compare trick totals against quota thresholds.',
+    Player: '1. **Lead**: Non-dealer leads first trick. 2. **Follow suit**: Second player must follow suit if possible from hand or currently face-up table cards. 3. **If void**: Any available card may be played; trumps can cut. 4. **Trick winner**: Higher card of same suit wins, otherwise trump wins, otherwise first played card wins when neither card is trump. 5. **Card availability**: You may play from hand or any face-up table card; when a face-up table card is played, its face-down undercard is revealed for future tricks. 6. **Continuation**: Winner of each trick leads next. 7. **End**: After 15 tricks, compare trick totals against quota thresholds.',
+    objective: 'Win enough tricks relative to your role quota: dealer targets more than 7, non-dealer targets more than 8, and 7-8 exact is a tie.',
+    gameplay: '1. **Lead**: Non-dealer leads first trick. 2. **Follow suit**: Second player must follow suit if possible from hand or currently face-up table cards. 3. **If void**: Any available card may be played; trumps can cut. 4. **Trick winner**: Higher card of same suit wins, otherwise trump wins, otherwise first played card wins when neither card is trump. 5. **Card availability**: You may play from hand or any face-up table card; when a face-up table card is played, its face-down undercard is revealed for future tricks. 6. **Continuation**: Winner of each trick leads next. 7. **End**: After 15 tricks, compare trick totals against quota thresholds.',
+    keyRules: [
+      '7 of hearts and 7 of spades are always top trumps when special-sevens rule is used.',
+      'Those two sevens count as trumps, not as hearts/spades for follow-suit in non-trump suits.',
+      'Second hand must follow suit if able; otherwise may discard or trump.',
+      'Exact 7 tricks for dealer and 8 for non-dealer is a draw.',
+      'Non-dealer always chooses trump after the initial 5-card deal.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Exactly 2 players; dealer alternates by deal.',
+      deck: 'Start from 52 cards and remove all 2-6 plus 7 of clubs and 7 of diamonds. Trumps rank: 7 of hearts (highest), 7 of spades, then A K Q J 10 9 8 of trump suit. Non-trump suits rank A K Q J 10 9 8.',
+      equipment: '30-card pack and optional score sheet for match play.',
+      dealing: 'Dealer gives 5 hand cards to each player. Non-dealer calls trump. Dealer then deals 5 face-down table cards in a row to each player and places 1 face-up card on each stack, giving each player 15 playable cards over time.',
+    },
+    turnFlow: '1. **Lead**: Non-dealer leads first trick. 2. **Follow suit**: Second player must follow suit if possible from hand or currently face-up table cards. 3. **If void**: Any available card may be played; trumps can cut. 4. **Trick winner**: Higher card of same suit wins, otherwise trump wins, otherwise first played card wins when neither card is trump. 5. **Card availability**: You may play from hand or any face-up table card; when a face-up table card is played, its face-down undercard is revealed for future tricks. 6. **Continuation**: Winner of each trick leads next. 7. **End**: After 15 tricks, compare trick totals against quota thresholds.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'This game does not use play_card in engine.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win enough tricks relative to your role quota: dealer targets more than 7, non-dealer targets more than 8, and 7-8 exact is a tie.',
+      'Turn-flow example: 1. **Lead**: Non-dealer leads first trick. 2. **Follow suit**: Second player must follow suit if possible from hand or currently face-up table cards. 3. **If void**: Any available card may be played; trumps can cut. 4. **Trick winner**: Higher card of same suit wins, otherwise trump wins, otherwise first played card wins when neither card is trump. 5. **Card availability**: You may play from hand or any face-up table card; when a face-up table card is played, its face-down undercard is revealed for future tricks. 6. **Continuation**: Winner of each trick leads next. 7. **End**: After 15 tricks, compare trick totals against quota thresholds.',
+      'Scoring example: Each deal is resolved by trick totals versus asymmetric quotas (dealer 7, non-dealer 8). Dealer wins by taking more than 7 tricks; non-dealer wins by taking more than 8; exactly 7-8 is tied..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'saat-aath.rules.objective',
+        title: 'Objective',
+        text: 'Win enough tricks relative to your role quota: dealer targets more than 7, non-dealer targets more than 8, and 7-8 exact is a tie.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'saat-aath.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Lead**: Non-dealer leads first trick. 2. **Follow suit**: Second player must follow suit if possible from hand or currently face-up table cards. 3. **If void**: Any available card may be played; trumps can cut. 4. **Trick winner**: Higher card of same suit wins, otherwise trump wins, otherwise first played card wins when neither card is trump. 5. **Card availability**: You may play from hand or any face-up table card; when a face-up table card is played, its face-down undercard is revealed for future tricks. 6. **Continuation**: Winner of each trick leads next. 7. **End**: After 15 tricks, compare trick totals against quota thresholds.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'saat-aath.setup.players',
+        title: 'Players',
+        text: 'Exactly 2 players; dealer alternates by deal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'saat-aath.setup.deck',
+        title: 'Deck',
+        text: 'Start from 52 cards and remove all 2-6 plus 7 of clubs and 7 of diamonds. Trumps rank: 7 of hearts (highest), 7 of spades, then A K Q J 10 9 8 of trump suit. Non-trump suits rank A K Q J 10 9 8.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'saat-aath.setup.equipment',
+        title: 'Equipment',
+        text: '30-card pack and optional score sheet for match play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'saat-aath.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives 5 hand cards to each player. Non-dealer calls trump. Dealer then deals 5 face-down table cards in a row to each player and places 1 face-up card on each stack, giving each player 15 playable cards over time.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'saat-aath.score.win-condition',
+        title: 'Win condition',
+        text: 'Dealer wins by taking more than 7 tricks; non-dealer wins by taking more than 8; exactly 7-8 is tied.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'saat-aath.score.description',
+        title: 'Scoring',
+        text: 'Each deal is resolved by trick totals versus asymmetric quotas (dealer 7, non-dealer 8).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'saat-aath.rules.key.1',
+        title: 'Key rule 1',
+        text: '7 of hearts and 7 of spades are always top trumps when special-sevens rule is used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'saat-aath.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Those two sevens count as trumps, not as hearts/spades for follow-suit in non-trump suits.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'saat-aath.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Second hand must follow suit if able; otherwise may discard or trump.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'saat-aath.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Exact 7 tricks for dealer and 8 for non-dealer is a draw.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'saat-aath.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Non-dealer always chooses trump after the initial 5-card deal.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'saat-aath.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'saat-aath.rules.objective',
+          'saat-aath.rules.gameplay',
+        ],
+      },
+      {
+        id: 'saat-aath.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'saat-aath.setup.players',
+          'saat-aath.setup.deck',
+          'saat-aath.setup.equipment',
+          'saat-aath.setup.dealing',
+        ],
+      },
+      {
+        id: 'saat-aath.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'saat-aath.rules.key.1',
+          'saat-aath.rules.key.2',
+          'saat-aath.rules.key.3',
+          'saat-aath.rules.key.4',
+          'saat-aath.rules.key.5',
+        ],
+      },
+      {
+        id: 'saat-aath.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'saat-aath.score.description',
+          'saat-aath.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'saat-aath.setup.dealing',
+        'saat-aath.rules.objective',
+      ],
+      deal_initial_hand: [
+        'saat-aath.rules.gameplay',
+      ],
+      choose_trump: [
+        'saat-aath.rules.gameplay',
+      ],
+      deal_face_down_rows: [
+        'saat-aath.rules.gameplay',
+      ],
+      reveal_table_tops: [
+        'saat-aath.rules.gameplay',
+      ],
+      lead_card: [
+        'saat-aath.rules.gameplay',
+      ],
+      follow_or_cut: [
+        'saat-aath.rules.gameplay',
+      ],
+      reveal_under_card: [
+        'saat-aath.rules.gameplay',
+      ],
+      compare_quotas: [
+        'saat-aath.rules.gameplay',
+      ],
+    },
+  },
+}

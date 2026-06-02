@@ -1,0 +1,223 @@
+{
+  system: {
+    guid: '8bccf82d-4564-4d7c-ae14-49b5fa652c5e',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/shanghai-rummy/shanghai-rummyRules.asset',
+    gameId: 'shanghai-rummy',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'On each turn, draw from stock or discard, optionally lay required meld contracts and lay off, then discard. Each hand has a specific contract requirement (sets/runs combinations). When a player goes out, others score cards left in hand. After ten hands, lowest total score wins.',
+    Player: 'On each turn, draw from stock or discard, optionally lay required meld contracts and lay off, then discard. Each hand has a specific contract requirement (sets/runs combinations). When a player goes out, others score cards left in hand. After ten hands, lowest total score wins.',
+    objective: 'Finish the ten-hand sequence with the lowest cumulative score.',
+    gameplay: 'On each turn, draw from stock or discard, optionally lay required meld contracts and lay off, then discard. Each hand has a specific contract requirement (sets/runs combinations). When a player goes out, others score cards left in hand. After ten hands, lowest total score wins.',
+    keyRules: [
+      'Ten hands with changing contract requirements.',
+      'Must meet the hand contract before laying off freely.',
+      'Jokers and 2s are commonly wild, subject to table limits.',
+      'Players may buy the top discard out of turn under agreed rules.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3-8 players, usually individual play.',
+      deck: 'Use enough 54-card decks for table size (typically two decks for up to four players). Jokers are wild.',
+      equipment: 'Cards, discard pile area, and score tracking.',
+      dealing: 'Deal 11 cards to each player each hand; remaining cards form stock with one face-up discard starter.',
+    },
+    turnFlow: 'On each turn, draw from stock or discard, optionally lay required meld contracts and lay off, then discard. Each hand has a specific contract requirement (sets/runs combinations). When a player goes out, others score cards left in hand. After ten hands, lowest total score wins.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer action at the start of each hand only.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'Allowed before the next player draws; buy limits apply per hand and players already down cannot buy.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Shanghai is a draw-meld-discard game rather than a trick-play game.',
+      draw: 'Exactly one draw before melding and discarding on your turn.',
+      discard: 'One discard at end of turn unless the player goes out without a final discard.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'Must satisfy the current hand contract before laying off freely.',
+      go_out: 'Player must have no cards left and cannot finish the hand with a discard according to common Shanghai rules.',
+    },
+    exampleHands: [
+      'Setup example: 11 card(s) per player.',
+      'Rule example: Finish the ten-hand sequence with the lowest cumulative score.',
+      'Turn-flow example: On each turn, draw from stock or discard, optionally lay required meld contracts and lay off, then discard. Each hand has a specific contract requirement (sets/runs combinations). When a player goes out, others score cards left in hand. After ten hands, lowest total score wins.',
+      'Scoring example: At hand end, the player who goes out scores 0 and others score cards left in hand. After ten hands, lowest cumulative score wins. Player with the lowest total penalty points after the tenth hand wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'shanghai-rummy.rules.objective',
+        title: 'Objective',
+        text: 'Finish the ten-hand sequence with the lowest cumulative score.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.rules.gameplay',
+        title: 'Turn flow',
+        text: 'On each turn, draw from stock or discard, optionally lay required meld contracts and lay off, then discard. Each hand has a specific contract requirement (sets/runs combinations). When a player goes out, others score cards left in hand. After ten hands, lowest total score wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.setup.players',
+        title: 'Players',
+        text: '3-8 players, usually individual play.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.setup.deck',
+        title: 'Deck',
+        text: 'Use enough 54-card decks for table size (typically two decks for up to four players). Jokers are wild.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, discard pile area, and score tracking.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 11 cards to each player each hand; remaining cards form stock with one face-up discard starter.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.score.win-condition',
+        title: 'Win condition',
+        text: 'Player with the lowest total penalty points after the tenth hand wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.score.description',
+        title: 'Scoring',
+        text: 'At hand end, the player who goes out scores 0 and others score cards left in hand. After ten hands, lowest cumulative score wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Ten hands with changing contract requirements.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must meet the hand contract before laying off freely.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Jokers and 2s are commonly wild, subject to table limits.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Players may buy the top discard out of turn under agreed rules.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'shanghai-rummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'shanghai-rummy.rules.objective',
+          'shanghai-rummy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'shanghai-rummy.setup.players',
+          'shanghai-rummy.setup.deck',
+          'shanghai-rummy.setup.equipment',
+          'shanghai-rummy.setup.dealing',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'shanghai-rummy.rules.key.1',
+          'shanghai-rummy.rules.key.2',
+          'shanghai-rummy.rules.key.3',
+          'shanghai-rummy.rules.key.4',
+        ],
+      },
+      {
+        id: 'shanghai-rummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'shanghai-rummy.score.description',
+          'shanghai-rummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'shanghai-rummy.setup.dealing',
+        'shanghai-rummy.rules.objective',
+      ],
+      deal: [
+        'shanghai-rummy.rules.gameplay',
+      ],
+      buy_stock: [
+        'shanghai-rummy.rules.gameplay',
+      ],
+      draw: [
+        'shanghai-rummy.rules.gameplay',
+      ],
+      discard: [
+        'shanghai-rummy.rules.gameplay',
+      ],
+      meld: [
+        'shanghai-rummy.rules.gameplay',
+      ],
+      go_out: [
+        'shanghai-rummy.rules.gameplay',
+      ],
+    },
+  },
+}

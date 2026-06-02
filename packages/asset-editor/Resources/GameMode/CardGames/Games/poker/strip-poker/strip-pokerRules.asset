@@ -1,0 +1,235 @@
+{
+  system: {
+    guid: 'f85df2cd-ee09-4ab4-9ce0-637e58bfd773',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/strip-poker/strip-pokerRules.asset',
+    gameId: 'strip-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Play is the same as five-card draw: deal five cards, first betting round, discard and draw (0 to 5 cards), second betting round, showdown. Stakes can be chips only, clothing only, or a combination; losers remove an item per lost hand or when out of chips.',
+    Player: 'Play is the same as five-card draw: deal five cards, first betting round, discard and draw (0 to 5 cards), second betting round, showdown. Stakes can be chips only, clothing only, or a combination; losers remove an item per lost hand or when out of chips.',
+    objective: 'Win the pot by having the highest-ranking five-card poker hand at showdown or by forcing all other players to fold. In strip poker, losers remove clothing (or stakes can be chips and clothing).',
+    gameplay: 'Play is the same as five-card draw: deal five cards, first betting round, discard and draw (0 to 5 cards), second betting round, showdown. Stakes can be chips only, clothing only, or a combination; losers remove an item per lost hand or when out of chips.',
+    keyRules: [
+      'Standard five-card draw hand rankings.',
+      'Stand pat (draw zero) or discard and draw up to five.',
+      'Betting rounds before and after the draw.',
+      'Stakes agreed in advance (clothing, chips, or both).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 to 6 players.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Standard deck; chips or clothing stakes as agreed.',
+      dealing: 'Each player is dealt five cards face down. After first betting round, each player may discard 0 to 5 cards and receive that many from the deck. Second betting round, then showdown.',
+    },
+    turnFlow: 'Play is the same as five-card draw: deal five cards, first betting round, discard and draw (0 to 5 cards), second betting round, showdown. Stakes can be chips only, clothing only, or a combination; losers remove an item per lost hand or when out of chips.',
+    moveValidityConditions: {
+      ante: 'Strip poker is often played without an ante; stakes are chips or clothing as agreed.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Legal during any betting round when it is your turn to act.',
+      check: 'Legal only when no one has bet in the current betting round.',
+      call: 'Legal when a bet has been made and you have not yet acted to the current bet.',
+      bet: 'Legal when no bet has been made in the current round; amount must meet minimum.',
+      raise: 'Legal when a bet has been made; must raise by at least the minimum raise.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Legal in showdown phase when you are still in the hand.',
+      award_pot: 'Triggered after showdown; not a player-initiated action.',
+      play_card: 'Strip poker is draw poker; cards are not played to a trick, only revealed at showdown.',
+      draw: 'Legal in draw round after discarding; draw count must match discard count.',
+      discard: 'Legal in draw round; must discard before drawing; can stand pat by discarding zero.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the highest-ranking five-card poker hand at showdown or by forcing all other players to fold. In strip poker, losers remove clothing (or stakes can be chips and clothing).',
+      'Turn-flow example: Play is the same as five-card draw: deal five cards, first betting round, discard and draw (0 to 5 cards), second betting round, showdown. Stakes can be chips only, clothing only, or a combination; losers remove an item per lost hand or when out of chips.',
+      'Scoring example: Highest five-card poker hand at showdown wins the pot; or the last player remaining when all others have folded. In strip poker, losers may remove clothing as stakes. Highest five-card hand at showdown wins the pot; or last player left after all others fold..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'strip-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest-ranking five-card poker hand at showdown or by forcing all other players to fold. In strip poker, losers remove clothing (or stakes can be chips and clothing).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'strip-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play is the same as five-card draw: deal five cards, first betting round, discard and draw (0 to 5 cards), second betting round, showdown. Stakes can be chips only, clothing only, or a combination; losers remove an item per lost hand or when out of chips.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'strip-poker.setup.players',
+        title: 'Players',
+        text: '2 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'strip-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'strip-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck; chips or clothing stakes as agreed.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'strip-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt five cards face down. After first betting round, each player may discard 0 to 5 cards and receive that many from the deck. Second betting round, then showdown.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'strip-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest five-card hand at showdown wins the pot; or last player left after all others fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'strip-poker.score.description',
+        title: 'Scoring',
+        text: 'Highest five-card poker hand at showdown wins the pot; or the last player remaining when all others have folded. In strip poker, losers may remove clothing as stakes.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'strip-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Standard five-card draw hand rankings.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'strip-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Stand pat (draw zero) or discard and draw up to five.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'strip-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Betting rounds before and after the draw.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'strip-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Stakes agreed in advance (clothing, chips, or both).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'strip-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'strip-poker.rules.objective',
+          'strip-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'strip-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'strip-poker.setup.players',
+          'strip-poker.setup.deck',
+          'strip-poker.setup.equipment',
+          'strip-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'strip-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'strip-poker.rules.key.1',
+          'strip-poker.rules.key.2',
+          'strip-poker.rules.key.3',
+          'strip-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'strip-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'strip-poker.score.description',
+          'strip-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'strip-poker.setup.dealing',
+        'strip-poker.rules.objective',
+      ],
+      fold: [
+        'strip-poker.rules.gameplay',
+      ],
+      check: [
+        'strip-poker.rules.gameplay',
+      ],
+      call: [
+        'strip-poker.rules.gameplay',
+      ],
+      bet: [
+        'strip-poker.rules.gameplay',
+      ],
+      raise: [
+        'strip-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'strip-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'strip-poker.rules.gameplay',
+      ],
+      draw: [
+        'strip-poker.rules.gameplay',
+      ],
+      discard: [
+        'strip-poker.rules.gameplay',
+      ],
+      deal_5_each: [
+        'strip-poker.rules.gameplay',
+      ],
+    },
+  },
+}

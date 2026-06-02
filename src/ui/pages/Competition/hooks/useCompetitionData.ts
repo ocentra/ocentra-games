@@ -278,11 +278,6 @@ export function useCompetitionData(userId: string | null, options: CompetitionDa
     void refreshPrograms();
   }, [loadPrograms, refreshPrograms]);
 
-  useEffect(() => {
-    if (!loadPrograms || !selectedProgramId) return;
-    void loadProgram(selectedProgramId);
-  }, [loadProgram, loadPrograms, selectedProgramId]);
-
   return {
     loading,
     registering,

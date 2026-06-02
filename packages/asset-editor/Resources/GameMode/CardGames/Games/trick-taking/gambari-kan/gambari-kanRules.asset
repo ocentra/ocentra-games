@@ -1,0 +1,220 @@
+{
+  system: {
+    guid: 'cc86c311-e5bf-4b74-8a57-bfbcfa04b33c',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/gambari-kan/gambari-kanRules.asset',
+    gameId: 'gambari-kan',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "After the deal, players in turn from dealer's right may say kan or pass. If all pass, the required scoring-card threshold for kankei is lowered and another pass/kan cycle begins. Once someone declares kan, that player leads and plays alone against the other two. Play is counterclockwise with follow-suit required; if void, any card may be played. Joker and trumps follow Kan-family trick rules, including joker restrictions on first and last trick.",
+    Player: "After the deal, players in turn from dealer's right may say kan or pass. If all pass, the required scoring-card threshold for kankei is lowered and another pass/kan cycle begins. Once someone declares kan, that player leads and plays alone against the other two. Play is counterclockwise with follow-suit required; if void, any card may be played. Joker and trumps follow Kan-family trick rules, including joker restrictions on first and last trick.",
+    objective: 'As kankei, take at least the current required number of scoring cards (A, K, Q, J). As mukankei, hold the kankei player below that threshold.',
+    gameplay: "After the deal, players in turn from dealer's right may say kan or pass. If all pass, the required scoring-card threshold for kankei is lowered and another pass/kan cycle begins. Once someone declares kan, that player leads and plays alone against the other two. Play is counterclockwise with follow-suit required; if void, any card may be played. Joker and trumps follow Kan-family trick rules, including joker restrictions on first and last trick.",
+    keyRules: [
+      'Initial requirement for kankei is 9 scoring cards; if all players pass, the requirement is reduced step by step until someone declares kan.',
+      'Scoring cards are the A, K, Q, and J of each suit, worth one each.',
+      'The kankei player leads the first trick after declaring kan.',
+      'Trick play follows Kan conventions: follow suit if possible; joker cannot be led in first or last trick.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Exactly three players. One becomes kankei (solo), the other two form mukankei.',
+      deck: '30-card pack: remove all 2s, 3s, 4s, 5s, and 6s, and remove all 7s except the 7 of Spades; include one joker.',
+      equipment: '30-card pack: remove all 2s, 3s, 4s, 5s, and 6s, and remove all 7s except the 7 of Spades; include one joker.',
+      dealing: 'Dealer shuffles and deals 10 cards to each player counterclockwise. No stock remains.',
+    },
+    turnFlow: "After the deal, players in turn from dealer's right may say kan or pass. If all pass, the required scoring-card threshold for kankei is lowered and another pass/kan cycle begins. Once someone declares kan, that player leads and plays alone against the other two. Play is counterclockwise with follow-suit required; if void, any card may be played. Joker and trumps follow Kan-family trick rules, including joker restrictions on first and last trick.",
+    moveValidityConditions: {
+      ante: 'Gambari-Kan has no ante payment step.',
+      deal: 'Dealer only at start of the deal.',
+      reveal_market: 'There is no market reveal system in Gambari-Kan.',
+      buy_market: 'Cards are never purchased from any market.',
+      buy_stock: 'No stock-buy action exists in this fixed-deal trick game.',
+      fold: 'Players remain active through all tricks and cannot fold.',
+      check: 'There is no betting round where checking applies.',
+      call: 'No wager matching call action is part of Kan rules.',
+      bet: 'Gambari-Kan does not use a betting pot.',
+      raise: 'No betting pot exists, so raising is not applicable.',
+      declare: 'The core game state uses kan/pass and trick play, not declaration melds.',
+      reveal_hand: 'Hands remain private during normal play.',
+      award_pot: 'System action at end of the ten tricks.',
+      play_card: 'Joker cannot be led to first or last trick under standard Kan-family play.',
+      draw: 'All cards are fully dealt at start; no draw phase exists.',
+      discard: 'Cards leave hand only through trick play, not a separate discard action.',
+      pass: 'Only during kan selection before trick play starts.',
+      bid: 'Only in pre-play selection; first declaring player becomes kankei.',
+      meld: 'Gambari-Kan has no meld-laying mechanic.',
+      go_out: 'The hand ends after fixed trick count, not by a go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 10 card(s) per player.',
+      'Rule example: As kankei, take at least the current required number of scoring cards (A, K, Q, J). As mukankei, hold the kankei player below that threshold.',
+      "Turn-flow example: After the deal, players in turn from dealer's right may say kan or pass. If all pass, the required scoring-card threshold for kankei is lowered and another pass/kan cycle begins. Once someone declares kan, that player leads and plays alone against the other two. Play is counterclockwise with follow-suit required; if void, any card may be played. Joker and trumps follow Kan-family trick rules, including joker restrictions on first and last trick.",
+      'Scoring example: In each deal the kankei side must capture at least the current required number of scoring cards (A, K, Q, J). If kankei fails, mukankei wins the deal. After an agreed session of deals, the highest cumulative score wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'gambari-kan.rules.objective',
+        title: 'Objective',
+        text: 'As kankei, take at least the current required number of scoring cards (A, K, Q, J). As mukankei, hold the kankei player below that threshold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gambari-kan.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal, players in turn from dealer's right may say kan or pass. If all pass, the required scoring-card threshold for kankei is lowered and another pass/kan cycle begins. Once someone declares kan, that player leads and plays alone against the other two. Play is counterclockwise with follow-suit required; if void, any card may be played. Joker and trumps follow Kan-family trick rules, including joker restrictions on first and last trick.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gambari-kan.setup.players',
+        title: 'Players',
+        text: 'Exactly three players. One becomes kankei (solo), the other two form mukankei.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gambari-kan.setup.deck',
+        title: 'Deck',
+        text: '30-card pack: remove all 2s, 3s, 4s, 5s, and 6s, and remove all 7s except the 7 of Spades; include one joker.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gambari-kan.setup.equipment',
+        title: 'Equipment',
+        text: '30-card pack: remove all 2s, 3s, 4s, 5s, and 6s, and remove all 7s except the 7 of Spades; include one joker.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gambari-kan.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles and deals 10 cards to each player counterclockwise. No stock remains.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gambari-kan.score.win-condition',
+        title: 'Win condition',
+        text: 'After an agreed session of deals, the highest cumulative score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gambari-kan.score.description',
+        title: 'Scoring',
+        text: 'In each deal the kankei side must capture at least the current required number of scoring cards (A, K, Q, J). If kankei fails, mukankei wins the deal.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gambari-kan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Initial requirement for kankei is 9 scoring cards; if all players pass, the requirement is reduced step by step until someone declares kan.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gambari-kan.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Scoring cards are the A, K, Q, and J of each suit, worth one each.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gambari-kan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The kankei player leads the first trick after declaring kan.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'gambari-kan.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Trick play follows Kan conventions: follow suit if possible; joker cannot be led in first or last trick.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gambari-kan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gambari-kan.rules.objective',
+          'gambari-kan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gambari-kan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gambari-kan.setup.players',
+          'gambari-kan.setup.deck',
+          'gambari-kan.setup.equipment',
+          'gambari-kan.setup.dealing',
+        ],
+      },
+      {
+        id: 'gambari-kan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gambari-kan.rules.key.1',
+          'gambari-kan.rules.key.2',
+          'gambari-kan.rules.key.3',
+          'gambari-kan.rules.key.4',
+        ],
+      },
+      {
+        id: 'gambari-kan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gambari-kan.score.description',
+          'gambari-kan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gambari-kan.setup.dealing',
+        'gambari-kan.rules.objective',
+      ],
+      deal: [
+        'gambari-kan.rules.gameplay',
+      ],
+      award_pot: [
+        'gambari-kan.rules.gameplay',
+      ],
+      play_card: [
+        'gambari-kan.rules.gameplay',
+      ],
+      pass: [
+        'gambari-kan.rules.gameplay',
+      ],
+      bid: [
+        'gambari-kan.rules.gameplay',
+      ],
+    },
+  },
+}

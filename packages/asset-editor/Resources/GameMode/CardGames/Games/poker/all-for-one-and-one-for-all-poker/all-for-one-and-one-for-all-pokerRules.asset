@@ -1,0 +1,231 @@
+{
+  system: {
+    guid: '46150575-03e3-4488-bdb4-3909a34d8a8b',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/all-for-one-and-one-for-all-poker/all-for-one-and-one-for-all-pokerRules.asset',
+    gameId: 'all-for-one-and-one-for-all-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: '1. **Initial Deal**: 5 cards each. Initial betting round. 2. **Repeated Draw Phases**: Each active player must choose one of three options: \n   - **All for One**: Discard your entire 5-card hand and draw 5 new ones.\n   - **One for All**: Discard exactly 1 card and draw 1 new one.\n   - **Stand Pat**: Keep your current hand (once you stand pat, you cannot draw in future rounds).\n3. **Betting**: Each draw phase is followed by a full betting round. 4. **Repetition**: Draw and betting rounds continue until the deck has too few cards left to fulfill a worst-case draw scenario (i.e., every participant drawing 5). 5. **Showdown**: Remaining players reveal hands. Best hand according to standard rankings wins.',
+    Player: '1. **Initial Deal**: 5 cards each. Initial betting round. 2. **Repeated Draw Phases**: Each active player must choose one of three options: \n   - **All for One**: Discard your entire 5-card hand and draw 5 new ones.\n   - **One for All**: Discard exactly 1 card and draw 1 new one.\n   - **Stand Pat**: Keep your current hand (once you stand pat, you cannot draw in future rounds).\n3. **Betting**: Each draw phase is followed by a full betting round. 4. **Repetition**: Draw and betting rounds continue until the deck has too few cards left to fulfill a worst-case draw scenario (i.e., every participant drawing 5). 5. **Showdown**: Remaining players reveal hands. Best hand according to standard rankings wins.',
+    objective: 'Win the pot by having the best 5-card poker hand at showdown or by forcing all other players to fold.',
+    gameplay: '1. **Initial Deal**: 5 cards each. Initial betting round. 2. **Repeated Draw Phases**: Each active player must choose one of three options: \n   - **All for One**: Discard your entire 5-card hand and draw 5 new ones.\n   - **One for All**: Discard exactly 1 card and draw 1 new one.\n   - **Stand Pat**: Keep your current hand (once you stand pat, you cannot draw in future rounds).\n3. **Betting**: Each draw phase is followed by a full betting round. 4. **Repetition**: Draw and betting rounds continue until the deck has too few cards left to fulfill a worst-case draw scenario (i.e., every participant drawing 5). 5. **Showdown**: Remaining players reveal hands. Best hand according to standard rankings wins.',
+    keyRules: [
+      'No half-measures: You cannot discard 2, 3, or 4 cards. It is strictly 1 or 5 or 0.',
+      'Standing Pat: Once a player stands pat, they are locked into that hand for the remainder of the deal.',
+      'End Condition: The game ends automatically when the deck contains fewer than (Active Players * 5) cards, or by mutual agreement if betting becomes circular.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '2 to 6 players.',
+      deck: 'Standard 52 cards.',
+      equipment: 'Poker chips, standard deck.',
+      dealing: 'Each player is dealt 5 cards face-down. Antes are placed.',
+    },
+    turnFlow: '1. **Initial Deal**: 5 cards each. Initial betting round. 2. **Repeated Draw Phases**: Each active player must choose one of three options: \n   - **All for One**: Discard your entire 5-card hand and draw 5 new ones.\n   - **One for All**: Discard exactly 1 card and draw 1 new one.\n   - **Stand Pat**: Keep your current hand (once you stand pat, you cannot draw in future rounds).\n3. **Betting**: Each draw phase is followed by a full betting round. 4. **Repetition**: Draw and betting rounds continue until the deck has too few cards left to fulfill a worst-case draw scenario (i.e., every participant drawing 5). 5. **Showdown**: Remaining players reveal hands. Best hand according to standard rankings wins.',
+    moveValidityConditions: {
+      ante: 'Required once per hand before dealing.',
+      deal: 'Dealer-only in initial deal phase.',
+      reveal_market: 'Five-card draw with one shared buy; no market reveal phase.',
+      buy_market: 'Draw is from stock; one card bought from central pool in draw round, not market.',
+      buy_stock: 'Drawing is replacement from stock (1 or 5 cards); no separate stock purchase.',
+      fold: 'Available during betting rounds.',
+      check: 'Available only when action is unopened.',
+      call: 'Only when there is an open wager.',
+      bet: 'Only when no bet has been placed yet.',
+      raise: 'Only when a bet or raise is already open.',
+      declare: 'Winner determined at showdown; no separate declare phase.',
+      reveal_hand: 'Showdown only for non-folded players.',
+      award_pot: 'System action after fold-out or showdown.',
+      play_card: 'Play is draw-and-discard (1 or 5 cards) then showdown; no single play_card to table.',
+      draw: 'During draw rounds only; replacements must equal discards.',
+      discard: 'Only counts 1 or 5 are allowed; 5-card exchange blocked if it would starve remaining players of one-card draws.',
+      pass: 'During draw rounds only.',
+      bid: 'Fixed-limit betting rounds only; no bidding.',
+      meld: 'Standard five-card draw poker; no melds.',
+      go_out: 'Hand ends at showdown; no go-out declaration.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the best 5-card poker hand at showdown or by forcing all other players to fold.',
+      'Turn-flow example: 1. **Initial Deal**: 5 cards each. Initial betting round. 2. **Repeated Draw Phases**: Each active player must choose one of three options: \n   - **All for One**: Discard your entire 5-card hand and draw 5 new ones.\n   - **One for All**: Discard exactly 1 card and draw 1 new one.\n   - **Stand Pat**: Keep your current hand (once you stand pat, you cannot draw in future rounds).\n3. **Betting**: Each draw phase is followed by a full betting round. 4. **Repetition**: Draw and betting rounds continue until the deck has too few cards left to fulfill a worst-case draw scenario (i.e., every participant drawing 5). 5. **Showdown**: Remaining players reveal hands. Best hand according to standard rankings wins.',
+      'Scoring example: Pot game scored by standard high-hand poker ranking at showdown. High hand wins the pot..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'all-for-one-and-one-for-all-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best 5-card poker hand at showdown or by forcing all other players to fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Initial Deal**: 5 cards each. Initial betting round. 2. **Repeated Draw Phases**: Each active player must choose one of three options: \n   - **All for One**: Discard your entire 5-card hand and draw 5 new ones.\n   - **One for All**: Discard exactly 1 card and draw 1 new one.\n   - **Stand Pat**: Keep your current hand (once you stand pat, you cannot draw in future rounds).\n3. **Betting**: Each draw phase is followed by a full betting round. 4. **Repetition**: Draw and betting rounds continue until the deck has too few cards left to fulfill a worst-case draw scenario (i.e., every participant drawing 5). 5. **Showdown**: Remaining players reveal hands. Best hand according to standard rankings wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.setup.players',
+        title: 'Players',
+        text: '2 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Poker chips, standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 5 cards face-down. Antes are placed.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'High hand wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.score.description',
+        title: 'Scoring',
+        text: 'Pot game scored by standard high-hand poker ranking at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No half-measures: You cannot discard 2, 3, or 4 cards. It is strictly 1 or 5 or 0.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Standing Pat: Once a player stands pat, they are locked into that hand for the remainder of the deal.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'End Condition: The game ends automatically when the deck contains fewer than (Active Players * 5) cards, or by mutual agreement if betting becomes circular.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'all-for-one-and-one-for-all-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'all-for-one-and-one-for-all-poker.rules.objective',
+          'all-for-one-and-one-for-all-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'all-for-one-and-one-for-all-poker.setup.players',
+          'all-for-one-and-one-for-all-poker.setup.deck',
+          'all-for-one-and-one-for-all-poker.setup.equipment',
+          'all-for-one-and-one-for-all-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'all-for-one-and-one-for-all-poker.rules.key.1',
+          'all-for-one-and-one-for-all-poker.rules.key.2',
+          'all-for-one-and-one-for-all-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'all-for-one-and-one-for-all-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'all-for-one-and-one-for-all-poker.score.description',
+          'all-for-one-and-one-for-all-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'all-for-one-and-one-for-all-poker.setup.dealing',
+        'all-for-one-and-one-for-all-poker.rules.objective',
+      ],
+      ante: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      deal: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      fold: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      check: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      call: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      bet: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      raise: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      draw: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      discard: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+      pass: [
+        'all-for-one-and-one-for-all-poker.rules.gameplay',
+      ],
+    },
+  },
+}

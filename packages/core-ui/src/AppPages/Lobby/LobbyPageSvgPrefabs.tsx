@@ -400,7 +400,15 @@ export function FeaturedCard({ card, x, y, w, h, onOpen }: { card: FeaturedCardD
   const actionTone = action === 'FULL' ? 'red' : action === 'JOIN' || action === 'START' ? 'cyan' : 'purple';
   const countLabel = card.countLabel ?? (card.players === '12' ? 'Spectators' : 'Players');
   return (
-    <g className="lobby-featured-card lobby-ui-hit" onClick={() => onOpen(card)} filter="url(#lobbySoftShadow)">
+    <g
+      className="lobby-featured-card lobby-ui-hit"
+      onClick={() => onOpen(card)}
+      onKeyDown={(event) => handleSvgButtonKey(event, () => onOpen(card))}
+      filter="url(#lobbySoftShadow)"
+      role="button"
+      aria-label={`${action} ${card.title}`}
+      tabIndex={0}
+    >
       <rect x={x} y={y} width={w} height={h} rx="10" fill="#050914" stroke={stroke} strokeWidth="1.15" />
       <ImageCardArt x={x + 1} y={y + 1} w={w - 2} h={imgH} ai={card.ai} tone={card.tone} variant={card.variant} imageUrl={card.imageUrl} />
       <CardBadge x={x + 8} y={y + 8} w={badgeWidth(card.code, 42, 56)} h={20} size={8.3} label={card.code} stroke="#426b91" textFill="#d7eaff" />
@@ -419,7 +427,7 @@ export function FeaturedCard({ card, x, y, w, h, onOpen }: { card: FeaturedCardD
           <CenterTxt x={x + 1 + (w - 2) * 0.34 + 6} y={footerY + 6} w={(w - 2) * 0.66 - 12} h={footerH - 13} text={card.entry} size={11} weight="950" fill="#ffca45" />
         </g>
       ) : (
-        <Btn x={x + 1 + (w - 2) * 0.34 + 6} y={footerY + 6} w={(w - 2) * 0.66 - 12} h={footerH - 13} label={action} active tone={actionTone} size={10.5} rx={6} />
+        <Btn x={x + 1 + (w - 2) * 0.34 + 6} y={footerY + 6} w={(w - 2) * 0.66 - 12} h={footerH - 13} label={action} active tone={actionTone} size={10.5} rx={6} onClick={() => onOpen(card)} />
       )}
     </g>
   );
@@ -587,6 +595,7 @@ export function Featured({
   mainB,
   controls,
   featuredCards,
+  starterCards,
   featuredScroll,
   onFeaturedScroll,
 }: {
@@ -607,10 +616,12 @@ export function Featured({
   mainB: { x: number; w: number };
   controls: LobbyPageSvgControls;
   featuredCards: FeaturedCardData[];
+  starterCards: FeaturedCardData[];
   featuredScroll: number;
   onFeaturedScroll: (next: number) => void;
 }) {
   const isAllTables = selectedFeaturedTab === 'ALL TABLES';
+  const isStarters = selectedFeaturedTab === 'STARTERS';
   const handleW = 24;
   const fx = mainB.x + 8 + handleW;
   const fy = controls.mainBody.featuredY;
@@ -630,12 +641,15 @@ export function Featured({
   const visibleFeaturedCount = 4;
   const cardW = (innerW - 32 - cardGap * 3) / 4;
   const cardH = Math.min(310, innerH - 34);
-  const maxFeaturedScroll = Math.max(0, featuredCards.length - visibleFeaturedCount);
+  const displayedCards = isStarters ? starterCards : featuredCards;
+  const maxFeaturedScroll = Math.max(0, displayedCards.length - visibleFeaturedCount);
   const safeFeaturedScroll = Math.max(0, Math.min(featuredScroll, maxFeaturedScroll));
-  const visibleFeaturedCards = featuredCards.slice(safeFeaturedScroll, safeFeaturedScroll + visibleFeaturedCount);
+  const visibleFeaturedCards = displayedCards.slice(safeFeaturedScroll, safeFeaturedScroll + visibleFeaturedCount);
   const cardsTotalW = visibleFeaturedCards.length > 0 ? cardW * visibleFeaturedCards.length + cardGap * Math.max(0, visibleFeaturedCards.length - 1) : cardW * 4 + cardGap * 3;
   const cardsStartX = innerX + (innerW - cardsTotalW) / 2;
   const pageCount = Math.max(1, maxFeaturedScroll + 1);
+  const emptyTitle = isStarters ? 'NO STARTER PRESETS' : 'NO FEATURED TABLES';
+  const emptyBody = isStarters ? 'Starter presets will appear here when the lobby starter catalog is available.' : 'Open tables will appear here after real lobby data is loaded.';
   const handlePrevious = () => {
     if (isAllTables) onTableScroll(Math.max(0, safeScroll - 1));
     else onFeaturedScroll(Math.max(0, safeFeaturedScroll - 1));
@@ -649,9 +663,10 @@ export function Featured({
       <g filter="url(#lobbyFrameGlow)">
         <path d={roundedRectPath(fx, fy, fw, fh, 10)} fill="url(#lobbyFrameBlue)" stroke="#58bfff" strokeWidth="1.1" />
         <path d={roundedRectPath(fx + 4, fy + 4, fw - 8, fh - 8, 8)} fill="#050d19" stroke="#173653" strokeWidth="1" opacity="0.25" />
-        <line x1={fx + 176} y1={fy + 41} x2={fx + fw - 12} y2={fy + 41} stroke="#4fb9e8" strokeWidth="1.4" opacity="0.65" />
-        <FrameTab x={fx + 12} y={fy + 6} count={String(featuredCards.length)} label="FEATURED" active={selectedFeaturedTab === 'FEATURED'} onClick={() => onSelectFeaturedTab('FEATURED')} />
-        <FrameTab x={fx + 152} y={fy + 6} count={String(tableRows.length)} label="ALL TABLES" active={selectedFeaturedTab === 'ALL TABLES'} onClick={() => onSelectFeaturedTab('ALL TABLES')} wide />
+        <line x1={fx + 476} y1={fy + 41} x2={fx + fw - 12} y2={fy + 41} stroke="#4fb9e8" strokeWidth="1.4" opacity="0.65" />
+        <FrameTab x={fx + 12} y={fy + 6} count={String(starterCards.length)} label="STARTERS" active={isStarters} onClick={() => onSelectFeaturedTab('STARTERS')} />
+        <FrameTab x={fx + 152} y={fy + 6} count={String(featuredCards.length)} label="FEATURED" active={selectedFeaturedTab === 'FEATURED'} onClick={() => onSelectFeaturedTab('FEATURED')} />
+        <FrameTab x={fx + 292} y={fy + 6} count={String(tableRows.length)} label="ALL TABLES" active={selectedFeaturedTab === 'ALL TABLES'} onClick={() => onSelectFeaturedTab('ALL TABLES')} wide />
         <rect x={innerX} y={innerY} width={innerW} height={innerH} rx="6" fill="none" stroke="#31506c" strokeWidth="1" opacity="0.58" />
       </g>
       {isAllTables ? (
@@ -694,7 +709,7 @@ export function Featured({
           {visibleFeaturedCards.length > 0 ? visibleFeaturedCards.map((card, i) => (
             <FeaturedCard key={card.code} card={card} x={cardsStartX + i * (cardW + cardGap)} y={innerY + (innerH - cardH) / 2} w={cardW} h={cardH} onOpen={onOpenFeaturedCard} />
           )) : (
-            <LobbyEmptyState x={innerX + 18} y={innerY + 34} w={innerW - 36} h={innerH - 68} title="NO FEATURED TABLES" body="Open tables will appear here after real lobby data is loaded." />
+            <LobbyEmptyState x={innerX + 18} y={innerY + 34} w={innerW - 36} h={innerH - 68} title={emptyTitle} body={emptyBody} />
           )}
           {Array.from({ length: pageCount }, (_, i) => (
             <rect
@@ -863,15 +878,21 @@ export function RightRail({
   systemMessage,
   onNavigate,
   party,
+  chatTitle,
+  chatEmptyTitle,
+  chatEmptyBody,
+  chatInputLabel,
+  chatInputPlaceholder,
+  chatInputDisabled,
   friendSearchDraft,
-  lobbyChatDraft,
+  chatDraft: rightRailChatDraft,
   onFriendSearchDraftChange,
-  onLobbyChatDraftChange,
+  onChatDraftChange,
   onAddFriend,
   onInviteFriend,
   onCreateParty,
   onLeaveParty,
-  onSendLobbyChat,
+  onSendChat,
   onRefreshLobbyServices,
 }: {
   controls: LobbyPageSvgControls;
@@ -884,15 +905,21 @@ export function RightRail({
   systemMessage: string | null;
   onNavigate?: (target: LobbyNavigationTarget) => void;
   party?: LobbyPartyStatus | null;
+  chatTitle?: string;
+  chatEmptyTitle?: string;
+  chatEmptyBody?: string;
+  chatInputLabel?: string;
+  chatInputPlaceholder?: string;
+  chatInputDisabled?: boolean;
   friendSearchDraft?: string;
-  lobbyChatDraft?: string;
+  chatDraft?: string;
   onFriendSearchDraftChange?: (value: string) => void;
-  onLobbyChatDraftChange?: (value: string) => void;
+  onChatDraftChange?: (value: string) => void;
   onAddFriend?: (friendId: string) => void;
   onInviteFriend?: (friendId: string) => void;
   onCreateParty?: () => void;
   onLeaveParty?: () => void;
-  onSendLobbyChat?: (message: string) => void;
+  onSendChat?: (message: string) => void;
   onRefreshLobbyServices?: () => void;
 }) {
   const rail = { ...controls.rightPanel, ...panel };
@@ -904,7 +931,9 @@ export function RightRail({
   const chat = { x: innerX, y: rail.y + rail.chatY, w: innerW, h: rail.y + rail.h - (rail.y + rail.chatY) };
   const showingParty = selectedFriendsTab === 'PARTY';
   const friendDraft = friendSearchDraft ?? '';
-  const chatDraft = lobbyChatDraft ?? '';
+  const chatDraft = rightRailChatDraft ?? '';
+  const visibleChatMessages = chatMessages.slice(0, 4);
+  const chatDisabled = Boolean(chatInputDisabled || !onSendChat);
   return (
     <Panel x={rail.x} y={rail.y} w={rail.w} h={rail.h} r={{ tl: 0, tr: 12, br: 12, bl: 0 }} stroke={controls.colors.panelStroke} fill="url(#lobbySide)" strokeWidth={controls.layout.panelStrokeWidth}>
       <PlayerMiniCard x={profile.x} y={profile.y} w={profile.w} h={profile.h} viewer={viewer} />
@@ -972,13 +1001,13 @@ export function RightRail({
         <Btn x={friends.x + 20} y={friends.y + friends.h - 38} w={friends.w - 40} h={34} label={showingParty ? 'VIEW ALL FRIENDS' : 'SOCIAL HUB'} size={11} onClick={() => onNavigate?.('social')} disabled={!onNavigate} />
       </Panel>
       <Panel x={chat.x} y={chat.y} w={chat.w} h={chat.h} r={10} stroke="#193750" fill="rgba(4,10,18,0.18)">
-        <Txt x={chat.x + 14} y={chat.y + 36} text="LOBBY CHAT" maxWidth={140} size={15} weight="950" />
+        <Txt x={chat.x + 14} y={chat.y + 36} text={chatTitle ?? 'TABLE CHAT'} maxWidth={140} size={15} weight="950" />
         <Btn x={chat.x + chat.w - 102} y={chat.y + 14} w={28} h={28} label="◎" size={12} onClick={() => onRefreshLobbyServices?.()} disabled={!onRefreshLobbyServices} />
         <Btn x={chat.x + chat.w - 64} y={chat.y + 14} w={34} h={28} label="⋯" size={13} onClick={() => onNavigate?.('social')} disabled={!onNavigate} />
-        {chatMessages.length > 0 ? chatMessages.map(({ name, msg, ago }, i) => (
-          <Chat key={`${name}-${i}`} x={chat.x + 14} y={chat.y + 58 + i * 54} w={chat.w - 28} name={name} msg={msg} ago={ago} avatarUrl={chatMessages[i]?.avatarUrl} />
+        {visibleChatMessages.length > 0 ? visibleChatMessages.map(({ messageId, name, msg, ago, avatarUrl }, i) => (
+          <Chat key={messageId ?? `${name}-${i}`} x={chat.x + 14} y={chat.y + 58 + i * 54} w={chat.w - 28} name={name} msg={msg} ago={ago} avatarUrl={avatarUrl} />
         )) : (
-          <LobbyEmptyState x={chat.x + 14} y={chat.y + 62} w={chat.w - 28} h={chat.h - 162} title="NO CHAT YET" body="Send the first lobby message." />
+          <LobbyEmptyState x={chat.x + 14} y={chat.y + 62} w={chat.w - 28} h={chat.h - 162} title={chatEmptyTitle ?? 'NO TABLE CHAT YET'} body={chatEmptyBody ?? 'Join a table to chat live.'} />
         )}
         {systemMessage ? (
           <>
@@ -992,22 +1021,23 @@ export function RightRail({
             onSubmit={(event) => {
               event.preventDefault();
               const message = chatDraft.trim();
-              if (!message) return;
-              onSendLobbyChat?.(message);
+              if (!message || chatDisabled) return;
+              onSendChat?.(message);
             }}
             style={{ display: 'flex', height: '34px', gap: '6px' }}
           >
             <input
-              aria-label="Lobby chat message"
+              aria-label={chatInputLabel ?? 'Table chat message'}
               value={chatDraft}
               maxLength={180}
-              onChange={(event) => onLobbyChatDraftChange?.(event.currentTarget.value)}
-              placeholder="Type a message..."
+              onChange={(event) => onChatDraftChange?.(event.currentTarget.value)}
+              placeholder={chatInputPlaceholder ?? 'Message table...'}
+              disabled={chatDisabled}
               style={{ flex: 1, minWidth: 0, border: '1px solid #244761', borderRadius: '8px', background: '#06121e', color: '#edf7ff', font: '700 11px Inter, sans-serif', padding: '0 9px', outline: 'none' }}
             />
             <button
               type="submit"
-              disabled={!onSendLobbyChat}
+              disabled={chatDisabled}
               style={{ width: '42px', border: '1px solid #6d35ff', borderRadius: '8px', background: '#17143c', color: '#f5fdff', font: '900 12px Inter, sans-serif' }}
             >
               ▶

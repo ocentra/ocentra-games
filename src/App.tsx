@@ -6,6 +6,7 @@ import { PlatformUIProvider } from '@/ui/platform/PlatformUIContext';
 import { PlatformAwareRoutes } from '@/ui/routes/PlatformAwareRoutes';
 import { NewVersionBanner } from '@/ui/components/NewVersionBanner/NewVersionBanner';
 import { RouteSeo } from '@/seo/RouteSeo';
+import { NavigationFeedbackProvider } from '@/ui/navigation/NavigationFeedbackProvider';
 
 const LazyPlatformDebugOverlay = lazy(async () => {
   const mod = await import('@/ui/platform/PlatformDebugOverlay');
@@ -20,16 +21,18 @@ export default function AppWrapper() {
   return (
     <PlatformUIProvider>
       <BrowserRouter>
-        <RouteSeo />
-        <QueryProvider>
-          <AuthProvider>
-            <NewVersionBanner />
-            <PlatformAwareRoutes />
-            <Suspense fallback={null}>
-              <LazyPlatformDebugOverlay />
-            </Suspense>
-          </AuthProvider>
-        </QueryProvider>
+        <NavigationFeedbackProvider>
+          <RouteSeo />
+          <QueryProvider>
+            <AuthProvider>
+              <NewVersionBanner />
+              <PlatformAwareRoutes />
+              <Suspense fallback={null}>
+                <LazyPlatformDebugOverlay />
+              </Suspense>
+            </AuthProvider>
+          </QueryProvider>
+        </NavigationFeedbackProvider>
       </BrowserRouter>
     </PlatformUIProvider>
   );

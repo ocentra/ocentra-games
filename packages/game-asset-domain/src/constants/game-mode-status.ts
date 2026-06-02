@@ -1,4 +1,6 @@
 export const GameModeStatus = {
+  WorkInProgress: 'WorkInProgress',
+  InternalOnly: 'InternalOnly',
   Available: 'Available',
   ComingSoon: 'ComingSoon',
   Maintenance: 'Maintenance',

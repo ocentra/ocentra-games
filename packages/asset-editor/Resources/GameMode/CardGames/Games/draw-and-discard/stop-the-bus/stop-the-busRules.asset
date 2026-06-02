@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: '84af0a8d-4eb3-4814-9e96-304ecb4f4df9',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/draw-and-discard/stop-the-bus/stop-the-busRules.asset',
+    gameId: 'stop-the-bus',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "Dealer deals three cards each and turns one card face up to start the discard pile; the rest form the stock. Player to dealer's left starts; play is clockwise. On your turn you may: (1) Draw the top card of the stock (face down), add it to your hand, then discard one of your four cards face up onto the discard pile; (2) Draw the top card of the discard pile, add it to your hand, then discard a different card from your hand face up; or (3) Call 'Stop the Bus' and keep your current three cards without drawing or discarding. When someone calls Stop the Bus, each other player has one more turn (they may pass without drawing). All then show hands; the player with the worst Brag hand loses one life (token). A player with no tokens left is eliminated. Play continues with new deals until one player remains.",
+    Player: "Dealer deals three cards each and turns one card face up to start the discard pile; the rest form the stock. Player to dealer's left starts; play is clockwise. On your turn you may: (1) Draw the top card of the stock (face down), add it to your hand, then discard one of your four cards face up onto the discard pile; (2) Draw the top card of the discard pile, add it to your hand, then discard a different card from your hand face up; or (3) Call 'Stop the Bus' and keep your current three cards without drawing or discarding. When someone calls Stop the Bus, each other player has one more turn (they may pass without drawing). All then show hands; the player with the worst Brag hand loses one life (token). A player with no tokens left is eliminated. Play continues with new deals until one player remains.",
+    objective: 'Form the best three-card Brag hand. Do not have the worst hand when someone calls Stop the Bus; the lowest hand loses a life.',
+    gameplay: "Dealer deals three cards each and turns one card face up to start the discard pile; the rest form the stock. Player to dealer's left starts; play is clockwise. On your turn you may: (1) Draw the top card of the stock (face down), add it to your hand, then discard one of your four cards face up onto the discard pile; (2) Draw the top card of the discard pile, add it to your hand, then discard a different card from your hand face up; or (3) Call 'Stop the Bus' and keep your current three cards without drawing or discarding. When someone calls Stop the Bus, each other player has one more turn (they may pass without drawing). All then show hands; the player with the worst Brag hand loses one life (token). A player with no tokens left is eliminated. Play continues with new deals until one player remains.",
+    keyRules: [
+      'Hands are ranked by three-card Brag order: Prial (three of a kind) best, then Running Flush, Run, Flush, Pair, High Card.',
+      'Tiebreak: compare suit of highest card using spades > hearts > diamonds > clubs.',
+      'If the player due to deal next was eliminated, the same dealer deals again so the next surviving player to the left does not miss their turn to start.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'From two to around nine or more can play; the game is best with three to five. With more players, those eliminated early have nothing to do until the game ends.',
+      deck: 'A standard Anglo-American 52-card pack; cards in each suit rank high to low A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+      equipment: 'Three tokens (e.g. pennies or matches) per player; optionally a small model bus to signal end of play.',
+      dealing: 'Dealer shuffles and deals three cards to each player one at a time face down. The next card is placed face up to start the discard pile; the remainder is placed face down as the stock.',
+    },
+    turnFlow: "Dealer deals three cards each and turns one card face up to start the discard pile; the rest form the stock. Player to dealer's left starts; play is clockwise. On your turn you may: (1) Draw the top card of the stock (face down), add it to your hand, then discard one of your four cards face up onto the discard pile; (2) Draw the top card of the discard pile, add it to your hand, then discard a different card from your hand face up; or (3) Call 'Stop the Bus' and keep your current three cards without drawing or discarding. When someone calls Stop the Bus, each other player has one more turn (they may pass without drawing). All then show hands; the player with the worst Brag hand loses one life (token). A player with no tokens left is eliminated. Play continues with new deals until one player remains.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Occurs in the reveal phase after the final round; system resolves lowest hand and removes one token from that player.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Players draw and discard or call stop; cards are not played to a trick.',
+      draw: 'Legal on your turn in the swap or final_round phase. You must discard one card after drawing.',
+      discard: 'Discard is performed as part of the draw action; player must discard one card after drawing.',
+      pass: 'Legal only in the final_round phase when you are content with your hand.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Form the best three-card Brag hand. Do not have the worst hand when someone calls Stop the Bus; the lowest hand loses a life.',
+      "Turn-flow example: Dealer deals three cards each and turns one card face up to start the discard pile; the rest form the stock. Player to dealer's left starts; play is clockwise. On your turn you may: (1) Draw the top card of the stock (face down), add it to your hand, then discard one of your four cards face up onto the discard pile; (2) Draw the top card of the discard pile, add it to your hand, then discard a different card from your hand face up; or (3) Call 'Stop the Bus' and keep your current three cards without drawing or discarding. When someone calls Stop the Bus, each other player has one more turn (they may pass without drawing). All then show hands; the player with the worst Brag hand loses one life (token). A player with no tokens left is eliminated. Play continues with new deals until one player remains.",
+      'Scoring example: Form the best three-card Brag hand. The player with the worst hand when someone calls Stop the Bus loses a life; last player remaining wins. Form the best three-card Brag hand. Do not have the worst hand when Stop the Bus is called; last player with tokens wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'stop-the-bus.rules.objective',
+        title: 'Objective',
+        text: 'Form the best three-card Brag hand. Do not have the worst hand when someone calls Stop the Bus; the lowest hand loses a life.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'stop-the-bus.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer deals three cards each and turns one card face up to start the discard pile; the rest form the stock. Player to dealer's left starts; play is clockwise. On your turn you may: (1) Draw the top card of the stock (face down), add it to your hand, then discard one of your four cards face up onto the discard pile; (2) Draw the top card of the discard pile, add it to your hand, then discard a different card from your hand face up; or (3) Call 'Stop the Bus' and keep your current three cards without drawing or discarding. When someone calls Stop the Bus, each other player has one more turn (they may pass without drawing). All then show hands; the player with the worst Brag hand loses one life (token). A player with no tokens left is eliminated. Play continues with new deals until one player remains.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'stop-the-bus.setup.players',
+        title: 'Players',
+        text: 'From two to around nine or more can play; the game is best with three to five. With more players, those eliminated early have nothing to do until the game ends.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'stop-the-bus.setup.deck',
+        title: 'Deck',
+        text: 'A standard Anglo-American 52-card pack; cards in each suit rank high to low A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'stop-the-bus.setup.equipment',
+        title: 'Equipment',
+        text: 'Three tokens (e.g. pennies or matches) per player; optionally a small model bus to signal end of play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'stop-the-bus.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles and deals three cards to each player one at a time face down. The next card is placed face up to start the discard pile; the remainder is placed face down as the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'stop-the-bus.score.win-condition',
+        title: 'Win condition',
+        text: 'Form the best three-card Brag hand. Do not have the worst hand when Stop the Bus is called; last player with tokens wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'stop-the-bus.score.description',
+        title: 'Scoring',
+        text: 'Form the best three-card Brag hand. The player with the worst hand when someone calls Stop the Bus loses a life; last player remaining wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'stop-the-bus.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hands are ranked by three-card Brag order: Prial (three of a kind) best, then Running Flush, Run, Flush, Pair, High Card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'stop-the-bus.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tiebreak: compare suit of highest card using spades > hearts > diamonds > clubs.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'stop-the-bus.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If the player due to deal next was eliminated, the same dealer deals again so the next surviving player to the left does not miss their turn to start.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'stop-the-bus.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'stop-the-bus.rules.objective',
+          'stop-the-bus.rules.gameplay',
+        ],
+      },
+      {
+        id: 'stop-the-bus.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'stop-the-bus.setup.players',
+          'stop-the-bus.setup.deck',
+          'stop-the-bus.setup.equipment',
+          'stop-the-bus.setup.dealing',
+        ],
+      },
+      {
+        id: 'stop-the-bus.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'stop-the-bus.rules.key.1',
+          'stop-the-bus.rules.key.2',
+          'stop-the-bus.rules.key.3',
+        ],
+      },
+      {
+        id: 'stop-the-bus.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'stop-the-bus.score.description',
+          'stop-the-bus.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'stop-the-bus.setup.dealing',
+        'stop-the-bus.rules.objective',
+      ],
+      reveal_hand: [
+        'stop-the-bus.rules.gameplay',
+      ],
+      draw: [
+        'stop-the-bus.rules.gameplay',
+      ],
+      pass: [
+        'stop-the-bus.rules.gameplay',
+      ],
+      perform_initial_deal: [
+        'stop-the-bus.rules.gameplay',
+      ],
+      call_stop_the_bus: [
+        'stop-the-bus.rules.gameplay',
+      ],
+    },
+  },
+}

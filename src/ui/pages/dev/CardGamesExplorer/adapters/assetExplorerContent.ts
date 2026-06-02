@@ -3,6 +3,7 @@ import {
   loadGameDetailAssetContent,
   loadSelectedGameAssetBundle,
 } from '@/ui/pages/games/SelectedGame/gameDetailAssetSections';
+import { repairDisplayText } from '@/utils/displayTextRepair';
 import type { Game, GameDetail, GameSummary } from '@/ui/pages/dev/CardGamesExplorer/types';
 
 type LooseRecord = Record<string, unknown>;
@@ -38,7 +39,7 @@ function dataOf(document: unknown): LooseRecord {
 }
 
 function cleanText(value: string): string {
-  return value
+  return repairDisplayText(value)
     .replace(/minimum viable playable table/gi, 'playable table')
     .replace(/local pilot/gi, 'local match')
     .replace(/playable pilot/gi, 'playable match')

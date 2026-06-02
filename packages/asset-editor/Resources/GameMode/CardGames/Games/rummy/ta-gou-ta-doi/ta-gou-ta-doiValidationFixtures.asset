@@ -1,0 +1,127 @@
+{
+  system: {
+    guid: '98042a01-872d-40a7-84cc-0e3dfd3eddc5',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/ta-gou-ta-doi/ta-gou-ta-doiValidationFixtures.asset',
+    gameId: 'ta-gou-ta-doi',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'ta-gou-ta-doi',
+    familyVariant: 'Draw and Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'ta-gou-ta-doi.core-runtime-contracts',
+        title: 'Ta Gou Ta Doi 搭九搭对 Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'ta-gou-ta-doi.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 4,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Ta Gou Ta Doi 搭九搭对 must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'ta-gou-ta-doi.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'ta-gou-ta-doi.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'first_turn',
+            supportedActionIds: [
+              'setup_round',
+              'declare',
+              'draw',
+              'discard',
+            ],
+            explanation: 'Ta Gou Ta Doi 搭九搭对 must run setup_round first, then enter first_turn with the processed legal actions.',
+            linkedRuleIds: [
+              'ta-gou-ta-doi.setup.initial-deal',
+              'ta-gou-ta-doi.flow.first_turn',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'first_turn',
+            firstPlayableLegalActions: [
+              'declare',
+              'discard',
+            ],
+          },
+          {
+            id: 'ta-gou-ta-doi.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'First player to hold six pieces forming three valid sets of two (Gou or Doi) and declare wins.',
+            scoringDirection: 'high_wins',
+            targetScore: null,
+            cardValues: {
+              '1': '1',
+              '2': '2',
+              '3': '3',
+              '4': '4',
+              '5': '5',
+              '6': '6',
+              '7': '7',
+              '8': '8',
+            },
+            explanation: 'No point scoring; first player to hold three valid sets of two and declare wins. If table is exhausted with no declaration, there is no winner.',
+            linkedRuleIds: [
+              'ta-gou-ta-doi.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'ta-gou-ta-doi.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

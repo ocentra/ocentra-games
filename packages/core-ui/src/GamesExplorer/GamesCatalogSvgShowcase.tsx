@@ -27,6 +27,12 @@ import {
   DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS,
   type GamesCatalogSvgLayoutControls,
 } from './GamesCatalogSvgShowcaseControls';
+import {
+  gamesExplorerReleaseStatusLabel,
+  gamesExplorerReleaseStatusShortLabel,
+  gamesExplorerReleaseStatusTone,
+  isGamesExplorerGameAvailable,
+} from './releaseStatus';
 import './GamesCatalogSvgShowcase.css';
 
 const BASE_VIEW_W = 1800;
@@ -1282,8 +1288,9 @@ function GameCardSvg({
   const descriptionBottomY = controls.showCardMeta ? metaTop - 26 : y + h - 24;
   const descriptionMaxLines = Math.max(1, Math.floor((descriptionBottomY - descriptionStartY) / descriptionLineHeight) + 1);
   const descriptionLines = wrapText(game.description, descMax, Math.min(6, descriptionMaxLines));
-  const status = game.source === 'asset' ? 'AVAILABLE' : 'COMING SOON';
-  const statusTone = game.source === 'asset' ? 'green' : 'gold';
+  const status = gamesExplorerReleaseStatusLabel(game.releaseStatus);
+  const statusTone = gamesExplorerReleaseStatusTone(game.releaseStatus);
+  const statusWidth = Math.min(178, Math.max(112, status.length * 8.2 + 28));
   const clipId = `${idPrefix}-card-img-${index}`;
   const topClampW = Math.min(190, w * 0.58);
   const topClampH = controls.cardTopClampHeight;
@@ -1320,7 +1327,7 @@ function GameCardSvg({
             </SvgText>
           </>
         ) : null}
-        {controls.showCardStatusBadge ? <Pill x={x + 22} y={bannerY + Math.max(0, bannerH - 36)} w={status === 'AVAILABLE' ? 112 : 140} label={status} tone={statusTone} controls={controls} /> : null}
+        {controls.showCardStatusBadge ? <Pill x={x + 22} y={bannerY + Math.max(0, bannerH - 36)} w={statusWidth} label={status} tone={statusTone} controls={controls} /> : null}
         <g className="games-catalog-svg-showcase__card-title">
           <SvgText x={bodyX} y={bodyTop} size={controls.cardTitleFont} strong color={controls.cardTextColor}>
             {truncate(game.name, titleMax)}
@@ -1416,8 +1423,8 @@ function GameListSvg({
             <SvgText x={x + 18} y={rowY + 23} strong={selected}>{truncate(game.name, 54)}</SvgText>
             <SvgText x={x + w - 350} y={rowY + 23}>{truncate(game.subcategory ? `${game.category} / ${game.subcategory}` : game.category, 28)}</SvgText>
             <SvgText x={x + w - 190} y={rowY + 23}>{truncate(game.players, 14)}</SvgText>
-            <SvgText x={x + w - 100} y={rowY + 23} color={game.source === 'asset' ? '#1ed6a6' : '#ffd36d'}>
-              {game.source === 'asset' ? 'Available' : 'Coming'}
+            <SvgText x={x + w - 100} y={rowY + 23} color={isGamesExplorerGameAvailable(game.releaseStatus) ? '#1ed6a6' : '#ffd36d'}>
+              {gamesExplorerReleaseStatusShortLabel(game.releaseStatus)}
             </SvgText>
           </Hit>
         );
@@ -1616,8 +1623,12 @@ function DetailOverlay({
   const sideCardW = 314;
   const sideCardH = 230;
   const sectionText = detailLoading ? '' : renderDetailSection(game, detail, activeDetailSection);
+  const status = gamesExplorerReleaseStatusLabel(game.releaseStatus);
+  const statusTone = gamesExplorerReleaseStatusTone(game.releaseStatus);
+  const statusWidth = Math.min(178, Math.max(116, status.length * 8.2 + 28));
+  const isAvailable = isGamesExplorerGameAvailable(game.releaseStatus);
   const sectionFallback = activeDetailSection === 'overview'
-    ? 'No overview is available for this catalog entry yet.'
+    ? 'No overview has been authored for this game yet.'
     : `No ${DETAIL_SECTION_LABELS[activeDetailSection].toLowerCase()} content has been authored yet.`;
   const sectionLines = wrapDetailText(sectionText || sectionFallback, Math.max(48, Math.floor((bodyCardW - 48) / 7.2)), Math.max(6, Math.floor((bodyCardH - 78) / 22)));
   const openGamePage = () => {
@@ -1640,8 +1651,8 @@ function DetailOverlay({
       <SvgText x={x + 42} y={y + 46} size={30} strong color="#ffffff">
         {truncate(game.name, 46)}
       </SvgText>
-      <Pill x={x + 42} y={y + 82} w={game.source === 'asset' ? 116 : 146} label={game.source === 'asset' ? 'AVAILABLE' : 'COMING SOON'} tone={game.source === 'asset' ? 'green' : 'gold'} controls={controls} />
-      <SvgText x={x + 210} y={y + 98} size={14} color="#b9d5ff">
+      <Pill x={x + 42} y={y + 82} w={statusWidth} label={status} tone={statusTone} controls={controls} />
+      <SvgText x={x + 70 + statusWidth} y={y + 98} size={14} color="#b9d5ff">
         {truncate(category, 62)}
       </SvgText>
       <Hit x={x + panelW - 78} y={y + 28} w={52} h={52} onClick={close} ariaLabel="Close game details">
@@ -1682,32 +1693,21 @@ function DetailOverlay({
         {controls.showDetailReadiness ? (
           <>
             <rect x={sideCardX} y={sideCardY} width={sideCardW} height={sideCardH} rx={16} fill={controls.detailCardFillColor} fillOpacity={controls.detailCardFillOpacity} stroke={controls.detailCardStrokeColor} strokeWidth={1.1} opacity={0.92} />
-            {game.source === 'asset' ? (
-              <>
-                <SvgText x={sideCardX + 22} y={sideCardY + 34} size={14} strong color="#e9f8ff">READINESS</SvgText>
-                {SECTIONS.map((section, index) => (
-                  <circle key={section} cx={sideCardX + 22 + index * 24} cy={sideCardY + 72} r={7} fill={completeness[section] ? '#1ed6a6' : 'none'} stroke="#1ed6a6" strokeWidth={1} opacity={completeness[section] ? 1 : 0.45} />
-                ))}
-                <SvgText x={sideCardX + sideCardW - 54} y={sideCardY + 73} size={13} color="#c9e9ff">{pct}%</SvgText>
-                <rect x={sideCardX + 22} y={sideCardY + 102} width={260} height={8} rx={4} fill="#061124" stroke="#345b89" strokeWidth={1} />
-                <rect x={sideCardX + 22} y={sideCardY + 102} width={260 * Math.max(0, Math.min(100, pct)) / 100} height={8} rx={4} fill="#1ed6a6" opacity={0.86} />
-                {controls.showDetailActions && hasGamePageAction ? <Button x={sideCardX + 22} y={sideCardY + 134} w={260} h={36} label="Game Page" active onClick={openGamePage} controls={controls} /> : null}
-                {controls.showDetailActions && hasRulesAction ? <Button x={sideCardX + 22} y={sideCardY + 180} w={260} h={36} label="Rules Page" onClick={openRulesPage} controls={controls} /> : null}
-              </>
-            ) : (
-              <>
-                <SvgText x={sideCardX + 22} y={sideCardY + 34} size={14} strong color="#e9f8ff">STATUS</SvgText>
-                <Pill x={sideCardX + 22} y={sideCardY + 58} w={146} label="COMING SOON" tone="gold" controls={controls} />
-                <SvgText x={sideCardX + 22} y={sideCardY + 116} size={13} color="#bdcbe0">
-                  Detail text is loaded from the catalog JSON.
-                </SvgText>
-                <SvgText x={sideCardX + 22} y={sideCardY + 142} size={13} color="#8295b0">
-                  A playable page appears here after migration.
-                </SvgText>
-                {controls.showDetailActions && hasGamePageAction ? <Button x={sideCardX + 22} y={sideCardY + 154} w={260} h={34} label="Game Page" active onClick={openGamePage} controls={controls} /> : null}
-                {controls.showDetailActions && hasRulesAction ? <Button x={sideCardX + 22} y={sideCardY + 196} w={260} h={34} label="Rules Page" onClick={openRulesPage} controls={controls} /> : null}
-              </>
-            )}
+            <SvgText x={sideCardX + 22} y={sideCardY + 34} size={14} strong color="#e9f8ff">READINESS</SvgText>
+            <Pill x={sideCardX + 22} y={sideCardY + 52} w={Math.min(170, Math.max(116, status.length * 7.8 + 24))} label={status} tone={statusTone} controls={controls} />
+            {SECTIONS.map((section, index) => (
+              <circle key={section} cx={sideCardX + 22 + index * 24} cy={sideCardY + 98} r={7} fill={completeness[section] ? '#1ed6a6' : 'none'} stroke="#1ed6a6" strokeWidth={1} opacity={completeness[section] ? 1 : 0.45} />
+            ))}
+            <SvgText x={sideCardX + sideCardW - 54} y={sideCardY + 99} size={13} color="#c9e9ff">{pct}%</SvgText>
+            <rect x={sideCardX + 22} y={sideCardY + 122} width={260} height={8} rx={4} fill="#061124" stroke="#345b89" strokeWidth={1} />
+            <rect x={sideCardX + 22} y={sideCardY + 122} width={260 * Math.max(0, Math.min(100, pct)) / 100} height={8} rx={4} fill="#1ed6a6" opacity={0.86} />
+            {!isAvailable ? (
+              <SvgText x={sideCardX + 22} y={sideCardY + 156} size={13} color="#bdcbe0">
+                Gameplay start stays disabled until this asset is Available.
+              </SvgText>
+            ) : null}
+            {controls.showDetailActions && hasGamePageAction ? <Button x={sideCardX + 22} y={sideCardY + (isAvailable ? 148 : 164)} w={260} h={isAvailable ? 34 : 28} label="Game Page" active onClick={openGamePage} controls={controls} /> : null}
+            {controls.showDetailActions && hasRulesAction ? <Button x={sideCardX + 22} y={sideCardY + (isAvailable ? 190 : 198)} w={260} h={isAvailable ? 34 : 28} label="Rules Page" onClick={openRulesPage} controls={controls} /> : null}
           </>
         ) : null}
       </g>

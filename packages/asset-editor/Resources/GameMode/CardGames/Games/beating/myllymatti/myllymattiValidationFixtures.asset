@@ -1,0 +1,115 @@
+{
+  system: {
+    guid: '5ff19d0f-6e95-4e49-a646-442abfe55ea4',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/beating/myllymatti/myllymattiValidationFixtures.asset',
+    gameId: 'myllymatti',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'myllymatti',
+    familyVariant: 'Attack-Defense',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'myllymatti.core-runtime-contracts',
+        title: 'Myllymatti Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'myllymatti.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 17,
+            expectedPlayerCounts: {
+              min: 3,
+              max: 3,
+              recommended: 3,
+            },
+            expectedTotalInitialCards: 51,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_up',
+            explanation: 'Myllymatti must start by giving each active player 17 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'myllymatti.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'myllymatti.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'phase_1_tricks',
+            supportedActionIds: [
+              'setup_round',
+              'play_card',
+            ],
+            explanation: 'Myllymatti must run setup_round first, then enter phase_1_tricks with the processed legal actions.',
+            linkedRuleIds: [
+              'myllymatti.setup.initial-deal',
+              'myllymatti.flow.phase_1_tricks',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'phase_1_tricks',
+            firstPlayableLegalActions: [
+              'play_card',
+            ],
+          },
+          {
+            id: 'myllymatti.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'NA',
+            scoringDirection: null,
+            targetScore: 'NA',
+            cardValues: {},
+            explanation: 'No scoring - the loser is simply the last player holding cards.',
+            linkedRuleIds: [
+              'myllymatti.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'myllymatti.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 17,
+        expectedPlayerCounts: {
+          min: 3,
+          max: 3,
+        },
+        expectedVisibility: 'face_up',
+      },
+    ],
+  },
+}

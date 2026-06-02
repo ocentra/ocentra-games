@@ -1,0 +1,239 @@
+{
+  system: {
+    guid: '91655caa-618d-4a38-b44b-26a2f9432386',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/wall-street-poker/wall-street-pokerRules.asset',
+    gameId: 'wall-street-poker',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Wall Street: 4 community cards face-up costing 1/2/3/4 units. Each round: buy a community card (fee to pot, card replaced from deck) OR get free face-up card. Continue until 4 upcards each. Final card dealt face-down. Standard betting rounds. Best 5-card hand wins.',
+    Player: 'Wall Street: 4 community cards face-up costing 1/2/3/4 units. Each round: buy a community card (fee to pot, card replaced from deck) OR get free face-up card. Continue until 4 upcards each. Final card dealt face-down. Standard betting rounds. Best 5-card hand wins.',
+    objective: 'Make the best high hand and/or the best low hand from your seven cards; after declaration, the high winner and the low winner split the pot.',
+    gameplay: 'Wall Street: 4 community cards face-up costing 1/2/3/4 units. Each round: buy a community card (fee to pot, card replaced from deck) OR get free face-up card. Continue until 4 upcards each. Final card dealt face-down. Standard betting rounds. Best 5-card hand wins.',
+    keyRules: [
+      'Buyable community cards (1-4 units)',
+      'Bought cards replaced from deck',
+      'Free alternative if no purchase',
+      'Seven-Card Stud base',
+      'Most expensive card can be wild (variant)',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two or more players.',
+      deck: 'Standard 52-card deck; one pack. No jokers or stripped cards.',
+      equipment: 'Cards, chips',
+      dealing: "Ante. 3 hole cards (2 down, 1 up) + 4 community 'Wall Street' cards.",
+    },
+    turnFlow: 'Wall Street: 4 community cards face-up costing 1/2/3/4 units. Each round: buy a community card (fee to pot, card replaced from deck) OR get free face-up card. Continue until 4 upcards each. Final card dealt face-down. Standard betting rounds. Best 5-card hand wins.',
+    moveValidityConditions: {
+      ante: 'Legal at start of hand before cards are dealt.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'Legal when acquiring an upcard; you may instead take a free card from the deck.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'Legal during any betting round.',
+      check: 'Legal only when current bet to you is zero.',
+      call: 'Legal when there is a bet to call.',
+      bet: 'Legal during betting rounds; amount must meet game limits.',
+      raise: 'Legal when betting is open; must raise by at least the minimum.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Make the best high hand and/or the best low hand from your seven cards; after declaration, the high winner and the low winner split the pot.',
+      'Turn-flow example: Wall Street: 4 community cards face-up costing 1/2/3/4 units. Each round: buy a community card (fee to pot, card replaced from deck) OR get free face-up card. Continue until 4 upcards each. Final card dealt face-down. Standard betting rounds. Best 5-card hand wins.',
+      'Scoring example: Standard poker hand rankings. Best 5-card poker hand from 7 cards..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'wall-street-poker.rules.objective',
+        title: 'Objective',
+        text: 'Make the best high hand and/or the best low hand from your seven cards; after declaration, the high winner and the low winner split the pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'wall-street-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Wall Street: 4 community cards face-up costing 1/2/3/4 units. Each round: buy a community card (fee to pot, card replaced from deck) OR get free face-up card. Continue until 4 upcards each. Final card dealt face-down. Standard betting rounds. Best 5-card hand wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'wall-street-poker.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'wall-street-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck; one pack. No jokers or stripped cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'wall-street-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'wall-street-poker.setup.dealing',
+        title: 'Deal',
+        text: "Ante. 3 hole cards (2 down, 1 up) + 4 community 'Wall Street' cards.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'wall-street-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Best 5-card poker hand from 7 cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'wall-street-poker.score.description',
+        title: 'Scoring',
+        text: 'Standard poker hand rankings.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'wall-street-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Buyable community cards (1-4 units)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'wall-street-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bought cards replaced from deck',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'wall-street-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Free alternative if no purchase',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'wall-street-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Seven-Card Stud base',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'wall-street-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Most expensive card can be wild (variant)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'wall-street-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'wall-street-poker.rules.objective',
+          'wall-street-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'wall-street-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'wall-street-poker.setup.players',
+          'wall-street-poker.setup.deck',
+          'wall-street-poker.setup.equipment',
+          'wall-street-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'wall-street-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'wall-street-poker.rules.key.1',
+          'wall-street-poker.rules.key.2',
+          'wall-street-poker.rules.key.3',
+          'wall-street-poker.rules.key.4',
+          'wall-street-poker.rules.key.5',
+        ],
+      },
+      {
+        id: 'wall-street-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'wall-street-poker.score.description',
+          'wall-street-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'wall-street-poker.setup.dealing',
+        'wall-street-poker.rules.objective',
+      ],
+      ante: [
+        'wall-street-poker.rules.gameplay',
+      ],
+      buy_market: [
+        'wall-street-poker.rules.gameplay',
+      ],
+      fold: [
+        'wall-street-poker.rules.gameplay',
+      ],
+      check: [
+        'wall-street-poker.rules.gameplay',
+      ],
+      call: [
+        'wall-street-poker.rules.gameplay',
+      ],
+      bet: [
+        'wall-street-poker.rules.gameplay',
+      ],
+      raise: [
+        'wall-street-poker.rules.gameplay',
+      ],
+      play_card: [
+        'wall-street-poker.rules.gameplay',
+      ],
+    },
+  },
+}

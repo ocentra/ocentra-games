@@ -1,0 +1,239 @@
+{
+  system: {
+    guid: '20eae3f4-db8e-41a7-852c-aa580f04e5b3',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/arizona-29-card-pitch/arizona-29-card-pitchRules.asset',
+    gameId: 'arizona-29-card-pitch',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Bidding**: Starting left of the dealer, players bid for the right to 'Pitch' (name trump). Bids range from 1 to 5. 2. **The Kitty**: The high bidder takes the 5-card kitty and discards 5 cards to return to a 6-card hand. 3. **The Pitch**: The high bidder leads the first card; the suit of this card is trumps. 4. **Trump Hierarchy**: A (High), K, Q, J, Joker, 10, 9, 6 (Low). 5. **Trick Play**: Must follow suit if possible; else any card. Highest trump wins the trick; if no trump, highest card of led suit wins. 6. **Scoring**: At hand's end, count points.",
+    Player: "1. **Bidding**: Starting left of the dealer, players bid for the right to 'Pitch' (name trump). Bids range from 1 to 5. 2. **The Kitty**: The high bidder takes the 5-card kitty and discards 5 cards to return to a 6-card hand. 3. **The Pitch**: The high bidder leads the first card; the suit of this card is trumps. 4. **Trump Hierarchy**: A (High), K, Q, J, Joker, 10, 9, 6 (Low). 5. **Trick Play**: Must follow suit if possible; else any card. Highest trump wins the trick; if no trump, highest card of led suit wins. 6. **Scoring**: At hand's end, count points.",
+    objective: 'The bidding team must earn at least as many points as they bid. Points are scored for High, Low, Jack, Joker, and Game.',
+    gameplay: "1. **Bidding**: Starting left of the dealer, players bid for the right to 'Pitch' (name trump). Bids range from 1 to 5. 2. **The Kitty**: The high bidder takes the 5-card kitty and discards 5 cards to return to a 6-card hand. 3. **The Pitch**: The high bidder leads the first card; the suit of this card is trumps. 4. **Trump Hierarchy**: A (High), K, Q, J, Joker, 10, 9, 6 (Low). 5. **Trick Play**: Must follow suit if possible; else any card. Highest trump wins the trick; if no trump, highest card of led suit wins. 6. **Scoring**: At hand's end, count points.",
+    keyRules: [
+      'High (1 pt): Winning or holding the highest trump in play (Ace).',
+      'Low (1 pt): Winning or holding the lowest trump in play (Six).',
+      'Jack (1 pt): Capturing the Jack of trumps in a trick.',
+      'Joker (1 pt): Capturing the Joker in a trick.',
+      'Game (1 pt): Winning the highest total value of pip-cards (A=4, K=3, Q=2, J=1, 10=10).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players in two partnerships (North-South vs East-West).',
+      deck: '29 cards: Ace, King, Queen, Jack, Ten, Nine, Six of each suit, plus one Joker. Remove 2, 3, 4, 5, 7, and 8 from a standard deck.',
+      equipment: 'Standard pack (modified), score sheet.',
+      dealing: "Each player is dealt 6 cards in batches of 3. The 5 remaining cards are placed face down as the 'Kitty'.",
+    },
+    turnFlow: "1. **Bidding**: Starting left of the dealer, players bid for the right to 'Pitch' (name trump). Bids range from 1 to 5. 2. **The Kitty**: The high bidder takes the 5-card kitty and discards 5 cards to return to a 6-card hand. 3. **The Pitch**: The high bidder leads the first card; the suit of this card is trumps. 4. **Trump Hierarchy**: A (High), K, Q, J, Joker, 10, 9, 6 (Low). 5. **Trick Play**: Must follow suit if possible; else any card. Highest trump wins the trick; if no trump, highest card of led suit wins. 6. **Scoring**: At hand's end, count points.",
+    moveValidityConditions: {
+      ante: 'Arizona Pitch has no ante; it uses bidding for the right to name trump.',
+      deal: 'Dealing is performed by the system via custom action deal_six_and_kitty.',
+      reveal_market: 'Arizona Pitch has no market; the kitty is taken by the bid winner.',
+      buy_market: 'There is no market or card purchase; the bid winner takes the kitty.',
+      buy_stock: 'Players do not buy from stock; the bid winner takes the kitty and discards five.',
+      fold: 'Arizona Pitch is trick-taking; there is no fold; all four players play every hand.',
+      check: 'Check is not used; players either bid or pass during the bidding phase.',
+      call: 'Arizona Pitch has no betting rounds; it uses bidding for trump, not call.',
+      bet: 'Arizona Pitch has no betting; it uses bidding (1-5) for the right to pitch.',
+      raise: 'There is no raise; only bidding for trump in Arizona Pitch.',
+      declare: 'Arizona Pitch has no declaration phase; points are tallied after tricks.',
+      reveal_hand: 'Reveal is implicit as cards are played to tricks; no separate reveal action.',
+      award_pot: 'Scoring is performed by the system via calculate_setback_score, not a pot award.',
+      play_card: 'Trump rule A-K-Q-J-Joker-10-9-6.',
+      draw: 'Drawing is only via taking the kitty (custom action take_kitty), not a general draw pile.',
+      discard: 'Discarding is done via custom action discard_five after taking the kitty, not a separate action.',
+      pass: 'Allowed when rules permit skipping a wager or play.',
+      bid: 'Bidding is done via custom action bid_one_to_five (bid 1-5 for points to make), not generic bid.',
+      meld: 'Arizona Pitch is trick-taking; there is no melding or laying down sets.',
+      go_out: 'Going out is not a mechanic; the hand ends after six tricks are played.',
+    },
+    exampleHands: [
+      'Setup example: 6 card(s) per player.',
+      'Rule example: The bidding team must earn at least as many points as they bid. Points are scored for High, Low, Jack, Joker, and Game.',
+      "Turn-flow example: 1. **Bidding**: Starting left of the dealer, players bid for the right to 'Pitch' (name trump). Bids range from 1 to 5. 2. **The Kitty**: The high bidder takes the 5-card kitty and discards 5 cards to return to a 6-card hand. 3. **The Pitch**: The high bidder leads the first card; the suit of this card is trumps. 4. **Trump Hierarchy**: A (High), K, Q, J, Joker, 10, 9, 6 (Low). 5. **Trick Play**: Must follow suit if possible; else any card. Highest trump wins the trick; if no trump, highest card of led suit wins. 6. **Scoring**: At hand's end, count points.",
+      "Scoring example: Pitch uses a 'Setback' scoring system where failing a bid subtracts from your total. Usually played to a target score of 21 or 31 points..",
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'arizona-29-card-pitch.rules.objective',
+        title: 'Objective',
+        text: 'The bidding team must earn at least as many points as they bid. Points are scored for High, Low, Jack, Joker, and Game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding**: Starting left of the dealer, players bid for the right to 'Pitch' (name trump). Bids range from 1 to 5. 2. **The Kitty**: The high bidder takes the 5-card kitty and discards 5 cards to return to a 6-card hand. 3. **The Pitch**: The high bidder leads the first card; the suit of this card is trumps. 4. **Trump Hierarchy**: A (High), K, Q, J, Joker, 10, 9, 6 (Low). 5. **Trick Play**: Must follow suit if possible; else any card. Highest trump wins the trick; if no trump, highest card of led suit wins. 6. **Scoring**: At hand's end, count points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.setup.deck',
+        title: 'Deck',
+        text: '29 cards: Ace, King, Queen, Jack, Ten, Nine, Six of each suit, plus one Joker. Remove 2, 3, 4, 5, 7, and 8 from a standard deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack (modified), score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 6 cards in batches of 3. The 5 remaining cards are placed face down as the 'Kitty'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.score.win-condition',
+        title: 'Win condition',
+        text: 'Usually played to a target score of 21 or 31 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.score.description',
+        title: 'Scoring',
+        text: "Pitch uses a 'Setback' scoring system where failing a bid subtracts from your total.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.rules.key.1',
+        title: 'Key rule 1',
+        text: 'High (1 pt): Winning or holding the highest trump in play (Ace).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Low (1 pt): Winning or holding the lowest trump in play (Six).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Jack (1 pt): Capturing the Jack of trumps in a trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Joker (1 pt): Capturing the Joker in a trick.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Game (1 pt): Winning the highest total value of pip-cards (A=4, K=3, Q=2, J=1, 10=10).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'arizona-29-card-pitch.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'arizona-29-card-pitch.rules.objective',
+          'arizona-29-card-pitch.rules.gameplay',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'arizona-29-card-pitch.setup.players',
+          'arizona-29-card-pitch.setup.deck',
+          'arizona-29-card-pitch.setup.equipment',
+          'arizona-29-card-pitch.setup.dealing',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'arizona-29-card-pitch.rules.key.1',
+          'arizona-29-card-pitch.rules.key.2',
+          'arizona-29-card-pitch.rules.key.3',
+          'arizona-29-card-pitch.rules.key.4',
+          'arizona-29-card-pitch.rules.key.5',
+        ],
+      },
+      {
+        id: 'arizona-29-card-pitch.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'arizona-29-card-pitch.score.description',
+          'arizona-29-card-pitch.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'arizona-29-card-pitch.setup.dealing',
+        'arizona-29-card-pitch.rules.objective',
+      ],
+      play_card: [
+        'arizona-29-card-pitch.rules.gameplay',
+      ],
+      pass: [
+        'arizona-29-card-pitch.rules.gameplay',
+      ],
+      deal_six_and_kitty: [
+        'arizona-29-card-pitch.rules.gameplay',
+      ],
+      bid_one_to_five: [
+        'arizona-29-card-pitch.rules.gameplay',
+      ],
+      take_kitty: [
+        'arizona-29-card-pitch.rules.gameplay',
+      ],
+      discard_five: [
+        'arizona-29-card-pitch.rules.gameplay',
+      ],
+      lead_trump_card: [
+        'arizona-29-card-pitch.rules.gameplay',
+      ],
+      calculate_setback_score: [
+        'arizona-29-card-pitch.rules.gameplay',
+      ],
+    },
+  },
+}

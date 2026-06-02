@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
 import { createClaimBotAction } from '@ocentra/game-domain/engine/mechanics/family/ClaimFamilyResolver';
-import type { GameState, PlayerActionTypeValue, Suit } from '@ocentra/game-domain/types/game';
+import type { GameState, PlayerAction, PlayerActionTypeValue, Suit } from '@ocentra/game-domain/types/game';
 import { AIPersonality, GamePhase } from '@ocentra/game-domain/types/game';
+import type { MechanicsSpec } from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
@@ -42,6 +43,95 @@ interface GameScreenPageProps {
 const LOCAL_PILOT_PLAYER_COUNT = 4;
 const AUTO_START_COUNTDOWN_SECONDS = 3;
 const BOT_ACTION_DELAY_MS = 350;
+
+function getActivePlayerCount(state: GameState): number {
+  const folded = new Set(state.mechanicsContext?.foldedPlayerIds ?? []);
+  return state.players.filter((player) => !folded.has(player.id)).length;
+}
+
+function createLocalPilotBotAction(
+  state: GameState,
+  spec: MechanicsSpec,
+  playerId: string,
+  seed: number,
+): PlayerAction | null {
+  if (spec.familyKernel === 'claim') {
+    return createClaimBotAction(state, spec, playerId, { seed });
+  }
+
+  const legalActions = getLegalActions(spec, state);
+  const timestamp = new Date(state.lastAction.getTime() + 1000);
+  const botPlayer = state.players.find((player) => player.id === playerId) ?? null;
+
+  if (legalActions.includes('play_card') && botPlayer?.hand[0]) {
+    return {
+      type: 'play_card',
+      playerId,
+      data: { cardId: botPlayer.hand[0].id },
+      timestamp,
+    };
+  }
+
+  if (legalActions.includes('reveal_hand')) {
+    const folded = new Set(state.mechanicsContext?.foldedPlayerIds ?? []);
+    const revealed = new Set(state.mechanicsContext?.revealedPlayerIds ?? []);
+    const nextRevealPlayer = state.players.find(
+      (player) => player.id === playerId && !folded.has(player.id) && !revealed.has(player.id),
+    ) ?? state.players.find(
+      (player) => player.isAI && !folded.has(player.id) && !revealed.has(player.id),
+    );
+    if (nextRevealPlayer) {
+      return {
+        type: 'reveal_hand',
+        playerId: nextRevealPlayer.id,
+        timestamp,
+      };
+    }
+  }
+
+  if (legalActions.includes('fold') && getActivePlayerCount(state) > 2) {
+    return {
+      type: 'fold',
+      playerId,
+      timestamp,
+    };
+  }
+
+  if (legalActions.includes('call_showdown') && getActivePlayerCount(state) >= 2) {
+    return {
+      type: 'call_showdown',
+      playerId,
+      timestamp,
+    };
+  }
+
+  if (legalActions.includes('bet')) {
+    return {
+      type: 'bet',
+      playerId,
+      data: { amount: 1 },
+      timestamp,
+    };
+  }
+
+  if (legalActions.includes('pass')) {
+    return {
+      type: 'pass',
+      playerId,
+      timestamp,
+    };
+  }
+
+  if (legalActions.includes('end_turn')) {
+    return {
+      type: 'end_turn',
+      playerId,
+      timestamp,
+    };
+  }
+
+  return null;
+}
 
 function getSeatName(index: number): string {
   return index === 0 ? 'You' : `Seat ${index + 1}`;
@@ -283,7 +373,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
         return;
       }
 
-      const action = createClaimBotAction(state, bundle.spec, botPlayer.id, { seed });
+      const action = createLocalPilotBotAction(state, bundle.spec, botPlayer.id, seed);
       if (!action) {
         return;
       }
@@ -393,6 +483,21 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
 
     if (action.kind === 'pick_up' && action.cardId) {
       dispatchAction('pick_up', currentPlayer.id, { discardCardId: action.cardId });
+      return;
+    }
+
+    if (action.kind === 'play_card' && action.cardId) {
+      dispatchAction('play_card', currentPlayer.id, { cardId: action.cardId });
+      return;
+    }
+
+    if (action.kind === 'bet') {
+      dispatchAction('bet', currentPlayer.id, { amount: 1 });
+      return;
+    }
+
+    if (action.kind === 'fold') {
+      handleSimpleAction('fold');
       return;
     }
 

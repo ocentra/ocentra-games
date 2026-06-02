@@ -1,0 +1,218 @@
+{
+  system: {
+    guid: '2a3cce0f-b869-48ce-b2e8-d242cdd7e0ce',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/vying/ulti/ultiRules.asset',
+    gameId: 'ulti',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Bid: Passz(1), Ulti(4), 40-100(4), Betli(5), Durchmars(7), 20-100(8). Bids combinable. Kontra doubles stakes. Follow suit, must head, must trump. Last trick = 10 bonus. Silent achievements = half value.',
+    Player: 'Bid: Passz(1), Ulti(4), 40-100(4), Betli(5), Durchmars(7), 20-100(8). Bids combinable. Kontra doubles stakes. Follow suit, must head, must trump. Last trick = 10 bonus. Silent achievements = half value.',
+    objective: 'The highest bidder becomes declarer and plays alone against the other two. The declarer must fulfill the contracted bid (e.g. score more card points than the defenders, win the last trick with the trump 7 in Ulti, take no tricks in Betli, or take all tricks in Durchmars). The defenders aim to prevent the declarer from fulfilling the contract.',
+    gameplay: 'Bid: Passz(1), Ulti(4), 40-100(4), Betli(5), Durchmars(7), 20-100(8). Bids combinable. Kontra doubles stakes. Follow suit, must head, must trump. Last trick = 10 bonus. Silent achievements = half value.',
+    keyRules: [
+      'Ulti: win last trick with trump 7',
+      'Betli: take no tricks',
+      'Durchmars: take all tricks',
+      'Combinable bids',
+      'Kontra system',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '3 (12-10-10 deal)',
+      deck: '32 Hungarian cards. Rank: A-K-O-U-10-9-8-7. A=11, 10=10, K=4, O=3, U=2.',
+      equipment: 'Cards, score sheet',
+      dealing: '12 to first, 10 each to others. First player discards 2 (talon).',
+    },
+    turnFlow: 'Bid: Passz(1), Ulti(4), 40-100(4), Betli(5), Durchmars(7), 20-100(8). Bids combinable. Kontra doubles stakes. Follow suit, must head, must trump. Last trick = 10 bonus. Silent achievements = half value.',
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: The highest bidder becomes declarer and plays alone against the other two. The declarer must fulfill the contracted bid (e.g. score more card points than the defenders, win the last trick with the trump 7 in Ulti, take no tricks in Betli, or take all tricks in Durchmars). The defenders aim to prevent the declarer from fulfilling the contract.',
+      'Turn-flow example: Bid: Passz(1), Ulti(4), 40-100(4), Betli(5), Durchmars(7), 20-100(8). Bids combinable. Kontra doubles stakes. Follow suit, must head, must trump. Last trick = 10 bonus. Silent achievements = half value.',
+      'Scoring example: Bid-based pts. A+10=10pts each. Last trick=10. Total 120+10. Kontra doubles. Declarer fulfills bid; defenders prevent it..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'ulti.rules.objective',
+        title: 'Objective',
+        text: 'The highest bidder becomes declarer and plays alone against the other two. The declarer must fulfill the contracted bid (e.g. score more card points than the defenders, win the last trick with the trump 7 in Ulti, take no tricks in Betli, or take all tricks in Durchmars). The defenders aim to prevent the declarer from fulfilling the contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ulti.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bid: Passz(1), Ulti(4), 40-100(4), Betli(5), Durchmars(7), 20-100(8). Bids combinable. Kontra doubles stakes. Follow suit, must head, must trump. Last trick = 10 bonus. Silent achievements = half value.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ulti.setup.players',
+        title: 'Players',
+        text: '3 (12-10-10 deal)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ulti.setup.deck',
+        title: 'Deck',
+        text: '32 Hungarian cards. Rank: A-K-O-U-10-9-8-7. A=11, 10=10, K=4, O=3, U=2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ulti.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ulti.setup.dealing',
+        title: 'Deal',
+        text: '12 to first, 10 each to others. First player discards 2 (talon).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ulti.score.win-condition',
+        title: 'Win condition',
+        text: 'Declarer fulfills bid; defenders prevent it.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ulti.score.description',
+        title: 'Scoring',
+        text: 'Bid-based pts. A+10=10pts each. Last trick=10. Total 120+10. Kontra doubles.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ulti.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Ulti: win last trick with trump 7',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ulti.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Betli: take no tricks',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ulti.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Durchmars: take all tricks',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'ulti.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Combinable bids',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'ulti.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Kontra system',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ulti.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ulti.rules.objective',
+          'ulti.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ulti.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ulti.setup.players',
+          'ulti.setup.deck',
+          'ulti.setup.equipment',
+          'ulti.setup.dealing',
+        ],
+      },
+      {
+        id: 'ulti.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ulti.rules.key.1',
+          'ulti.rules.key.2',
+          'ulti.rules.key.3',
+          'ulti.rules.key.4',
+          'ulti.rules.key.5',
+        ],
+      },
+      {
+        id: 'ulti.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ulti.score.description',
+          'ulti.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ulti.setup.dealing',
+        'ulti.rules.objective',
+      ],
+      play_card: [
+        'ulti.rules.gameplay',
+      ],
+    },
+  },
+}

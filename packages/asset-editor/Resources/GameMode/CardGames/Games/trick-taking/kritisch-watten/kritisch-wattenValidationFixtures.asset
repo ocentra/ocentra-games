@@ -1,0 +1,119 @@
+{
+  system: {
+    guid: 'b01c417e-98e8-4881-80a2-4ff2b9699506',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/kritisch-watten/kritisch-wattenValidationFixtures.asset',
+    gameId: 'kritisch-watten',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'kritisch-watten',
+    familyVariant: 'Partnership',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'kritisch-watten.core-runtime-contracts',
+        title: 'Kritisch-Watten Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'kritisch-watten.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 4,
+              max: 4,
+              recommended: 4,
+            },
+            expectedTotalInitialCards: 20,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Kritisch-Watten must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'kritisch-watten.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'kritisch-watten.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'trump_selection',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'call',
+              'raise',
+              'award_pot',
+              'play_card',
+            ],
+            explanation: 'Kritisch-Watten must run setup_round first, then enter trump_selection with the processed legal actions.',
+            linkedRuleIds: [
+              'kritisch-watten.setup.initial-deal',
+              'kritisch-watten.flow.trump_selection',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'trump_selection',
+            firstPlayableLegalActions: [
+              'call',
+            ],
+          },
+          {
+            id: 'kritisch-watten.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '11',
+            scoringDirection: 'high_wins',
+            targetScore: 11,
+            cardValues: {},
+            explanation: 'Win 3 of 5 tricks to score 2 points. Players can raise stakes during play. First to 11 points wins.',
+            linkedRuleIds: [
+              'kritisch-watten.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'kritisch-watten.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 4,
+          max: 4,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

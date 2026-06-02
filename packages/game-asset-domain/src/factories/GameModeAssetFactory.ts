@@ -4,6 +4,7 @@ import { CardGameScoring } from '../game/scoring/CardGameScoring';
 import { GameInfo } from '../game/gameInfo/GameInfo';
 import { CardGameLayout } from '../ui/layout/CardGameLayout';
 import { PageLayout, type PageLayoutDocument } from '../ui/pageLayout/PageLayout';
+import { DEFAULT_SELECTED_GAME_CONTENT_PLAN } from '../ui/selectedGame/SelectedGamePresentation';
 import { Deck } from '../card/deck/Deck';
 import { ImageCarousel } from '../content/imageCarousel/ImageCarousel';
 import { CardGameMode, type CardGameAssetLinks } from '../gameMode/cardGameMode/CardGameMode';
@@ -43,6 +44,7 @@ import {
   getCardRankingReference,
   resolveDeckAssetByTriple,
 } from './ProcessedGameAssetFactory';
+import type { ProcessedGameTaxonomyPath } from './ProcessedGameTaxonomyPath';
 
 const log = MainAppLogger.instance;
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
@@ -79,7 +81,7 @@ log.register(import.meta.url);
 export interface CreateGameModeOptions {
   gameId: string;
   displayName: string;
-  category: string;
+  category: ProcessedGameTaxonomyPath;
   copyFromTemplate?: Record<string, unknown>;
   assetDataOverrides?: Partial<Record<'rules' | 'strategy' | 'scoring' | 'gameInfo' | 'layout' | 'deck' | 'carousel' | 'mechanics' | 'cardGame', Record<string, unknown>>>;
   mechanicsModelDataOverrides?: Partial<Record<GameMechanicsModelRefKey, Record<string, unknown>>>;
@@ -152,6 +154,7 @@ async function createPageLayoutAsset(
         { id: sliceId, type: kind === 'selected-game' ? 'selected-game' : 'custom', order: 10 },
       ],
     },
+    ...(kind === 'selected-game' ? { contentPlan: DEFAULT_SELECTED_GAME_CONTENT_PLAN } : {}),
     preview: {
       sampleGameRef: {
         gameId: context.gameId,
@@ -182,7 +185,7 @@ function bindPageLayoutToGame(asset: CreatedAsset, gameId: string, gameModeGuid:
 }
 
 export class GameModeCreator {
-  async createGameModeAssetsFromProcessedGame(processedGamePath: string, category = 'CardGames/Imported'): Promise<CreateResult> {
+  async createGameModeAssetsFromProcessedGame(processedGamePath: string, category?: ProcessedGameTaxonomyPath): Promise<CreateResult> {
     const createOptions = buildCreateGameModeOptionsFromProcessedGame({
       processedGamePath,
       category,
@@ -435,7 +438,7 @@ export class GameModeCreator {
     }
   }
 
-  private getGameFolder(category: string, gameId: string): string {
+  private getGameFolder(category: ProcessedGameTaxonomyPath, gameId: string): string {
     return `${category}/${gameId}`;
   }
 

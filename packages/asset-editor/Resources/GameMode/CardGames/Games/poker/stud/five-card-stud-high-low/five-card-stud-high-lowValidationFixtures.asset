@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: 'bbd46d13-8d34-45e9-97ed-71d57c59bbd1',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/stud/five-card-stud-high-low/five-card-stud-high-lowValidationFixtures.asset',
+    gameId: 'five-card-stud-high-low',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'five-card-stud-high-low',
+    familyVariant: 'Stud Poker',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'five-card-stud-high-low.core-runtime-contracts',
+        title: 'Five Card Stud High-Low Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'five-card-stud-high-low.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 5,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 10,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 50,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Five Card Stud High-Low must start by giving each active player 5 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'five-card-stud-high-low.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'five-card-stud-high-low.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'declare',
+              'reveal_hand',
+              'award_pot',
+            ],
+            explanation: 'Five Card Stud High-Low must run setup_round first, then enter ante with the processed legal actions.',
+            linkedRuleIds: [
+              'five-card-stud-high-low.setup.initial-deal',
+              'five-card-stud-high-low.flow.ante',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
+            ],
+          },
+          {
+            id: 'five-card-stud-high-low.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win high half and or low half. Low must qualify.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Split pot',
+            linkedRuleIds: [
+              'five-card-stud-high-low.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'five-card-stud-high-low.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 5,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 10,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

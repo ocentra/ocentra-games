@@ -1,0 +1,73 @@
+{
+  system: {
+    guid: '31fb369c-79f8-4e9a-90bb-22c8ce21598f',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/domino/austrian-dominoes/austrian-dominoesStateEventModel.asset',
+    gameId: 'austrian-dominoes',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'austrian-dominoes',
+    familyVariant: 'Line / Draw',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'talon',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: null,
+        },
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: null,
+        },
+        {
+          id: 'tableau',
+          type: 'grid',
+          visibility: 'public',
+          owner: 'table',
+          capacity: null,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: 'face_up',
+        stockPurchase: 'face_down',
+        discardTop: null,
+        tableauCards: 'face_up',
+      },
+      constants: {},
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'setup',
+        'deal',
+        'play_loop',
+        'tally',
+      ],
+      actions: [
+        'setup_round',
+        'remove_doubles',
+        'deal_tiles',
+        'match_tile_brick',
+        'draw_from_talon',
+        'count_opposing_pips',
+      ],
+    },
+    examples: [],
+  },
+}

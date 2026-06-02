@@ -1,5 +1,6 @@
 import type { GamesExplorerGame } from './types';
 import { CATEGORY_ICONS } from './types';
+import { gamesExplorerReleaseStatusShortLabel } from './releaseStatus';
 import './GameListRow.css';
 
 export function GameListRowHeader() {
@@ -9,7 +10,7 @@ export function GameListRowHeader() {
       <span className="cge-list-row__cat">Category</span>
       <span className="cge-list-row__players">Players</span>
       <span className="cge-list-row__quality">Quality</span>
-      <span className="cge-list-row__status">JSON / link</span>
+      <span className="cge-list-row__status">Asset / status</span>
       <div />
       <span className="cge-list-row__pct">%</span>
     </div>
@@ -30,7 +31,7 @@ export function GameListRow({ game, onGameClick }: GameListRowProps) {
   const quality = game.quality ?? 'complete';
   const status =
     game.file_exists != null
-      ? `${game.file_exists ? '✓ JSON' : '✗ No JSON'} · ${game.link_valid ?? 'unknown'}`
+      ? `${game.file_exists ? 'Authored' : 'Missing'} / ${gamesExplorerReleaseStatusShortLabel(game.releaseStatus)}`
       : '—';
 
   const handleClick = () => onGameClick?.(game);

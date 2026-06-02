@@ -1,0 +1,215 @@
+{
+  system: {
+    guid: '81a86d44-50c5-4534-9030-c601d920d636',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    icon: '🃏',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/briscola/briscolaRules.asset',
+    gameId: 'briscola',
+  },
+  data: {
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    LLM: 'Each trick: non-dealer leads any card. No follow-suit obligation. Opponent plays any card. Trick won by higher Briscola (trump) played, OR higher of led suit if no Briscola. Winner draws first from stock; loser draws second. Winner leads next. Final trick: trump indicator card is last taken from stock.',
+    Player: 'Each trick: non-dealer leads any card. No follow-suit obligation. Opponent plays any card. Trick won by higher Briscola (trump) played, OR higher of led suit if no Briscola. Winner draws first from stock; loser draws second. Winner leads next. Final trick: trump indicator card is last taken from stock.',
+    objective: 'Score 61 or more of the 120 available card points.',
+    gameplay: 'Each trick: non-dealer leads any card. No follow-suit obligation. Opponent plays any card. Trick won by higher Briscola (trump) played, OR higher of led suit if no Briscola. Winner draws first from stock; loser draws second. Winner leads next. Final trick: trump indicator card is last taken from stock.',
+    keyRules: [
+      'NO obligation to follow suitâ€”ever.',
+      'Trump (Briscola) beats all off-suit cards regardless of rank.',
+      'The trump-indicator card is taken by the winner of the last draw-phase trick.',
+      'Pointing cards: only A, 3, K, Q, J have value.',
+    ],
+    moveValidityConditions: {
+      ante: 'Briscola is a trick-taking game; object is to take cards for points. No betting.',
+      deal: 'Briscola uses custom deal phase (deal_3_each_turn_trump); standard deal action not used.',
+      reveal_market: 'One card turned face-up for trump; no market. Stock placed beside trump card.',
+      buy_market: 'No market or buying; players deal and draw from stock only.',
+      buy_stock: 'Players draw from stock after each trick; no purchase mechanic.',
+      fold: 'Trick-taking; no betting or fold. Each trick both players play a card.',
+      check: 'No betting; trick-taking only.',
+      call: 'No betting mechanic.',
+      bet: 'No betting; score by card points won in tricks.',
+      raise: 'No betting mechanic.',
+      declare: 'Game ends when all cards played; points counted from won tricks. No declaration.',
+      reveal_hand: 'No showdown; count points from tricks won at end.',
+      award_pot: 'No pot; winner is higher point total from tricks.',
+      play_card: 'Legal during play phases when the selected card satisfies phase/trick constraints.',
+      draw: 'Winner and loser draw after each trick; modeled in trick phase, not standalone.',
+      discard: 'Play card to trick; winner takes both. No discard-from-hand.',
+      pass: 'No pass; second player may play any card (no follow-suit).',
+      bid: 'Basic Briscola has no bidding. Briscola Chiamata (5p) adds it.',
+      meld: 'Trick-taking; no melding. Score from cards won in tricks.',
+      go_out: 'Game ends when all cards played; no go-out mechanic.',
+    },
+    exampleHands: [
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Score 61 or more of the 120 available card points.',
+      'Turn-flow example: Each trick: non-dealer leads any card. No follow-suit obligation. Opponent plays any card. Trick won by higher Briscola (trump) played, OR higher of led suit if no Briscola. Winner draws first from stock; loser draws second. Winner leads next. Final trick: trump indicator card is last taken from stock.',
+      'Scoring example: Card points won in tricks. First to 61 card points wins the deal..',
+    ],
+    bonusRules: '',
+    assetType: 'CardGameRules',
+    setup: {
+      players: '2 (standard); 3, 4, or 6 (variants).',
+      deck: '40 cards. Italian deck: A, 3, Re (K), Cavallo (Q), Fante (J), 7, 6, 5, 4, 2 in 4 suits. OR: French deck stripped of 8s, 9s, 10s.',
+      equipment: 'Cards.',
+      dealing: "Deal 3 cards to each player, then turn one card face-up beside the remaining stockâ€”that card's suit is Briscola (trump). Stock placed crosswise on trump card, leaving suit visible.",
+    },
+    turnFlow: 'Each trick: non-dealer leads any card. No follow-suit obligation. Opponent plays any card. Trick won by higher Briscola (trump) played, OR higher of led suit if no Briscola. Winner draws first from stock; loser draws second. Winner leads next. Final trick: trump indicator card is last taken from stock.',
+    rules: [
+      {
+        id: 'briscola.rules.objective',
+        title: 'Objective',
+        text: 'Score 61 or more of the 120 available card points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'briscola.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each trick: non-dealer leads any card. No follow-suit obligation. Opponent plays any card. Trick won by higher Briscola (trump) played, OR higher of led suit if no Briscola. Winner draws first from stock; loser draws second. Winner leads next. Final trick: trump indicator card is last taken from stock.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscola.setup.players',
+        title: 'Players',
+        text: '2 (standard); 3, 4, or 6 (variants).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'briscola.setup.deck',
+        title: 'Deck',
+        text: '40 cards. Italian deck: A, 3, Re (K), Cavallo (Q), Fante (J), 7, 6, 5, 4, 2 in 4 suits. OR: French deck stripped of 8s, 9s, 10s.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'briscola.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'briscola.setup.dealing',
+        title: 'Deal',
+        text: "Deal 3 cards to each player, then turn one card face-up beside the remaining stockâ€”that card's suit is Briscola (trump). Stock placed crosswise on trump card, leaving suit visible.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'briscola.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 61 card points wins the deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'briscola.score.description',
+        title: 'Scoring',
+        text: 'Card points won in tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'briscola.rules.key.1',
+        title: 'Key rule 1',
+        text: 'NO obligation to follow suitâ€”ever.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'briscola.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump (Briscola) beats all off-suit cards regardless of rank.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'briscola.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The trump-indicator card is taken by the winner of the last draw-phase trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'briscola.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pointing cards: only A, 3, K, Q, J have value.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'briscola.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'briscola.rules.objective',
+          'briscola.rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscola.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'briscola.setup.players',
+          'briscola.setup.deck',
+          'briscola.setup.equipment',
+          'briscola.setup.dealing',
+        ],
+      },
+      {
+        id: 'briscola.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'briscola.rules.key.1',
+          'briscola.rules.key.2',
+          'briscola.rules.key.3',
+          'briscola.rules.key.4',
+        ],
+      },
+      {
+        id: 'briscola.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'briscola.score.description',
+          'briscola.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'briscola.setup.dealing',
+        'briscola.rules.objective',
+      ],
+      play_card: [
+        'briscola.rules.gameplay',
+      ],
+      deal_3_each_turn_trump: [
+        'briscola.rules.gameplay',
+      ],
+      play_any_card: [
+        'briscola.rules.gameplay',
+      ],
+    },
+  },
+}

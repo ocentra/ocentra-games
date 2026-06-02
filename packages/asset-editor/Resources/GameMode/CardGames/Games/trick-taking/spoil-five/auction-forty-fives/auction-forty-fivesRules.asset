@@ -1,0 +1,210 @@
+{
+  system: {
+    guid: 'a948db62-415d-419b-ba9c-f09dedd187e3',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/spoil-five/auction-forty-fives/auction-forty-fivesRules.asset',
+    gameId: 'auction-forty-fives',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+    Player: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+    objective: 'First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty.',
+    gameplay: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+    keyRules: [
+      'Bid 5s; high bidder declares trump, exchanges with kitty',
+      '5 and J high in trump; heart Ace always trump',
+      '120 to win; 30 for 60, 60 for 120 special bids',
+    ],
+    bonusRuleGuids: [],
+    useTrump: true,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 or 6 in partnerships (opposite). 5 cards each (3+2), 4-card kitty.',
+      deck: '52 cards. Trump: 5 high, then J, A of hearts always trump.',
+      equipment: '52-card deck; score to 120.',
+      dealing: 'Left of dealer bids first; dealer may hold. High bidder names trump, may exchange with kitty.',
+    },
+    turnFlow: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+    moveValidityConditions: {
+      ante: '45s is a trick game; no antes.',
+      deal: 'Dealer deals 5 each and 4 to kitty; not a player action.',
+      reveal_market: 'No market; kitty is the only extra cards.',
+      buy_market: 'High bidder exchanges with kitty; no market purchase.',
+      buy_stock: 'Kitty exchange is part of bidding; no stock purchase.',
+      fold: 'Partnership trick game; no folding out.',
+      check: 'Bidding uses bid or pass; no check.',
+      call: 'No chip betting; bidding is by contract level.',
+      bet: 'Bidding in 5s; no chip bet.',
+      raise: 'Bid level only; no chip raise.',
+      declare: 'Trump declared by high bidder after kitty exchange.',
+      reveal_hand: 'Tricks are played face-up; no showdown.',
+      award_pot: 'Scoring is by trick points; no pot to award.',
+      play_card: 'Standard trick rules; 5 and J high in trump.',
+      draw: 'Full deal of 5 each plus kitty; no draw pile.',
+      discard: 'Cards played to tricks; no discard pile.',
+      pass: 'During bidding.',
+      bid: 'Bidding phase; must exceed current bid or pass.',
+      meld: 'Trick-taking game; no melds.',
+      go_out: 'Game ends when a team reaches 120 points.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty.',
+      'Turn-flow example: Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+      'Scoring example: 5 per trick; +5 for highest trump in trick. First to 120 wins. First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'auction-forty-fives.rules.objective',
+        title: 'Objective',
+        text: 'First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.setup.players',
+        title: 'Players',
+        text: '4 or 6 in partnerships (opposite). 5 cards each (3+2), 4-card kitty.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Trump: 5 high, then J, A of hearts always trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck; score to 120.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.setup.dealing',
+        title: 'Deal',
+        text: 'Left of dealer bids first; dealer may hold. High bidder names trump, may exchange with kitty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.score.description',
+        title: 'Scoring',
+        text: '5 per trick; +5 for highest trump in trick. First to 120 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid 5s; high bidder declares trump, exchanges with kitty',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.rules.key.2',
+        title: 'Key rule 2',
+        text: '5 and J high in trump; heart Ace always trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.rules.key.3',
+        title: 'Key rule 3',
+        text: '120 to win; 30 for 60, 60 for 120 special bids',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'auction-forty-fives.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'auction-forty-fives.rules.objective',
+          'auction-forty-fives.rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'auction-forty-fives.setup.players',
+          'auction-forty-fives.setup.deck',
+          'auction-forty-fives.setup.equipment',
+          'auction-forty-fives.setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'auction-forty-fives.rules.key.1',
+          'auction-forty-fives.rules.key.2',
+          'auction-forty-fives.rules.key.3',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'auction-forty-fives.score.description',
+          'auction-forty-fives.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'auction-forty-fives.setup.dealing',
+        'auction-forty-fives.rules.objective',
+      ],
+      play_card: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+      pass: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+      bid: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+      deal_five_kitty: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+      tally_45s: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+    },
+  },
+}

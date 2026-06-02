@@ -34,6 +34,8 @@ export type {
 };
 
 export const LEADERBOARD_GAME_ACTIVITY_UNAVAILABLE_LABEL = 'ACTIVITY UNAVAILABLE';
+export const LEADERBOARD_EMPTY_VALUE_LABEL = 'NO DATA';
+export const LEADERBOARD_EMPTY_ENTRY_LABEL = 'NO ENTRY';
 
 export const DEFAULT_LEADERBOARD_PAGE_CONTENT: LeaderboardPageContentData = {
   tabs: [
@@ -116,7 +118,7 @@ export const DEFAULT_LEADERBOARD_PAGE_CONTENT: LeaderboardPageContentData = {
     stats: [
       { label: 'STATUS', value: 'UNPUBLISHED' },
       { label: 'PRIZE POOL', value: 'NOT PUBLISHED' },
-      { label: 'CLAIMED', value: 'N/A' },
+      { label: 'CLAIMED', value: 'NOT OPEN' },
     ],
   },
   metricLabels: {

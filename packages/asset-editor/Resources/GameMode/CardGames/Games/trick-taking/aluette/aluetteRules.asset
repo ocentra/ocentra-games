@@ -1,0 +1,204 @@
+{
+  system: {
+    guid: 'b7328b4f-a0f9-4980-8bb4-f255bb3f65da',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/aluette/aluetteRules.asset',
+    gameId: 'aluette',
+    icon: '🃏',
+  },
+  data: {
+    LLM: 'Left of dealer leads; no suit obligation. Highest card wins trick (ties = trick spoiled, same player leads again). Nine tricks. First to 3 tricks turns a card face up; first to 3 turns two up (to remember order for ties). Partners may signal by agreed gestures.',
+    Player: 'Left of dealer leads; no suit obligation. Highest card wins trick (ties = trick spoiled, same player leads again). Nine tricks. First to 3 tricks turns a card face up; first to 3 turns two up (to remember order for ties). Partners may signal by agreed gestures.',
+    objective: 'Your team wins the point if one of you takes more tricks than any other single player; if tied, the first to have reached that trick count wins the point for the team.',
+    gameplay: 'Left of dealer leads; no suit obligation. Highest card wins trick (ties = trick spoiled, same player leads again). Nine tricks. First to 3 tricks turns a card face up; first to 3 turns two up (to remember order for ties). Partners may signal by agreed gestures.',
+    keyRules: [
+      '48 cards; fixed ranking; no trumps; tricks not pooled by partnership',
+      'Ties for high = spoiled trick; first to most tricks wins point for team',
+      'Signals allowed; chanter optional (extra 6 cards each to two players, discard to 9)',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Four in two fixed partnerships, partners opposite. Deal and play clockwise.',
+      deck: '48-card Spanish pack (A, K, Cavalier, Jack, 9, 8, 7, 6, 5, 4, 3, 2 in each suit) with Aluette fixed rank order.',
+      equipment: '48-card Spanish-suited pack (Aluette designs); optional score sheet.',
+      dealing: 'First dealer by deal-until-high-four (monsieur/madame vs borgne/vache); madame deals first. Nine cards each in batches of three; 12 left (optional chanter: 6 each to left of dealer and dealer, then each discards 6).',
+    },
+    turnFlow: 'Left of dealer leads; no suit obligation. Highest card wins trick (ties = trick spoiled, same player leads again). Nine tricks. First to 3 tricks turns a card face up; first to 3 turns two up (to remember order for ties). Partners may signal by agreed gestures.',
+    moveValidityConditions: {
+      ante: 'No betting ante in this game.',
+      deal: 'Dealer-only at start of hand.',
+      reveal_market: 'No market mechanic in this game.',
+      buy_market: 'No market buying in this game.',
+      buy_stock: 'No stock buying in this game.',
+      fold: 'Trick-taking partnership game; no fold.',
+      check: 'No check action in this game.',
+      call: 'No call/match betting.',
+      bet: 'No betting rounds.',
+      raise: 'No betting rounds.',
+      declare: 'Points determined by card play.',
+      reveal_hand: 'Cards played to tricks; no showdown.',
+      award_pot: 'System action at end of hand.',
+      play_card: 'Highest by fixed Aluette rank wins; equal highest spoils trick.',
+      draw: 'Fixed hand dealt; no draw.',
+      discard: 'Cards played to tricks; no discard.',
+      pass: 'Partnership game; no pass option.',
+      bid: 'No bidding; trump set by play.',
+      meld: 'Trick-taking game; no melds.',
+      go_out: 'All cards played in tricks.',
+    },
+    exampleHands: [
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Your team wins the point if one of you takes more tricks than any other single player; if tied, the first to have reached that trick count wins the point for the team.',
+      'Turn-flow example: Left of dealer leads; no suit obligation. Highest card wins trick (ties = trick spoiled, same player leads again). Nine tricks. First to 3 tricks turns a card face up; first to 3 turns two up (to remember order for ties). Partners may signal by agreed gestures.',
+      'Scoring example: Team of the individual with most tricks (or first to that count) gets 1 point. Match = 5 deals; higher total wins. Mordienne: win with a run of consecutive tricks at the end after none earlier = 2 points. Surrender possible; refusal commits opponents to mordienne or give 2 to surrendering team. Your team wins the point if one of you takes more tricks than any other single player; if tied, the first to have reached that trick count wins the point for the team..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'aluette.rules.objective',
+        title: 'Objective',
+        text: 'Your team wins the point if one of you takes more tricks than any other single player; if tied, the first to have reached that trick count wins the point for the team.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'aluette.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Left of dealer leads; no suit obligation. Highest card wins trick (ties = trick spoiled, same player leads again). Nine tricks. First to 3 tricks turns a card face up; first to 3 turns two up (to remember order for ties). Partners may signal by agreed gestures.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'aluette.setup.players',
+        title: 'Players',
+        text: 'Four in two fixed partnerships, partners opposite. Deal and play clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'aluette.setup.deck',
+        title: 'Deck',
+        text: '48-card Spanish pack (A, K, Cavalier, Jack, 9, 8, 7, 6, 5, 4, 3, 2 in each suit) with Aluette fixed rank order.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'aluette.setup.equipment',
+        title: 'Equipment',
+        text: '48-card Spanish-suited pack (Aluette designs); optional score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'aluette.setup.dealing',
+        title: 'Deal',
+        text: 'First dealer by deal-until-high-four (monsieur/madame vs borgne/vache); madame deals first. Nine cards each in batches of three; 12 left (optional chanter: 6 each to left of dealer and dealer, then each discards 6).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'aluette.score.win-condition',
+        title: 'Win condition',
+        text: 'Your team wins the point if one of you takes more tricks than any other single player; if tied, the first to have reached that trick count wins the point for the team.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'aluette.score.description',
+        title: 'Scoring',
+        text: 'Team of the individual with most tricks (or first to that count) gets 1 point. Match = 5 deals; higher total wins. Mordienne: win with a run of consecutive tricks at the end after none earlier = 2 points. Surrender possible; refusal commits opponents to mordienne or give 2 to surrendering team.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'aluette.rules.key.1',
+        title: 'Key rule 1',
+        text: '48 cards; fixed ranking; no trumps; tricks not pooled by partnership',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'aluette.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ties for high = spoiled trick; first to most tricks wins point for team',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'aluette.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Signals allowed; chanter optional (extra 6 cards each to two players, discard to 9)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'aluette.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'aluette.rules.objective',
+          'aluette.rules.gameplay',
+        ],
+      },
+      {
+        id: 'aluette.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'aluette.setup.players',
+          'aluette.setup.deck',
+          'aluette.setup.equipment',
+          'aluette.setup.dealing',
+        ],
+      },
+      {
+        id: 'aluette.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'aluette.rules.key.1',
+          'aluette.rules.key.2',
+          'aluette.rules.key.3',
+        ],
+      },
+      {
+        id: 'aluette.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'aluette.score.description',
+          'aluette.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'aluette.setup.dealing',
+        'aluette.rules.objective',
+      ],
+      deal: [
+        'aluette.rules.gameplay',
+      ],
+      award_pot: [
+        'aluette.rules.gameplay',
+      ],
+      play_card: [
+        'aluette.rules.gameplay',
+      ],
+    },
+  },
+}

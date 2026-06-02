@@ -1,0 +1,247 @@
+{
+  system: {
+    guid: '7d914adb-c910-4687-9f98-8764fac9f0ee',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/hearts/heartsRules.asset',
+    gameId: 'hearts',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. PASSING: After the deal, each player selects 3 cards to pass to an opponent (direction rotates: Left, Right, Across, None). All passes are simultaneous.\n2. OPENING LEAD: The player with the 2 of Clubs leads it to the first trick.\n3. FOLLOWING SUIT: Players must follow the suit led if possible. If unable to follow suit, any card may be played (except penalty cards on the first trick).\n4. WINNING TRICKS: The highest card of the suit led wins the trick. There is no trump suit. The trick winner leads the next trick.\n5. BREAKING HEARTS: Hearts cannot be led until a heart has been played ('discarded') on a previous trick, or the player has nothing but hearts remaining.\n6. FIRST TRICK RESTRICTION: No penalty cards (hearts or Queen of Spades) may be played on the first trick.\n7. SCORING: After all 13 tricks are played, each player counts penalty points in their captured tricks. Each heart = 1 point, Queen of Spades = 13 points. Maximum penalty per round = 26 points.\n8. SHOOT THE MOON: If one player captures ALL 13 hearts AND the Queen of Spades, they score 0 and every other player scores 26 points.\n9. GAME END: Play continues across rounds until a player reaches 100 cumulative points. The player with the lowest score at that point wins.",
+    Player: "1. PASSING: After the deal, each player selects 3 cards to pass to an opponent (direction rotates: Left, Right, Across, None). All passes are simultaneous.\n2. OPENING LEAD: The player with the 2 of Clubs leads it to the first trick.\n3. FOLLOWING SUIT: Players must follow the suit led if possible. If unable to follow suit, any card may be played (except penalty cards on the first trick).\n4. WINNING TRICKS: The highest card of the suit led wins the trick. There is no trump suit. The trick winner leads the next trick.\n5. BREAKING HEARTS: Hearts cannot be led until a heart has been played ('discarded') on a previous trick, or the player has nothing but hearts remaining.\n6. FIRST TRICK RESTRICTION: No penalty cards (hearts or Queen of Spades) may be played on the first trick.\n7. SCORING: After all 13 tricks are played, each player counts penalty points in their captured tricks. Each heart = 1 point, Queen of Spades = 13 points. Maximum penalty per round = 26 points.\n8. SHOOT THE MOON: If one player captures ALL 13 hearts AND the Queen of Spades, they score 0 and every other player scores 26 points.\n9. GAME END: Play continues across rounds until a player reaches 100 cumulative points. The player with the lowest score at that point wins.",
+    objective: 'Have the lowest cumulative score when any player reaches 100 points. Avoid taking tricks containing hearts (1 point each) and the Queen of Spades (13 points).',
+    gameplay: "1. PASSING: After the deal, each player selects 3 cards to pass to an opponent (direction rotates: Left, Right, Across, None). All passes are simultaneous.\n2. OPENING LEAD: The player with the 2 of Clubs leads it to the first trick.\n3. FOLLOWING SUIT: Players must follow the suit led if possible. If unable to follow suit, any card may be played (except penalty cards on the first trick).\n4. WINNING TRICKS: The highest card of the suit led wins the trick. There is no trump suit. The trick winner leads the next trick.\n5. BREAKING HEARTS: Hearts cannot be led until a heart has been played ('discarded') on a previous trick, or the player has nothing but hearts remaining.\n6. FIRST TRICK RESTRICTION: No penalty cards (hearts or Queen of Spades) may be played on the first trick.\n7. SCORING: After all 13 tricks are played, each player counts penalty points in their captured tricks. Each heart = 1 point, Queen of Spades = 13 points. Maximum penalty per round = 26 points.\n8. SHOOT THE MOON: If one player captures ALL 13 hearts AND the Queen of Spades, they score 0 and every other player scores 26 points.\n9. GAME END: Play continues across rounds until a player reaches 100 cumulative points. The player with the lowest score at that point wins.",
+    keyRules: [
+      'Must follow suit if possible; if void in the led suit, may play any card (with first-trick restrictions).',
+      "Hearts cannot be led until 'broken' (a heart has been played on a previous trick).",
+      'No penalty cards (hearts or Queen of Spades) on the first trick.',
+      'Queen of Spades = 13 penalty points; each heart = 1 penalty point.',
+      'Shoot the Moon: Taking all 26 penalty points gives 0 to shooter, 26 to everyone else.',
+      'Passing direction rotates: Left → Right → Across → None (hold), then repeats.',
+      '2 of Clubs always leads the first trick of each round.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: '4 players playing individually. For 3 players remove the 2 of Diamonds. For 5 players remove two low cards.',
+      deck: 'Standard 52-card deck. Ranking: Ace (high) down to 2 (low) in each suit.',
+      equipment: 'Score-keeping paper and pen.',
+      dealing: "Deal all 13 cards to each player (one at a time, face-down). After looking at their hands, players pass 3 cards to an opponent. Passing direction rotates each round: Left, Right, Across, then No Pass (a 'hold' round). This 4-round cycle repeats.",
+    },
+    turnFlow: "1. PASSING: After the deal, each player selects 3 cards to pass to an opponent (direction rotates: Left, Right, Across, None). All passes are simultaneous.\n2. OPENING LEAD: The player with the 2 of Clubs leads it to the first trick.\n3. FOLLOWING SUIT: Players must follow the suit led if possible. If unable to follow suit, any card may be played (except penalty cards on the first trick).\n4. WINNING TRICKS: The highest card of the suit led wins the trick. There is no trump suit. The trick winner leads the next trick.\n5. BREAKING HEARTS: Hearts cannot be led until a heart has been played ('discarded') on a previous trick, or the player has nothing but hearts remaining.\n6. FIRST TRICK RESTRICTION: No penalty cards (hearts or Queen of Spades) may be played on the first trick.\n7. SCORING: After all 13 tricks are played, each player counts penalty points in their captured tricks. Each heart = 1 point, Queen of Spades = 13 points. Maximum penalty per round = 26 points.\n8. SHOOT THE MOON: If one player captures ALL 13 hearts AND the Queen of Spades, they score 0 and every other player scores 26 points.\n9. GAME END: Play continues across rounds until a player reaches 100 cumulative points. The player with the lowest score at that point wins.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Dealer only. Once per round.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: 'Must follow led suit if able. Cannot play penalty cards (hearts or Queen of Spades) on the first trick. Cannot lead hearts until broken (a heart has been discarded on a previous trick) unless only hearts remain.',
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: "Must pass exactly 3 cards. All players pass simultaneously. Direction rotates: Left → Right → Across → None. Skipped on 'None' rounds.",
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Have the lowest cumulative score when any player reaches 100 points. Avoid taking tricks containing hearts (1 point each) and the Queen of Spades (13 points).',
+      "Turn-flow example: 1. PASSING: After the deal, each player selects 3 cards to pass to an opponent (direction rotates: Left, Right, Across, None). All passes are simultaneous.\n2. OPENING LEAD: The player with the 2 of Clubs leads it to the first trick.\n3. FOLLOWING SUIT: Players must follow the suit led if possible. If unable to follow suit, any card may be played (except penalty cards on the first trick).\n4. WINNING TRICKS: The highest card of the suit led wins the trick. There is no trump suit. The trick winner leads the next trick.\n5. BREAKING HEARTS: Hearts cannot be led until a heart has been played ('discarded') on a previous trick, or the player has nothing but hearts remaining.\n6. FIRST TRICK RESTRICTION: No penalty cards (hearts or Queen of Spades) may be played on the first trick.\n7. SCORING: After all 13 tricks are played, each player counts penalty points in their captured tricks. Each heart = 1 point, Queen of Spades = 13 points. Maximum penalty per round = 26 points.\n8. SHOOT THE MOON: If one player captures ALL 13 hearts AND the Queen of Spades, they score 0 and every other player scores 26 points.\n9. GAME END: Play continues across rounds until a player reaches 100 cumulative points. The player with the lowest score at that point wins.",
+      'Scoring example: Penalty-based scoring. Each heart captured = 1 point. Queen of Spades = 13 points. Maximum penalty per round = 26 points. Shoot the Moon reversal: if one player takes all 26, they get 0 and others get 26. Game ends when any player reaches 100 cumulative points. The player with the lowest cumulative score at that point wins..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'hearts.rules.objective',
+        title: 'Objective',
+        text: 'Have the lowest cumulative score when any player reaches 100 points. Avoid taking tricks containing hearts (1 point each) and the Queen of Spades (13 points).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hearts.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. PASSING: After the deal, each player selects 3 cards to pass to an opponent (direction rotates: Left, Right, Across, None). All passes are simultaneous.\n2. OPENING LEAD: The player with the 2 of Clubs leads it to the first trick.\n3. FOLLOWING SUIT: Players must follow the suit led if possible. If unable to follow suit, any card may be played (except penalty cards on the first trick).\n4. WINNING TRICKS: The highest card of the suit led wins the trick. There is no trump suit. The trick winner leads the next trick.\n5. BREAKING HEARTS: Hearts cannot be led until a heart has been played ('discarded') on a previous trick, or the player has nothing but hearts remaining.\n6. FIRST TRICK RESTRICTION: No penalty cards (hearts or Queen of Spades) may be played on the first trick.\n7. SCORING: After all 13 tricks are played, each player counts penalty points in their captured tricks. Each heart = 1 point, Queen of Spades = 13 points. Maximum penalty per round = 26 points.\n8. SHOOT THE MOON: If one player captures ALL 13 hearts AND the Queen of Spades, they score 0 and every other player scores 26 points.\n9. GAME END: Play continues across rounds until a player reaches 100 cumulative points. The player with the lowest score at that point wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hearts.setup.players',
+        title: 'Players',
+        text: '4 players playing individually. For 3 players remove the 2 of Diamonds. For 5 players remove two low cards.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hearts.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranking: Ace (high) down to 2 (low) in each suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hearts.setup.equipment',
+        title: 'Equipment',
+        text: 'Score-keeping paper and pen.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hearts.setup.dealing',
+        title: 'Deal',
+        text: "Deal all 13 cards to each player (one at a time, face-down). After looking at their hands, players pass 3 cards to an opponent. Passing direction rotates each round: Left, Right, Across, then No Pass (a 'hold' round). This 4-round cycle repeats.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hearts.score.win-condition',
+        title: 'Win condition',
+        text: 'Game ends when any player reaches 100 cumulative points. The player with the lowest cumulative score at that point wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hearts.score.description',
+        title: 'Scoring',
+        text: 'Penalty-based scoring. Each heart captured = 1 point. Queen of Spades = 13 points. Maximum penalty per round = 26 points. Shoot the Moon reversal: if one player takes all 26, they get 0 and others get 26.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hearts.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible; if void in the led suit, may play any card (with first-trick restrictions).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hearts.rules.key.2',
+        title: 'Key rule 2',
+        text: "Hearts cannot be led until 'broken' (a heart has been played on a previous trick).",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hearts.rules.key.3',
+        title: 'Key rule 3',
+        text: 'No penalty cards (hearts or Queen of Spades) on the first trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hearts.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Queen of Spades = 13 penalty points; each heart = 1 penalty point.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hearts.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Shoot the Moon: Taking all 26 penalty points gives 0 to shooter, 26 to everyone else.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'hearts.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Passing direction rotates: Left → Right → Across → None (hold), then repeats.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'hearts.rules.key.7',
+        title: 'Key rule 7',
+        text: '2 of Clubs always leads the first trick of each round.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hearts.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hearts.rules.objective',
+          'hearts.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hearts.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hearts.setup.players',
+          'hearts.setup.deck',
+          'hearts.setup.equipment',
+          'hearts.setup.dealing',
+        ],
+      },
+      {
+        id: 'hearts.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hearts.rules.key.1',
+          'hearts.rules.key.2',
+          'hearts.rules.key.3',
+          'hearts.rules.key.4',
+          'hearts.rules.key.5',
+          'hearts.rules.key.6',
+          'hearts.rules.key.7',
+        ],
+      },
+      {
+        id: 'hearts.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hearts.score.description',
+          'hearts.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hearts.setup.dealing',
+        'hearts.rules.objective',
+      ],
+      deal: [
+        'hearts.rules.gameplay',
+      ],
+      play_card: [
+        'hearts.rules.gameplay',
+      ],
+      pass: [
+        'hearts.rules.gameplay',
+      ],
+      score_round: [
+        'hearts.rules.gameplay',
+      ],
+    },
+  },
+}

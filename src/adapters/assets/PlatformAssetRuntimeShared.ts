@@ -1,44 +1,62 @@
-import type { ResourceRequest } from '@ocentra/network-domain/router-types';
-import { HttpContentType } from '@ocentra/endpoint-domain/constants/http';
-import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
+import type { ResourceRequest } from '@ocentra/network-domain/router-types'
+import { HttpContentType } from '@ocentra/endpoint-domain/constants/http'
+import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder'
 import {
   clearAssetDownloadUrlResolveCache,
+  clearAssetDownloadUrlResolveCacheForRequest,
   getWorkerBaseUrl,
   resolveAssetDownloadUrl,
-} from '@ocentra/endpoint-domain/utils/resolve-asset-download-url';
+} from '@ocentra/endpoint-domain/utils/resolve-asset-download-url'
 import {
   EntryIndexSchema,
   type AssetIndexResourceEntry,
   type EntryIndexDocument,
-} from '@ocentra/game-asset-domain/schemas/entry-index-schema';
+} from '@ocentra/game-asset-domain/schemas/entry-index-schema'
 import {
   GameCatalogDocumentSchema,
   type GameCatalogDocument,
-} from '@ocentra/game-asset-domain/schemas/game-catalog-entry-schema';
-import { GameEngineSchema, type GameEngine } from '@ocentra/game-asset-domain/schemas/game-engine-schema';
-import { GamePageSchema, type GamePage } from '@ocentra/game-asset-domain/schemas/game-page-schema';
+} from '@ocentra/game-asset-domain/schemas/game-catalog-entry-schema'
+import {
+  GameEngineSchema,
+  type GameEngine,
+} from '@ocentra/game-asset-domain/schemas/game-engine-schema'
+import {
+  GamePageSchema,
+  type GamePage,
+} from '@ocentra/game-asset-domain/schemas/game-page-schema'
 import {
   HomePageGamesDocumentSchema,
   type HomePageGamesDocument,
-} from '@ocentra/game-asset-domain/schemas/home-page-games-schema';
+} from '@ocentra/game-asset-domain/schemas/home-page-games-schema'
 import {
   AppPageSliceDocumentSchema,
   type AppPageSliceDocument,
-} from '@ocentra/game-asset-domain/schemas/app-page-slice-schema';
-import { getCachedSlice, setCachedSlice } from '@/adapters/assets/ContentSliceCache';
-import { getEntryIndexUrl, type StorageConfig } from '@/services/storage/StorageConfig';
+} from '@ocentra/game-asset-domain/schemas/app-page-slice-schema'
+import {
+  getCachedSlice,
+  setCachedSlice,
+} from '@/adapters/assets/ContentSliceCache'
+import {
+  getEntryIndexUrl,
+  type StorageConfig,
+} from '@/services/storage/StorageConfig'
 
-export const ENTRY_INDEX_TTL_MS = 60 * 60 * 1000;
+export const ENTRY_INDEX_TTL_MS = 60 * 60 * 1000
 
-export { clearAssetDownloadUrlResolveCache, getWorkerBaseUrl, resolveAssetDownloadUrl };
-
-export interface PlatformAssetFetchOptions {
-  useGuidCache?: boolean;
-  fetchConcurrency?: number;
-  cache?: RequestCache;
+export {
+  clearAssetDownloadUrlResolveCache,
+  clearAssetDownloadUrlResolveCacheForRequest,
+  getWorkerBaseUrl,
+  resolveAssetDownloadUrl,
 }
 
-export const DEFAULT_PLATFORM_ASSET_FETCH_CONCURRENCY = 12;
+export interface PlatformAssetFetchOptions {
+  useGuidCache?: boolean
+  fetchConcurrency?: number
+  cache?: RequestCache
+}
+
+export const DEFAULT_PLATFORM_ASSET_FETCH_CONCURRENCY = 12
 
 export async function runWithConcurrency<T, R>(
   items: readonly T[],
@@ -46,203 +64,275 @@ export async function runWithConcurrency<T, R>(
   fn: (item: T, index: number) => Promise<R>
 ): Promise<R[]> {
   if (items.length === 0) {
-    return [];
+    return []
   }
-  const limit = Math.max(1, Math.min(concurrency, items.length));
-  const results: R[] = new Array(items.length);
-  let next = 0;
+  const limit = Math.max(1, Math.min(concurrency, items.length))
+  const results: R[] = new Array(items.length)
+  let next = 0
   const runners = Array.from({ length: limit }, async () => {
     while (true) {
-      const i = next++;
+      const i = next++
       if (i >= items.length) {
-        return;
+        return
       }
-      results[i] = await fn(items[i]!, i);
+      results[i] = await fn(items[i]!, i)
     }
-  });
-  await Promise.all(runners);
-  return results;
+  })
+  await Promise.all(runners)
+  return results
 }
 
 export interface PlatformAssetRequest {
-  guid?: string;
-  hash?: string;
-  checksum?: string;
+  guid?: string
+  hash?: string
+  checksum?: string
 }
 
 export interface PlatformAssetRuntimeDebugInfo {
-  runtime: 'web' | 'desktop' | 'mobile';
-  transportMode: 'browser-fetch' | 'desktop-native-fetch' | 'mobile-fetch';
-  sliceCacheMode: 'indexeddb' | 'native-backend';
-  imageCacheMode: 'indexeddb' | 'desktop-native' | 'mobile-native';
-  supportsNativeFetch: boolean;
+  runtime: 'web' | 'desktop' | 'mobile'
+  transportMode: 'browser-fetch' | 'desktop-native-fetch' | 'mobile-fetch'
+  sliceCacheMode: 'indexeddb' | 'native-backend'
+  imageCacheMode: 'indexeddb' | 'desktop-native' | 'mobile-native'
+  supportsNativeFetch: boolean
 }
 
 export interface PlatformAssetRuntime {
-  getEntryIndex(storageConfig: StorageConfig): Promise<EntryIndexDocument | null>;
-  getHomePageGames(storageConfig: StorageConfig): Promise<HomePageGamesDocument | null>;
-  getGameCatalog(storageConfig: StorageConfig): Promise<GameCatalogDocument | null>;
-  getAppPageSlice(pageId: string, storageConfig: StorageConfig): Promise<AppPageSliceDocument | null>;
-  getSelectedGamePage(gameId: string, storageConfig: StorageConfig): Promise<GamePage | null>;
-  getGameEngine(gameId: string, storageConfig: StorageConfig): Promise<GameEngine | null>;
-  prefetchCoreSlices(storageConfig: StorageConfig): Promise<void>;
+  getEntryIndex(
+    storageConfig: StorageConfig
+  ): Promise<EntryIndexDocument | null>
+  getHomePageGames(
+    storageConfig: StorageConfig
+  ): Promise<HomePageGamesDocument | null>
+  getGameCatalog(
+    storageConfig: StorageConfig
+  ): Promise<GameCatalogDocument | null>
+  getAppPageSlice(
+    pageId: string,
+    storageConfig: StorageConfig
+  ): Promise<AppPageSliceDocument | null>
+  getSelectedGamePage(
+    gameId: string,
+    storageConfig: StorageConfig
+  ): Promise<GamePage | null>
+  getGameEngine(
+    gameId: string,
+    storageConfig: StorageConfig
+  ): Promise<GameEngine | null>
+  prefetchCoreSlices(storageConfig: StorageConfig): Promise<void>
   prefetchAssets(
     requests: PlatformAssetRequest[],
     storageConfig: StorageConfig,
     options?: PlatformAssetFetchOptions
-  ): Promise<void>;
+  ): Promise<void>
   getAssetByGuid(
     guid: string,
     storageConfig: StorageConfig,
     options?: PlatformAssetFetchOptions
-  ): Promise<Response>;
-  getAssetByHash(hash: string, storageConfig: StorageConfig): Promise<Response>;
-  getAssetByChecksum(checksum: string, storageConfig: StorageConfig): Promise<Response>;
+  ): Promise<Response>
+  getAssetByHash(hash: string, storageConfig: StorageConfig): Promise<Response>
+  getAssetByChecksum(
+    checksum: string,
+    storageConfig: StorageConfig
+  ): Promise<Response>
   batchFetchAssets(
     guids: string[],
     storageConfig: StorageConfig,
     options?: PlatformAssetFetchOptions
-  ): Promise<Map<string, ArrayBuffer>>;
+  ): Promise<Map<string, ArrayBuffer>>
   fetchAsset(
     request: Pick<ResourceRequest, 'guid' | 'hash' | 'checksum'>,
     storageConfig: StorageConfig,
     options?: PlatformAssetFetchOptions
-  ): Promise<Response>;
-  getDebugInfo(): PlatformAssetRuntimeDebugInfo;
+  ): Promise<Response>
+  getDebugInfo(): PlatformAssetRuntimeDebugInfo
 }
 
 export function getAssetUrl(
   request: Pick<ResourceRequest, 'guid' | 'hash' | 'checksum'>,
   storageConfig: StorageConfig
 ): string {
-  const base = storageConfig.assetsPublicUrl?.replace(/\/$/, '');
+  const base = storageConfig.assetsPublicUrl?.replace(/\/$/, '')
   if (!base) {
     throw new Error(
       'Cannot fetch resource: assetsPublicUrl is empty. Set VITE_ASSETS_PUBLIC_URL or VITE_CLAIM_STORAGE_URL.'
-    );
+    )
   }
 
-  const key = request.guid ?? request.hash ?? request.checksum ?? '';
+  const key = request.guid ?? request.hash ?? request.checksum ?? ''
   if (!key) {
-    throw new Error('Cannot fetch resource: request has no guid/hash/checksum');
+    throw new Error('Cannot fetch resource: request has no guid/hash/checksum')
   }
 
-  return `${base}/${encodeURIComponent(key)}`;
+  return `${base}/${encodeURIComponent(key)}`
 }
 
 export async function getCachedJsonSlice<T>(url: string): Promise<T | null> {
-  const cached = await getCachedSlice<T>(url);
-  return cached ?? null;
+  const cached = await getCachedSlice<T>(url)
+  return cached ?? null
 }
 
 export interface JsonSliceFetchOptions {
-  bypassCache?: boolean;
+  bypassCache?: boolean
+}
+
+const LOCAL_JSON_SLICE_HOSTNAMES = new Set([
+  'localhost',
+  '127.0.0.1',
+  '[::1]',
+  '::1',
+])
+
+export function isLocalJsonSliceUrl(url: string): boolean {
+  try {
+    return LOCAL_JSON_SLICE_HOSTNAMES.has(new URL(url).hostname.toLowerCase())
+  } catch {
+    return false
+  }
+}
+
+export function shouldBypassJsonSliceCache(
+  url: string,
+  options: JsonSliceFetchOptions = {}
+): boolean {
+  return options.bypassCache === true || isLocalJsonSliceUrl(url)
 }
 
 export async function fetchJsonSlice<T>(
   url: string,
   options: JsonSliceFetchOptions = {}
 ): Promise<T | null> {
-  if (!options.bypassCache) {
-    const cached = await getCachedJsonSlice<T>(url);
+  const bypassCache = shouldBypassJsonSliceCache(url, options)
+  if (!bypassCache) {
+    const cached = await getCachedJsonSlice<T>(url)
     if (cached !== null) {
-      return cached;
+      return cached
     }
   }
   try {
-    const response = await fetch(url, options.bypassCache ? { cache: 'no-store' } : undefined);
+    const response = await fetch(
+      url,
+      bypassCache ? { cache: 'no-store' } : undefined
+    )
     if (!response.ok) {
-      return null;
+      return null
     }
-    const data = (await response.json()) as T;
-    void setCachedSlice(url, data);
-    return data;
+    const data = (await response.json()) as T
+    if (!bypassCache) {
+      void setCachedSlice(url, data)
+    }
+    return data
   } catch {
-    return null;
+    return null
   }
 }
 
-export async function setCachedJsonSlice(url: string, data: unknown): Promise<void> {
-  void setCachedSlice(url, data);
+export async function setCachedJsonSlice(
+  url: string,
+  data: unknown
+): Promise<void> {
+  void setCachedSlice(url, data)
 }
 
-export function getSliceUrl(storageConfig: StorageConfig, endpoint: string): string {
-  const baseUrl = getWorkerBaseUrl(storageConfig);
+export function getSliceUrl(
+  storageConfig: StorageConfig,
+  endpoint: string
+): string {
+  const baseUrl = getWorkerBaseUrl(storageConfig)
   if (!baseUrl) {
-    return '';
+    return ''
   }
-  return buildApiUrl(endpoint, { baseUrl });
+  return buildApiUrl(endpoint, { baseUrl })
 }
 
-export function getEntryIndexAssetGuids(entryIndex: EntryIndexDocument): string[] {
+export function getEntryIndexAssetGuids(
+  entryIndex: EntryIndexDocument
+): string[] {
   return entryIndex.resources
     .map((resource: AssetIndexResourceEntry) => resource.guid)
-    .filter((guid): guid is string => typeof guid === 'string' && guid.length > 0);
+    .filter(
+      (guid): guid is string => typeof guid === 'string' && guid.length > 0
+    )
 }
 
-export function parseEntryIndexPayload(payload: unknown): EntryIndexDocument | null {
-  const parsed = EntryIndexSchema.safeParse(payload);
-  return parsed.success ? parsed.data : null;
+export function parseEntryIndexPayload(
+  payload: unknown
+): EntryIndexDocument | null {
+  const parsed = EntryIndexSchema.safeParse(payload)
+  return parsed.success ? parsed.data : null
 }
 
-export function parseHomePageGamesPayload(payload: unknown): HomePageGamesDocument | null {
-  const parsed = HomePageGamesDocumentSchema.safeParse(payload);
-  return parsed.success ? parsed.data : null;
+export function parseHomePageGamesPayload(
+  payload: unknown
+): HomePageGamesDocument | null {
+  const parsed = HomePageGamesDocumentSchema.safeParse(payload)
+  return parsed.success ? parsed.data : null
 }
 
-export function parseGameCatalogPayload(payload: unknown): GameCatalogDocument | null {
-  const parsed = GameCatalogDocumentSchema.safeParse(payload);
-  return parsed.success ? parsed.data : null;
+export function parseGameCatalogPayload(
+  payload: unknown
+): GameCatalogDocument | null {
+  const parsed = GameCatalogDocumentSchema.safeParse(payload)
+  return parsed.success ? parsed.data : null
 }
 
-export function parseAppPageSlicePayload(payload: unknown): AppPageSliceDocument | null {
-  const parsed = AppPageSliceDocumentSchema.safeParse(payload);
-  return parsed.success ? parsed.data : null;
+export function parseAppPageSlicePayload(
+  payload: unknown
+): AppPageSliceDocument | null {
+  const parsed = AppPageSliceDocumentSchema.safeParse(payload)
+  return parsed.success ? parsed.data : null
 }
 
 export function parseGamePagePayload(payload: unknown): GamePage | null {
-  const parsed = GamePageSchema.safeParse(payload);
-  return parsed.success ? parsed.data : null;
+  const parsed = GamePageSchema.safeParse(payload)
+  return parsed.success ? parsed.data : null
 }
 
 export function parseGameEnginePayload(payload: unknown): GameEngine | null {
-  const parsed = GameEngineSchema.safeParse(payload);
-  return parsed.success ? parsed.data : null;
+  const parsed = GameEngineSchema.safeParse(payload)
+  return parsed.success ? parsed.data : null
 }
 
 export async function prefetchCoreSlicesInternal(
-  runtime: Pick<PlatformAssetRuntime, 'getEntryIndex' | 'getHomePageGames' | 'getGameCatalog'>,
+  runtime: Pick<
+    PlatformAssetRuntime,
+    'getEntryIndex' | 'getHomePageGames' | 'getGameCatalog'
+  >,
   storageConfig: StorageConfig
 ): Promise<void> {
   await Promise.allSettled([
     runtime.getEntryIndex(storageConfig),
     runtime.getHomePageGames(storageConfig),
     runtime.getGameCatalog(storageConfig),
-  ]);
+  ])
 }
 
-export function toCachedAssetResponse(content: Uint8Array, contentType?: string): Response {
-  const body = content as unknown as BodyInit;
+export function toCachedAssetResponse(
+  content: Uint8Array,
+  contentType?: string
+): Response {
+  const body = content as unknown as BodyInit
   return new Response(body, {
     status: 200,
     headers: {
       'content-type': contentType ?? HttpContentType.ApplicationJson,
     },
-  });
+  })
 }
 
 export function toArrayBufferCopy(content: Uint8Array): ArrayBuffer {
-  const copy = new Uint8Array(content.byteLength);
-  copy.set(content);
-  return copy.buffer;
+  const copy = new Uint8Array(content.byteLength)
+  copy.set(content)
+  return copy.buffer
 }
 
-export async function responseToArrayBuffer(response: Response): Promise<ArrayBuffer | null> {
+export async function responseToArrayBuffer(
+  response: Response
+): Promise<ArrayBuffer | null> {
   if (!response.ok) {
-    await response.text().catch(() => undefined);
-    return null;
+    await response.text().catch(() => undefined)
+    return null
   }
-  return await response.arrayBuffer();
+  return await response.arrayBuffer()
 }
 
 export function toResponse(
@@ -251,16 +341,17 @@ export function toResponse(
   contentType?: string,
   etag?: string | null
 ): Response {
-  const bytes = content instanceof Uint8Array ? content : new Uint8Array(content);
-  const headers = new Headers();
-  headers.set('content-type', contentType ?? HttpContentType.ApplicationJson);
+  const bytes =
+    content instanceof Uint8Array ? content : new Uint8Array(content)
+  const headers = new Headers()
+  headers.set('content-type', contentType ?? HttpContentType.ApplicationJson)
   if (etag) {
-    headers.set('etag', etag);
+    headers.set('etag', etag)
   }
   return new Response(bytes as unknown as BodyInit, {
     status,
     headers,
-  });
+  })
 }
 
-export { getEntryIndexUrl };
+export { getEntryIndexUrl }

@@ -1,0 +1,246 @@
+{
+  system: {
+    guid: 'd2884699-b2df-4887-8162-5c8f12b4829d',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/banking/baccarat-deux-tableaux-baccarat-banque/baccarat-deux-tableaux-baccarat-banqueRules.asset',
+    gameId: 'baccarat-deux-tableaux-baccarat-banque',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. **Initial Deal**: Three cards are dealt face down in sequence: Left Player, Right Player, Banker. This is repeated for a second card. 2. **Naturals**: If any of the three hands has 8 or 9, it is turned over; the round ends for that specific tableau. 3. **The Players' Choice**: The representative player at each tableau decides whether to draw a third card (must draw on 0-4, must stand on 6-7, optional on 5). 4. **The Banker's Challenge**: The Banker sees the third-card values of both opponents (if they drew) and must decide whether to draw to their own hand to maximize their return against *both* tableaus.",
+    Player: "1. **Initial Deal**: Three cards are dealt face down in sequence: Left Player, Right Player, Banker. This is repeated for a second card. 2. **Naturals**: If any of the three hands has 8 or 9, it is turned over; the round ends for that specific tableau. 3. **The Players' Choice**: The representative player at each tableau decides whether to draw a third card (must draw on 0-4, must stand on 6-7, optional on 5). 4. **The Banker's Challenge**: The Banker sees the third-card values of both opponents (if they drew) and must decide whether to draw to their own hand to maximize their return against *both* tableaus.",
+    objective: "For the Banker: Beat both players' hands. For Punters: Beat the Banker's hand at your specific wing of the table.",
+    gameplay: "1. **Initial Deal**: Three cards are dealt face down in sequence: Left Player, Right Player, Banker. This is repeated for a second card. 2. **Naturals**: If any of the three hands has 8 or 9, it is turned over; the round ends for that specific tableau. 3. **The Players' Choice**: The representative player at each tableau decides whether to draw a third card (must draw on 0-4, must stand on 6-7, optional on 5). 4. **The Banker's Challenge**: The Banker sees the third-card values of both opponents (if they drew) and must decide whether to draw to their own hand to maximize their return against *both* tableaus.",
+    keyRules: [
+      'Tableau split: The Banker can win against the left side and lose against the right side in the same round.',
+      'Fixed Banker: Unlike Chemin de Fer, the Banker does not rotate after every loss. They remain until their bank is lost or they choose to retire.',
+      "Banque Ouverte: A version where there is no limit to the bank except the Banker's willingness to cover bets.",
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: "Variable. One Banker, sitting in the middle. Players sit at 'Tableau 1' (Left) and 'Tableau 2' (Right).",
+      deck: 'Three standard 52-card decks shuffled together (156 cards).',
+      equipment: "Oval baccarat table with two betting wings, a massive shoe, and a Banker's palette.",
+      dealing: 'The Banker deals three hands: one for the players on the left, one for the players on the right, and one for themselves.',
+    },
+    turnFlow: "1. **Initial Deal**: Three cards are dealt face down in sequence: Left Player, Right Player, Banker. This is repeated for a second card. 2. **Naturals**: If any of the three hands has 8 or 9, it is turned over; the round ends for that specific tableau. 3. **The Players' Choice**: The representative player at each tableau decides whether to draw a third card (must draw on 0-4, must stand on 6-7, optional on 5). 4. **The Banker's Challenge**: The Banker sees the third-card values of both opponents (if they drew) and must decide whether to draw to their own hand to maximize their return against *both* tableaus.",
+    moveValidityConditions: {
+      ante: 'Baccarat Banque uses fixed bets per tableau; there is no ante phase.',
+      deal: 'Only the actor with role:banker during the deal phase.',
+      reveal_market: 'Banking game with no market or tableau reveal mechanic.',
+      buy_market: 'Cards are dealt from the shoe only; there is no market to buy from.',
+      buy_stock: 'Third card is dealt by the banker on request; players do not buy from stock.',
+      fold: 'Banking game; players commit to bets before the deal and cannot fold.',
+      check: 'No betting rounds; punters place fixed wagers before the deal only.',
+      call: 'No raise or call structure; all bets are placed once before the deal.',
+      bet: "Betting phase. Total bets must not exceed the current Bank's staked bankroll.",
+      raise: 'Single betting phase; no raising after initial wagers.',
+      declare: 'No declaration phase; naturals (8 or 9) are revealed automatically.',
+      reveal_hand: 'Showdown phase or natural check.',
+      award_pot: 'Resolution phase after banker_choice.',
+      play_card: 'Hands are dealt and optionally draw a third card; no card-by-card play.',
+      draw: 'Must draw on 0-4; optional on 5; stand on 6-7.',
+      discard: 'No discard pile; only draw or stand on the third card.',
+      pass: 'Player/Banker choice phase.',
+      bid: 'Auction phase. Winner becomes the persistent banker.',
+      meld: 'Hands are valued by total modulo 10; no melds or sets.',
+      go_out: 'Round ends by comparing hand totals; no go-out or knock mechanic.',
+    },
+    exampleHands: [
+      'Setup example: 2 card(s) per player.',
+      "Rule example: For the Banker: Beat both players' hands. For Punters: Beat the Banker's hand at your specific wing of the table.",
+      "Turn-flow example: 1. **Initial Deal**: Three cards are dealt face down in sequence: Left Player, Right Player, Banker. This is repeated for a second card. 2. **Naturals**: If any of the three hands has 8 or 9, it is turned over; the round ends for that specific tableau. 3. **The Players' Choice**: The representative player at each tableau decides whether to draw a third card (must draw on 0-4, must stand on 6-7, optional on 5). 4. **The Banker's Challenge**: The Banker sees the third-card values of both opponents (if they drew) and must decide whether to draw to their own hand to maximize their return against *both* tableaus.",
+      'Scoring example: Standard Baccarat totaling (Modulo 10). Closest to 9..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.rules.objective',
+        title: 'Objective',
+        text: "For the Banker: Beat both players' hands. For Punters: Beat the Banker's hand at your specific wing of the table.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Initial Deal**: Three cards are dealt face down in sequence: Left Player, Right Player, Banker. This is repeated for a second card. 2. **Naturals**: If any of the three hands has 8 or 9, it is turned over; the round ends for that specific tableau. 3. **The Players' Choice**: The representative player at each tableau decides whether to draw a third card (must draw on 0-4, must stand on 6-7, optional on 5). 4. **The Banker's Challenge**: The Banker sees the third-card values of both opponents (if they drew) and must decide whether to draw to their own hand to maximize their return against *both* tableaus.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.setup.players',
+        title: 'Players',
+        text: "Variable. One Banker, sitting in the middle. Players sit at 'Tableau 1' (Left) and 'Tableau 2' (Right).",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.setup.deck',
+        title: 'Deck',
+        text: 'Three standard 52-card decks shuffled together (156 cards).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.setup.equipment',
+        title: 'Equipment',
+        text: "Oval baccarat table with two betting wings, a massive shoe, and a Banker's palette.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.setup.dealing',
+        title: 'Deal',
+        text: 'The Banker deals three hands: one for the players on the left, one for the players on the right, and one for themselves.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.score.win-condition',
+        title: 'Win condition',
+        text: 'Closest to 9.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.score.description',
+        title: 'Scoring',
+        text: 'Standard Baccarat totaling (Modulo 10).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tableau split: The Banker can win against the left side and lose against the right side in the same round.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Fixed Banker: Unlike Chemin de Fer, the Banker does not rotate after every loss. They remain until their bank is lost or they choose to retire.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.rules.key.3',
+        title: 'Key rule 3',
+        text: "Banque Ouverte: A version where there is no limit to the bank except the Banker's willingness to cover bets.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'baccarat-deux-tableaux-baccarat-banque.rules.objective',
+          'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'baccarat-deux-tableaux-baccarat-banque.setup.players',
+          'baccarat-deux-tableaux-baccarat-banque.setup.deck',
+          'baccarat-deux-tableaux-baccarat-banque.setup.equipment',
+          'baccarat-deux-tableaux-baccarat-banque.setup.dealing',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'baccarat-deux-tableaux-baccarat-banque.rules.key.1',
+          'baccarat-deux-tableaux-baccarat-banque.rules.key.2',
+          'baccarat-deux-tableaux-baccarat-banque.rules.key.3',
+        ],
+      },
+      {
+        id: 'baccarat-deux-tableaux-baccarat-banque.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'baccarat-deux-tableaux-baccarat-banque.score.description',
+          'baccarat-deux-tableaux-baccarat-banque.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'baccarat-deux-tableaux-baccarat-banque.setup.dealing',
+        'baccarat-deux-tableaux-baccarat-banque.rules.objective',
+      ],
+      deal: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      bet: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      reveal_hand: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      award_pot: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      draw: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      pass: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      bid: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      bid_bankroll: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      bet_tableau_1: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      bet_tableau_2: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      deal_hidden_hands: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      p1_choice: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      p2_choice: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      banker_draw: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      banker_stand: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      settle_tableau_1: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+      settle_tableau_2: [
+        'baccarat-deux-tableaux-baccarat-banque.rules.gameplay',
+      ],
+    },
+  },
+}

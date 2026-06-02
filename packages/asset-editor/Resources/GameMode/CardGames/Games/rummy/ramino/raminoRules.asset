@@ -1,0 +1,235 @@
+{
+  system: {
+    guid: 'd127a5c2-aabd-44f1-ae15-131d08237efb',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/ramino/raminoRules.asset',
+    gameId: 'ramino',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "After the deal, the first player to dealer's left may post a blind (fare il buio). Others then call, fold, or raise in poker fashion. If two or more remain, play starts: each turn a player draws one card from the stock or the top of the discard pile, then discards one card face up. A player may go out after drawing by laying 10 cards in sets (three or more of same rank) and runs (three or more consecutive same suit; Ace may be high or low). No melds are shown until going out. Jokers are wild. The winner takes the pool.",
+    Player: "After the deal, the first player to dealer's left may post a blind (fare il buio). Others then call, fold, or raise in poker fashion. If two or more remain, play starts: each turn a player draws one card from the stock or the top of the discard pile, then discards one card face up. A player may go out after drawing by laying 10 cards in sets (three or more of same rank) and runs (three or more consecutive same suit; Ace may be high or low). No melds are shown until going out. Jokers are wild. The winner takes the pool.",
+    objective: 'Win the hand by being first to go out with 10 cards in valid sets and runs and one discard, and collect the pool; or win the betting round when all others fold.',
+    gameplay: "After the deal, the first player to dealer's left may post a blind (fare il buio). Others then call, fold, or raise in poker fashion. If two or more remain, play starts: each turn a player draws one card from the stock or the top of the discard pile, then discards one card face up. A player may go out after drawing by laying 10 cards in sets (three or more of same rank) and runs (three or more consecutive same suit; Ace may be high or low). No melds are shown until going out. Jokers are wild. The winner takes the pool.",
+    keyRules: [
+      'Sets are three or more cards of the same rank; runs are three or more consecutive cards of the same suit; Ace may be next to King or Two.',
+      'First player may post a blind before looking; others call, fold, or raise. If only one remains after betting, that player wins the pool without play.',
+      'Each turn: draw one from stock or top discard, then discard one. Going out: expose 10 cards in valid combinations and discard the 11th.',
+      'Special hands (e.g. one 10-card run without Jokers) may entitle the winner to extra payments from active players.',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Three to five players (best); adaptable to more with extra packs.',
+      deck: 'Double deck of standard 52-card packs plus four Jokers (108 cards total).',
+      equipment: 'Table and chips or agreed stakes.',
+      dealing: "Dealer shuffles and is cut by player to dealer's right. Each player receives 10 cards dealt one at a time. Remainder is stacked face down as stock.",
+    },
+    turnFlow: "After the deal, the first player to dealer's left may post a blind (fare il buio). Others then call, fold, or raise in poker fashion. If two or more remain, play starts: each turn a player draws one card from the stock or the top of the discard pile, then discards one card face up. A player may go out after drawing by laying 10 cards in sets (three or more of same rank) and runs (three or more consecutive same suit; Ace may be high or low). No melds are shown until going out. Jokers are wild. The winner takes the pool.",
+    moveValidityConditions: {
+      ante: 'Blind is posted as a bet; ante is not a separate action in this game.',
+      deal: 'Dealer only, at start of hand.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'During betting round only; cannot re-enter the hand.',
+      check: 'Betting uses blind, call, and raise; no check in this variant.',
+      call: 'During betting round when a bet or raise has been made.',
+      bet: 'First player may post blind before looking; others may bet when it is their turn to act.',
+      raise: 'During betting round when permitted by house rules.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'Resolution phase only.',
+      play_card: 'Ramino uses draw-discard and go-out; there is no single-card play to a trick.',
+      draw: 'Start of turn; must draw before discarding or going out.',
+      discard: 'After drawing; required each turn except when going out (then meld 10 and discard 11th).',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'When going out: expose 10 cards in valid sets and runs, then discard the 11th.',
+      go_out: 'After drawing; hand must form valid combinations (sets of three or more of same rank, runs of three or more consecutive same suit).',
+    },
+    exampleHands: [
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the hand by being first to go out with 10 cards in valid sets and runs and one discard, and collect the pool; or win the betting round when all others fold.',
+      "Turn-flow example: After the deal, the first player to dealer's left may post a blind (fare il buio). Others then call, fold, or raise in poker fashion. If two or more remain, play starts: each turn a player draws one card from the stock or the top of the discard pile, then discards one card face up. A player may go out after drawing by laying 10 cards in sets (three or more of same rank) and runs (three or more consecutive same suit; Ace may be high or low). No melds are shown until going out. Jokers are wild. The winner takes the pool.",
+      'Scoring example: Winner of each hand collects the pool. Special hands may entitle the winner to extra payments from active players. First player to go out with 10 cards in valid sets and runs (and discard the 11th) wins the hand and collects the pool; or the last player remaining after all others fold wins without play..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'ramino.rules.objective',
+        title: 'Objective',
+        text: 'Win the hand by being first to go out with 10 cards in valid sets and runs and one discard, and collect the pool; or win the betting round when all others fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ramino.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal, the first player to dealer's left may post a blind (fare il buio). Others then call, fold, or raise in poker fashion. If two or more remain, play starts: each turn a player draws one card from the stock or the top of the discard pile, then discards one card face up. A player may go out after drawing by laying 10 cards in sets (three or more of same rank) and runs (three or more consecutive same suit; Ace may be high or low). No melds are shown until going out. Jokers are wild. The winner takes the pool.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ramino.setup.players',
+        title: 'Players',
+        text: 'Three to five players (best); adaptable to more with extra packs.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ramino.setup.deck',
+        title: 'Deck',
+        text: 'Double deck of standard 52-card packs plus four Jokers (108 cards total).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ramino.setup.equipment',
+        title: 'Equipment',
+        text: 'Table and chips or agreed stakes.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ramino.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles and is cut by player to dealer's right. Each player receives 10 cards dealt one at a time. Remainder is stacked face down as stock.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ramino.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to go out with 10 cards in valid sets and runs (and discard the 11th) wins the hand and collects the pool; or the last player remaining after all others fold wins without play.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ramino.score.description',
+        title: 'Scoring',
+        text: 'Winner of each hand collects the pool. Special hands may entitle the winner to extra payments from active players.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ramino.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Sets are three or more cards of the same rank; runs are three or more consecutive cards of the same suit; Ace may be next to King or Two.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ramino.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First player may post a blind before looking; others call, fold, or raise. If only one remains after betting, that player wins the pool without play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ramino.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each turn: draw one from stock or top discard, then discard one. Going out: expose 10 cards in valid combinations and discard the 11th.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'ramino.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Special hands (e.g. one 10-card run without Jokers) may entitle the winner to extra payments from active players.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ramino.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ramino.rules.objective',
+          'ramino.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ramino.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ramino.setup.players',
+          'ramino.setup.deck',
+          'ramino.setup.equipment',
+          'ramino.setup.dealing',
+        ],
+      },
+      {
+        id: 'ramino.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ramino.rules.key.1',
+          'ramino.rules.key.2',
+          'ramino.rules.key.3',
+          'ramino.rules.key.4',
+        ],
+      },
+      {
+        id: 'ramino.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ramino.score.description',
+          'ramino.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ramino.setup.dealing',
+        'ramino.rules.objective',
+      ],
+      deal: [
+        'ramino.rules.gameplay',
+      ],
+      fold: [
+        'ramino.rules.gameplay',
+      ],
+      call: [
+        'ramino.rules.gameplay',
+      ],
+      bet: [
+        'ramino.rules.gameplay',
+      ],
+      raise: [
+        'ramino.rules.gameplay',
+      ],
+      award_pot: [
+        'ramino.rules.gameplay',
+      ],
+      draw: [
+        'ramino.rules.gameplay',
+      ],
+      discard: [
+        'ramino.rules.gameplay',
+      ],
+      meld: [
+        'ramino.rules.gameplay',
+      ],
+      go_out: [
+        'ramino.rules.gameplay',
+      ],
+    },
+  },
+}

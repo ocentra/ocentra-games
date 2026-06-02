@@ -1,6 +1,59 @@
 import type { StackFrame } from '@ocentra/logging-domain/types/stackFrame';
 import { UNKNOWN_CONTEXT } from '@ocentra/logging-domain/core/constants';
 
+interface ParsedLocation {
+  filePath: string;
+  lineNum: string;
+  colNum: string;
+}
+
+function isDigits(value: string): boolean {
+  if (!value) return false;
+  for (let i = 0; i < value.length; i += 1) {
+    const code = value.charCodeAt(i);
+    if (code < 48 || code > 57) return false;
+  }
+  return true;
+}
+
+function parseLocation(value: string): ParsedLocation | null {
+  const colSeparator = value.lastIndexOf(':');
+  if (colSeparator <= 0) return null;
+
+  const lineSeparator = value.lastIndexOf(':', colSeparator - 1);
+  if (lineSeparator <= 0) return null;
+
+  const filePath = value.slice(0, lineSeparator);
+  const lineNum = value.slice(lineSeparator + 1, colSeparator);
+  const colNum = value.slice(colSeparator + 1);
+
+  if (!filePath || !isDigits(lineNum) || !isDigits(colNum)) return null;
+
+  return { filePath, lineNum, colNum };
+}
+
+function getFileName(filePath: string): string {
+  const slashIndex = Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\'));
+  if (slashIndex < 0) return filePath;
+  return filePath.slice(slashIndex + 1) || filePath;
+}
+
+function buildFrame(raw: string, location: ParsedLocation, funcName?: string): StackFrame {
+  const frame: StackFrame = {
+    file: getFileName(location.filePath),
+    filePath: location.filePath,
+    line: parseInt(location.lineNum, 10),
+    column: parseInt(location.colNum, 10),
+    raw,
+  };
+
+  if (funcName) {
+    frame.function = funcName;
+  }
+
+  return frame;
+}
+
 export function parseStackFrame(
   line: string,
   frameCache: Map<string, StackFrame>,
@@ -16,79 +69,39 @@ export function parseStackFrame(
 
   let frame: StackFrame | null = null;
 
-  const withFunction = trimmed.match(
-    /^at\s+(?:async\s+)?([\w.]+)\s+\((.+):(\d+):(\d+)\)$/
-  );
-  if (withFunction) {
-    const [, funcName, filePath, lineNum, colNum] = withFunction;
-    const fileName = filePath.split(/[/\\]/).pop() || filePath;
+  if (trimmed.startsWith('at ')) {
+    let chromeFrame = trimmed.slice(3);
+    if (chromeFrame.startsWith('async ')) {
+      chromeFrame = chromeFrame.slice(6);
+    }
 
-    frame = {
-      function: funcName,
-      file: fileName,
-      filePath: filePath,
-      line: parseInt(lineNum, 10),
-      column: parseInt(colNum, 10),
-      raw: trimmed,
-    };
+    if (chromeFrame.startsWith('eval (') && chromeFrame.endsWith(')')) {
+      const location = parseLocation(chromeFrame.slice(6, -1));
+      if (location) frame = buildFrame(trimmed, location);
+    }
+
+    const callSeparator = chromeFrame.lastIndexOf(' (');
+    if (!frame && callSeparator > 0 && chromeFrame.endsWith(')')) {
+      const funcName = chromeFrame.slice(0, callSeparator);
+      const location = parseLocation(chromeFrame.slice(callSeparator + 2, -1));
+      if (location) frame = buildFrame(trimmed, location, funcName);
+    }
+
+    if (!frame) {
+      const location = parseLocation(chromeFrame);
+      if (location) frame = buildFrame(trimmed, location);
+    }
   } else {
-    const withoutFunction = trimmed.match(/^at\s+(.+):(\d+):(\d+)$/);
-    if (withoutFunction) {
-      const [, filePath, lineNum, colNum] = withoutFunction;
-      const fileName = filePath.split(/[/\\]/).pop() || filePath;
+    const atSeparator = trimmed.lastIndexOf('@');
+    if (atSeparator > 0) {
+      const funcName = trimmed.slice(0, atSeparator);
+      const location = parseLocation(trimmed.slice(atSeparator + 1));
+      if (location) frame = buildFrame(trimmed, location, funcName);
+    }
 
-      frame = {
-        file: fileName,
-        filePath: filePath,
-        line: parseInt(lineNum, 10),
-        column: parseInt(colNum, 10),
-        raw: trimmed,
-      };
-    } else {
-      const evalMatch = trimmed.match(/^at eval \((.+):(\d+):(\d+)\)$/);
-      if (evalMatch) {
-        const [, filePath, lineNum, colNum] = evalMatch;
-        const fileName = filePath.split(/[/\\]/).pop() || filePath;
-
-        frame = {
-          file: fileName,
-          filePath: filePath,
-          line: parseInt(lineNum, 10),
-          column: parseInt(colNum, 10),
-          raw: trimmed,
-        };
-      } else {
-        const firefoxWithFunction = trimmed.match(
-          /^([\w.$]+)@(.+):(\d+):(\d+)$/
-        );
-        if (firefoxWithFunction) {
-          const [, funcName, filePath, lineNum, colNum] = firefoxWithFunction;
-          const fileName = filePath.split(/[/\\]/).pop() || filePath;
-
-          frame = {
-            function: funcName,
-            file: fileName,
-            filePath: filePath,
-            line: parseInt(lineNum, 10),
-            column: parseInt(colNum, 10),
-            raw: trimmed,
-          };
-        } else {
-          const firefoxNoFunction = trimmed.match(/^(.+):(\d+):(\d+)$/);
-          if (firefoxNoFunction) {
-            const [, filePath, lineNum, colNum] = firefoxNoFunction;
-            const fileName = filePath.split(/[/\\]/).pop() || filePath;
-
-            frame = {
-              file: fileName,
-              filePath: filePath,
-              line: parseInt(lineNum, 10),
-              column: parseInt(colNum, 10),
-              raw: trimmed,
-            };
-          }
-        }
-      }
+    if (!frame) {
+      const location = parseLocation(trimmed);
+      if (location) frame = buildFrame(trimmed, location);
     }
   }
 

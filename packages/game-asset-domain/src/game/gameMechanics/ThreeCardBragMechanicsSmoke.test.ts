@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
 import { GamePhase } from '@ocentra/game-domain/types/game';
 import { validateAssetFile } from '@/schemas/asset/asset-file-schema';
-import { CardGameMechanicsDataSchema } from '@/schemas/asset/card-game-mechanics-data.schema';
+import { decodeCardGameMechanicsData } from '@/schemas/asset/card-game-mechanics-data.schema';
 import { toMechanicsSpec } from './MechanicsTranslator';
 import { createFrench52DeckProvider } from './testDeckProviders';
 
@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../../../..');
 const threeCardBragMechanicsAssetPath = path.resolve(
   repoRoot,
-  'packages/asset-editor/Resources/GameMode/CardGames/Games/three-card-brag/three-card-bragMechanics.asset',
+  'packages/asset-editor/Resources/GameMode/CardGames/Games/vying/three-card-brag/three-card-bragMechanics.asset',
 );
 
 describe('Three Card Brag mechanics asset smoke', () => {
@@ -24,7 +24,7 @@ describe('Three Card Brag mechanics asset smoke', () => {
     const validation = validateAssetFile(parsed);
     expect(validation.success).toBe(true);
 
-    const data = CardGameMechanicsDataSchema.parse((parsed as { data: unknown }).data);
+    const data = decodeCardGameMechanicsData((parsed as { data: unknown }).data);
     const spec = toMechanicsSpec(data);
 
     const engine = new GameEngine({
@@ -85,9 +85,12 @@ describe('Three Card Brag mechanics asset smoke', () => {
       expect(revealResult.isValid).toBe(true);
     }
 
-    const endedState = engine.getGameState()!;
-    expect(endedState.phase).toBe(GamePhase.GAME_END);
-    expect(endedState.round).toBe(2);
-    expect(endedState.players.reduce((total, player) => total + player.score, 0)).toBe(5);
+    const nextRoundState = engine.getGameState()!;
+    expect(nextRoundState.phase).toBe(GamePhase.PLAYER_ACTION);
+    expect(nextRoundState.mechanicsPhaseId).toBe('betting_round');
+    expect(nextRoundState.round).toBe(2);
+    expect(nextRoundState.players.every((player) => player.hand.length === 3)).toBe(true);
+    expect(nextRoundState.mechanicsContext?.roundPot).toBe(3);
+    expect(nextRoundState.players.reduce((total, player) => total + player.score, 0)).toBe(5);
   });
 });

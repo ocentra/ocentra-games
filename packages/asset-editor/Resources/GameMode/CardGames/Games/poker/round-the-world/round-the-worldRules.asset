@@ -1,0 +1,198 @@
+{
+  system: {
+    guid: '717f1a3f-77e2-498e-b09c-1ecb09b338ba',
+    assetType: 'CardGameRules',
+    schemaVersion: 1,
+    displayName: 'Game Rules',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/round-the-world/round-the-worldRules.asset',
+    gameId: 'round-the-world',
+    icon: '🃏',
+  },
+  data: {
+    LLM: "1. Agree the order of hand types (e.g. high card, pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush). 2. Each deal: dealer gives five cards face down to each player. 3. First betting round. 4. Draw: each player may discard and replace zero to three cards (or four if holding an ace). 5. Second betting round. 6. Showdown: remaining players reveal; the best hand that qualifies for this round's required type wins the pot. 7. Next deal uses the next hand type in the cycle.",
+    Player: "1. Agree the order of hand types (e.g. high card, pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush). 2. Each deal: dealer gives five cards face down to each player. 3. First betting round. 4. Draw: each player may discard and replace zero to three cards (or four if holding an ace). 5. Second betting round. 6. Showdown: remaining players reveal; the best hand that qualifies for this round's required type wins the pot. 7. Next deal uses the next hand type in the cycle.",
+    objective: "Win the pot by having the best hand that meets the current round's required hand type (e.g. this deal only a pair or better wins; next deal only two pair or better), or by forcing all others to fold.",
+    gameplay: "1. Agree the order of hand types (e.g. high card, pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush). 2. Each deal: dealer gives five cards face down to each player. 3. First betting round. 4. Draw: each player may discard and replace zero to three cards (or four if holding an ace). 5. Second betting round. 6. Showdown: remaining players reveal; the best hand that qualifies for this round's required type wins the pot. 7. Next deal uses the next hand type in the cycle.",
+    keyRules: [
+      "Only hands that meet the round's required type can win; a higher hand that does not qualify loses to a qualifying lower hand.",
+      'Standard five-card draw rules apply within each deal.',
+      'The cycle of hand types repeats after the final type (e.g. after royal flush, back to high card).',
+    ],
+    bonusRuleGuids: [],
+    useTrump: false,
+    trumpBonusValues: null,
+    setup: {
+      players: 'Two to eight players; best with about six.',
+      deck: 'Standard 52-card deck.',
+      equipment: 'Standard 52-card deck and poker chips.',
+      dealing: 'Each deal: five cards face down to each player. The required hand to win that deal is determined by the round number (e.g. round 1 high card, round 2 pair, up to royal flush), then play follows standard five-card draw with a betting round, draw, and final betting round before showdown.',
+    },
+    turnFlow: "1. Agree the order of hand types (e.g. high card, pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush). 2. Each deal: dealer gives five cards face down to each player. 3. First betting round. 4. Draw: each player may discard and replace zero to three cards (or four if holding an ace). 5. Second betting round. 6. Showdown: remaining players reveal; the best hand that qualifies for this round's required type wins the pot. 7. Next deal uses the next hand type in the cycle.",
+    moveValidityConditions: {
+      ante: 'This game has no ante or betting.',
+      deal: 'Deal is performed by the dealer; not a player action.',
+      reveal_market: 'This game does not use a market to reveal.',
+      buy_market: 'This game has no market purchase.',
+      buy_stock: 'This game has no buying from stock.',
+      fold: 'This game has no fold action.',
+      check: 'This game has no check or betting.',
+      call: 'This game has no call or betting.',
+      bet: 'This game has no bet action.',
+      raise: 'This game has no raise or betting.',
+      declare: 'This game has no declare phase.',
+      reveal_hand: 'Hands are not revealed in this phase.',
+      award_pot: 'This game has no pot to award.',
+      play_card: "Legal only when it is the player's turn in the current betting or draw round; at showdown all remaining players reveal.",
+      draw: 'This game has no draw-from-stock action.',
+      discard: 'This game has no discard pile.',
+      pass: 'This game has no pass action.',
+      bid: 'This game has no bid action.',
+      meld: 'This game has no meld action.',
+      go_out: 'This game has no go-out action.',
+    },
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Win the pot by having the best hand that meets the current round's required hand type (e.g. this deal only a pair or better wins; next deal only two pair or better), or by forcing all others to fold.",
+      "Turn-flow example: 1. Agree the order of hand types (e.g. high card, pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush). 2. Each deal: dealer gives five cards face down to each player. 3. First betting round. 4. Draw: each player may discard and replace zero to three cards (or four if holding an ace). 5. Second betting round. 6. Showdown: remaining players reveal; the best hand that qualifies for this round's required type wins the pot. 7. Next deal uses the next hand type in the cycle.",
+      'Scoring example: Points or match rules. Win by game rules..',
+    ],
+    bonusRules: '',
+    rules: [
+      {
+        id: 'round-the-world.rules.objective',
+        title: 'Objective',
+        text: "Win the pot by having the best hand that meets the current round's required hand type (e.g. this deal only a pair or better wins; next deal only two pair or better), or by forcing all others to fold.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'round-the-world.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Agree the order of hand types (e.g. high card, pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush). 2. Each deal: dealer gives five cards face down to each player. 3. First betting round. 4. Draw: each player may discard and replace zero to three cards (or four if holding an ace). 5. Second betting round. 6. Showdown: remaining players reveal; the best hand that qualifies for this round's required type wins the pot. 7. Next deal uses the next hand type in the cycle.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'round-the-world.setup.players',
+        title: 'Players',
+        text: 'Two to eight players; best with about six.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'round-the-world.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'round-the-world.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck and poker chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'round-the-world.setup.dealing',
+        title: 'Deal',
+        text: 'Each deal: five cards face down to each player. The required hand to win that deal is determined by the round number (e.g. round 1 high card, round 2 pair, up to royal flush), then play follows standard five-card draw with a betting round, draw, and final betting round before showdown.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'round-the-world.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'round-the-world.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'round-the-world.rules.key.1',
+        title: 'Key rule 1',
+        text: "Only hands that meet the round's required type can win; a higher hand that does not qualify loses to a qualifying lower hand.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'round-the-world.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Standard five-card draw rules apply within each deal.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'round-the-world.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The cycle of hand types repeats after the final type (e.g. after royal flush, back to high card).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'round-the-world.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'round-the-world.rules.objective',
+          'round-the-world.rules.gameplay',
+        ],
+      },
+      {
+        id: 'round-the-world.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'round-the-world.setup.players',
+          'round-the-world.setup.deck',
+          'round-the-world.setup.equipment',
+          'round-the-world.setup.dealing',
+        ],
+      },
+      {
+        id: 'round-the-world.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'round-the-world.rules.key.1',
+          'round-the-world.rules.key.2',
+          'round-the-world.rules.key.3',
+        ],
+      },
+      {
+        id: 'round-the-world.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'round-the-world.score.description',
+          'round-the-world.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'round-the-world.setup.dealing',
+        'round-the-world.rules.objective',
+      ],
+      play_card: [
+        'round-the-world.rules.gameplay',
+      ],
+    },
+  },
+}

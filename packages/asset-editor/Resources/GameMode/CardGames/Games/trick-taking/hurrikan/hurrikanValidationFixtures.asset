@@ -1,0 +1,124 @@
+{
+  system: {
+    guid: 'f676b2af-9b1b-4655-98ce-db0d89000e73',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/trick-taking/hurrikan/hurrikanValidationFixtures.asset',
+    gameId: 'hurrikan',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'hurrikan',
+    familyVariant: 'Scopa-variant',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: 'hurrikan.core-runtime-contracts',
+        title: 'Hurrikan Core Runtime Contracts',
+        fixtures: [
+          {
+            id: 'hurrikan.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 2,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 6,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: 'Hurrikan must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              'hurrikan.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: 'hurrikan.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'deal',
+            supportedActionIds: [
+              'setup_round',
+              'deal',
+              'reveal_market',
+              'award_pot',
+              'play_card',
+              'discard',
+            ],
+            explanation: 'Hurrikan must run setup_round first, then enter deal with the processed legal actions.',
+            linkedRuleIds: [
+              'hurrikan.setup.initial-deal',
+              'hurrikan.flow.deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'deal',
+            firstPlayableLegalActions: [
+              'deal',
+            ],
+          },
+          {
+            id: 'hurrikan.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: '16',
+            scoringDirection: 'high_wins',
+            targetScore: 16,
+            cardValues: {
+              'Most Cards': '1 point',
+              'Most Hearts': '1 point',
+              'Seven of Hearts': '1 point',
+              'Hurrikan (sweep)': '1 point each',
+            },
+            explanation: 'Players score points by capturing cards and completing sweeps (Hurrikans). First to 16 wins.',
+            linkedRuleIds: [
+              'hurrikan.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: 'hurrikan.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 2,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

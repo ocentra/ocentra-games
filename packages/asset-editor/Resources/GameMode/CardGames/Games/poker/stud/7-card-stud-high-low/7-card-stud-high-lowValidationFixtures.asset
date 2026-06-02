@@ -1,0 +1,123 @@
+{
+  system: {
+    guid: 'f49be1e3-cd23-4986-a47c-e28f25225d1d',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Validation Fixtures',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/poker/stud/7-card-stud-high-low/7-card-stud-high-lowValidationFixtures.asset',
+    gameId: '7-card-stud-high-low',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'custom.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: '7-card-stud-high-low',
+    familyVariant: 'Seven Card Stud / Split Pot',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    validationSuites: [
+      {
+        id: '7-card-stud-high-low.core-runtime-contracts',
+        title: '7 Card Stud High-Low Core Runtime Contracts',
+        fixtures: [
+          {
+            id: '7-card-stud-high-low.setup.initial-deal',
+            title: 'Initial deal',
+            purpose: 'setup',
+            expectedInitialHandSize: 3,
+            expectedPlayerCounts: {
+              min: 2,
+              max: 6,
+              recommended: 2,
+            },
+            expectedTotalInitialCards: 18,
+            expectedDeckCount: 1,
+            expectedVisibility: 'face_down',
+            explanation: '7 Card Stud High-Low must start by giving each active player 3 card(s), matching the processed setup and engine initialHandSize.',
+            linkedRuleIds: [
+              '7-card-stud-high-low.setup.initial-deal',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.initialHandSize',
+              'engine.playerConfig',
+              'engine.cardVisibility.initialDeal',
+            ],
+          },
+          {
+            id: '7-card-stud-high-low.flow.first-phase',
+            title: 'Opening phase',
+            purpose: 'flow',
+            expectedFirstPhase: 'setup_round',
+            expectedActor: 'system',
+            expectedLegalActions: [
+              'setup_round',
+            ],
+            expectedNextPhase: 'ante',
+            supportedActionIds: [
+              'setup_round',
+              'ante',
+              'fold',
+              'check',
+              'call',
+              'bet',
+              'raise',
+              'declare',
+              'reveal_hand',
+              'award_pot',
+            ],
+            explanation: '7 Card Stud High-Low must run setup_round first, then enter ante with the processed legal actions.',
+            linkedRuleIds: [
+              '7-card-stud-high-low.setup.initial-deal',
+              '7-card-stud-high-low.flow.ante',
+            ],
+            sourceFields: [
+              'setup.dealing',
+              'engine.phases.0',
+              'engine.playerActions',
+              'engine.customActions',
+            ],
+            firstPlayablePhase: 'ante',
+            firstPlayableLegalActions: [
+              'ante',
+            ],
+          },
+          {
+            id: '7-card-stud-high-low.scoring.primary-outcome',
+            title: 'Primary scoring outcome',
+            purpose: 'scoring',
+            expectedFinalScore: 'Win the high half and/or the low half of the pot; best high hand and best qualifying low (e.g. 8-or-better) split; one player can scoop both.',
+            scoringDirection: null,
+            targetScore: null,
+            cardValues: {},
+            explanation: 'Pot split between high and low; scoop if you win both.',
+            linkedRuleIds: [
+              '7-card-stud-high-low.score.win-condition',
+            ],
+            sourceFields: [
+              'scoring.description',
+              'scoring.winCondition',
+              'scoring.cardValues',
+              'scoring.targetScore',
+              'scoring.scoringDirection',
+            ],
+          },
+        ],
+      },
+    ],
+    examples: [
+      {
+        id: '7-card-stud-high-low.initial-deal-preview',
+        purpose: 'Runtime setup preview and playtest assertion.',
+        expectedInitialHandSize: 3,
+        expectedPlayerCounts: {
+          min: 2,
+          max: 6,
+        },
+        expectedVisibility: 'face_down',
+      },
+    ],
+  },
+}

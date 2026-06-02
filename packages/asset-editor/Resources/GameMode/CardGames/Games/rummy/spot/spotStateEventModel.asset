@@ -1,0 +1,82 @@
+{
+  system: {
+    guid: 'e680ceb1-7926-4b88-afcc-b4c51ea94161',
+    assetType: 'GameStateEventModel',
+    schemaVersion: 1,
+    displayName: 'State Event Model',
+    category: 'Game',
+    treePath: 'Resources/GameMode/CardGames/Games/rummy/spot/spotStateEventModel.asset',
+    gameId: 'spot',
+  },
+  data: {
+    modelKind: 'state_event_model',
+    modelId: 'custom.state-event-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'spot',
+    familyVariant: 'Draw and Discard',
+    inheritsFrom: null,
+    executorId: 'custom.executor.v1',
+    assetRefs: {},
+    stateModel: {
+      zones: [
+        {
+          id: 'hand',
+          type: 'hand',
+          visibility: 'private',
+          owner: 'player',
+          capacity: 52,
+        },
+        {
+          id: 'stock',
+          type: 'stack',
+          visibility: 'hidden',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'discard',
+          type: 'stack',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 52,
+        },
+        {
+          id: 'tableau',
+          type: 'pool',
+          visibility: 'public',
+          owner: 'table',
+          capacity: 52,
+        },
+      ],
+      cardVisibility: {
+        handDefault: 'face_down',
+        initialDeal: 'face_down',
+        marketCards: null,
+        stockPurchase: 'face_up',
+        discardTop: 'face_up',
+        tableauCards: 'face_up',
+      },
+      constants: {
+        ante: 5,
+      },
+    },
+    eventModel: {
+      phases: [
+        'setup_round',
+        'deal',
+        'turn_loop',
+        'resolution',
+      ],
+      actions: [
+        'setup_round',
+        'deal',
+        'award_pot',
+        'draw',
+        'discard',
+        'meld',
+        'go_out',
+      ],
+    },
+    examples: [],
+  },
+}
