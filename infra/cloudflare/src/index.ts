@@ -4,6 +4,7 @@ import { alertOversizedRequest, detectAttackPattern } from '@/monitoring/securit
 import { getCorsHeaders, validateCorsOrigin } from '@/utils/cors';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
+import { ApiPathPrefix } from '@ocentra/endpoint-domain/constants/versions';
 import { RequestLimits } from '@/constants/request-limits';
 import { RateLimitFallback } from '@/constants/rate-limit';
 import { SecurityEventType } from '@/constants/security-events';
@@ -262,11 +263,20 @@ export default {
         executionContext.waitUntil(flushDebugLogs());
       }
 
+      const isApiPath = path === ApiPathPrefix || path.startsWith(`${ApiPathPrefix}/`);
       return afterBridgeSend(
-        new Response(ErrorMessage.NotFound, {
-          status: HttpStatus.NotFound,
-          headers: getCorsHeaders(env, requestOrigin || undefined),
-        }),
+        isApiPath
+          ? new Response(JSON.stringify({ error: ErrorMessage.NotFound }), {
+            status: HttpStatus.NotFound,
+            headers: {
+              [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+              ...getCorsHeaders(env, requestOrigin || undefined),
+            },
+          })
+          : new Response(ErrorMessage.NotFound, {
+            status: HttpStatus.NotFound,
+            headers: getCorsHeaders(env, requestOrigin || undefined),
+          }),
         env,
         requestOrigin
       );
